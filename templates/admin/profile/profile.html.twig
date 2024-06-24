@@ -450,6 +450,8 @@
                 linkDwnload.remove();
             }
             var eltFile = $(".vich-image");
+            
+            
             if (eltFile.length > 0) {
                 eltFile.addClass("row mt-3");
                 var divCustomFile = $('<div class="custom-file col-md-1" style="margin-left: 0.8em;"></div>');
@@ -468,14 +470,19 @@
                   var divSm10 = $('<div class="col-sm-10"></div>');
                 var divSm10 = $('<div class="col-sm-10"></div>');
                 var divFormCheck = $('<div class="form-check"></div>');
+                divCustomSuppression.append(divSm2);
+                {% if ((profil is not null) and (profil.image != "")) %}
+                eltFile.children(":first").remove();;
+              
                 var inputFileDelete = $('<input type="checkbox" id="profil_imageFile_delete" name="profil[imageFile][delete]" class="form-check-input" value="1">');
                 //var labelDelete = $('<label class="form-check-label" for="profil_avatar_delete">Supprimer?</label>');
                  var deleteLink = $('<label href="#" class="btn btn-danger btn-sm" title="Supprimer l\'image de profil"><i class="bi bi-trash"></i></label>');
                 
-                 divCustomSuppression.append(divSm2);
+                 
                  
                   divFormCheck.append(inputFileDelete);
                   divFormCheck.append(deleteLink);
+                {% endif %}
                   
                   divSm10.append(divFormCheck);
                    divCustomSuppression.append(divSm10);

@@ -296,9 +296,7 @@ class UserController extends AbstractController
                 $directoryPublicCopy = $this->getParameter('kernel.project_dir'). '/public/uploads/avatar/';
                
                 if ($request->isXmlHttpRequest()) {
-                   if ($request->get('profil')['imageFile']['delete'] === "1" && $user->getImage() != "" && $user->getImage() != null && @file_exists($directoryPublicCopy.$user->getImage())) {
-                    $user->setImage(null);
-                   }
+                   
                     $this->userService->update();
                     $data["html"] = $this->renderView('admin/profile/profile.html.twig', [
                         'profil' => $user,
