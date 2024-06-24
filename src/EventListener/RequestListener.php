@@ -125,7 +125,12 @@ class RequestListener implements EventSubscriberInterface
 
 
                     if (method_exists($user, 'getAppActive')) {
-                        $application = $user->getAppActive()->getEntreprise();
+                        $appActive = $user->getAppActive();
+                        if ($appActive !== null) {
+                            $application = $appActive->getEntreprise();
+                        } else {
+                            $application = 'Point de vente'; 
+                        }
                     }
 
 

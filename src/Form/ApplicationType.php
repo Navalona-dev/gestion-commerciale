@@ -25,36 +25,48 @@ class ApplicationType extends AbstractType
                 'required' => true,
                 'attr' => array(
                     'readonly' => false,
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
                 ),
             ])
             ->add('nomResp', TextType::class, [
                 'required' => false,
                 'attr' => array(
                     'readonly' => false,
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
                 ),
             ])
             ->add('prenomResp', TextType::class, [
                 'required' => false,
                 'attr' => array(
                     'readonly' => false,
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
                 ),
             ])
             ->add('mailResp', TextType::class, [
                 'required' => false,
                 'attr' => array(
                     'readonly' => false,
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
                 ),
             ])
             ->add('adresse', TextType::class, [
                 'required' => false,
                 'attr' => array(
                     'readonly' => false,
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
                 ),
             ])
             ->add('telephone', TextType::class, [
                 'required' => false,
                 'attr' => array(
                     'readonly' => false,
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
                 ),
             ])
             ->add('isActive', CheckboxType::class, [

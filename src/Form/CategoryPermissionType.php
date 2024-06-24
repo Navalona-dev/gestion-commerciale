@@ -19,12 +19,17 @@ class CategoryPermissionType extends AbstractType
         //'config_name' => 'simple_config',
         $builder
             ->add('title', TextType::class, [
-                'required' => true
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
+                ]
             ])
             ->add('description', TextareaType::class, [
                 'attr' => [
-                    'class' => 'ckeditor'
-                ]
+                    'class' => 'ckeditor form-controlo form-control-md mb-3'
+                ],
+                'required' => true
             ])
             //->add('save', SubmitType::class, ['attr' => ['class' => 'btn btn-fill btn-green mx-auto']])
         ;

@@ -59,7 +59,8 @@ class UserType extends AbstractType
                     new NotBlank([
                         'message' => 'Merci d\'entrer une civilité',
                     ])
-                ]
+                    ],
+                    'required' => true
             ])
             ->add('nom', TextType::class, ['label' => 'Nom', 'attr' => [
                 'required' => true,
@@ -144,6 +145,9 @@ class UserType extends AbstractType
                 'image_uri' => false,
                 'allow_delete' => false,
                 'asset_helper' => true,
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3'
+                ]
         ]);
         
     }
