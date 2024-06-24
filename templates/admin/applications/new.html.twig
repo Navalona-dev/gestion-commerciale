@@ -1,46 +1,64 @@
 
 <div class="modal fade" id="modalNewApplication" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content p-4">
-            <div class="modal-header">
-                <h5 class="modal-title text-center fw-bold" id="modalNewLabel">Création nouveau application</h5>
+        <div class="modal-content p-4 modal-application">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau application</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 
                 {{ form_start(form, {'attr': {'id': 'newApplication', 'action': path('applications_create') }}) }}
-                   
-                        <div class="form-group mb-3">
-                            <label for="" class="mb-2">Point de vente</label>
-                            {{ form_widget(form.entreprise) }}
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Point de vente <sup class="text-danger">*</sup> </label>
+                                <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.entreprise)}} </span>
+                                {{ form_widget(form.entreprise) }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            <label for="" class="mb-2">Nom responsable</label>
-                            {{ form_widget(form.nomResp) }}
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Nom responsable</label>
+                                {{ form_widget(form.nomResp) }}
+                            </div>
                         </div>
-                         <div class="form-group mb-3">
-                            <label for="" class="mb-2">Prénom responsable</label>
-                            {{ form_widget(form.prenomResp) }}
+                   </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Prénom responsable</label>
+                                {{ form_widget(form.prenomResp) }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            <label for="" class="mb-2">Email responsable</label>
-                            {{ form_widget(form.mailResp) }}
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Email responsable</label>
+                                {{ form_widget(form.mailResp) }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            <label for="" class="mb-2">adresse</label>
-                            {{ form_widget(form.adresse) }}
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">adresse</label>
+                                {{ form_widget(form.adresse) }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            <label for="" class="mb-2">Téléphone</label>
-                            {{ form_widget(form.telephone) }}
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Téléphone</label>
+                                {{ form_widget(form.telephone) }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            <label for="" class="mb-2">Activé</label>
-                            {{ form_widget(form.isActive) }}
-                        </div>
-                    
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Activé</label>
+                        {{ form_widget(form.isActive) }}
+                    </div>
+                        
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-sm px-3 mt-3" style="width: 100%;">Ajouter</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-3 mt-3" style="width: 100%;">Ajouter application</button>
                     </div>
                 {{ form_end(form) }}
             </div>

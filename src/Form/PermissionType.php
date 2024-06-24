@@ -24,12 +24,15 @@ class PermissionType extends AbstractType
                 'required' => true,
                 'attr' => array(
                     'readonly' => (($options['isEdit']) ? true : false),
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocmplete' => 'off'
                 ),
             ])
             ->add('description', TextareaType::class, [
                 'attr' => [
-                    'class' => 'ckeditor'
-                ]
+                    'class' => 'ckeditor form-control form-control-md mb-3'
+                ],
+                'required' => true
             ])
             ->add('categoryofpermission', EntityType::class, [
                 'class' => Categoryofpermission::class,
@@ -40,6 +43,9 @@ class PermissionType extends AbstractType
                 'choice_label' => 'title',
                 'required' => true,
                 'placeholder' => 'Choisir categorie',
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3 chosen-select'
+                ]
             ])
 
             ->remove('privileges')

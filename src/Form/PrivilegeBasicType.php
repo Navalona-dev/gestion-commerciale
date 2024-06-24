@@ -22,13 +22,16 @@ class PrivilegeBasicType extends AbstractType
                 'required' => true,
                 'attr' => array(
                     'readonly' => (($options['isEdit']) ? true : false),
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
                 ),
             ])
             
             ->add('description', TextareaType::class, [
                 'attr' => [
-                    'class' => 'ckeditor'
-                ]
+                    'class' => 'ckeditor form-control form-control-md mb-3'
+                ],
+                'required' => true
                 ]);
 
             /*->add('description', CKEditorType::class, [

@@ -26,7 +26,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col-xl-8 col-lg-7 col-md-12 col-sm-12">
-                <h5 class="card-title">Liste application </h5>
+                <h5 class="card-title fw-bold">Liste application </h5>
               </div>
              
               <div class="col-xl-4 col-lg-5 col-md-12 col-sm-12 mt-4 mb-5">
@@ -47,9 +47,11 @@
                 
                 {% else %}
                     <tr>
-                        <td>Aucun enregistrement trouvé</td>
-                         <td>&nbsp;</td>
-                          <td>&nbsp;</td>
+                        <td colspan="4">Aucun enregistrement trouvé</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                         
                     </tr>
                 {% endif %}
                 
@@ -72,7 +74,7 @@
       $('#liste-table-application').DataTable({
         responsive: true,
         language: {
-          url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
       },
         border: false,
         scrollX: '100%',
