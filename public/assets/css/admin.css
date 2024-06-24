@@ -12,13 +12,14 @@
 :root {
     scroll-behavior: smooth;
     --color--: #2a4ce8;
-    --color-black: #444444;
+    --color-black:   #212f3d  ;
+    --bg-color--: #f6f9ff;
   }
   
   body {
     font-family: "Open Sans", sans-serif;
-    background: #f6f9ff;
-    color: #444444;
+    background: var(--bg-color--);
+    color: var(--color-black);
   }
   
   a {
@@ -66,7 +67,7 @@
     font-size: 24px;
     margin-bottom: 0;
     font-weight: 600;
-    color: var(--color--) !important;
+    color: var(--color-black);
   }
   
   /*--------------------------------------------------------------
@@ -124,7 +125,7 @@
   }
   
   .dropdown-menu .dropdown-footer a {
-    color: #444444;
+    color: var(--color-black);
     text-decoration: underline;
   }
   
@@ -150,7 +151,7 @@
   }
   
   .dropdown-menu .dropdown-item:hover {
-    background-color: #f6f9ff;
+    background-color: var(--bg-color--);
   }
   
   @media (min-width: 768px) {
@@ -285,7 +286,7 @@
   
   .accordion-button:not(.collapsed) {
     color: var(--color--) !important;
-    background-color: #f6f9ff;
+    background-color: var(--bg-color--);
   }
   
   .accordion-flush .accordion-button {
@@ -374,7 +375,7 @@
   .logo span {
     font-size: 26px;
     font-weight: 700;
-    color: var(--color--) !important;
+    color: var(--color-black) !important;
     font-family: "Nunito", sans-serif;
   }
   
@@ -476,7 +477,7 @@
   }
   
   .header-nav .nav-profile {
-    color: var(--color--) !important;
+    color: var(--color-black) !important;
   }
   
   .header-nav .nav-profile img {
@@ -525,7 +526,7 @@
   }
   
   .header-nav .notifications .notification-item:hover {
-    background-color: #f6f9ff;
+    background-color: var(--bg-color--);
   }
   
   .header-nav .messages {
@@ -550,7 +551,7 @@
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 5px;
-    color: #444444;
+    color: var(--color-black);
   }
   
   .header-nav .messages .message-item p {
@@ -560,7 +561,7 @@
   }
   
   .header-nav .messages .message-item:hover {
-    background-color: #f6f9ff;
+    background-color: var(--bg-color--);
   }
   
   .header-nav .profile {
@@ -573,7 +574,7 @@
     font-size: 18px;
     margin-bottom: 0;
     font-weight: 600;
-    color: #444444;
+    color: var(--color-black);
   }
   
   .header-nav .profile .dropdown-header span {
@@ -593,7 +594,7 @@
   }
   
   .header-nav .profile .dropdown-item:hover {
-    background-color: #f6f9ff;
+    background-color: var(--bg-color--);
   }
   
   /*--------------------------------------------------------------
@@ -688,7 +689,7 @@
     font-weight: 600;
     color: #4154f1;
     transition: 0.3;
-    background: #f6f9ff;
+    background: var(--bg-color--);
     padding: 10px 15px;
     border-radius: 4px;
   }
@@ -710,7 +711,7 @@
   
   .sidebar-nav .nav-link:hover {
     color: var(--color--);
-    background: #f6f9ff;
+    background: var(--bg-color--);
   }
   
   .sidebar-nav .nav-link:hover i {
@@ -1266,3 +1267,38 @@
   width: 180% !important;
   margin-left: -12rem !important;
  }
+
+ .img-app {
+  width: 20px;
+  height: 20px;
+ }
+
+ .custom-dropdown-width {
+  min-width: 500px !important; 
+}
+
+.app-content {
+  color: var(--color-black);
+}
+
+.app-content img {
+  filter: grayscale(100%) brightness(0%);
+}
+
+.app-content:hover {
+  color: var(--color-black) !important;
+}
+
+.dropdown-title i {
+  color: var(--color-black) !important;
+  font-size: 20px;
+  margin-right: 15px;
+}
+
+.work-post-content {
+  color: var(--color-black) !important;
+}
+
+.work-post-content:hover {
+  color: var(--color-black) !important;
+}
