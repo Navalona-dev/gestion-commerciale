@@ -16,20 +16,26 @@ use App\Entity\Permission;
 use App\Service\PermissionService;
 use App\Form\PermissionType;
 use App\Service\AccesService;
+use App\Service\ApplicationManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Route('/admin/permissions', name: 'permissions')]
 class PermissionsController extends AbstractController
 {
+    private $permissionService;
     private $accesService;
-    public function __construct(AccesService $AccesService)
+    private $application;
+
+    public function __construct(PermissionService $permissionService, ApplicationManager $applicationManager, AccesService $accesService)
     {
-        $this->accesService = $AccesService;
+        $this->permissionService = $permissionService;
+        $this->accesService = $accesService;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
     #[Route('/', name: '_liste')]
-    public function list(PermissionService $PermissionService)
+    public function list()
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
@@ -37,7 +43,7 @@ class PermissionsController extends AbstractController
         $data = [];
         try {
 
-            $permissions = $PermissionService->getAllPermissions();
+            $permissions = $this->permissionService->getAllPermissions();
 
             if ($permissions == false) {
                 $permissions = [];
@@ -57,7 +63,7 @@ class PermissionsController extends AbstractController
     }
 
     #[Route('/new', name: '_create')]
-    public function create(Request $request, PermissionService $PermissionService)
+    public function create(Request $request)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
@@ -73,7 +79,7 @@ class PermissionsController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 
                 if ($request->isXmlHttpRequest()) {
-                    $PermissionService->add($permission);
+                    $this->permissionService->add($permission);
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
 
@@ -111,7 +117,7 @@ class PermissionsController extends AbstractController
     }
 
     #[Route('/{permission}', name: '_edit')]
-    public function edit(Request $request, PermissionService $PermissionService, Permission $permission)
+    public function edit(Request $request, Permission $permission)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
@@ -124,7 +130,7 @@ class PermissionsController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
-                    $PermissionService->update();
+                    $this->permissionService->update();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
                 $this->addFlash('success', 'Modification permission "' . $permission->getTitle() . '" avec succès.');
@@ -159,7 +165,7 @@ class PermissionsController extends AbstractController
     }
 
     #[Route('/delete/{permission}', name: '_delete')]
-    public function delete(Request $request, PermissionService $permissionService, Permission $permission)
+    public function delete(Request $request, Permission $permission)
     {
        /* if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -167,7 +173,7 @@ class PermissionsController extends AbstractController
         try {
            
             if ($request->isXmlHttpRequest()) {
-                $permissionService->remove($permission);
+                $this->permissionService->remove($permission);
                 return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
             }
                 

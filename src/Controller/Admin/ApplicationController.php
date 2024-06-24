@@ -16,20 +16,26 @@ use App\Entity\Application;
 use App\Service\ApplicationService;
 use App\Form\ApplicationType;
 use App\Service\AccesService;
+use App\Service\ApplicationManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Route('/admin/applications', name: 'applications')]
 class ApplicationController extends AbstractController
 {
+    private $applicationService;
     private $accesService;
-    public function __construct(AccesService $AccesService)
+    private $application;
+
+    public function __construct(ApplicationService $applicationService, ApplicationManager $applicationManager, AccesService $accesService)
     {
-        $this->accesService = $AccesService;
+        $this->applicationService = $applicationService;
+        $this->accesService = $accesService;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
     #[Route('/', name: '_liste')]
-    public function list(ApplicationService $applicationService)
+    public function list()
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
@@ -37,7 +43,7 @@ class ApplicationController extends AbstractController
         $data = [];
         try {
 
-            $applications = $applicationService->getAllApplications();
+            $applications = $this->applicationService->getAllApplications();
 
             if ($applications == false) {
                 $applications = [];
@@ -57,7 +63,7 @@ class ApplicationController extends AbstractController
     }
 
     #[Route('/new', name: '_create')]
-    public function create(Request $request, ApplicationService $applicationService)
+    public function create(Request $request)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
@@ -74,7 +80,7 @@ class ApplicationController extends AbstractController
                 
                 if ($request->isXmlHttpRequest()) {
                     
-                    $applicationService->add($application);
+                    $this->applicationService->add($application);
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
 
@@ -112,7 +118,7 @@ class ApplicationController extends AbstractController
     }
 
     #[Route('/{application}', name: '_edit')]
-    public function edit(Request $request, ApplicationService $applicationService, Application $application)
+    public function edit(Request $request, Application $application)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
@@ -125,7 +131,7 @@ class ApplicationController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
-                    $applicationService->update();
+                    $this->applicationService->update();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
                 //$this->addFlash('success', 'Modification application "' . $application->getTitle() . '" avec succès.');
@@ -160,7 +166,7 @@ class ApplicationController extends AbstractController
     }
 
     #[Route('/delete/{application}', name: '_delete')]
-    public function delete(Request $request, ApplicationService $applicationService, Application $application)
+    public function delete(Request $request, Application $application)
     {
        /* if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -168,7 +174,7 @@ class ApplicationController extends AbstractController
         try {
            
             if ($request->isXmlHttpRequest()) {
-                $applicationService->remove($application);
+                $this->applicationService->remove($application);
                 return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
             }
                 

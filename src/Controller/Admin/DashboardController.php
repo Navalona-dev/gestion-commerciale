@@ -13,6 +13,8 @@ use App\Repository\ProductRepository;
 use Symfony\Component\Form\FormError;
 use App\Repository\CategoryRepository;
 use App\Repository\SocialLinkRepository;
+use App\Service\AccesService;
+use App\Service\ApplicationManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,13 +25,15 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class DashboardController extends AbstractController
 {
-    private $em;
 
-    public function __construct(
-        EntityManagerInterface $em
-    )
+    private $categoryPermissionService;
+    private $accesService;
+    private $application;
+
+    public function __construct(ApplicationManager $applicationManager, AccesService $accesService)
     {
-        $this->em = $em;
+        $this->accesService = $accesService;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
     #[Route('/admin', name: 'app_admin')]

@@ -50,25 +50,25 @@ class ApplicationService
 
     public function getAllapplications()
     {
-        $applications = $this->entityManager->getRepository(application::class)->findAll();
+        $applications = $this->entityManager->getRepository(Application::class)->findAll();
         if (count($applications) > 0) {
             return $applications;
         }
         return false;
     }
 
-    public function getAllapplicationByCategorie($categorie)
+    public function getAllApplicationByCategorie($categorie)
     {
-        $applications = $this->entityManager->getRepository(application::class)->findBy(['categoryofapplication' => $categorie]);
+        $applications = $this->entityManager->getRepository(Application::class)->findBy(['categoryofapplication' => $categorie]);
         if (count($applications) > 0) {
             return $applications;
         }
         return false;
     }
 
-    public function getapplicationById($id)
+    public function getApplicationById($id)
     {
-        $application = $this->entityManager->getRepository(application::class)->find($id);
+        $application = $this->entityManager->getRepository(Application::class)->find($id);
         if ($application) {
             return $application;
         }

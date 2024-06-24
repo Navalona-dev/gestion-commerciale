@@ -18,6 +18,8 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use App\Exception\UnsufficientPrivilegeException;
 use App\Form\AccesExtranetType;
 use App\Form\ProfilType;
+use App\Service\AccesService;
+use App\Service\ApplicationManager;
 use Symfony\Component\HttpClient\Exception\ServerException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,10 +33,14 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class UserController extends AbstractController
 {
     private $userService;
+    private $accesService;
+    private $application;
 
-    public function __construct(UserService $UserService)
+    public function __construct(UserService $UserService, ApplicationManager $applicationManager, AccesService $accesService)
     {
         $this->userService = $UserService;
+        $this->accesService = $accesService;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
     /**
@@ -45,9 +51,10 @@ class UserController extends AbstractController
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
         }*/
+      
         $data = [];
         try {
-
+            
             $utilisateurs = $this->userService->getAllUser();
 
             if ($utilisateurs == false) {

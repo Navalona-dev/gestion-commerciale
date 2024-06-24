@@ -16,20 +16,26 @@ use Symfony\Component\HttpClient\Exception\ServerException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use App\Form\CategoryPermissionType;
 use App\Service\AccesService;
+use App\Service\ApplicationManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Route('/admin/categorypermission', name: 'app_category_permission')]
 class CategoryPermissionController extends AbstractController
 {
+    private $categoryPermissionService;
     private $accesService;
-    public function __construct(AccesService $AccesService)
+    private $application;
+
+    public function __construct(CategoryPermissionService $categoryPermissionService, ApplicationManager $applicationManager, AccesService $accesService)
     {
-        $this->accesService = $AccesService;
+        $this->categoryPermissionService = $categoryPermissionService;
+        $this->accesService = $accesService;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
     #[Route('/', name: '_liste')]
-    public function index(CategoryPermissionService $categoryPermissionService)
+    public function index()
     {
         /*if (!$this->accesService->insufficientPrivilege('admin')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -37,7 +43,7 @@ class CategoryPermissionController extends AbstractController
         $data = [];
         try {
             
-            $categoryPermissions = $categoryPermissionService->getAllCategoryPermission();
+            $categoryPermissions = $this->categoryPermissionService->getAllCategoryPermission();
             if ($categoryPermissions == false) {
                 $categoryPermissions = [];
             }
@@ -55,7 +61,7 @@ class CategoryPermissionController extends AbstractController
     }
 
     #[Route('/new', name: '_create')]
-    public function create(Request $request, CategoryPermissionService $categoryPermissionService)
+    public function create(Request $request)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -70,7 +76,7 @@ class CategoryPermissionController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
 
                 if ($request->isXmlHttpRequest()) {
-                    $categoryPermissionService->add($categoryofPermission);
+                    $this->categoryPermissionService->add($categoryofPermission);
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
                 $this->addFlash('success', 'Creation category  "' . $categoryofPermission->getTitle() . '" avec succès.');
@@ -107,7 +113,7 @@ class CategoryPermissionController extends AbstractController
     }
 
     #[Route('/{category}', name: '_edit')]
-    public function edit(Request $request, CategoryPermissionService $categoryPermissionService, Categoryofpermission $category)
+    public function edit(Request $request, Categoryofpermission $category)
     {
        /* if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -119,7 +125,7 @@ class CategoryPermissionController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
-                    $categoryPermissionService->update();
+                    $this->categoryPermissionService->update();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
                 
@@ -157,7 +163,7 @@ class CategoryPermissionController extends AbstractController
     }
 
     #[Route('/delete/{category}', name: '_delete')]
-    public function delete(Request $request, CategoryPermissionService $categoryPermissionService, Categoryofpermission $category)
+    public function delete(Request $request, Categoryofpermission $category)
     {
        /* if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -165,7 +171,7 @@ class CategoryPermissionController extends AbstractController
         try {
            
             if ($request->isXmlHttpRequest()) {
-                $categoryPermissionService->remove($category);
+                $this->categoryPermissionService->remove($category);
                 return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
             }
                 

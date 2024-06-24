@@ -52,12 +52,6 @@ class RequestListener implements EventSubscriberInterface
     
     public function onKernelRequest(RequestEvent $event)
     {
-        if (!$this->entityManager->isOpen()) {
-            $this->entityManager = $this->entityManager->create(
-                $this->entityManager->getConnection(),
-                $this->entityManager->getConfiguration()
-            );
-        }
         
         $host = $event->getRequest()->getHost();
         $this->path= $event->getRequest()->getRequestUri();

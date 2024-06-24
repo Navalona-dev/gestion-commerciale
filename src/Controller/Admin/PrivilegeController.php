@@ -20,20 +20,26 @@ use App\Form\PrivilegeBasicType;
 use App\Form\PrivilegeAssignationPermissionType;
 use App\Service\AuthorizationManager;
 use App\Service\AccesService;
+use App\Service\ApplicationManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Route('/admin/privileges', name: 'privileges')]
 class PrivilegeController extends AbstractController
 {
+    private $privilegeService;
     private $accesService;
-    public function __construct(AccesService $AccesService)
+    private $application;
+
+    public function __construct(PrivilegeService $privilegeService, ApplicationManager $applicationManager, AccesService $accesService)
     {
-        $this->accesService = $AccesService;
+        $this->privilegeService = $privilegeService;
+        $this->accesService = $accesService;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
     #[Route('/', name: '_liste')]
-    public function liste(PrivilegeService $PrivilegeService)
+    public function liste()
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -41,7 +47,7 @@ class PrivilegeController extends AbstractController
         $data = [];
         try {
 
-            $privileges = $PrivilegeService->getAllPrivilege();
+            $privileges = $this->privilegeService->getAllPrivilege();
 
             if ($privileges == false) {
                 $privileges = [];
@@ -60,11 +66,12 @@ class PrivilegeController extends AbstractController
     }
 
     #[Route('/new', name: '_create')]
-    public function create(Request $request, PrivilegeService $PrivilegeService)
+    public function create(Request $request)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
         }*/
+        $data = [];
         try {
             $privilege = new Privilege();
             $form = $this->createForm(PrivilegeBasicType::class, $privilege);
@@ -73,12 +80,12 @@ class PrivilegeController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
-                    $PrivilegeService->add($privilege);
+                    $this->privilegeService->add($privilege);
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
         
-                $this->addFlash('success', 'Création privilege "' . $privilege->getTitle() . '" avec succès.');
-                return $this->redirectToRoute('privilege_liste');
+                //$this->addFlash('success', 'Création privilege "' . $privilege->getTitle() . '" avec succès.');
+                //return $this->redirectToRoute('privilege_liste');
             }
 
             $data['exception'] = "";
@@ -109,7 +116,7 @@ class PrivilegeController extends AbstractController
     }
 
     #[Route('/{privilege}', name: '_edit')]
-    public function edit(Request $request, PrivilegeService $PrivilegeService, Privilege $privilege)
+    public function edit(Request $request, Privilege $privilege)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -122,11 +129,11 @@ class PrivilegeController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
-                    $PrivilegeService->update();
+                    $this->privilegeService->update();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
-                $this->addFlash('success', 'Modification privilege  "' . $privilege->getTitle() . '" avec succès.');
-                return $this->redirectToRoute('privilege_liste');
+                //$this->addFlash('success', 'Modification privilege  "' . $privilege->getTitle() . '" avec succès.');
+                //return $this->redirectToRoute('privilege_liste');
             }
 
             $data['exception'] = "";
@@ -157,7 +164,7 @@ class PrivilegeController extends AbstractController
     }
 
     #[Route('/delete/{privilege}', name: '_delete')]
-    public function delete(Request $request, PrivilegeService $privilegeService, Privilege $privilege)
+    public function delete(Request $request, Privilege $privilege)
     {
        /* if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -165,7 +172,7 @@ class PrivilegeController extends AbstractController
         try {
            
             if ($request->isXmlHttpRequest()) {
-                $privilegeService->remove($privilege);
+                $this->privilegeService->remove($privilege);
                 return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
             }
                 
@@ -191,7 +198,7 @@ class PrivilegeController extends AbstractController
     }
 
     #[Route('/assignation/permission/{privilege}', name: '_assignation_permission')]
-    public function assignation(Request $request, PrivilegeService $PrivilegeService, CategoryPermissionService $CategoryPermissionService, PermissionService $PermissionService, Privilege $privilege, AuthorizationManager $authorization)
+    public function assignation(Request $request, CategoryPermissionService $CategoryPermissionService, PermissionService $PermissionService, Privilege $privilege, AuthorizationManager $authorization)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -257,7 +264,7 @@ class PrivilegeController extends AbstractController
     }
 
     #[Route('/assignation/permission/validation/{privilege}', name: '_assignation_permission_validation')]
-    public function assignationValidation(Request $request, PrivilegeService $PrivilegeService, CategoryPermissionService $CategoryPermissionService, PermissionService $PermissionService, Privilege $privilege, AuthorizationManager $authorization)
+    public function assignationValidation(Request $request, CategoryPermissionService $CategoryPermissionService, PermissionService $PermissionService, Privilege $privilege, AuthorizationManager $authorization)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -276,11 +283,11 @@ class PrivilegeController extends AbstractController
 
             foreach ($permissionsPrivilege as $key => $idPermission) {
                 $permission = $PermissionService->getPermissionById($idPermission);
-                $PrivilegeService->addPermission($privilege, $permission);
+                $this->privilegeService->addPermission($privilege, $permission);
                 $PermissionService->addPrivilege($permission, $privilege);
             }
             if ($request->isXmlHttpRequest()) {
-                $PrivilegeService->update();
+                $this->privilegeService->update();
                 return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
             }
 
@@ -289,7 +296,7 @@ class PrivilegeController extends AbstractController
         } else {
             // remove all permissions du privilege
             if ($request->isXmlHttpRequest()) {
-                $PrivilegeService->removeAllPermissionPrivilege($privilege);
+                $this->privilegeService->removeAllPermissionPrivilege($privilege);
                 return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
             }
             //$this->addFlash('success', 'Assignation permission au "' . $privilege->getTitle() . '" avec succès.');
