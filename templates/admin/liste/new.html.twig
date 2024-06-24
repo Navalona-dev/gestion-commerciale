@@ -1,0 +1,135 @@
+
+<div class="modal fade" id="modalNew" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content p-4">
+            <div class="modal-header">
+                <h5 class="modal-title text-center fw-bold" id="modalNewLabel">Création nouveau {{menu}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                {{ form_start(form, {'attr': {'id': 'newData', 'action': path('app_admin_new') }}) }}
+                    {% if menu == 'categorie' %}
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Nom du categorie</label>
+                            {{ form_widget(form.name) }}
+                        </div>
+
+                    {% elseif menu == "type" %}
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Nom du type</label>
+                            {{ form_widget(form.name) }}
+                        </div>
+
+                    {% elseif menu == "contact" %}
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Nom du contact</label>
+                            {{ form_widget(form.name) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Numéro téléphone</label>
+                            {{ form_widget(form.contact) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Adresse e-mail</label>
+                            {{ form_widget(form.email) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Adresse exacte</label>
+                            {{ form_widget(form.adresse) }}
+                        </div>
+
+                    {% elseif menu == "produit" %}
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Nom de produit</label>
+                            {{form_widget(form.name)}}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Categorie</label>
+                            {{form_widget(form.category)}}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Type</label>
+                            {{form_widget(form.type)}}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Référence</label>
+                            {{form_widget(form.reference)}}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Description</label>
+                            {{form_widget(form.description)}}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Image</label>
+                            {{form_widget(form.imageFile)}}
+                        </div>
+
+                    {% elseif menu == "social" %}
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Nom du réseau sociaux</label>
+                            {{ form_widget(form.name) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Url exacte</label>
+                            {{ form_widget(form.link) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Icône</label>
+                            {{ form_widget(form.icon) }}
+                        </div>
+                    {% endif %}
+
+                    <input type="hidden" name="menu" value="{{menu}}">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm px-3 mt-3" style="width: 100%;">Ajouter</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+       $('#newData').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+            var menu = '{{menu}}';
+            // Create an FormData object
+            let formData = new FormData(form[0]);
+          
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#modalNew').modal('hide');
+                    var nextLink = $('#sidebar').find('li#'+menu).find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Enregistrement effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de la catégorie.');
+                }
+            });
+        });
+    });
+</script>

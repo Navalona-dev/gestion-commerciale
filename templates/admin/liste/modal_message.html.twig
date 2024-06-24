@@ -1,0 +1,70 @@
+
+<div class="modal fade" id="modalUpdate" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalNewLabel">{{menu}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ form_start(form, {'attr': {'id': 'updateData', 'action': path('app_admin_update', {'id': id}) }}) }}
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Nom</label>
+                        {{ form.vars.value.nom ~ form.vars.value.prenom }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Objet</label>
+                        {{ form.vars.value.objet }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Message</label>
+                        {{ form.vars.value.message|raw }}
+                    </div>
+                    <input type="hidden" name="menu" value="{{menu}}">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm px-3">Répondre</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+       $('#updateData').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+            var menu = '{{menu}}';
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: form.serialize(),
+                success: function (response) {
+                    $('#modalUpdate').modal('hide');
+                    var nextLink = $('#sidebar').find('li#'+menu).find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Enregistrement effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de la catégorie.');
+                }
+            });
+        });
+    });
+</script>

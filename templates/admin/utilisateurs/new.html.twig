@@ -1,0 +1,101 @@
+
+<div class="modal fade" id="modalNewUtilisateur" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content p-4">
+            <div class="modal-header">
+                <h5 class="modal-title text-center fw-bold" id="modalNewLabel">Création nouveau utilisateur</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                {{ form_start(form, {'attr': {'id': 'newUtilisateur', 'action': path('utilisateurs_create') }}) }}
+                   
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Nom</label>
+                            {{ form_widget(form.nom) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Prénom</label>
+                            {{ form_widget(form.prenom) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Point de vente</label>
+                            {{ form_widget(form.applications) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Privileges</label>
+                            {{ form_widget(form.privileges) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Email</label>
+                            {{ form_widget(form.email) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Telephone</label>
+                            {{ form_widget(form.telephone) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Photo</label>
+                            {{ form_widget(form.imageFile) }}
+                        </div>
+                       
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Activé</label>
+                            {{ form_widget(form.isActive) }}
+                        </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm px-3 mt-3" style="width: 100%;">Ajouter</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+<script>
+  
+    $(document).ready(function () {
+        
+       $('#newUtilisateur').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+          
+            // Create an FormData object
+            let formData = new FormData(form[0]);
+          formData.append('isNew', false);
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#modalNewUtilisateur').modal('hide');
+                    var nextLink = $('#sidebar').find('li#utilisateur').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Enregistrement effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de la catégorie.');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

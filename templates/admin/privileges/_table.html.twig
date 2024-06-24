@@ -1,0 +1,121 @@
+   
+        {% if type == "thead" %}
+        <tr id="thead_privilege" class="text-nowrap">
+            <th>Titre</th>
+            <th>Description</th>
+            <th>Action</th>
+        </tr>
+        {% elseif type == "tbody" %}
+        <tr id="tbody_privilege" class="text-nowrap">
+            <td> {{liste.title}} </td>
+            <td> {{liste.description|slice(0,50)|raw}} </td>
+            
+            <td>
+               <a href="#" onclick="return openModalAssignationPrivilege({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return openModalUpdatePrivilege({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return deletePrivilege({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
+            </td>
+        </tr>
+         {% endif %}
+<script>
+    
+    function deletePrivilege(id = null) {
+        if (confirm('Voulez vous vraiment supprimer cet privilege?')) {
+            $.ajax({
+                url: '/admin/privileges/delete/'+id,
+                type: 'POST',
+                data: {category: id},
+                success: function (response) {
+                    var nextLink = $('#sidebar').find('li#privilege').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Suppression effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de la catégorie.');
+                }
+            });
+        }
+    }
+
+
+    function openModalAssignationPrivilege(id = null) {
+        $.ajax({
+                url: '/admin/privileges/assignation/permission/'+id,
+                type: 'POST',
+                data: {id: id},
+                success: function (response) {
+                    if (response.html != "") {
+                        $("#blocModalPrivilegeEmpty").empty();
+                        $("#blocModalPrivilegeEmpty").append(response.html);
+
+                        $('#modalAssignationPrivilege').modal('show');
+                    }
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de la catégorie.');
+                }
+            });
+    }
+
+    function openModalUpdatePrivilege(id = null) {
+        $.ajax({
+                url: '/admin/privileges/'+id,
+                type: 'POST',
+                data: {id: id},
+                success: function (response) {
+                    if (response.html != "") {
+                        $("#blocModalPrivilegeEmpty").empty();
+                        $("#blocModalPrivilegeEmpty").append(response.html);
+
+                        console.log('oo');
+                        $('#modalUpdatePrivilege').modal('show');
+
+                        console.log('ici');
+                    }
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de la catégorie.');
+                }
+            });
+    }
+/*
+    function setActive(id) {
+        $.ajax({
+            url: '/admin/liste/update-is-active/' + id,
+            method: 'POST', 
+            success: function(response) {
+                // Mettez à jour l'icône en fonction de la réponse
+                var icon = $('.activate-toggle[data-id="' + id + '"] i');
+                if (response.isActive == 1) {
+                    icon.removeClass('text-danger').addClass('text-success').removeClass('bi-x-circle-fill').addClass('bi-check-circle-fill');
+                } else {
+                    icon.removeClass('text-success').addClass('text-danger').removeClass('bi-check-circle-fill').addClass('bi-x-circle-fill');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Erreur lors de la mise à jour de l\'état :', error);
+            }
+        });
+    }
+    $(document).ready(function() {
+   
+});*/
+</script>

@@ -1,0 +1,38 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Tableau de bord!{% endblock %}
+
+{% block body %}
+
+<section class="my-account">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-2 col-lg-1 col-md-12 col-sm-12"></div>
+            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+                <div class="card shadow p-5">
+                    <h3 class="fw-bold mb-4 text-center">Mon compte</h3>
+                    <p><strong>Nom de famille : </strong> <span> {{user.lastName}} </span></p>
+                    <p><strong>Prénom(s) : </strong> <span> {{user.firstName}} </span></p>
+                    <p><strong>Adresse e-mail : </strong> <span> {{user.email}} </span></p>
+                    <div class="account-btn mt-3">
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                                <a href="#" class="btn btn-primary btn-sm" style="width: 100%;">Modifier mon adresse e-mail</a>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                                <a href="#" class="btn btn-primary btn-sm" style="width: 100%;">Modifier mon mot de passe</a>
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            <a href="#" class="btn btn-secondary btn-sm" style="width: 100%;">Modifier mes informations</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-1 col-md-12 col-sm-12"></div>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}

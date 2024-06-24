@@ -1,0 +1,88 @@
+
+<div class="modal fade" id="modalAssignationPrivilege" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content p-4">
+            <div class="modal-header">
+                <h5 class="modal-title text-center fw-bold" id="modalNewLabel">Assignation permission - <strong> {{ title }}</strong></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                <form id="assignationPermission" action="{{ path('privileges_assignation_permission_validation', {'privilege': id }) }}" method = "POST">
+
+        {% for key, categories in tabCategories %}
+        <div class="row">
+                       <h4 class="card-title col-sm-12  text-left">{{key}}</h4>
+        </div>
+        <div class="row mb-4">
+            {% for keyPermission, permission in categories %}
+            <div class="col-sm-6 col-md-4 checkbox-radios">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" {% if permission.state == true %} checked {% endif %} name="permission_privilege[]" value="{{ permission.id }}"> {{ permission.title }}
+                        <span class="form-check-sign">
+                            <span class="check"></span>
+                        </span>
+                        </label>
+                    </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+         <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm px-3 mt-3" style="width: 100%;">Ajouter</button>
+                    </div>
+    </div>
+  
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    //datatable
+
+    $(document).ready(function () {
+    
+       $('#assignationPermission').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+          
+            // Create an FormData object
+            let formData = new FormData(form[0]);
+       
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#modalAssignationPrivilege').modal('hide');
+                    var nextLink = $('#sidebar').find('li#tab-privilege').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Enregistrement effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de la catégorie.');
+                }
+            });
+        });
+    });
+
+   
+  </script>

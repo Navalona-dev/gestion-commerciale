@@ -1,0 +1,74 @@
+{% extends 'admin/security/base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block stylesheets %}
+
+    <style>
+        .card {
+            margin-top: 100px;
+        }
+
+        .btn-primary, .btn-primary:hover, .btn-primary:focus {
+            background-color: #4682B4 !important;
+            border: none !important;
+        }
+    </style>
+
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    
+    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12"></div>
+    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+        <div class="card shadow px-3 py-4">
+            {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{message}}
+            </div>
+        {% endfor %}
+            <h3 class="text-center mb-3">Connectez-vous</h3>
+            {{form_start(form)}}
+            {% if error %}
+                <div class="alert alert-danger">Le nom d'utilisateur ou le mot de passe n'est pas valide</div>
+            {% endif %}
+            
+            <div class="input-group mb-2">
+              <div class="input-group-prepend">
+                  <span class="input-group-text" style="border-right: none; border-radius: 0.2rem 0 0 0.2rem; background-color: #fff;">
+                      <i class="fas fa-envelope" style="height: 24px; padding-top: 5px;"></i>
+                  </span>
+              </div>
+          {{form_widget(form.email)}}
+          </div>
+        
+          <div class="input-group mb-2">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" style="border-right: none; border-radius: 0.2rem 0 0 0.2rem; background-color: #fff;">
+                        <i class="fas fa-lock" style="height: 24px; padding-top: 5px;"></i>
+                    </span>
+                </div>
+                {{ form_widget(form.password, {'attr': {'aria-describedby': 'loginPassword-toggle'}}) }}
+                <button class="btn btn-outline-secondary btn-eye" type="button" id="loginPassword-toggle" aria-label="Toggle password visibility" style="height: 38px;">
+                    <i class="bi bi-eye-slash"></i>
+                </button>
+            </div>
+        </div>
+            
+            <input type="hidden" name="_csrf_token"
+                  value="{{ csrf_token('authenticate') }}">
+        
+            <div class="text-center pt-1 mb-4 pb-1">
+              <button class=" btn btn-primary mb-4 btn-sm" type="submit" style="width: 100%;">
+                 Se Connecter
+              </button><br/>
+              {# <a class="text-black" href="{{path('forgotten_password_admin')}}">Mot de passe oublié</a> #}
+            </div>
+          {{form_end(form)}}
+        </div>
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12"></div>
+</div>
+{% endblock %}

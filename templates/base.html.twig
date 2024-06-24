@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>Gestion commerciale - {% block title %}{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        <link rel="stylesheet" href="{{ asset('plugins/bootstrap/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/fontaoesome/css/all.min.css') }}">
+        <link href="{{ asset('plugins/animate.css/animate.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('plugins/aos/aos.css') }}" rel="stylesheet">
+        <link href="{{ asset('plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('plugins/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+        <link href="{{ asset('plugins/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('plugins/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('plugins/remixicon/remixicon.css') }}" rel="stylesheet">
+        <link href="{{ asset('plugins/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('plugins/datatable/datatable.min.css') }}" rel="stylesheet">
+
+        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+        
+        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+        {% block stylesheets %}
+        {% endblock %}
+
+        {% block javascripts %}
+        {% endblock %}
+    </head>
+    <body>
+        <div class="main">
+            {% include 'front/partials/header.html.twig' %}
+            {% block body %}{% endblock %}
+            {% include 'front/partials/footer.html.twig' %}
+
+        </div>
+
+        <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+        <script src="{{ asset('plugins/aos/aos.js') }}"></script>
+        <script src="{{ asset('plugins/typed/typed.min.js') }}"></script>
+        <script src="{{ asset('plugins/owlcarousel/owl.carousel.min.js') }}"></script>
+        <script src="{{ asset('plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('plugins/glightbox/js/glightbox.min.js') }}"></script>
+        <script src="{{ asset('plugins/fontaoesome/js/all.min.js') }}"></script>
+        <script src="{{ asset('plugins/isotope-layout/isotope.pkgd.min.js') }}"></script>
+        <script src="{{ asset('plugins/swiper/swiper-bundle.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatable/datatable.min.js') }}"></script>
+        <script src="{{ asset('assets/js/main.js') }}"></script>
+       
+    </body>
+</html>

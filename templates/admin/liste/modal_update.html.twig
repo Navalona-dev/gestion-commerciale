@@ -1,0 +1,99 @@
+
+<div class="modal fade" id="modalUpdate" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalNewLabel">Modifier {{menu}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ form_start(form, {'attr': {'id': 'updateData', 'action': path('app_admin_update', {'id': id}) }}) }}
+                    {% if menu == "categorie" %}
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Nom du categorie</label>
+                            {{ form_widget(form.name) }}
+                        </div>
+                    {% elseif menu == "contact" %}
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Nom du contact</label>
+                            {{ form_widget(form.name) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Numéro téléphone</label>
+                            {{ form_widget(form.contact) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Adresse e-mail</label>
+                            {{ form_widget(form.email) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Adresse exacte</label>
+                            {{ form_widget(form.adresse) }}
+                        </div>
+                    {% elseif menu == "social" %}
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Nom du réseau sociaux</label>
+                            {{ form_widget(form.name) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Url exacte</label>
+                            {{ form_widget(form.link) }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Icône</label>
+                            {{ form_widget(form.icon) }}
+                        </div>
+                    {% elseif menu == "type" %}
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Nom de type de produit</label>
+                            {{ form_widget(form.name) }}
+                        </div>
+                    {% endif %}
+                    <input type="hidden" name="menu" value="{{menu}}">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm px-3">Modifier</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+       $('#updateData').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+            var menu = '{{menu}}';
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: form.serialize(),
+                success: function (response) {
+                    $('#modalUpdate').modal('hide');
+                    var nextLink = $('#sidebar').find('li#'+menu).find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Enregistrement effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de la catégorie.');
+                }
+            });
+        });
+    });
+</script>
