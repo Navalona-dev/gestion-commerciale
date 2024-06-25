@@ -6,6 +6,11 @@
         <img src="{{asset('assets/img/logo.png')}}" alt="">
         <span class="d-none d-lg-block">{{ app.user.appActive.entreprise }}</span>
       </a>
+      {% else %}
+      <a href="index.html" class="logo d-flex align-items-center">
+        <img src="{{asset('assets/img/logo.png')}}" alt="">
+        <span class="d-none d-lg-block">Point de vente</span>
+      </a>
       {% endif %}
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div>
@@ -15,6 +20,16 @@
         <input type="text" name="query" placeholder="Search" title="Enter search keyword">
         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
       </form>
+    </div>
+
+    <div class="dropdown">
+      <button class="btn btn-primary dropdown-toggle btn-sm px-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Ajouter
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#">Ajouter un client</a></li>
+        <li><a class="dropdown-item" href="#">Ajouter un fournisseur</a></li>
+      </ul>
     </div>
 
     <nav class="header-nav ms-auto">
@@ -168,19 +183,163 @@
         </li>#}
 
         <li class="nav-item dropdown pe-3">
+          <a class="nav-link nav-profile d-flex align-items-center pe-0 dropdown-title" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-ui-checks-grid"></i>
+          </a>
+          <ul class="py-3 dropdown-menu dropdown-menu-end dropdown-menu-arrow profile row list-app custom-dropdown-width">
+            <div class="row">
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                  <a href="#" class="app-content">
+                    <div class="d-flex justify-content-center">
+                      <img src="{{asset('assets/img/logo.png')}}" alt="" class="img-fluid img-app">
+                    </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                  </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="app-content">
+                  <div class="d-flex justify-content-center">
+                    <img src="{{asset('assets/img/logo.png')}}" alt="" class="img-fluid img-app">
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="app-content">
+                  <div class="d-flex justify-content-center">
+                    <img src="{{asset('assets/img/logo.png')}}" alt="" class="img-fluid img-app">
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="app-content">
+                  <div class="d-flex justify-content-center">
+                    <img src="{{asset('assets/img/logo.png')}}" alt="" class="img-fluid img-app">
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="app-content">
+                  <div class="d-flex justify-content-center">
+                    <img src="{{asset('assets/img/logo.png')}}" alt="" class="img-fluid img-app">
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="app-content">
+                  <div class="d-flex justify-content-center">
+                    <img src="{{asset('assets/img/logo.png')}}" alt="" class="img-fluid img-app">
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="app-content">
+                  <div class="d-flex justify-content-center">
+                    <img src="{{asset('assets/img/logo.png')}}" alt="" class="img-fluid img-app">
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="app-content">
+                  <div class="d-flex justify-content-center">
+                    <img src="{{asset('assets/img/logo.png')}}" alt="" class="img-fluid img-app">
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+            </div>
+          </ul>
+        </li>
+
+        <li class="nav-item dropdown pe-3">
+          <a class="nav-link nav-profile d-flex align-items-center pe-0 dropdown-title" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-laptop"></i>
+          </a>
+          <ul class="py-3 dropdown-menu dropdown-menu-end dropdown-menu-arrow profile row list-app custom-dropdown-width">
+            <div class="row">
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                  <a href="#" class="work-post-content">
+                    <div class="d-flex justify-content-center">
+                      <i class="bi bi-journal-bookmark"></i>
+                    </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                  </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-stickies"></i>
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-archive"></i>
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-bookmarks-fill"></i>
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-box-fill"></i>
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-building-fill-up"></i>
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-calendar2-check-fill"></i>
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                <a href="#" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-envelope"></i>
+                  </div>
+                  <p class="text-center"><small>Point de vente</small></p>
+                </a>
+              </div>
+            </div>
+          </ul>
+        </li>
+           
+        <li class="nav-item dropdown pe-3">
           {% if app.user is not null %}
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
             <img src="{{asset('assets/img/profile.jpg')}}" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2">{% if app.user.nom is null %} {{app.user.prenom|upper}} {% else %} {{ app.user.prenom|slice(0, 1)|upper }} {{app.user.prenom}}{% endif %} </span>
+            <span class="d-none d-md-block dropdown-toggle ps-2">{% if app.user.prenom is null %} {{app.user.nom|upper}} {% else %} {{ app.user.nom|slice(0, 1)|upper }} {{app.user.nom}}{% endif %} </span>
           </a>
           {% endif %}
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-              <h6>{% if app.user.nom is null %} {{app.user.prenom|upper}} {% else %} {{ app.user.prenom|slice(0, 1)|upper }} {{app.user.prenom}}{% endif %}</h6>
-              {# <span>Web Designer</span> #}
-            </li>
-            <li>
-              <hr class="dropdown-divider">
+              <h6>{% if app.user.prenom is null %} {{app.user.nom|upper}} {% else %} {{ app.user.nom|slice(0, 1)|upper }} {{app.user.nom}}{% endif %}</h6>
             </li>
 
             <li>
@@ -193,25 +352,9 @@
               <hr class="dropdown-divider">
             </li>
 
-            {# <li>
-              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
-                <i class="bi bi-gear"></i>
-                <span>Account Settings</span>
-              </a>
-            </li>
             <li>
               <hr class="dropdown-divider">
             </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
-                <i class="bi bi-question-circle"></i>
-                <span>Need Help?</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li> #}
 
             <li>
               <a class="dropdown-item d-flex align-items-center" href="{{ path('app_logout') }}">
