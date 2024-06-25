@@ -25,6 +25,9 @@ $(document).ready(function() {
     if (anchorName === "tab-profile") {
         showTabProfile();
     }
+    if (anchorName === "tab-categorie") {
+        showTabCategorie();
+    }
 });
 
 function showTabProfile() {
@@ -43,6 +46,7 @@ function showTabProfile() {
                  $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -70,6 +74,7 @@ function showTabApplication() {
                  $('.sidebar-nav a[href="#tab-application"]').removeClass('collapsed');
                  $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  
                  $(".loadBody").css('display', 'none');
              },
@@ -97,6 +102,7 @@ function showTabUtilisateur() {
                  $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -124,6 +130,7 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -151,6 +158,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -177,6 +185,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -203,6 +212,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -214,7 +224,32 @@ function showTabPermission() {
          });
  }
 
+ function showTabCategorie() {
+    $.ajax({
+             type: 'post',
+             url: '/admin/categorie/',
+             //data: {},
+             success: function (response) {
+                 $("#tab-categorie").empty();
+                 $("#tab-categorie").append(response.html);
+                 $('.sidebar-nav a[href="#tab-categorie"]').tab('show');
+                 $("#tab-categorie").addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').removeClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $(".loadBody").css('display', 'none');
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
 
+         });
+ }
 
 
 

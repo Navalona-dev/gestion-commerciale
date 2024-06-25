@@ -50,10 +50,31 @@ class Application
     #[ORM\Column(nullable: true)]
     private ?bool $isActive = null;
 
+    /**
+     * @var Collection<int, Product>
+     */
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'application')]
+    private Collection $products;
+
+    /**
+     * @var Collection<int, Categorie>
+     */
+    #[ORM\OneToMany(targetEntity: Categorie::class, mappedBy: 'application')]
+    private Collection $categories;
+
+    /**
+     * @var Collection<int, ProduitCategorie>
+     */
+    #[ORM\OneToMany(targetEntity: ProduitCategorie::class, mappedBy: 'application')]
+    private Collection $produitCategories;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->userAppActive = new ArrayCollection();
+        $this->products = new ArrayCollection();
+        $this->categories = new ArrayCollection();
+        $this->produitCategories = new ArrayCollection();
     }
 
     public static function newApplicationFromInstance($instance = null)
@@ -204,6 +225,96 @@ class Application
     public function setisActive(?bool $isActive): static
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): static
+    {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+            $product->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): static
+    {
+        if ($this->products->removeElement($product)) {
+            // set the owning side to null (unless already changed)
+            if ($product->getApplication() === $this) {
+                $product->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Categorie>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Categorie $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+            $category->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Categorie $category): static
+    {
+        if ($this->categories->removeElement($category)) {
+            // set the owning side to null (unless already changed)
+            if ($category->getApplication() === $this) {
+                $category->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProduitCategorie>
+     */
+    public function getProduitCategories(): Collection
+    {
+        return $this->produitCategories;
+    }
+
+    public function addProduitCategory(ProduitCategorie $produitCategory): static
+    {
+        if (!$this->produitCategories->contains($produitCategory)) {
+            $this->produitCategories->add($produitCategory);
+            $produitCategory->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduitCategory(ProduitCategorie $produitCategory): static
+    {
+        if ($this->produitCategories->removeElement($produitCategory)) {
+            // set the owning side to null (unless already changed)
+            if ($produitCategory->getApplication() === $this) {
+                $produitCategory->setApplication(null);
+            }
+        }
 
         return $this;
     }

@@ -1,31 +1,34 @@
    
         {% if type == "thead" %}
-        <tr id="thead_categorie_permission" class="text-nowrap">
-            <th>Titre</th>
-            <th>Description</th>
+        <tr id="thead_categorie" class="text-nowrap">
+            <th>Nom</th>
+            <th>Etat</th>
+            <th>Application</th>
+            <th>Date de création</th>
             <th>Action</th>
         </tr>
         {% elseif type == "tbody" %}
-        <tr id="tbody_categorie_permission" class="text-nowrap">
-            <td> {{liste.title}} </td>
-            <td> {{liste.description|slice(0,50)|raw}} </td>
-            
+        <tr id="tbody_categorie" class="text-nowrap">
+            <td> {{liste.nom}} </td>
+            <td> {{liste.etat}} </td>
+            <td> {{liste.application.entreprise}} </td>
+            <td> {{liste.dateCreation|date('s-m-Y')}} </td>
             <td>
-                <a href="#" onclick="return openModalUpdateCategoryPermission({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
-                <a href="#" onclick="return deleteCategoryPermission({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
+                <a href="#" onclick="return openModalUpdateCategorie({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return deleteCategorie({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
             </td>
         </tr>
          {% endif %}
 <script>
     
-    function deleteCategoryPermission(id = null) {
-        if (confirm('Voulez vous vraiment supprimer cette catégorie permission?')) {
+    function deleteCategorie(id = null) {
+        if (confirm('Voulez vous vraiment supprimer cette catégorie?')) {
             $.ajax({
-                url: '/admin/categorypermission/delete/'+id,
+                url: '/admin/categorie/delete/'+id,
                 type: 'POST',
                 data: {category: id},
                 success: function (response) {
-                    var nextLink = $('#sidebar').find('li#category_permission').find('a');
+                    var nextLink = $('#sidebar').find('li#categorie').find('a');
                     setTimeout(function () {
                         toastr.options = {
                             closeButton: true,
@@ -44,30 +47,33 @@
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de la suppression de la catégorie permission.');
+                    alert('Erreur lors de la suppression de la catégorie.');
                 }
             });
         }
     }
 
-    function openModalUpdateCategoryPermission(id = null) {
+    function openModalUpdateCategorie(id = null) {
         $.ajax({
-                url: '/admin/categorypermission/'+id,
+                url: '/admin/categorie/'+id,
                 type: 'POST',
                 data: {id: id},
                 success: function (response) {
                     if (response.html != "") {
-                        $("#blocModalEmpty").empty();
-                        $("#blocModalEmpty").append(response.html);
-                        $('#modalUpdateCategoryPermission').modal('show');
+                        $("#blocModalCategorieEmpty").empty();
+                        $("#blocModalCategorieEmpty").append(response.html);
+
+                        $('#modalUpdateCategorie').modal('show');
+
                     }
                     
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de la mise à jour de la catégorie permission.');
+                    alert('Erreur lors de la mise à jour de la catégorie.');
                 }
             });
     }
 
+   
 </script>
