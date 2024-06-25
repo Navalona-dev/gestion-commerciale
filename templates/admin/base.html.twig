@@ -30,6 +30,7 @@
         {% include 'admin/partials/menu_left.html.twig' %}
                         
         {% include 'admin/partials/header.html.twig' %}
+        
         <main id="main" class="main tab-content">
             
             {% block body %}{% endblock %}
@@ -54,5 +55,6 @@
         <script src="{{ asset('assets/js/plugins/toastr/toastr.min.js') }}"></script>
         <script src="{{ asset('assets/js/script_base.js')}}"></script>
         <script src="{{ asset('assets/js/plugins/chosen/chosen.jquery.js') }}"></script>
+        <script src="{{asset('assets/js/admin.js')}}"></script>
     </body>
 </html>

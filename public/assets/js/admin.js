@@ -332,3 +332,27 @@ function togglePasswordVisibility(passwordField) {
   }
 }
 
+$(document).ready(function() {
+  $('#search-app').on('input', function() {
+      var searchValue = $(this).val().toLowerCase();
+      var hasResults = false;
+
+      $('#app-list .col-xl-4').each(function() {
+          var appName = $(this).find('.app-name').text().toLowerCase();
+          if (appName.includes(searchValue)) {
+              $(this).show();
+              hasResults = true;
+          } else {
+              $(this).hide();
+          }
+      });
+
+      if (hasResults) {
+          $('#no-results').hide();
+      } else {
+          $('#no-results').show();
+      }
+  });
+});
+
+

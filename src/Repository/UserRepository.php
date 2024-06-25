@@ -89,7 +89,7 @@ class UserRepository extends ServiceEntityRepository
     public function getAllUser($start = 0, $limit = 0, $search = "")
     {
         
-        $sql = "SELECT nom, telephone, email, id FROM user as u";
+        $sql = "SELECT nom, telephone, email, id, is_active FROM user as u";
         if ($search != "") {
             $sql .= "
             WHERE (u.nom ILIKE '%" . $search . "%' OR u.telephone ILIKE '%" . $search . "%' OR u.email ILIKE '%" . $search . "%') ";
