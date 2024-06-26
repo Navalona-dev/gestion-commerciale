@@ -86,11 +86,27 @@ class ProduitCategorie
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateCreation = null;
 
+    /**
+     * @var Collection<int, Stock>
+     */
+    #[ORM\OneToMany(targetEntity: Stock::class, mappedBy: 'produitCategorie')]
+    private Collection $stocks;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->productImages = new ArrayCollection();
+        $this->stocks = new ArrayCollection();
+    }
+
+    public static function newProduitCategorie($instance = null)
+    {
+        if (is_null($instance->getNom()) or empty($instance->getNom())) {
+            throw new PropertyVideException("Your permission name doesn't empty");
+        }
+
+        return $instance;
     }
 
     public function getId(): ?int
@@ -379,6 +395,36 @@ class ProduitCategorie
     public function setDateCreation(?\DateTimeInterface $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Stock>
+     */
+    public function getStocks(): Collection
+    {
+        return $this->stocks;
+    }
+
+    public function addStock(Stock $stock): static
+    {
+        if (!$this->stocks->contains($stock)) {
+            $this->stocks->add($stock);
+            $stock->setProduitCategorie($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStock(Stock $stock): static
+    {
+        if ($this->stocks->removeElement($stock)) {
+            // set the owning side to null (unless already changed)
+            if ($stock->getProduitCategorie() === $this) {
+                $stock->setProduitCategorie(null);
+            }
+        }
 
         return $this;
     }

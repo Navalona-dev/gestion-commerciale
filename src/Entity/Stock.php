@@ -20,6 +20,9 @@ class Stock
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateCreation = null;
 
+    #[ORM\ManyToOne(inversedBy: 'stocks')]
+    private ?ProduitCategorie $produitCategorie = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +48,18 @@ class Stock
     public function setDateCreation(?\DateTimeInterface $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
+
+        return $this;
+    }
+
+    public function getProduitCategorie(): ?ProduitCategorie
+    {
+        return $this->produitCategorie;
+    }
+
+    public function setProduitCategorie(?ProduitCategorie $produitCategorie): static
+    {
+        $this->produitCategorie = $produitCategorie;
 
         return $this;
     }

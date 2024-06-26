@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ProductImageRepository::class)]
 class ProductImage
@@ -18,6 +20,9 @@ class ProductImage
 
     #[ORM\Column(length: 255)]
     private ?string $image = null;
+
+    #[Vich\UploadableField(mapping:"product_image", fileNameProperty:"image")]
+    public ?File $imageFile = null;
 
     /**
      * @var Collection<int, ProduitCategorie>
@@ -43,11 +48,22 @@ class ProductImage
         return $this->image;
     }
 
-    public function setImage(string $image): static
+    public function setImage(?string $image): self
     {
         $this->image = $image;
 
         return $this;
+    }
+
+    public function setImageFile(File $image )
+    {
+        $this->imageFile = $image;
+    }
+
+
+    public function getImageFile()
+    {
+        return $this->imageFile;
     }
 
     /**

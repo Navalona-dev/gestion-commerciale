@@ -21,16 +21,17 @@
 <section class="section">
     <div class="row">
       <div class="col-lg-12">
+        {% include 'admin/tab/_nav_tab_produit.html.twig' %}
 
         <div class="card">
           <div class="card-body">
             <div class="row">
               <div class="col-xl-8 col-lg-7 col-md-12 col-sm-12">
-                <h5 class="card-title fw-bold">Liste Categorie </h5>
+                {#<h5 class="card-title fw-bold">Liste Categorie </h5>#}
               </div>
              
               <div class="col-xl-4 col-lg-5 col-md-12 col-sm-12 mt-4 mb-5">
-                <button class="btn btn-primary btn-sm" style="width: 100%;"   onclick="return newCategorie(true)">Nouveau application </button>
+                <button class="btn btn-primary btn-sm" style="width: 100%;"   onclick="return newCategorie(true)">Nouveau catégorie </button>
               </div>
               
             </div>
@@ -72,6 +73,9 @@
     //datatable
     
     $(document).ready(function() {
+      $('.tab-categorie').addClass('active');
+        $('.tab-produit-categorie').removeClass('active');
+
       $('#liste-table-categorie').DataTable({
         responsive: true,
         language: {

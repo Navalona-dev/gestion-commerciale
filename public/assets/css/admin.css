@@ -1263,7 +1263,7 @@
       right: 1rem;
   }
 
- .modal-user, .modal-application {
+ .modal-user, .modal-application, .modal-produit-categorie {
   width: 180% !important;
   margin-left: -12rem !important;
  }

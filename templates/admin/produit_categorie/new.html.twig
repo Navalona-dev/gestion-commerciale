@@ -1,0 +1,219 @@
+{% form_theme form 'admin/produit_categorie/_collection.html.twig' %}
+
+<div class="modal fade" id="modalNewProduitCategorie" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content p-4 modal-produit-categorie">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau produit categorie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                {{ form_start(form, {'attr': {'id': 'newProduitCategorie', 'action': path('categories_create') }}) }}
+                    
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Nom</label>
+                                {{form_widget(form.nom)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Application</label>
+                                {{form_widget(form.application)}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Référence</label>
+                                {{form_widget(form.reference)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Tva</label>
+                                {{form_widget(form.tva)}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Quantité</label>
+                                {{form_widget(form.qtt)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">PrixHt</label>
+                                {{form_widget(form.prixHt)}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Stock minimum</label>
+                                {{form_widget(form.stockMin)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Stock maximum</label>
+                                {{form_widget(form.stockMax)}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Unité vente de gros</label>
+                                {{form_widget(form.uniteVenteGros)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Unité vente détail</label>
+                                {{form_widget(form.uniteVenteDetail)}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Prix vente de gros</label>
+                                {{form_widget(form.prixVenteGros)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Prix vente détail</label>
+                                {{form_widget(form.prixVenteDetail)}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Prix TTC</label>
+                                {{form_widget(form.prixTTC)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Prix d'achat</label>
+                                {{form_widget(form.prixAchat)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Stock Restant</label>
+                                {{form_widget(form.stockRestant)}}
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Catégorie</label>
+                        {{form_widget(form.categories)}}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Description</label>
+                        {{form_widget(form.description)}}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Produit images</label>
+                        {{form_widget(form.productImages)}}
+                    </div>
+                        
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Ajouter catégorie</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+<script>
+  
+    $(document).ready(function () {
+    
+       $('#newProduitCategorie').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+          
+            // Create an FormData object
+            let formData = new FormData(form[0]);
+          formData.append('isNew', false);
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#modalNewProduitCategorie').modal('hide');
+                    var nextLink = $('#sidebar').find('li#produit-categorie').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Enregistrement effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout du produit catégorie.');
+                }
+            });
+        });
+    });
+
+    $(document).ready(function() {
+        $("#add-image").click(function() {
+
+        const index = +$('#widgets-counter').val();
+
+        const tmpl = $('#produit_categorie_productImages').data('prototype').replace(/__name__/g, index);
+
+        $('#produit_categorie_productImages').append(tmpl);
+
+        $('#widgets-counter').val(index + 1);
+
+        handleDelete();
+        });
+
+        function handleDelete(){
+        $('a[data-action="delete"]').click(function() {
+            const target = this.dataset.target;
+            $(target).remove();
+        });
+        }
+
+        function updateCounter() {
+        const count = +$('#produit_categorie_productImages div.form-group').length;
+
+        $('#widgets-counter').val(count);
+        }
+
+        updateCounter();
+        handleDelete();
+    })
+    
+</script>
+{% endblock %}
