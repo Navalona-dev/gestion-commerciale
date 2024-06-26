@@ -45,6 +45,26 @@
         <script src="{{ asset('plugins/isotope-layout/isotope.pkgd.min.js') }}"></script>
         <script src="{{ asset('plugins/swiper/swiper-bundle.min.js') }}"></script>
         <script src="{{ asset('plugins/datatable/datatable.min.js') }}"></script>
-        <script src="{{ asset('assets/js/admin.js') }}"></script>
+        
+        <script>
+            $(document).ready(function() {
+                $('#loginPassword-toggle').click(function() {
+                    togglePasswordVisibility($('#login_form_password'));
+                });
+                
+            });
+
+            function togglePasswordVisibility(passwordField) {
+                var fieldType = passwordField.attr('type');
+                
+                if (fieldType === 'password') {
+                    passwordField.attr('type', 'text');
+                    $('.btn-eye i').removeClass('bi-eye-slash').addClass('bi-eye');
+                } else {
+                    passwordField.attr('type', 'password');
+                    $('.btn-eye i').removeClass('bi-eye').addClass('bi-eye-slash');
+                }
+            }
+        </script>
     </body>
 </html>

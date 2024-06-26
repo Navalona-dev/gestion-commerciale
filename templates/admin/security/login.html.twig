@@ -22,13 +22,13 @@
     
     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12"></div>
     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
-        <div class="card shadow px-3 py-4">
+        <div class="login-content p-5">
             {% for message in app.flashes('success') %}
             <div class="alert alert-success">
                 {{message}}
             </div>
         {% endfor %}
-            <h3 class="text-center mb-3">Connectez-vous</h3>
+            <h3 class="text-center mb-5 fw-bold text-white title">Connectez-vous</h3>
             {{form_start(form)}}
             {% if error %}
                 <div class="alert alert-danger">Le nom d'utilisateur ou le mot de passe n'est pas valide</div>
@@ -51,8 +51,8 @@
                     </span>
                 </div>
                 {{ form_widget(form.password, {'attr': {'aria-describedby': 'loginPassword-toggle'}}) }}
-                <button class="btn btn-outline-secondary btn-eye" type="button" id="loginPassword-toggle" aria-label="Toggle password visibility" style="height: 38px;">
-                    <i class="bi bi-eye-slash"></i>
+                <button class="btn btn-outline-secondary btn-eye text-black bg-white" type="button" id="loginPassword-toggle" aria-label="Toggle password visibility" style="height: 40px; margin-top: -1px;">
+                    <i class="bi bi-eye-slash text-"></i>
                 </button>
             </div>
         </div>
@@ -61,7 +61,7 @@
                   value="{{ csrf_token('authenticate') }}">
         
             <div class="text-center pt-1 mb-4 pb-1">
-              <button class=" btn btn-primary mb-4 btn-sm" type="submit" style="width: 100%;">
+              <button class=" btn btn-primary mb-4 btn-sm btn-submit" type="submit">
                  Se Connecter
               </button><br/>
               {# <a class="text-black" href="{{path('forgotten_password_admin')}}">Mot de passe oublié</a> #}
