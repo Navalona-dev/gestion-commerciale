@@ -1,6 +1,7 @@
    
         {% if type == "thead" %}
         <tr id="thead_produit_categorie" class="text-nowrap">
+            <th>Action</th>
             <th>Nom</th>
             <th>Application</th>
             <th>Référence</th>
@@ -18,10 +19,13 @@
             <th>Prix vente détail</th>
             <th>Date de création</th>
             <th>Description</th>
-            <th>Action</th>
         </tr>
         {% elseif type == "tbody" %}
         <tr id="tbody_produit_categorie" class="text-nowrap">
+            <td>
+                <a href="#" onclick="return openModalUpdateProduitCategorie({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return deleteProduitCategorie({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
+            </td>
             <td> {{liste.nom}} </td>
             <td> {{liste.application.entreprise}} </td>
             <td> {{liste.reference}} </td>
@@ -37,13 +41,8 @@
             <td> {{liste.prixAchat}} </td>
             <td> {{liste.prixVenteGros}} </td>
             <td> {{liste.prixVenteDetail}} </td>
-            <td> {{liste.dateCreation|date('s-m-Y')}} </td>
+            <td> {{liste.dateCreation|date('d-m-Y')}} </td>
             <td> {{liste.description|slice(0,30)|raw}} {% if liste.description|length > 30 %} ... {% endif %} </td>
-
-            <td>
-                <a href="#" onclick="return openModalUpdateProduitCategorie({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
-                <a href="#" onclick="return deleteProduitCategorie({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
-            </td>
         </tr>
          {% endif %}
 <script>
