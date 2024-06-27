@@ -132,24 +132,14 @@ class ProduitCategorieType extends AbstractType
                 ],
                 'required' => true
             ])
-            ->add('categories', EntityType::class, [
+            ->add('categorie', EntityType::class, [
                 'class' => Categorie::class,
                 'choice_label' => 'nom',
-                'multiple' => true,
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3'
                 ],
                 'required' => false
             ])
-           /* ->add('productImages', EntityType::class, [
-                'class' => ProductImage::class,
-                'choice_label' => 'id',
-                'multiple' => true,
-                'attr' => [
-                    'class' => 'form-control form-control-md mb-3'
-                ]
-            ])*/
-
             ->add('productImages', CollectionType::class, [
                 'entry_type' => ProduitImageType::class,
                 'allow_add' => true,

@@ -34,8 +34,23 @@
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
+                                <label for="" class="mb-2">Catégorie</label>
+                                {{form_widget(form.categorie)}}
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
                                 <label for="" class="mb-2">Tva</label>
                                 {{form_widget(form.tva)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Stock Restant</label>
+                                {{form_widget(form.stockRestant)}}
                             </div>
                         </div>
                     </div>
@@ -96,30 +111,21 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Prix TTC</label>
                                 {{form_widget(form.prixTTC)}}
                             </div>
                         </div>
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Prix d'achat</label>
                                 {{form_widget(form.prixAchat)}}
                             </div>
                         </div>
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Stock Restant</label>
-                                {{form_widget(form.stockRestant)}}
-                            </div>
-                        </div>
                     </div>
                    
-                    <div class="form-group mb-3">
-                        <label for="" class="mb-2">Catégorie</label>
-                        {{form_widget(form.categories)}}
-                    </div>
+                    
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Description</label>
                         {{form_widget(form.description)}}
