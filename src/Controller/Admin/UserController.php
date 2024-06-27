@@ -28,9 +28,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-/**
- * @Route("/admin/utilisateurs", name="utilisateurs")
- */
+#[Route('/admin/utilisateurs', name: 'utilisateurs')]
 class UserController extends AbstractController
 {
     private $userService;
@@ -44,9 +42,7 @@ class UserController extends AbstractController
         $this->application = $applicationManager->getApplicationActive();
     }
 
-    /**
-     * @Route("/", name="_liste")
-     */
+    #[Route('/', name: '_liste')]
     public function index()
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {

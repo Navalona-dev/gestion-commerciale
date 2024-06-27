@@ -51,11 +51,11 @@
     function deleteProduitCategorie(id = null) {
         if (confirm('Voulez vous vraiment supprimer cet produit catégorie?')) {
             $.ajax({
-                url: '/admin/categorie/delete/'+id,
+                url: '/admin/produit/categorie/delete/'+id,
                 type: 'POST',
                 data: {category: id},
                 success: function (response) {
-                    var nextLink = $('#sidebar').find('li#categorie').find('a');
+                    var nextLink = $('#sidebar').find('li#produit-categorie').find('a');
                     setTimeout(function () {
                         toastr.options = {
                             closeButton: true,
@@ -82,15 +82,15 @@
 
     function openModalUpdateProduitCategorie(id = null) {
         $.ajax({
-                url: '/admin/categorie/'+id,
+                url: '/admin/produit/categorie/'+id,
                 type: 'POST',
                 data: {id: id},
                 success: function (response) {
                     if (response.html != "") {
-                        $("#blocModalCategorieEmpty").empty();
-                        $("#blocModalCategorieEmpty").append(response.html);
+                        $("#blocModalProduitCategorieEmpty").empty();
+                        $("#blocModalProduitCategorieEmpty").append(response.html);
 
-                        $('#modalUpdateCategorie').modal('show');
+                        $('#modalUpdateProduitCategorie').modal('show');
 
                     }
                     

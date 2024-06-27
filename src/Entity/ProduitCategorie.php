@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Exception\PropertyVideException;
 use App\Repository\ProduitCategorieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -83,7 +84,7 @@ class ProduitCategorie
     /**
      * @var Collection<int, Stock>
      */
-    #[ORM\OneToMany(targetEntity: Stock::class, mappedBy: 'produitCategorie')]
+    #[ORM\OneToMany(targetEntity: Stock::class, mappedBy: 'produitCategorie', cascade:["remove"])]
     private Collection $stocks;
 
     #[ORM\ManyToOne(inversedBy: 'produitCategories')]

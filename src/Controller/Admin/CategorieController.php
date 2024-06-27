@@ -169,8 +169,6 @@ class CategorieController extends AbstractController
             $this->createNotFoundException('Exception' . $ORMInvalidArgumentException->getMessage());
         } catch (UnsufficientPrivilegeException $UnsufficientPrivilegeException) {
             $this->createNotFoundException('Exception' . $UnsufficientPrivilegeException->getMessage());
-        } catch (ServerException $ServerException) {
-            $this->createNotFoundException('Exception' . $ServerException->getMessage());
         } catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
             $this->createNotFoundException('Exception' . $NotNullConstraintViolationException->getMessage());
         } catch (\Exception $Exception) {

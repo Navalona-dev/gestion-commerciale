@@ -102,12 +102,15 @@ class User implements UserInterface, \Serializable, PasswordAuthenticatedUserInt
     #[ORM\Column(length: 15, nullable: true)]
     private ?string $civilite = null;
 
+    #[ORM\ManyToMany(targetEntity: Compte::class, mappedBy: 'utilisateur')]
+    private $comptes;
 
     public function __construct()
     {
         $this->privileges = new ArrayCollection();
         $this->DateCreation = new \DateTime('now',new \DateTimeZone('EAT'));
         $this->applications = new ArrayCollection();
+        $this->comptes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -475,6 +478,31 @@ class User implements UserInterface, \Serializable, PasswordAuthenticatedUserInt
     public function setCivilite(?string $civilite): static
     {
         $this->civilite = $civilite;
+
+        return $this;
+    }
+
+    public function getComptes(): Collection
+    {
+        return $this->comptes;
+    }
+
+    public function addCompte(Compte $compte): self
+    {
+        if (!$this->comptes->contains($compte)) {
+            $this->comptes[] = $compte;
+            $compte->addUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompte(Compte $compte): self
+    {
+        if ($this->comptes->contains($compte)) {
+            $this->comptes->removeElement($compte);
+            $compte->removeUtilisateur($this);
+        }
 
         return $this;
     }

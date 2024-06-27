@@ -1,15 +1,15 @@
 {% form_theme form 'admin/produit_categorie/_collection.html.twig' %}
 
-<div class="modal fade" id="modalNewProduitCategorie" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+<div class="modal fade" id="modalUpdateProduitCategorie" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content p-4 modal-produit-categorie">
             <div class="modal-header modal-header-center">
-                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau produit categorie</h5>
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Modifier produit categorie</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 
-                {{ form_start(form, {'attr': {'id': 'newProduitCategorie', 'action': path('produit_categories_create') }}) }}
+                {{ form_start(form, {'attr': {'id': 'updateProduitCategorie', 'action': path('produit_categories_edit', {'produitCategorie': id}) }}) }}
                     
                     <div class="row">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
@@ -136,7 +136,7 @@
                     </div>
                         
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Ajouter catégorie</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Modifier catégorie</button>
                     </div>
                 {{ form_end(form) }}
             </div>
@@ -147,24 +147,17 @@
 {% block javascripts %}
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 <script>
-  
+   
     $(document).ready(function () {
-    
-       $('#newProduitCategorie').on('submit', function (e) {
+       $('#updateProduitCategorie').on('submit', function (e) {
             e.preventDefault();
             let form = $(this);
-          
-            // Create an FormData object
-            let formData = new FormData(form[0]);
-          formData.append('isNew', false);
             $.ajax({
                 url: form.attr('action'),
                 type: form.attr('method'),
-                data: formData,
-                processData: false,
-                contentType: false,
+                data: form.serialize(),
                 success: function (response) {
-                    $('#modalNewProduitCategorie').modal('hide');
+                    $('#modalUpdateProduitCategorie').modal('hide');
                     var nextLink = $('#sidebar').find('li#produit-categorie').find('a');
                     setTimeout(function () {
                         toastr.options = {
@@ -173,7 +166,7 @@
                             showMethod: 'slideDown',
                             timeOut: 1000
                         };
-                        toastr.success('Avec succèss', 'Enregistrement effectuée');
+                        toastr.success('Avec succèss', 'Mise à jour effectuée');
 
                         //$(".loadBody").css('display', 'none');
 
@@ -184,42 +177,11 @@
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'ajout du produit catégorie.');
+                    alert('Erreur lors de la mise à jour de la catégorie.');
                 }
             });
         });
     });
-
-    $(document).ready(function() {
-        $("#add-image").click(function() {
-
-        const index = +$('#widgets-counter').val();
-
-        const tmpl = $('#produit_categorie_productImages').data('prototype').replace(/__name__/g, index);
-
-        $('#produit_categorie_productImages').append(tmpl);
-
-        $('#widgets-counter').val(index + 1);
-
-        handleDelete();
-        });
-
-        function handleDelete(){
-        $('a[data-action="delete"]').click(function() {
-            const target = this.dataset.target;
-            $(target).remove();
-        });
-        }
-
-        function updateCounter() {
-        const count = +$('#produit_categorie_productImages div.form-group').length;
-
-        $('#widgets-counter').val(count);
-        }
-
-        updateCounter();
-        handleDelete();
-    })
-    
 </script>
+
 {% endblock %}

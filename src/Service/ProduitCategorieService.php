@@ -55,7 +55,7 @@ class ProduitCategorieService
         foreach($produitCategorie->getProductImages() as $productImage) {
             $productImage->setProduitCategorie($produitCategorie);
             $productImage->setCreatedAt($date);
-            $entityManager->persist($productImage);
+            $this->entityManager->persist($productImage);
         }
 
         $stock = new Stock();
@@ -67,10 +67,10 @@ class ProduitCategorieService
         }
 
         $stock->setQtt($qtt);
-        $stock->setProduitCategorie($product);
-        $stock->setCreatedAt($date);
+        $stock->setProduitCategorie($produitCategorie);
+        $stock->setDateCreation($date);
 
-        $entityManager->persist($stock);
+        $this->entityManager->persist($stock);
 
         $this->entityManager->persist($produitCategorie);
         $this->update();

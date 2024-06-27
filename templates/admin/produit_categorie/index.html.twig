@@ -42,7 +42,7 @@
                 {% if listes|length > 0 %}
 
                   {% for liste in listes %}
-                      {% include 'admin/produi_categorie/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
+                      {% include 'admin/produit_categorie/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
                   {% endfor %}
                 
                 {% else %}
