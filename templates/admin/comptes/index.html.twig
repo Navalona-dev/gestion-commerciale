@@ -10,7 +10,7 @@
 </style>
 
 <div class="pagetitle">
-    <h1>Tous les clients </h1>
+    <h1>Tous les <span class="compte-title">clients</span> </h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
@@ -21,6 +21,50 @@
 <section class="section">
     <div class="row">
       <div class="col-lg-12">
+        <div class="card p-5" style="border-radius: 20px;">
+          <div class="row">
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="user-icon">
+                        <i class="bi bi-person"></i>
+                    </span>
+                </div>
+                <select class="form-control form-control-sm chosen-select" id="user-select">
+                    <option value="" selected disabled class="option-compte">Nom du client</option>
+                    {% for liste in listes %}
+                      <option value="{{liste.id}}"> {{liste.nom}} </option>
+                    {% endfor %}
+                </select>
+                <div class="input-group-append">
+                    <span class="input-group-text" id="search-icon">
+                        <i class="bi bi-search"></i>
+                    </span>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="user-icon">
+                        <i class="bi bi-calendar"></i>
+                    </span>
+                </div>
+                <input type="text" class="form-control form-control-sm date-start" id="user-date-start" placeholder="Date de début" />
+              </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="user-icon">
+                        <i class="bi bi-calendar"></i>
+                    </span>
+                </div>
+                <input type="text" class="form-control form-control-sm date-end" id="user-date-end" placeholder="Date fin" />
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="card">
           <div class="card-body">
             <div class="row">
@@ -114,5 +158,23 @@
                 }
             });
     }
+
+     //date-picker
+
+ $(document).ready(function() {
+  var dateFormat = 'dd/mm/yyyy';
+  var dateNow = new Date();
+  dateNow.setDate(dateNow.getDate() + 1)
+
+  $('.date-start, .date-end').datepicker({
+      format: dateFormat,
+      todayHighlight: true,
+      daysOfWeekDisabled: '0',
+      startDate: dateNow,
+      language: 'fr',
+
+  });
+
+});
 
   </script>

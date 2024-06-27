@@ -32,13 +32,17 @@ $(document).ready(function() {
         showTabProduitCategorie();
     }
 
+    var anchorName = document.location.hash.substring(1);
     if (anchorName === "tab-compte_1") {
         showTabCompte(1);
+    }
+    if (anchorName === "tab-compte_2") {
+        showTabCompte(2);
     }
 
 });
 
-function showTabCompte(genre = 1) {
+/*function showTabCompte(genre = 1) {
     $.ajax({
              type: 'post',
              url: '/admin/comptes/',
@@ -82,7 +86,41 @@ function showTabCompte(genre = 1) {
              }
 
          });
- }
+ }*/
+
+    function showTabCompte(genre = 1) {
+        
+    $.ajax({
+        type: 'post',
+        url: '/admin/comptes/',
+        //data: {},
+        success: function(response) {
+            // Hide all compte tabs
+            $('[id^="tab-compte_"]').removeClass('active').empty();
+
+            // Show the selected compte tab
+            $('#tab-compte_' + genre).append(response.html).addClass('active');
+
+            if (genre == 1) {
+                $('.compte-title').text("clients");
+                $('.option-compte').text('Nom du client');
+            } else if (genre == 2) {
+                $('.compte-title').text("fournisseurs");
+                $('.option-compte').text('Nom du fournisseur');
+
+            }
+
+            // Handle sidebar navigation
+            $('.sidebar-nav a[href^="#tab-compte_"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-compte_' + genre + '"]').removeClass('collapsed').tab('show');
+
+            $(".loadBody").css('display', 'none');
+        },
+        error: function() {
+            $(".chargementError").css('display', 'block');
+        }
+    });
+}
 
 function showTabProfile() {
     $.ajax({
@@ -102,6 +140,8 @@ function showTabProfile() {
                  $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -131,6 +171,8 @@ function showTabApplication() {
                  $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  
                  $(".loadBody").css('display', 'none');
              },
@@ -160,6 +202,8 @@ function showTabUtilisateur() {
                  $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -189,6 +233,8 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -218,6 +264,8 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -247,6 +295,8 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -276,6 +326,8 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -305,6 +357,8 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -334,6 +388,8 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -343,6 +399,7 @@ function showTabPermission() {
 
          });
  }
+
 
 
 
