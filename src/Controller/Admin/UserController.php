@@ -2,30 +2,31 @@
 
 namespace App\Controller\Admin;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
 use App\Entity\User;
 use App\Form\UserType;
-use App\Service\UserService;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-
-use Doctrine\ORM\ORMInvalidArgumentException;
-use App\Exception\PropertyVideException;
-use Doctrine\Persistence\Mapping\MappingException;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use App\Exception\UnsufficientPrivilegeException;
-use App\Form\AccesExtranetType;
 use App\Form\ProfilType;
 use App\Service\AccesService;
 use App\Service\ApplicationManager;
-use Symfony\Component\HttpClient\Exception\ServerException;
-use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
+use App\Service\UserService;
+use App\Form\AccesExtranetType;
+use App\Exception\PropertyVideException;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMInvalidArgumentException;
+
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use App\Exception\UnsufficientPrivilegeException;
+use Doctrine\Persistence\Mapping\MappingException;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * @Route("/admin/utilisateurs", name="utilisateurs")
@@ -390,6 +391,21 @@ class UserController extends AbstractController
             $this->createNotFoundException('Exception' . $Exception->getMessage());
         }
         return new JsonResponse($data);
+    }
+
+    #[Route("/update-is-active/{id}", name:"app_is_active_user")]
+    public function updateIsActive(Request $request, EntityManagerInterface $em, User $user): JsonResponse
+    {
+        if (!$user) {
+            throw $this->createNotFoundException('Aucune entité trouvée pour l\'identifiant. '.$id);
+        }
+
+        $user->setIsActive(!$user->getIsActive());
+        $em->persist($user);
+        $em->flush();
+
+        // Renvoyer une réponse JSON avec l'état mis à jour
+        return new JsonResponse(['isActive' => $user->getIsActive()]);
     }
 
     /**

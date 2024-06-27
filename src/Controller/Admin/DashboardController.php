@@ -7,6 +7,7 @@ use App\Entity\PasswordUpdate;
 use App\Form\PasswordUpdateType;
 use App\Repository\TypeRepository;
 use App\Repository\AdminRepository;
+use App\Service\HeaderDataProvider;
 use App\Repository\ContactRepository;
 use App\Repository\MessageRepository;
 use App\Repository\ProductRepository;
@@ -37,14 +38,18 @@ class DashboardController extends AbstractController
     }
 
     #[Route('/admin', name: 'app_admin')]
-    public function index(Request $request)
+    public function index(Request $request, HeaderDataProvider $headerDataProvider)
     {
+        $headerData = $headerDataProvider->getHeaderData();
+
         if ($request->isXmlHttpRequest()) {
             try {
-                
-                $data["html"] = $this->renderView('admin/dashboard/index.html.twig', [
-                    'listes' => []
+
+                $_data = array_merge($headerData, [
+                    'listes' => [],
                 ]);
+                
+                $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
             
                 return new JsonResponse($data);
             } catch (\Exception $Exception) {
@@ -53,9 +58,11 @@ class DashboardController extends AbstractController
             return new JsonResponse($data);
         } 
 
-        return $this->render('admin/index.html.twig', [
-            'listes' => []
+        $_data = array_merge($headerData, [
+            'listes' => [],
         ]);
+
+        return $this->render('admin/index.html.twig', $_data);
     }
 
     /**

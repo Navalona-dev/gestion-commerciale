@@ -15,6 +15,13 @@
             <td>
                 <a href="#" onclick="return openModalUpdateUtilisateur({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
                 <a href="#" onclick="return deleteUtilisateur({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
+                <a href="#" class="activate-toggle" data-id="{{ liste.id }}" onclick="return setActive({{liste.id}})">
+                    {% if liste.is_active == 1 %}
+                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+                    {% endif %}
+                </a>
             </td>
         </tr>
          {% endif %}
@@ -46,7 +53,7 @@
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'ajout de la catégorie.');
+                    alert('Erreur lors de la suppression de l\'utilisateur.');
                 }
             });
         }
@@ -72,10 +79,10 @@
                 }
             });
     }
-/*
+
     function setActive(id) {
         $.ajax({
-            url: '/admin/liste/update-is-active/' + id,
+            url: '/admin/utilisateurs/update-is-active/' + id,
             method: 'POST', 
             success: function(response) {
                 // Mettez à jour l'icône en fonction de la réponse
@@ -91,7 +98,4 @@
             }
         });
     }
-    $(document).ready(function() {
-   
-});*/
 </script>

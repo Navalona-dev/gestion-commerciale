@@ -20,6 +20,12 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[UniqueEntity(fields: ['email'], message: 'Cet e-mail est déjà utilisé. Veuillez en choisir un autre.')]
 class User implements UserInterface, \Serializable, PasswordAuthenticatedUserInterface
 {
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
+
+    public static $ROLES = [
+        self::ROLE_ADMIN,
+    ];
+    
     const CIVILITE = [
         0 => 'M.',
         //1 => 'Mrs',

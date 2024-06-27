@@ -313,22 +313,27 @@
 
 })();
 
-
 $(document).ready(function() {
-  $('#loginPassword-toggle').click(function() {
-    togglePasswordVisibility($('#login_form_password'));
+  $('#search-app').on('input', function() {
+      var searchValue = $(this).val().toLowerCase();
+      var hasResults = false;
+
+      $('#app-list .col-xl-4').each(function() {
+          var appName = $(this).find('.app-name').text().toLowerCase();
+          if (appName.includes(searchValue)) {
+              $(this).show();
+              hasResults = true;
+          } else {
+              $(this).hide();
+          }
+      });
+
+      if (hasResults) {
+          $('#no-results').hide();
+      } else {
+          $('#no-results').show();
+      }
   });
 });
 
-function togglePasswordVisibility(passwordField) {
-  var fieldType = passwordField.attr('type');
-  
-  if (fieldType === 'password') {
-      passwordField.attr('type', 'text');
-      $('.btn-eye i').removeClass('bi-eye-slash').addClass('bi-eye');
-  } else {
-      passwordField.attr('type', 'password');
-      $('.btn-eye i').removeClass('bi-eye').addClass('bi-eye-slash');
-  }
-}
 

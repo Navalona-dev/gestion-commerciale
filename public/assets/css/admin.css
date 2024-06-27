@@ -1263,7 +1263,7 @@
       right: 1rem;
   }
 
- .modal-user, .modal-application {
+ .modal-user, .modal-application, .modal-produit-categorie {
   width: 180% !important;
   margin-left: -12rem !important;
  }
@@ -1300,5 +1300,18 @@
 }
 
 .work-post-content:hover {
+  color: var(--color-black) !important;
+}
+
+.nav-tabs .nav-item .nav-link {
+  color: var(--color-black) !important;
+}
+
+.work-post-content p {
+  color: var(--color-black) !important;
+}
+
+.work-post-content .icons {
+  font-size: 20px !important;
   color: var(--color-black) !important;
 }

@@ -2,23 +2,25 @@
 
 namespace App\Controller\Admin;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\ORMInvalidArgumentException;
-use App\Exception\PropertyVideException;
-use Doctrine\Persistence\Mapping\MappingException;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use App\Exception\UnsufficientPrivilegeException;
-use Symfony\Component\HttpClient\Exception\ServerException;
-use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use App\Entity\Application;
-use App\Service\ApplicationService;
 use App\Form\ApplicationType;
 use App\Service\AccesService;
 use App\Service\ApplicationManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Service\ApplicationService;
+use App\Exception\PropertyVideException;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use App\Exception\UnsufficientPrivilegeException;
+use Doctrine\Persistence\Mapping\MappingException;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpClient\Exception\ServerException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/admin/applications', name: 'applications')]
 class ApplicationController extends AbstractController
@@ -197,5 +199,20 @@ class ApplicationController extends AbstractController
             $data["html"] = "";
             return new JsonResponse($data);
         }
+    }
+
+    #[Route("/update-is-active/{id}", name:"app_is_active_application")]
+    public function updateIsActive(Request $request, EntityManagerInterface $em, Application $application): JsonResponse
+    {
+        if (!$application) {
+            throw $this->createNotFoundException('Aucune entité trouvée pour l\'identifiant. '.$id);
+        }
+
+        $application->setIsActive(!$application->getIsActive());
+        $em->persist($application);
+        $em->flush();
+
+        // Renvoyer une réponse JSON avec l'état mis à jour
+        return new JsonResponse(['isActive' => $application->getIsActive()]);
     }
 }

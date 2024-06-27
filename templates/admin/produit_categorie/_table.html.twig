@@ -1,0 +1,106 @@
+   
+        {% if type == "thead" %}
+        <tr id="thead_produit_categorie" class="text-nowrap">
+            <th>Nom</th>
+            <th>Application</th>
+            <th>Référence</th>
+            <th>PrixHt</th>
+            <th>Tva</th>
+            <th>Quantité</th>
+            <th>Stock restant</th>
+            <th>Stock minimum</th>
+            <th>Stock maximum</th>
+            <th>Unité vente de gros</th>
+            <th>Unité vente détail</th>
+            <th>PrixTTC</th>
+            <th>Prix d'achat</th>
+            <th>Prix vente de gros</th>
+            <th>Prix vente détail</th>
+            <th>Date de création</th>
+            <th>Description</th>
+            <th>Action</th>
+        </tr>
+        {% elseif type == "tbody" %}
+        <tr id="tbody_produit_categorie" class="text-nowrap">
+            <td> {{liste.nom}} </td>
+            <td> {{liste.application.entreprise}} </td>
+            <td> {{liste.reference}} </td>
+            <td> {{liste.prixHt}} </td>
+            <td> {{liste.tva}} </td>
+            <td> {{liste.qtt}} </td>
+            <td> {{liste.stockRestant}} </td>
+            <td> {{liste.stockMin}} </td>
+            <td> {{liste.stockMax}} </td>
+            <td> {{liste.uniteVenteGros}} </td>
+            <td> {{liste.uniteVenteDetail}} </td>
+            <td> {{liste.prixTTC}} </td>
+            <td> {{liste.prixAchat}} </td>
+            <td> {{liste.prixVenteGros}} </td>
+            <td> {{liste.prixVenteDetail}} </td>
+            <td> {{liste.dateCreation|date('s-m-Y')}} </td>
+            <td> {{liste.description|slice(0,30)|raw}} {% if liste.description|length > 30 %} ... {% endif %} </td>
+
+            <td>
+                <a href="#" onclick="return openModalUpdateProduitCategorie({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return deleteProduitCategorie({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
+            </td>
+        </tr>
+         {% endif %}
+<script>
+    
+    function deleteProduitCategorie(id = null) {
+        if (confirm('Voulez vous vraiment supprimer cet produit catégorie?')) {
+            $.ajax({
+                url: '/admin/categorie/delete/'+id,
+                type: 'POST',
+                data: {category: id},
+                success: function (response) {
+                    var nextLink = $('#sidebar').find('li#categorie').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Suppression effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la suppression de la catégorie.');
+                }
+            });
+        }
+    }
+
+    function openModalUpdateProduitCategorie(id = null) {
+        $.ajax({
+                url: '/admin/categorie/'+id,
+                type: 'POST',
+                data: {id: id},
+                success: function (response) {
+                    if (response.html != "") {
+                        $("#blocModalCategorieEmpty").empty();
+                        $("#blocModalCategorieEmpty").append(response.html);
+
+                        $('#modalUpdateCategorie').modal('show');
+
+                    }
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la mise à jour de la catégorie.');
+                }
+            });
+    }
+
+   
+</script>
