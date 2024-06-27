@@ -69,11 +69,24 @@
     //datatable
     
     $(document).ready(function() {
+
       $('.tab-user').removeClass('active');
       $('.tab-permission').removeClass('active');
       $('.tab-privilege').removeClass('active');
       $('.tab-cat-permission').addClass('active');
-
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+      $('#tab-categorie-permission').addClass('active');
+      $('#tab-application').removeClass('active');
+      $('.tab-categorie').removeClass('active');
+      $('#tab-produit-categorie').removeClass('active');
+      $('.tab-produit-categorie').removeClass('active');
+      $('#tab-categorie').removeClass('active');  
+      $('#tab-compte_1').removeClass('active');
+      
       $('#liste-table-category-permission').DataTable({
         responsive: true,
         language: {

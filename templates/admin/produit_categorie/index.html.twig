@@ -30,7 +30,7 @@
               </div>
              
               <div class="col-xl-4 col-lg-5 col-md-12 col-sm-12 mt-4 mb-5">
-                <button class="btn btn-primary btn-sm" style="width: 100%;"   onclick="return newProduitCategorie(true)">Nouveau produit catégorie </button>
+                <button class="btn btn-primary btn-sm" style="width: 100%;"   onclick="return newProduitCategorie(true)">Nouveau produit </button>
               </div>
               
             </div>
@@ -85,9 +85,24 @@
     //datatable
     
     $(document).ready(function() {
-        $('.tab-categorie').removeClass('active');
-        $('.tab-produit-categorie').addClass('active');
-
+      $('.tab-categorie').removeClass('active');
+      $('.tab-produit-categorie').addClass('active');
+      $('.tab-user').removeClass('active');
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
+      $('#tab-categorie').removeClass('active');
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-produit-categorie').addClass('active');
+      $('#tab-compte_1').removeClass('active');
+      
         $('#liste-table-produi-categorie').DataTable({
             responsive: true,
             language: {

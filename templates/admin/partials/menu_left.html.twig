@@ -23,25 +23,57 @@
         </a>
       </li>
 
-      <li class="nav-item" id="produit" title="Produit">
-        <a class="nav-link collapsed" href="#">
-          <i class="bi bi-basket"></i>
-          <span>Produit</span>
+    
+      <li class="nav-item" id="clients" title="Clients">
+        <a class="nav-link collapsed" href="#tab-compte_1" onClick="return showTabCompte(1)">
+          <i class="bi bi-person"></i>
+          <span>Clients</span>
+        </a>
+      </li>
+      <li class="nav-item" id="fournisseur" title="Fournisseurs">
+        <a class="nav-link collapsed" href="#tab-compte_2" onClick="return showTabCompte(2)">
+          <i class="bi bi-person"></i>
+          <span>Fournisseurs</span>
         </a>
       </li>
       <li class="nav-item" id="produit-categorie" title="Produit catégorie">
         <a class="nav-link collapsed" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()">
-          <i class="bi bi-bag"></i>
-          <span>Produit catégorie</span>
+          <i class="bi bi-person"></i>
+          <span>Devis clients</span>
         </a>
       </li>
-      <li class="nav-item" id="profile" title="Profile">
+      <li class="nav-item" id="produit-categorie">
+        <a class="nav-link collapsed" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()">
+          <i class="bi bi-person"></i>
+          <span>Commandes clients</span>
+        </a>
+      </li>
+       <li class="nav-item" id="produit-categorie">
+        <a class="nav-link collapsed" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()">
+          <i class="bi bi-bag"></i>
+          <span>Factures clients</span>
+        </a>
+      </li>
+      {# <li class="nav-item" id="categorie">
+        <a class="nav-link collapsed" href="#tab-categorie" onClick="return showTabCategorie()">
+          <i class="bi bi-grid"></i>
+          <span>Catégories</span>
+        </a>
+      </li> #}
+      <li class="nav-item" id="produit-categorie">
+        <a class="nav-link collapsed" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()">
+          <i class="bi bi-bag"></i>
+          <span>Produit/Categories</span>
+        </a>
+      </li>
+     
+      {# <li class="nav-item" id="profile">
         <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-profile" onClick="return showTabProfile()">
           <i class="bi bi-person"></i>
           <span>Profile</span>
         </a>
-      </li>
-      <li class="nav-item" id="category_permission" title="Catégorie permission">
+      </li> 
+      <li class="nav-item" id="category_permission">
         <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-categorie-permission" onClick="return showTabCategoriePermission()">
           <i class="bi bi-folder"></i>
           <span>Catégorie permission</span>
@@ -71,7 +103,7 @@
           <i class="bi bi-person"></i>
           <span>Utilisateur</span>
         </a>
-      </li>
+      </li>#}
 
     </ul>
 

@@ -215,20 +215,20 @@
           </a>
           <ul class="p-4 dropdown-menu dropdown-menu-end dropdown-menu-arrow profile row list-app custom-dropdown-width">
             <div class="row">
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
-                  <a class="work-post-content" href="#tab-categorie" onClick="return showTabCategorie()">
+              {# <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                  <a href="#" class="work-post-content">
                     <div class="d-flex justify-content-center">
                       <i class="bi-tags icons"></i>
                     </div>
-                  <p class="text-center text-nowrap"><small>Categorie</small></p>
+                  <p class="text-center text-nowrap"><small>Categories</small></p>
                   </a>
-              </div>
+              </div> #}
               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
                 <a href="#tab-utilisateur" onClick="return showTabUtilisateur()" class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-person icons"></i>
                   </div>
-                  <p class="text-center text-nowrap"><small>Utilisateur</small></p>
+                  <p class="text-center text-nowrap"><small>Utilisateurs</small></p>
                 </a>
               </div>
               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
@@ -236,7 +236,7 @@
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-app icons"></i>
                   </div>
-                  <p class="text-center text-nowrap"><small>Application</small></p>
+                  <p class="text-center text-nowrap"><small>Applications</small></p>
                 </a>
               </div>
               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
@@ -244,7 +244,7 @@
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-shield-lock icons"></i>
                   </div>
-                  <p class="text-center text-nowrap"><small>Permission</small></p>
+                  <p class="text-center text-nowrap"><small>Permissions</small></p>
                 </a>
               </div>
               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
@@ -252,7 +252,7 @@
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-award icons"></i>
                   </div>
-                  <p class="text-center text-nowrap"><small>Privilège</small></p>
+                  <p class="text-center text-nowrap"><small>Privilèges</small></p>
                 </a>
               </div>
               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
@@ -264,11 +264,11 @@
                 </a>
               </div>
               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
-                <a href="#" class="work-post-content">
+                <a href="#" onClick="return showTabProduitCategorie()"  class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-basket icons"></i>
                   </div>
-                  <p class="text-center text-nowrap"><small>Produit</small></p>
+                  <p class="text-center text-nowrap"><small>Produits</small></p>
                 </a>
               </div>
               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
@@ -297,7 +297,7 @@
             </li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+              <a class="dropdown-item d-flex align-items-center" onClick="return showTabProfile()" href="#">
                 <i class="bi bi-person"></i>
                 <span>Profile</span>
               </a>
