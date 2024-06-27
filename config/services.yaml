@@ -47,6 +47,9 @@ services:
     App\Service\ApplicationService:
         arguments: ['@App.AuthorizationManager', '@security.token_storage', '@doctrine.orm.entity_manager']
         public: true
+    App\Service\CompteService:
+        arguments: ['@App.AuthorizationManager', '@security.token_storage', '@doctrine.orm.entity_manager']
+        public: true
     session_interface:
         alias: Symfony\Component\HttpFoundation\Session\SessionInterface
     App\EventListener\RequestListener:

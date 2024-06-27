@@ -31,7 +31,41 @@ $(document).ready(function() {
     if (anchorName === "tab-produit-categorie") {
         showTabProduitCategorie();
     }
+
+    if (anchorName === "tab-compte_1") {
+        showTabCompte(1);
+    }
+
 });
+
+function showTabCompte(genre = 1) {
+    $.ajax({
+             type: 'post',
+             url: '/admin/comptes/',
+             //data: {},
+             success: function (response) {
+                 $('#tab-compte_'+genre+'').empty();
+                 $('#tab-compte_'+genre+'').append(response.html);
+                 $('.sidebar-nav a[href="#tab-compte_'+ genre +' " ]').tab('show');
+                 $('#tab-compte_'+genre+'').addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_'+ genre + ']').removeClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+
+                 $(".loadBody").css('display', 'none');
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
+
+         });
+ }
 
 function showTabProfile() {
     $.ajax({

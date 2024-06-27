@@ -10,7 +10,7 @@
 </style>
 
 <div class="pagetitle">
-    <h1>Liste application </h1>
+    <h1>Tous les clients </h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
@@ -21,37 +21,34 @@
 <section class="section">
     <div class="row">
       <div class="col-lg-12">
-
         <div class="card">
           <div class="card-body">
             <div class="row">
               <div class="col-xl-8 col-lg-7 col-md-12 col-sm-12">
-                <h5 class="card-title fw-bold">Liste application </h5>
+                {#<h5 class="card-title fw-bold">Liste compte </h5>#}
               </div>
              
               <div class="col-xl-4 col-lg-5 col-md-12 col-sm-12 mt-4 mb-5">
-                <button class="btn btn-primary btn-sm" style="width: 100%;"   onclick="return newApplication(true)">Nouveau application </button>
+                <button class="btn btn-primary btn-sm" style="width: 100%;"   onclick="return newCompte(true)">Nouveau compte </button>
               </div>
               
             </div>
-            <table class="table table-striped" id="liste-table-application" style="width: 100%;">
+            <table class="table table-striped" id="liste-table-compte" style="width: 100%;">
               <thead>
-                    {% include 'admin/applications/_table.html.twig' with { 'type': 'thead' } %}
+                    {% include 'admin/comptes/_table.html.twig' with { 'type': 'thead' } %}
               </thead>
               <tbody>
                 {% if listes|length > 0 %}
 
                   {% for liste in listes %}
-                      {% include 'admin/applications/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
+                      {% include 'admin/comptes/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
                   {% endfor %}
                 
                 {% else %}
                     <tr>
-                        <td colspan="4">Aucun enregistrement trouvé</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                         
+                        <td>Aucun enregistrement trouvé</td>
+                         <td>&nbsp;</td>
+                          <td>&nbsp;</td>
                     </tr>
                 {% endif %}
                 
@@ -63,30 +60,22 @@
 
       </div>
     </div>
-    <div id="blocModalApplicationEmpty">
+    <div id="blocModalCompteEmpty">
             </div>
   </section>
 
   <script>
-    //datatable
     
+    //datatable
     $(document).ready(function() {
       $('.tab-user').removeClass('active');
-      $('.tab-permission').removeClass('active');
+      $('.tab-compte').addClass('active');
       $('.tab-privilege').removeClass('active');
-      $('.tab-cat-permission').removeClass('active');
+      $('.tab-cat-compte').removeClass('active');
       $('#tab-dashboard').removeClass('active');
-      $('#tab-profile').removeClass('active');
-      $('#tab-utilisateur').removeClass('active');
-      $('#tab-permission').removeClass('active');
-      $('#tab-privilege').removeClass('active');
       $('#tab-categorie-permission').removeClass('active');
-      $('#tab-application').addClass('active');
-      $('.tab-categorie').removeClass('active');
-      $('#tab-produit-categorie').removeClass('active');
-      $('.tab-produit-categorie').removeClass('active');
-      $('#tab-categorie').removeClass('active');  
-      $('#liste-table-application').DataTable({
+    
+      $('#liste-table-compte').DataTable({
         responsive: true,
         language: {
           url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
@@ -98,20 +87,21 @@
       });
     });
 
-    function newApplication(isNew = false) {
+    function newCompte(isNew = false) {
             $.ajax({
-                url: '/admin/applications/new',
+                url: '/admin/comptes/new',
                 type: 'POST',
                 data: {isNew: isNew},
                 success: function (response) {
-                    $("#blocModalApplicationEmpty").empty();
-                    $("#blocModalApplicationEmpty").append(response.html);
-                    $('#modalNewApplication').modal('show');
+                    $("#blocModalCompteEmpty").empty();
+                    $("#blocModalCompteEmpty").append(response.html);
+                    $('#modalNewCompte').modal('show');
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'ajout de la catégorie.');
+                    alert('Erreur lors de l\'ajout de la compte.');
                 }
             });
     }
+
   </script>

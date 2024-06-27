@@ -74,7 +74,28 @@
     
     $(document).ready(function() {
       $('.tab-categorie').addClass('active');
-        $('.tab-produit-categorie').removeClass('active');
+      $('#tab-produit-categorie').removeClass('active');
+      $('.tab-produit-categorie').removeClass('active');
+      $('#tab-categorie').addClass('active');
+
+      $('.tab-user').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
+      
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+     
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+      
+      
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+     
 
       $('#liste-table-categorie').DataTable({
         responsive: true,
