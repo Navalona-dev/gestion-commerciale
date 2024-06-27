@@ -27,12 +27,34 @@ class ApplicationController extends AbstractController
     private $applicationService;
     private $accesService;
     private $application;
-
+    
     public function __construct(ApplicationService $applicationService, ApplicationManager $applicationManager, AccesService $accesService)
     {
         $this->applicationService = $applicationService;
         $this->accesService = $accesService;
         $this->application = $applicationManager->getApplicationActive();
+    }
+
+    #[Route('/change-appli/{id}', name: '_change_appli')]
+    public function changeAppli(
+        Application $application,
+        Request $request)
+    {
+        $user = $this->getUser();
+
+        $uri = $request->get('uri');
+
+        $user->setAppActive($application);
+        $this->applicationService->persist($user);
+        $this->applicationService->update();
+
+        if (preg_match("/compte|financiere|tache|affaire|agenda|home/", $uri)) {
+            return $this->redirect("/gomyclic/home");
+        }
+
+        $this->addFlash('success', 'Vous êtes basculé sur l\' application : '.$application->getEntreprise().' ');
+
+        return $this->redirect($uri);
     }
 
     #[Route('/', name: '_liste')]

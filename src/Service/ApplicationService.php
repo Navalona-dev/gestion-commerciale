@@ -37,6 +37,11 @@ class ApplicationService
         return $application;
     }
 
+    public function persist($entity)
+    {
+        $this->entityManager->persist($entity);
+    }
+
     public function update()
     {
         $this->entityManager->flush();

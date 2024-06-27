@@ -91,8 +91,8 @@ class ProduitCategorieService
 
     public function getAllProduitCategories()
     {
-        $produitCategories = $this->entityManager->getRepository(ProduitCategorie::class)->findAll();
-        if (count($produitCategories) > 0) {
+        $produitCategories = $this->entityManager->getRepository(ProduitCategorie::class)->getProduits();
+        if ($produitCategories != false  && count($produitCategories) > 0) {
             return $produitCategories;
         }
         return false;

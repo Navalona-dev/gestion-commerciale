@@ -47,7 +47,9 @@
                 
                 {% else %}
                     <tr>
-                        <td colspan="18">Aucun enregistrement trouvé</td>
+                        <td colspan="2">Aucun enregistrement trouvé</td>
+                       <td></td>
+                       {# <td></td>
                        <td></td>
                        <td></td>
                        <td></td>
@@ -62,9 +64,7 @@
                        <td></td>
                        <td></td>
                        <td></td>
-                       <td></td>
-                       <td></td>
-                       <td></td>
+                       <td></td> #}
                          
                     </tr>
                 {% endif %}
@@ -102,7 +102,7 @@
       $('#tab-profile').removeClass('active');
       $('#tab-produit-categorie').addClass('active');
       $('#tab-compte_1').removeClass('active');
-      
+      $('#liste-table-produi-categorie').DataTable().ajax.reload();
         $('#liste-table-produi-categorie').DataTable({
             responsive: true,
             language: {
