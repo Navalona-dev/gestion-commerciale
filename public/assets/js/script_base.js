@@ -56,6 +56,23 @@ function showTabCompte(genre = 1) {
                  $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 
+                 $('.tab-compte_1').addClass('active');
+                 $('.tab-user').removeClass('active');
+                $('.tab-permission').removeClass('active');
+                $('.tab-privilege').removeClass('active');
+                $('.tab-cat-permission').removeClass('active');
+                $('#tab-dashboard').removeClass('active');
+                $('#tab-profile').removeClass('active');
+                $('#tab-utilisateur').removeClass('active');
+                $('#tab-permission').removeClass('active');
+                $('#tab-privilege').removeClass('active');
+                $('#categorie-permission').removeClass('active');
+                $('#tab-application').removeClass('active');
+                $('.tab-categorie').removeClass('active');
+                $('#tab-produit-categorie').removeClass('active');
+                $('.tab-produit-categorie').removeClass('active');
+                $('#tab-categorie').removeClass('active');  
 
                  $(".loadBody").css('display', 'none');
              },

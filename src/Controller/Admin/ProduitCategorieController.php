@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Exception\UnsufficientPrivilegeException;
+use App\Service\ApplicationManager;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -25,10 +26,12 @@ class ProduitCategorieController extends AbstractController
 {
     private $accesService;
     private $produitCategorieService;
-    public function __construct(AccesService $AccesService, ProduitCategorieService $produitCategorieService)
+    private $application;
+    public function __construct(AccesService $AccesService, ApplicationManager $applicationManager, ProduitCategorieService $produitCategorieService)
     {
         $this->accesService = $AccesService;
         $this->produitCategorieService = $produitCategorieService;
+        $this->application = $applicationManager->getApplicationActive();
     }
     
     #[Route('/', name: '_liste')]
@@ -41,7 +44,7 @@ class ProduitCategorieController extends AbstractController
             if ($produitCategories == false) {
                 $produitCategories = [];
             }
-           
+          
             $data["html"] = $this->renderView('admin/produit_categorie/index.html.twig', [
                 'listes' => $produitCategories,
             ]);
@@ -69,6 +72,7 @@ class ProduitCategorieController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 
                 if ($request->isXmlHttpRequest()) {
+                    $produitCategorie->setApplication($this->application);
                     $this->produitCategorieService->add($produitCategorie);
 
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);

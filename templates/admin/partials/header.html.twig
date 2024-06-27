@@ -196,7 +196,7 @@
               {% if applications %}
                 {% for application in applications %}
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
-                      <a href="#" class="app-content">
+                      <a class="app-content" href="{{ path('applications_change_appli', {'id': application.id}) }}?uri={{ app.request.uri }}">
                         <div class="d-flex justify-content-center">
                           <img src="{{asset('assets/img/logo.png')}}" alt="" class="img-fluid img-app">
                         </div>
