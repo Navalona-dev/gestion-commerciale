@@ -50,16 +50,12 @@ class ProduitCategorieService
         $produitCategorie->setPrixVenteDetail($instance->getPrixVenteDetail());
         $produitCategorie->setPrixTTC($instance->getPrixTTC());
         $produitCategorie->setPrixAchat($instance->getPrixAchat());
+        $produitCategorie->setCategorie($instance->getCategorie());
 
         foreach($produitCategorie->getProductImages() as $productImage) {
             $productImage->setProduitCategorie($produitCategorie);
             $productImage->setCreatedAt($date);
             $entityManager->persist($productImage);
-        }
-
-        foreach($produitCategorie->getCategories() as $categorie) {
-            $categorie->addProduitCategory($produitCategorie);
-            $entityManager->persist($categorie);
         }
 
         $stock = new Stock();

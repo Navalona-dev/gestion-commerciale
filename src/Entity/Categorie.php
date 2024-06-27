@@ -30,19 +30,20 @@ class Categorie
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateCreation = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $nom = null;
+
     /**
      * @var Collection<int, ProduitCategorie>
      */
-    #[ORM\ManyToMany(targetEntity: ProduitCategorie::class, mappedBy: 'categories')]
+    #[ORM\OneToMany(targetEntity: ProduitCategorie::class, mappedBy: 'categorie')]
     private Collection $produitCategories;
-
-    #[ORM\Column(length: 255)]
-    private ?string $nom = null;
 
     public function __construct()
     {
         $this->produitCategories = new ArrayCollection();
     }
+
 
     public static function newCategorie($instance = null)
     {
@@ -106,6 +107,18 @@ class Categorie
         return $this;
     }
 
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, ProduitCategorie>
      */
@@ -118,7 +131,7 @@ class Categorie
     {
         if (!$this->produitCategories->contains($produitCategory)) {
             $this->produitCategories->add($produitCategory);
-            $produitCategory->addCategory($this);
+            $produitCategory->setCategorie($this);
         }
 
         return $this;
@@ -127,20 +140,11 @@ class Categorie
     public function removeProduitCategory(ProduitCategorie $produitCategory): static
     {
         if ($this->produitCategories->removeElement($produitCategory)) {
-            $produitCategory->removeCategory($this);
+            // set the owning side to null (unless already changed)
+            if ($produitCategory->getCategorie() === $this) {
+                $produitCategory->setCategorie(null);
+            }
         }
-
-        return $this;
-    }
-
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): static
-    {
-        $this->nom = $nom;
 
         return $this;
     }
