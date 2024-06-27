@@ -2,14 +2,21 @@
 
     <ul class="nav sidebar-nav flex-column" id="sidebar-nav">
 
-      <li class="nav-item" id="dashboard">
+      <li class="nav-item" id="dashboard" title="Tableau de board">
         <a class="nav-link active" href="#tab-dashboard" data-placement="right" data-toggle="tab" onClick="return showTabDasboard()">
           <i class="bi bi-grid"></i>
           <span>Tableau de board</span>
         </a>
       </li>
 
-      <li class="nav-item" id="contact">
+      <li class="nav-item" id="categorie" title="Catégories">
+        <a class="nav-link collapsed" href="#tab-categorie" onClick="return showTabCategorie()">
+          <i class="bi bi-grid"></i>
+          <span>Catégories</span>
+        </a>
+      </li>
+
+      <li class="nav-item" id="contact" title="Contact">
         <a class="nav-link collapsed" href="#">
           <i class="bi bi-telephone"></i>
           <span>Contact</span>
@@ -17,19 +24,19 @@
       </li>
 
     
-      <li class="nav-item" id="clients">
+      <li class="nav-item" id="clients" title="Clients">
         <a class="nav-link collapsed" href="#tab-compte_1" onClick="return showTabCompte(1)">
           <i class="bi bi-person"></i>
           <span>Clients</span>
         </a>
       </li>
-      <li class="nav-item" id="fournisseur">
+      <li class="nav-item" id="fournisseur" title="Fournisseurs">
         <a class="nav-link collapsed" href="#tab-compte_2" onClick="return showTabCompte(2)">
           <i class="bi bi-person"></i>
           <span>Fournisseurs</span>
         </a>
       </li>
-      <li class="nav-item" id="produit-categorie">
+      <li class="nav-item" id="produit-categorie" title="Produit catégorie">
         <a class="nav-link collapsed" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()">
           <i class="bi bi-person"></i>
           <span>Devis clients</span>
@@ -72,26 +79,26 @@
           <span>Catégorie permission</span>
         </a>
       </li>
-       <li class="nav-item" id="permission">
+       <li class="nav-item" id="permission" title="Permission">
         <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-permission" onClick="return showTabPermission()">
           <i class="bi bi-shield-lock"></i>
           <span>Permission</span>
         </a>
       </li>
-      <li class="nav-item" id="privilege">
+      <li class="nav-item" id="privilege" title="Privilège">
         <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-privilege" onClick="return showTabPrivilege()">
           <i class="bi bi-award"></i>
           <span>Privilège</span>
         </a>
       </li>
-      <li class="nav-item" id="application">
+      <li class="nav-item" id="application" title="Application">
         <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-application" onClick="return showTabApplication()">
           <i class="bi bi-app"></i>
           <span>Application</span>
         </a>
       </li>
 
-      <li class="nav-item" id="utilisateur">
+      <li class="nav-item" id="utilisateur" title="Utilisateur">
         <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-utilisateur" onClick="return showTabUtilisateur()">
           <i class="bi bi-person"></i>
           <span>Utilisateur</span>

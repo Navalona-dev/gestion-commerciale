@@ -1,19 +1,19 @@
    
         {% if type == "thead" %}
         <tr id="thead_application" class="text-nowrap">
+            <th>Action</th>
+            <th>Actif</th>
             <th>Entreprise</th>
             <th>Responsable</th>
-            <th>Actif</th>
-            <th>Action</th>
         </tr>
         {% elseif type == "tbody" %}
         <tr id="tbody_application" class="text-nowrap">
-            <td> {{liste.entreprise}} </td>
-            <td> {{liste.nomResp}} </td>
-            <td> {{liste.isActive}} </td>
             <td>
                 <a href="#" onclick="return openModalUpdateApplication({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
                 <a href="#" onclick="return deleteApplication({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
+                
+            </td>
+            <td>
                 <a href="#" class="activate-toggle" data-id="{{ liste.id }}" onclick="return setActive({{liste.id}})">
                     {% if liste.isActive == 1 %}
                         <i class="bi bi-check-circle-fill text-success fs-5"></i>
@@ -22,6 +22,8 @@
                     {% endif %}
                 </a>
             </td>
+            <td> {{liste.entreprise}} </td>
+            <td> {{liste.nomResp}} </td>
         </tr>
          {% endif %}
 <script>

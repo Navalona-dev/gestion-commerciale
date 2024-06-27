@@ -48,6 +48,7 @@
     margin-top: 60px;
     padding: 20px 30px;
     transition: all 0.3s;
+    margin-left:  150px !important;
   }
   
   @media (max-width: 1199px) {
@@ -605,7 +606,7 @@
     top: 60px;
     left: 0;
     bottom: 0;
-    width: 300px;
+    width: 100px;
     z-index: 996;
     transition: all 0.3s;
     padding: 20px;
@@ -614,6 +615,10 @@
     scrollbar-color: #aab7cf transparent;
     box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
     background-color: #fff;
+  }
+
+  .sidebar span {
+    display: none !important;
   }
   
   @media (max-width: 1199px) {
@@ -650,11 +655,20 @@
   
     .toggle-sidebar #main,
     .toggle-sidebar #footer {
-      margin-left: 0;
+      /*margin-left: 0;*/
+      margin-left: 350px !important;
     }
   
-    .toggle-sidebar .sidebar {
+    /*.toggle-sidebar .sidebar {
       left: -300px;
+    }*/
+
+    .toggle-sidebar .sidebar {
+      width: 300px !important;
+    }
+
+    .toggle-sidebar .sidebar span {
+      display: block !important;
     }
   }
   
