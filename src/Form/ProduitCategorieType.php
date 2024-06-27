@@ -125,7 +125,7 @@ class ProduitCategorieType extends AbstractType
                 ],
                 'required' => false
             ])
-            ->add('application', EntityType::class, [
+            /*->add('application', EntityType::class, [
                 'class' => Application::class,
                 'choice_label' => 'entreprise',
                 'attr' => [
@@ -136,7 +136,7 @@ class ProduitCategorieType extends AbstractType
                     return $er->createQueryBuilder('a')
                         ->where('a.isActive = true'); 
                 }
-            ])
+            ])*/
             ->add('categorie', EntityType::class, [
                 'class' => Categorie::class,
                 'choice_label' => 'nom',

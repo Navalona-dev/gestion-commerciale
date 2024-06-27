@@ -3,8 +3,8 @@
         <tr id="thead_produit_categorie" class="text-nowrap">
             <th>Action</th>
             <th>Nom</th>
-            <th>Application</th>
-            <th>Référence</th>
+            
+            {# <th>Référence</th>
             <th>PrixHt</th>
             <th>Tva</th>
             <th>Quantité</th>
@@ -18,7 +18,7 @@
             <th>Prix vente de gros</th>
             <th>Prix vente détail</th>
             <th>Date de création</th>
-            <th>Description</th>
+            <th>Description</th> #}
         </tr>
         {% elseif type == "tbody" %}
         <tr id="tbody_produit_categorie" class="text-nowrap">
@@ -27,8 +27,8 @@
                 <a href="#" onclick="return deleteProduitCategorie({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
             </td>
             <td> {{liste.nom}} </td>
-            <td> {{liste.application.entreprise}} </td>
-            <td> {{liste.reference}} </td>
+            
+            {# <td> {{liste.reference}} </td>
             <td> {{liste.prixHt}} </td>
             <td> {{liste.tva}} </td>
             <td> {{liste.qtt}} </td>
@@ -42,7 +42,7 @@
             <td> {{liste.prixVenteGros}} </td>
             <td> {{liste.prixVenteDetail}} </td>
             <td> {{liste.dateCreation|date('d-m-Y')}} </td>
-            <td> {{liste.description|slice(0,30)|raw}} {% if liste.description|length > 30 %} ... {% endif %} </td>
+            <td> {{liste.description|slice(0,30)|raw}} {% if liste.description|length > 30 %} ... {% endif %} </td> #}
         </tr>
          {% endif %}
 <script>

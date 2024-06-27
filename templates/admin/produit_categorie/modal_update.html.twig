@@ -18,12 +18,12 @@
                                 {{form_widget(form.nom)}}
                             </div>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                        {# <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Application</label>
                                 {{form_widget(form.application)}}
                             </div>
-                        </div>
+                        </div> #}
                     </div>
                     <div class="row">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
@@ -136,7 +136,7 @@
                     </div>
                         
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Modifier catégorie</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Modifier produit</button>
                     </div>
                 {{ form_end(form) }}
             </div>
@@ -159,6 +159,7 @@
                 success: function (response) {
                     $('#modalUpdateProduitCategorie').modal('hide');
                     var nextLink = $('#sidebar').find('li#produit-categorie').find('a');
+                    //
                     setTimeout(function () {
                         toastr.options = {
                             closeButton: true,
