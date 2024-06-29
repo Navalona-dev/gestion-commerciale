@@ -102,15 +102,14 @@ class StockController extends AbstractController
         
     }
 
-    #[Route('/{stock}', name: '_edit')]
+    #[Route('/edit/{stock}', name: '_edit')]
     public function edit(Request $request, StockService $stockService, Stock $stock)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
         }*/
-
         $produitCategorie = $stock->getProduitCategorie();
-
+      
         $data = [];
         try {
             $form = $this->createForm(StockType::class, $stock, []);
@@ -127,7 +126,7 @@ class StockController extends AbstractController
             }
 
             $data['exception'] = "";
-            $data["html"] = $this->renderView('admin/categorie/modal_update.html.twig', [
+            $data["html"] = $this->renderView('admin/stock/modal_update.html.twig', [
                 'form' => $form->createView(),
                 'id' => $stock->getId(),
             ]);

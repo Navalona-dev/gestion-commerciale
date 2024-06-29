@@ -52,7 +52,7 @@
 
     function openModalUpdateStock(id = null) {
         $.ajax({
-                url: '/admin/stock/'+id,
+                url: '/admin/stock/edit/'+id,
                 type: 'POST',
                 data: {id: id},
                 success: function (response) {

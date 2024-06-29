@@ -7,7 +7,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                {{ form_start(form, {'attr': {'id': 'updateStock', 'action': path('stocks_edit', {'categorie': id}) }}) }}
+                {{ form_start(form, {'attr': {'id': 'updateStock', 'action': path('stocks_edit', {'stock': id}) }}) }}
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Quantité</label>
                         {{ form_widget(form.qtt) }}
