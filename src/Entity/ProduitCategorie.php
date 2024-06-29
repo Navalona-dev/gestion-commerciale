@@ -72,12 +72,6 @@ class ProduitCategorie
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'produitCategorie')]
     private Collection $produits;
 
-    /**
-     * @var Collection<int, ProductImage>
-     */
-    #[ORM\ManyToMany(targetEntity: ProductImage::class, mappedBy: 'produitCategories')]
-    private Collection $productImages;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateCreation = null;
 
@@ -90,6 +84,15 @@ class ProduitCategorie
     #[ORM\ManyToOne(inversedBy: 'produitCategories')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Categorie $categorie = null;
+
+    #[ORM\ManyToOne(inversedBy: 'produitCategories')]
+    private ?ProduitType $type = null;
+
+    /**
+     * @var Collection<int, ProductImage>
+     */
+    #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'produitCategorie')]
+    private Collection $productImages;
 
     public function __construct()
     {
@@ -334,32 +337,6 @@ class ProduitCategorie
         return $this;
     }
 
-    /**
-     * @return Collection<int, ProductImage>
-     */
-    public function getProductImages(): Collection
-    {
-        return $this->productImages;
-    }
-
-    public function addProductImage(ProductImage $productImage): static
-    {
-        if (!$this->productImages->contains($productImage)) {
-            $this->productImages->add($productImage);
-            $productImage->addProduitCategory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProductImage(ProductImage $productImage): static
-    {
-        if ($this->productImages->removeElement($productImage)) {
-            $productImage->removeProduitCategory($this);
-        }
-
-        return $this;
-    }
 
     public function getDateCreation(): ?\DateTimeInterface
     {
@@ -411,6 +388,48 @@ class ProduitCategorie
     public function setCategorie(?Categorie $categorie): static
     {
         $this->categorie = $categorie;
+
+        return $this;
+    }
+
+    public function getType(): ?ProduitType
+    {
+        return $this->type;
+    }
+
+    public function setType(?ProduitType $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProductImage>
+     */
+    public function getProductImages(): Collection
+    {
+        return $this->productImages;
+    }
+
+    public function addProductImage(ProductImage $productImage): static
+    {
+        if (!$this->productImages->contains($productImage)) {
+            $this->productImages->add($productImage);
+            $productImage->setProduitCategorie($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductImage(ProductImage $productImage): static
+    {
+        if ($this->productImages->removeElement($productImage)) {
+            // set the owning side to null (unless already changed)
+            if ($productImage->getProduitCategorie() === $this) {
+                $productImage->setProduitCategorie(null);
+            }
+        }
 
         return $this;
     }

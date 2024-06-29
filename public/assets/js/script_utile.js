@@ -22,7 +22,7 @@ $(document).ready(function() {
 });
 
 //ckeditor
-document.querySelectorAll('.ckeditor').forEach(editor => {
+/*document.querySelectorAll('.ckeditor').forEach(editor => {
 ClassicEditor.create(editor);
 })
 
@@ -33,7 +33,31 @@ $('#category_permission_description').val(description);
 $('#permission_description').val(description);
 $('#privilege_basic_description').val(description);
 
-})
+})*/
+
+$(document).ready(function() {
+    // Initialiser CKEditor
+    document.querySelectorAll('.ckeditor').forEach(editor => {
+        ClassicEditor.create(editor).then(editorInstance => {
+            editorInstance.model.document.on('change:data', () => {
+                editor.closest('textarea').value = editorInstance.getData();
+            });
+        }).catch(error => {
+            console.error(error);
+        });
+    });
+  
+    // Synchroniser le contenu de CKEditor avant la soumission du formulaire
+    $('form').on('submit', function() {
+        $('.ckeditor').each(function() {
+            var editorInstance = $(this).data('ckeditorInstance');
+            if (editorInstance) {
+                var editorData = editorInstance.getData();
+                $(this).closest('textarea').val(editorData);
+            }
+        });
+    });
+  });
 
 
 

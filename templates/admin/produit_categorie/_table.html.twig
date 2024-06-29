@@ -3,12 +3,12 @@
         <tr id="thead_produit_categorie" class="text-nowrap">
             <th>Action</th>
             <th>Nom</th>
+            <th>Stock restant</th>
             
             {# <th>Référence</th>
             <th>PrixHt</th>
             <th>Tva</th>
             <th>Quantité</th>
-            <th>Stock restant</th>
             <th>Stock minimum</th>
             <th>Stock maximum</th>
             <th>Unité vente de gros</th>
@@ -25,14 +25,16 @@
             <td>
                 <a href="#" onclick="return openModalUpdateProduitCategorie({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
                 <a href="#" onclick="return deleteProduitCategorie({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
+                <a href="#tab-stock" onclick="return listStock({{liste.id}})" title="liste stock"><i class="bi bi-box-seam"></i></a>
+                <a href="#" onclick="return listImage({{liste.id}})" title="liste image"><i class="bi bi-image"></i></a>
             </td>
             <td> {{liste.nom}} </td>
+            <td> {{liste.stockRestant}} </td>
             
             {# <td> {{liste.reference}} </td>
             <td> {{liste.prixHt}} </td>
             <td> {{liste.tva}} </td>
             <td> {{liste.qtt}} </td>
-            <td> {{liste.stockRestant}} </td>
             <td> {{liste.stockMin}} </td>
             <td> {{liste.stockMax}} </td>
             <td> {{liste.uniteVenteGros}} </td>
@@ -52,7 +54,7 @@
             $.ajax({
                 url: '/admin/produit/categorie/delete/'+id,
                 type: 'POST',
-                data: {category: id},
+                data: {produitCategory: id},
                 success: function (response) {
                     var nextLink = $('#sidebar').find('li#produit-categorie').find('a');
                     setTimeout(function () {
@@ -100,6 +102,36 @@
                 }
             });
     }
+
+    function listStock(id = null) {
+    $.ajax({
+             type: 'post',
+             url: '/admin/stock/'+id,
+             //data: {},
+             success: function (response) {
+                 $("#tab-stock").empty();
+                 $("#tab-stock").append(response.html);
+                 $("#tab-stock").addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $(".loadBody").css('display', 'none');
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
+
+         });
+ }
 
    
 </script>

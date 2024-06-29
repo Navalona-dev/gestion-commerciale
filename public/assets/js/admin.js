@@ -313,6 +313,8 @@
 
 })();
 
+
+
 $(document).ready(function() {
   $('#search-app').on('input', function() {
       var searchValue = $(this).val().toLowerCase();

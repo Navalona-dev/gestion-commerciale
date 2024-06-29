@@ -54,7 +54,7 @@ class ProduitCategorieService
 
         foreach($produitCategorie->getProductImages() as $productImage) {
             $productImage->setProduitCategorie($produitCategorie);
-            $productImage->setCreatedAt($date);
+            $productImage->setDateCreation($date);
             $this->entityManager->persist($productImage);
         }
 

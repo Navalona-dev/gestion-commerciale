@@ -40,61 +40,30 @@ $(document).ready(function() {
         showTabCompte(2);
     }
 
+    if (anchorName === "tab-produit-type") {
+        showTabProduitType();
+    }
+
 });
 
-/*function showTabCompte(genre = 1) {
-    $.ajax({
-             type: 'post',
-             url: '/admin/comptes/',
-             //data: {},
-             success: function (response) {
-                 $('#tab-compte_'+genre+'').empty();
-                 $('#tab-compte_'+genre+'').append(response.html);
-                 $('.sidebar-nav a[href="#tab-compte_'+ genre +' " ]').tab('show');
-                 $('#tab-compte_'+genre+'').addClass('active');
-                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-compte_'+ genre + ']').removeClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
-                 
-                 $('.tab-compte_1').addClass('active');
-                 $('.tab-user').removeClass('active');
-                $('.tab-permission').removeClass('active');
-                $('.tab-privilege').removeClass('active');
-                $('.tab-cat-permission').removeClass('active');
-                $('#tab-dashboard').removeClass('active');
-                $('#tab-profile').removeClass('active');
-                $('#tab-utilisateur').removeClass('active');
-                $('#tab-permission').removeClass('active');
-                $('#tab-privilege').removeClass('active');
-                $('#categorie-permission').removeClass('active');
-                $('#tab-application').removeClass('active');
-                $('.tab-categorie').removeClass('active');
-                $('#tab-produit-categorie').removeClass('active');
-                $('.tab-produit-categorie').removeClass('active');
-                $('#tab-categorie').removeClass('active');  
 
-                 $(".loadBody").css('display', 'none');
-             },
-             error: function () {
-                // $(".loadBody").css('display', 'none');
-                 $(".chargementError").css('display', 'block');
-             }
-
-         });
- }*/
-
-    function showTabCompte(genre = 1) {
+function showTabCompte(genre = 1) {
         
     $.ajax({
         type: 'post',
         url: '/admin/comptes/',
         //data: {},
         success: function(response) {
+            $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-profile"]').removeClass('collapsed');
+            $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
             // Hide all compte tabs
             $('[id^="tab-compte_"]').removeClass('active').empty();
 
@@ -173,6 +142,7 @@ function showTabApplication() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  
                  $(".loadBody").css('display', 'none');
              },
@@ -204,6 +174,7 @@ function showTabUtilisateur() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -235,6 +206,7 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -266,6 +238,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -297,6 +270,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -328,6 +302,8 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+
 
                  $(".loadBody").css('display', 'none');
              },
@@ -359,6 +335,8 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -390,6 +368,8 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -400,6 +380,36 @@ function showTabPermission() {
          });
  }
 
+ function showTabProduitType() {
+    $.ajax({
+             type: 'post',
+             url: '/admin/produit/type/',
+             //data: {},
+             success: function (response) {
+                 $("#tab-produit-type").empty();
+                 $("#tab-produit-type").append(response.html);
+                 $('.sidebar-nav a[href="#tab-produit-type"]').tab('show');
+                 $("#tab-produit-type").addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').removeClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $(".loadBody").css('display', 'none');
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
+
+         });
+ }
 
 
 
