@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 #[Route('/admin/stock', name: 'stocks')]
 class StockController extends AbstractController
@@ -103,13 +104,13 @@ class StockController extends AbstractController
     }
 
     #[Route('/edit/{stock}', name: '_edit')]
-    public function edit(Request $request, StockService $stockService, Stock $stock)
+    public function edit(Request $request, StockService $stockService, Stock $stock, SessionInterface $session)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
         }*/
         $produitCategorie = $stock->getProduitCategorie();
-      
+        $session->set('stock', $stock->getId());
         $data = [];
         try {
             $form = $this->createForm(StockType::class, $stock, []);
@@ -149,6 +150,43 @@ class StockController extends AbstractController
            
             $this->createNotFoundException('Exception' . $Exception->getMessage());
         }
+        return new JsonResponse($data);
+    }
+    
+    #[Route('/refresh/produit', name: '_refresh')]
+    public function refresh(Request $request, StockService $stockService, SessionInterface $session, ProduitCategorieRepository $produitCategorieRepository)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
+        }*/
+        $produitCategorieId = $request->getSession()->get('produitCategorieId');
+        $produitCategorie = $produitCategorieRepository->find($produitCategorieId);
+        $stocks = $stockService->getStockByProduit($produitCategorie);
+
+        if ($stocks == false) {
+            $stocks = [];
+        }
+        
+        $data = [];
+        try {
+            
+            $stocks = $stockService->getStockByProduit($produitCategorie);
+            if ($stocks == false) {
+                $stocks = [];
+            }
+          
+            $data["html"] = $this->renderView('admin/stock/index.html.twig', [
+                'listes' => $stocks,
+                'id' => $produitCategorie->getId(),
+                'produitCategory' => $produitCategorie,
+            ]);
+
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+
         return new JsonResponse($data);
     }
 

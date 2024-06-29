@@ -36,7 +36,7 @@ class ProduitCategorieRepository extends ServiceEntityRepository
         }
         return false;
     }
-
+    
     //    /**
     //     * @return ProduitCategorie[] Returns an array of ProduitCategorie objects
     //     */

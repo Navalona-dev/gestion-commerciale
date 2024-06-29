@@ -44,8 +44,41 @@ $(document).ready(function() {
         showTabProduitType();
     }
 
+    if (anchorName === "tab-stock") {
+        listStockByProduitSession();
+    }
+
 });
 
+function listStockByProduitSession() {
+    $.ajax({
+             type: 'post',
+             url: '/admin/stock/refresh/produit',
+             //data: {},
+             success: function (response) {
+                 $("#tab-stock").empty();
+                 $("#tab-stock").append(response.html);
+                 $("#tab-stock").addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $(".loadBody").css('display', 'none');
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
+
+         });
+ }
 
 function showTabCompte(genre = 1) {
         
