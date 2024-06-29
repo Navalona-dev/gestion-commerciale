@@ -38,9 +38,7 @@
                         //$(".loadBody").css('display', 'none');
 
                     }, 800);
-                    if (nextLink.length > 0) {
-                        nextLink.click();
-                    }
+                   listStockByProduitSession();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
