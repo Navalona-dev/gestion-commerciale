@@ -8,7 +8,7 @@
         {% elseif type == "tbody" %}
         <tr id="tbody_stock" class="text-nowrap">
             <td>
-                <a href="#" onclick="return openModalUpdateStock({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return openModalUpdateStock({{liste.id}}, {{liste.qtt}})"><i class="bi bi-pencil-fill"></i></a>
                 <a href="#" onclick="return deleteStock({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
             </td>
             <td> {{liste.qtt}} </td>
@@ -48,11 +48,11 @@
         }
     }
 
-    function openModalUpdateStock(id = null) {
+    function openModalUpdateStock(id = null, oldQtt = null) {
         $.ajax({
                 url: '/admin/stock/edit/'+id,
                 type: 'POST',
-                data: {id: id},
+                data: {id: id, oldQtt: oldQtt},
                 success: function (response) {
                     if (response.html != "") {
                         $("#blocModalStockEmpty").empty();

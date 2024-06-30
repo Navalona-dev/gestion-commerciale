@@ -109,6 +109,7 @@ class StockController extends AbstractController
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
         }*/
+        $oldQtt = $request->get('oldQtt');
         $produitCategorie = $stock->getProduitCategorie();
         $session->set('stock', $stock->getId());
         $data = [];
@@ -119,7 +120,7 @@ class StockController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
-                    $stockService->edit($stock, $produitCategorie);
+                    $stockService->edit($stock, $produitCategorie, $oldQtt);
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
                 //$this->addFlash('success', 'Modification application "' . $stock->getTitle() . '" avec succès.');
@@ -130,6 +131,7 @@ class StockController extends AbstractController
             $data["html"] = $this->renderView('admin/stock/modal_update.html.twig', [
                 'form' => $form->createView(),
                 'id' => $stock->getId(),
+                'oldQtt' => $stock->getQtt()
             ]);
             return new JsonResponse($data);
         } catch (PropertyVideException $PropertyVideException) {

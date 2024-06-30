@@ -52,33 +52,53 @@ class StockService
         return $stock;
     }
 
-    public function edit($stock, $produitCategorie)
+    public function edit($stock, $produitCategorie, $oldQtt)
     {
     
         // Obtenez la quantité et le stock restant actuels
-        $oldQtt = $stock->getQtt();
+        //$oldQtt = $stock->getQtt();
         $oldStockRestant = $produitCategorie->getStockRestant();
     
         // Calculez le nouveau stock restant après soustraction de l'ancienne quantité
-        $stockRestant = $oldStockRestant - $oldQtt;
-        $produitCategorie->setStockRestant($stockRestant);
-        $this->entityManager->persist($produitCategorie);
-    
-        // Persist l'état actuel de stock
-        $this->entityManager->persist($stock);
-    
-        // Obtenez la nouvelle quantité
-        $newQtt = $stock->getQtt();
-    
-        // Calculez le nouveau stock restant après ajout de la nouvelle quantité
-        $newStockRestant = $produitCategorie->getStockRestant();
-        $stockRestant = $newStockRestant + $newQtt;
-        $produitCategorie->setStockRestant($stockRestant);
-        $this->entityManager->persist($produitCategorie);
-    
-        // Enregistrez toutes les modifications en base de données
-        $this->update();
-    
+        //d($oldStockRestant, $oldQtt);
+        if ($oldQtt <= $oldStockRestant) {
+            $stockRestant = $oldStockRestant - $oldQtt;
+            $newQtt = $stock->getQtt();
+            $stockRestant = $stockRestant + $newQtt;
+           
+            $produitCategorie->setStockRestant($stockRestant);
+            $this->entityManager->persist($produitCategorie);
+            
+            // Persist l'état actuel de stock
+            $this->entityManager->persist($stock);
+            $this->update();
+            // Obtenez la nouvelle quantité
+           // $newQtt = $stock->getQtt();
+        
+            // Calculez le nouveau stock restant après ajout de la nouvelle quantité
+            //$newStockRestant = $produitCategorie->getStockRestant();
+            
+            
+            //$produitCategorie->setStockRestant($stockRestant);
+        
+            //$this->entityManager->persist($produitCategorie);
+        
+            // Enregistrez toutes les modifications en base de données
+           // $this->update();
+            //d($produitCategorie, $oldStockRestant, $oldQtt, $stockRestant, $newStockRestant, $newQtt);
+            return $stock;
+        } else {
+            $stocktoAdd = $oldQtt - $oldStockRestant;
+            $stockRestant = $oldStockRestant + $stocktoAdd;
+           
+            $produitCategorie->setStockRestant($stockRestant);
+            $this->entityManager->persist($produitCategorie);
+            
+            // Persist l'état actuel de stock
+            $this->entityManager->persist($stock);
+            //dd($stockRestant, $stocktoAdd, $oldStockRestant, $produitCategorie->getStockRestant(), $stock);
+            $this->update();
+        }
         return $stock;
     }
     
