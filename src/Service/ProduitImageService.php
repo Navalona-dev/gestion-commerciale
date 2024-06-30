@@ -71,7 +71,7 @@ class ProduitImageService
         if ($produitImage) {
             return $produitImage;
         }
-        return null;
+        return false;
     }
 
     public function getImageByProduit($produitCategorie)
@@ -80,7 +80,7 @@ class ProduitImageService
         if ($produitImage) {
             return $produitImage;
         }
-        return null;
+        return false;
     }
 
 }

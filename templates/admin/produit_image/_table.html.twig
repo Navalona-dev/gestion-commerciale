@@ -8,7 +8,7 @@
         {% elseif type == "tbody" %}
         <tr id="tbody_produit_image" class="text-nowrap">
             <td>
-                <a href="#" onclick="return openModalUpdateStock({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return openModalUpdateImage({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
                 <a href="#" onclick="return deleteStock({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
             </td>
             <td>
@@ -21,9 +21,9 @@
 <script>
     
     function deleteStock(id = null) {
-        if (confirm('Voulez vous vraiment supprimer stock?')) {
+        if (confirm('Voulez vous vraiment supprimer cette image?')) {
             $.ajax({
-                url: '/admin/stock/delete/'+id,
+                url: '/admin/produit/image/delete/'+id,
                 type: 'POST',
                 data: {category: id},
                 success: function (response) {
@@ -40,7 +40,7 @@
                         //$(".loadBody").css('display', 'none');
 
                     }, 800);
-                   listStockByProduitSession();
+                   listImageByProduitSession();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -50,17 +50,17 @@
         }
     }
 
-    function openModalUpdateStock(id = null) {
+    function openModalUpdateImage(id = null) {
         $.ajax({
-                url: '/admin/stock/edit/'+id,
+                url: '/admin/produit/image/edit/'+id,
                 type: 'POST',
                 data: {id: id},
                 success: function (response) {
                     if (response.html != "") {
-                        $("#blocModalStockEmpty").empty();
-                        $("#blocModalStockEmpty").append(response.html);
+                        $("#blocModalProduitImageEmpty").empty();
+                        $("#blocModalProduitImageEmpty").append(response.html);
 
-                        $('#modalUpdateStock').modal('show');
+                        $('#modalUpdateImage').modal('show');
 
                     }
                     

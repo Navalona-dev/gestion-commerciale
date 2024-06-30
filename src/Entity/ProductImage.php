@@ -40,9 +40,9 @@ class ProductImage
 
     public static function newProduitImage($instance = null)
     {
-        if (is_null($instance->getImage()) or empty($instance->getImage())) {
+        /*if (is_null($instance->getImage()) or empty($instance->getImage())) {
             throw new PropertyVideException("Your image doesn't empty");
-        }
+        }*/
 
         return $instance;
     }
