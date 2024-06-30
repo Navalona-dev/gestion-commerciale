@@ -27,7 +27,7 @@ class Stock
     public static function newStock($instance = null)
     {
         if (is_null($instance->getQtt()) or empty($instance->getQtt())) {
-            throw new PropertyVideException("Your permission name doesn't empty");
+            throw new PropertyVideException("Your quantity doesn't empty");
         }
 
         return $instance;

@@ -7,7 +7,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                {{ form_start(form, {'attr': {'id': 'updateProduitType', 'action': path('types_edit', {'categorie': id}) }}) }}
+                {{ form_start(form, {'attr': {'id': 'updateProduitType', 'action': path('types_edit', {'produitType': id}) }}) }}
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Application</label>
                         {{ form_widget(form.application) }}
@@ -63,6 +63,7 @@
                     if (nextLink.length > 0) {
                         nextLink.click();
                     }
+                    showTabProduitType();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)

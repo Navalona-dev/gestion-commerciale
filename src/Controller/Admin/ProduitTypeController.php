@@ -99,7 +99,7 @@ class ProduitTypeController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/{produitType}', name: '_edit')]
+    #[Route('/edit/{produitType}', name: '_edit')]
     public function edit(Request $request, ProduitType $produitType, ProduitTypeService $produitTypeService)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {

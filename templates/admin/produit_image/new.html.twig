@@ -1,21 +1,21 @@
 
-<div class="modal fade" id="modalNewStock" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+<div class="modal fade" id="modalNewProduitImage" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content p-4 modal-stock">
+        <div class="modal-content p-4 modal-produit-image">
             <div class="modal-header modal-header-center">
-                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau Stock</h5>
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau image de produit</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 
-                {{ form_start(form, {'attr': {'id': 'newStock', 'action': path('stocks_create') }}) }}
+                {{ form_start(form, {'attr': {'id': 'newProduitImage', 'action': path('produit_images_create') }}) }}
                     <div class="form-group mb-3">
-                        <label for="" class="mb-2">Quantité</label>
-                        {{ form_widget(form.qtt) }}
+                        <label for="" class="mb-2">Image</label>
+                        {{ form_widget(form.imageFile) }}
                     </div>  
                         
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Ajouter stock</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Ajouter image</button>
                     </div>
                 {{ form_end(form) }}
             </div>
@@ -29,7 +29,7 @@
   
     $(document).ready(function () {
     
-       $('#newStock').on('submit', function (e) {
+       $('#newProduitImage').on('submit', function (e) {
             e.preventDefault();
             let form = $(this);
           
@@ -43,8 +43,8 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    $('#modalNewStock').modal('hide');
-                    var nextLink = $('#sidebar').find('li#stock').find('a');
+                    $('#modalNewProduitImage').modal('hide');
+                    var nextLink = $('#sidebar').find('li#produit-image').find('a');
                     setTimeout(function () {
                         toastr.options = {
                             closeButton: true,
@@ -60,12 +60,12 @@
                     if (nextLink.length > 0) {
                         nextLink.click();
                     }
-                    listStockByProduitSession();
+                    listImageByProduitSession();
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'ajout de stock.');
+                    alert('Erreur lors de l\'ajout d\'image.');
                 }
             });
         });

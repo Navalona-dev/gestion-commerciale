@@ -1,0 +1,76 @@
+   
+        {% if type == "thead" %}
+        <tr id="thead_produit_image" class="text-nowrap">
+            <th>Action</th>
+            <th>Image</th>
+            <th>Date de création</th>
+        </tr>
+        {% elseif type == "tbody" %}
+        <tr id="tbody_produit_image" class="text-nowrap">
+            <td>
+                <a href="#" onclick="return openModalUpdateStock({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return deleteStock({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
+            </td>
+            <td>
+                <img src="{{asset('uploads/product/' ~ liste.image)}}" alt="" style="width: 40px; height: 40px; border-radius: 100%;">
+            </td>
+            <td> {{liste.dateCreation|date('d-m-Y')}} </td>
+            
+        </tr>
+         {% endif %}
+<script>
+    
+    function deleteStock(id = null) {
+        if (confirm('Voulez vous vraiment supprimer stock?')) {
+            $.ajax({
+                url: '/admin/stock/delete/'+id,
+                type: 'POST',
+                data: {category: id},
+                success: function (response) {
+                    var nextLink = $('#sidebar').find('li#stock').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Suppression effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                   listStockByProduitSession();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la suppression de stock.');
+                }
+            });
+        }
+    }
+
+    function openModalUpdateStock(id = null) {
+        $.ajax({
+                url: '/admin/stock/edit/'+id,
+                type: 'POST',
+                data: {id: id},
+                success: function (response) {
+                    if (response.html != "") {
+                        $("#blocModalStockEmpty").empty();
+                        $("#blocModalStockEmpty").append(response.html);
+
+                        $('#modalUpdateStock').modal('show');
+
+                    }
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la mise à jour de stock.');
+                }
+            });
+    }
+
+   
+</script>

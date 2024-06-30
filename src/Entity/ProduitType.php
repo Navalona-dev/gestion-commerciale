@@ -47,7 +47,7 @@ class ProduitType
     public static function newProduitType($instance = null)
     {
         if (is_null($instance->getNom()) or empty($instance->getNom())) {
-            throw new PropertyVideException("Your permission name doesn't empty");
+            throw new PropertyVideException("Your name doesn't empty");
         }
 
         return $instance;
