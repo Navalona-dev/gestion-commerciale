@@ -54,6 +54,7 @@
                     if (nextLink.length > 0) {
                         nextLink.click();
                     }
+                    showTabProduitType();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -65,7 +66,7 @@
 
     function openModalUpdateProduitType(id = null) {
         $.ajax({
-                url: '/admin/produit/type/'+id,
+                url: '/admin/produit/type/edit/'+id,
                 type: 'POST',
                 data: {id: id},
                 success: function (response) {

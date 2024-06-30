@@ -19,25 +19,15 @@ class ProductImageRepository extends ServiceEntityRepository
     //    /**
     //     * @return ProductImage[] Returns an array of ProductImage objects
     //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?ProductImage
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findByProductCategory($produitCategorie): array
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.produitCategorie', 'pc')
+            ->andWhere('pc.id = :produit_categorie_id')
+            ->setParameter('produit_categorie_id', $produitCategorie->getId())
+            ->orderBy('p.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

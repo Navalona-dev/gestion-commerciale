@@ -2,15 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\ProductImageRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Exception\PropertyVideException;
+use App\Repository\ProductImageRepository;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpFoundation\File\File;
+use Doctrine\Common\Collections\ArrayCollection;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ProductImageRepository::class)]
+#[Vich\Uploadable]
 class ProductImage
 {
     #[ORM\Id]
@@ -34,6 +36,15 @@ class ProductImage
     public function __construct()
     {
         $this->produitCategories = new ArrayCollection();
+    }
+
+    public static function newProduitImage($instance = null)
+    {
+        /*if (is_null($instance->getImage()) or empty($instance->getImage())) {
+            throw new PropertyVideException("Your image doesn't empty");
+        }*/
+
+        return $instance;
     }
 
     public function getId(): ?int

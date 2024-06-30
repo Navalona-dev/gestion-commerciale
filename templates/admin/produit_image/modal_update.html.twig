@@ -1,0 +1,63 @@
+
+<div class="modal fade" id="modalUpdateImage" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content p-4 modal-categorie">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Mise à jour stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ form_start(form, {'attr': {'id': 'updateImage', 'action': path('produit_images_edit', {'productImage': id}) }}) }}
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Image</label>
+                        {{ form_widget(form.imageFile) }}
+                    </div>  
+                   
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm px-3" style="width: 100%;">Modifier stock</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+
+<script>
+   
+    $(document).ready(function () {
+       $('#updateImage').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+            let formData = new FormData(form[0]);
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#modalUpdateImage').modal('hide');
+                    var nextLink = $('#sidebar').find('li#stock').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Mise à jour effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    listImageByProduitSession();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la mise à jour de stock.');
+                }
+            });
+        });
+    });
+</script>

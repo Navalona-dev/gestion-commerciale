@@ -2,168 +2,200 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\ProduitType;
-use App\Form\TypeProduitType;
+use App\Entity\ProductImage;
 use App\Service\AccesService;
-use App\Service\ProduitTypeService;
+use App\Form\ProduitImageType;
+use App\Entity\ProduitCategorie;
+use App\Service\ProduitImageService;
 use App\Exception\PropertyVideException;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
+use App\Repository\ProduitCategorieRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Exception\UnsufficientPrivilegeException;
+use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-#[Route('/admin/produit/type', name: 'types')]
-class ProduitTypeController extends AbstractController
+#[Route('/admin/produit/image', name: 'produit_images')]
+class ProduitImageController extends AbstractController
 {
     private $accesService;
-    public function __construct(AccesService $AccesService)
+    private $produitImageService;
+    public function __construct(AccesService $AccesService, ProduitImageService $produitImageService)
     {
         $this->accesService = $AccesService;
+        $this->produitImageService = $produitImageService;
+    }
+
+    #[Route('/new', name: '_create')]
+    public function create(Request $request, ProduitCategorieRepository $produitCategorieRepo)
+    {
+        $produitCategorieId = $request->getSession()->get('produitCategorieId');
+
+        $produitCategorie = $produitCategorieRepo->findOneBy(['id' => $produitCategorieId]);
+
+        try {
+            $produitImage = new ProductImage();
+            $form = $this->createForm(ProduitImageType::class, $produitImage);
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                if ($request->isXmlHttpRequest()) {
+                    $this->produitImageService->add($produitImage, $produitCategorie);
+                    return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                } 
+        
+                //$this->addFlash('success', 'Création d\'une image "' . $produitImage->getNom() . '" avec succès.');
+                //return $this->redirectToRoute('produit_images_liste');
+            }
+
+            $data['exception'] = "";
+            $data["html"] = $this->renderView('admin/produit_image/new.html.twig', [
+                'form' => $form->createView(),
+            ]);
+           
+            return new JsonResponse($data);
+        } catch (PropertyVideException $PropertyVideException) {
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
+            throw $this->createNotFoundException('Exception' . $UniqueConstraintViolationException->getMessage());
+        } catch (MappingException $MappingException) {
+            $this->createNotFoundException('Exception' . $MappingException->getMessage());
+        } catch (ORMInvalidArgumentException $ORMInvalidArgumentException) {
+            $this->createNotFoundException('Exception' . $ORMInvalidArgumentException->getMessage());
+        } catch (UnsufficientPrivilegeException $UnsufficientPrivilegeException) {
+            $this->createNotFoundException('Exception' . $UnsufficientPrivilegeException->getMessage());
+        }catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
+            $this->createNotFoundException('Exception' . $NotNullConstraintViolationException->getMessage());
+        } catch (\Exception $Exception) {
+            $data['exception'] = $Exception->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
     }
     
-    #[Route('/', name: '_liste')]
-    public function index(ProduitTypeService $produitTypeService): Response
+    #[Route('/edit/{productImage}', name: '_edit')]
+    public function edit(Request $request, ProductImage $productImage, SessionInterface $session)
     {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
+        }*/
+       
         $data = [];
         try {
             
-            $produitType = $produitTypeService->getAllProduitTypes();
-            if ($produitType == false) {
-                $produitType = [];
+            $form = $this->createForm(ProduitImageType::class, $productImage);
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                if ($request->isXmlHttpRequest()) {
+                    $this->produitImageService->add($productImage, $productImage->getProduitCategorie());
+                    return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                } 
+        
+                //$this->addFlash('success', 'Création d\'une image "' . $productImage->getNom() . '" avec succès.');
+                //return $this->redirectToRoute('produit_images_liste');
             }
-           
-            $data["html"] = $this->renderView('admin/produit_type/index.html.twig', [
-                'listes' => $produitType,
+
+            $data['exception'] = "";
+            $data["html"] = $this->renderView('admin/produit_image/modal_update.html.twig', [
+                'form' => $form->createView(),
+                'id' => $productImage->getId(),
             ]);
+            return new JsonResponse($data);
+        } catch (PropertyVideException $PropertyVideException) {
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
+            throw $this->createNotFoundException('Exception' . $UniqueConstraintViolationException->getMessage());
+        } catch (MappingException $MappingException) {
+            $this->createNotFoundException('Exception' . $MappingException->getMessage());
+        } catch (ORMInvalidArgumentException $ORMInvalidArgumentException) {
+            $this->createNotFoundException('Exception' . $ORMInvalidArgumentException->getMessage());
+        } catch (UnsufficientPrivilegeException $UnsufficientPrivilegeException) {
+            $this->createNotFoundException('Exception' . $UnsufficientPrivilegeException->getMessage());
+        } catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
+            $this->createNotFoundException('Exception' . $NotNullConstraintViolationException->getMessage());
+        } catch (\Exception $Exception) {
+            $data['exception'] = $Exception->getMessage();
+            $data["html"] = "";
            
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/{produitCategorie}', name: '_liste')]
+    public function index(Request $request, ProduitCategorie $produitCategorie): Response
+    {   
+        $request->getSession()->set('produitCategorieId', $produitCategorie->getId());
+
+        $data = [];
+        try {
+            
+            $stocks = $this->produitImageService->getImageByProduit($produitCategorie);
+            if ($stocks == false) {
+                $stocks = [];
+            }
+          
+            $data["html"] = $this->renderView('admin/produit_image/index.html.twig', [
+                'listes' => $stocks,
+                'id' => $produitCategorie->getId(),
+                'produitCategory' => $produitCategorie,
+            ]);
+
             return new JsonResponse($data);
         } catch (\Exception $Exception) {
             $data["exception"] = $Exception->getMessage();
             $this->createNotFoundException('Exception' . $Exception->getMessage());
         }
+
         return new JsonResponse($data);
-      
-    }
-
-    #[Route('/new', name: '_create')]
-    public function create(Request $request, ProduitTypeService $produitTypeService)
-    {
-       
-        try {
-            $produitType = new ProduitType();
-            $form = $this->createForm(TypeProduitType::class, $produitType);
-
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                if ($request->isXmlHttpRequest()) {
-                    $produitTypeService->add($produitType);
-                    return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
-                } 
         
-                $this->addFlash('success', 'Création type de produit "' . $produitType->getNom() . '" avec succès.');
-                return $this->redirectToRoute('types_liste');
-            }
-
-            $data['exception'] = "";
-            $data["html"] = $this->renderView('admin/produit_type/new.html.twig', [
-                'form' => $form->createView(),
-            ]);
-           
-            return new JsonResponse($data);
-        } catch (PropertyVideException $PropertyVideException) {
-            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
-        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
-            throw $this->createNotFoundException('Exception' . $UniqueConstraintViolationException->getMessage());
-        } catch (MappingException $MappingException) {
-            $this->createNotFoundException('Exception' . $MappingException->getMessage());
-        } catch (ORMInvalidArgumentException $ORMInvalidArgumentException) {
-            $this->createNotFoundException('Exception' . $ORMInvalidArgumentException->getMessage());
-        } catch (UnsufficientPrivilegeException $UnsufficientPrivilegeException) {
-            $this->createNotFoundException('Exception' . $UnsufficientPrivilegeException->getMessage());
-        }catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
-            $this->createNotFoundException('Exception' . $NotNullConstraintViolationException->getMessage());
-        } catch (\Exception $Exception) {
-            $data['exception'] = $Exception->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            $this->createNotFoundException('Exception' . $Exception->getMessage());
-        }
-        return new JsonResponse($data);
     }
 
-    #[Route('/edit/{produitType}', name: '_edit')]
-    public function edit(Request $request, ProduitType $produitType, ProduitTypeService $produitTypeService)
+    #[Route('/refresh/produit', name: '_refresh')]
+    public function refresh(Request $request, SessionInterface $session, ProduitCategorieRepository $produitCategorieRepository)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
         }*/
+        $produitCategorieId = $request->getSession()->get('produitCategorieId');
+        $produitCategorie = $produitCategorieRepository->find($produitCategorieId);
+        
         $data = [];
         try {
-            $form = $this->createForm(TypeProduitType::class, $produitType, []);
-
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                if ($request->isXmlHttpRequest()) {
-                    $produitTypeService->update();
-                    return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
-                }
-                //$this->addFlash('success', 'Modification application "' . $categorie->getTitle() . '" avec succès.');
-                //return $this->redirectToRoute('applications_liste');
+            
+            $produitImages = $this->produitImageService->getImageByProduit($produitCategorie);
+            if ($produitImages == false) {
+                $produitImages = [];
             }
-
-            $data['exception'] = "";
-            $data["html"] = $this->renderView('admin/produit_type/modal_update.html.twig', [
-                'form' => $form->createView(),
-                'id' => $produitType->getId(),
+          
+            $data["html"] = $this->renderView('admin/produit_image/index.html.twig', [
+                'listes' => $produitImages,
+                'id' => $produitCategorie->getId(),
+                'produitCategory' => $produitCategorie,
             ]);
+
             return new JsonResponse($data);
-        } catch (PropertyVideException $PropertyVideException) {
-            $data['exception'] = $PropertyVideException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
-        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
-            throw $this->createNotFoundException('Exception' . $UniqueConstraintViolationException->getMessage());
-        } catch (MappingException $MappingException) {
-            $data['exception'] = $MappingException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            $this->createNotFoundException('Exception' . $MappingException->getMessage());
-        } catch (ORMInvalidArgumentException $ORMInvalidArgumentException) {
-            $data['exception'] = $ORMInvalidArgumentException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            $this->createNotFoundException('Exception' . $ORMInvalidArgumentException->getMessage());
-        } catch (UnsufficientPrivilegeException $UnsufficientPrivilegeException) {
-            $data['exception'] = $UnsufficientPrivilegeException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            $this->createNotFoundException('Exception' . $UnsufficientPrivilegeException->getMessage());
-        }catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
-            $data['exception'] = $NotNullConstraintViolationException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            $this->createNotFoundException('Exception' . $NotNullConstraintViolationException->getMessage());
         } catch (\Exception $Exception) {
-            $data['exception'] = $Exception->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
+            $data["exception"] = $Exception->getMessage();
             $this->createNotFoundException('Exception' . $Exception->getMessage());
         }
+
         return new JsonResponse($data);
     }
 
-    #[Route('/delete/{produitType}', name: '_delete')]
-    public function delete(Request $request, ProduitType $produitType, ProduitTypeService $produitTypeService)
+    #[Route('/delete/{productImage}', name: '_delete')]
+    public function delete(Request $request, ProductImage $productImage)
     {
        /* if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -171,62 +203,26 @@ class ProduitTypeController extends AbstractController
         try {
            
             if ($request->isXmlHttpRequest()) {
-                $produitTypeService->remove($produitType);
-                $produitTypeService->update();
+                $this->produitImageService->remove($productImage);
                 return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
-            }
+            } 
                 
         } catch (PropertyVideException $PropertyVideException) {
-            $data['exception'] = $PropertyVideException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
             throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
         } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
-            $data['exception'] = $UniqueConstraintViolationException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
             throw $this->createNotFoundException('Exception' . $UniqueConstraintViolationException->getMessage());
         } catch (MappingException $MappingException) {
-            $data['exception'] = $MappingException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
             $this->createNotFoundException('Exception' . $MappingException->getMessage());
         } catch (ORMInvalidArgumentException $ORMInvalidArgumentException) {
-            $data['exception'] = $ORMInvalidArgumentException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
             $this->createNotFoundException('Exception' . $ORMInvalidArgumentException->getMessage());
         } catch (UnsufficientPrivilegeException $UnsufficientPrivilegeException) {
-            $data['exception'] = $UnsufficientPrivilegeException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
             $this->createNotFoundException('Exception' . $UnsufficientPrivilegeException->getMessage());
-        }catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
-            $data['exception'] = $NotNullConstraintViolationException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
+        } catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
             $this->createNotFoundException('Exception' . $NotNullConstraintViolationException->getMessage());
         } catch (\Exception $Exception) {
             $data['exception'] = $Exception->getMessage();
             $data["html"] = "";
             return new JsonResponse($data);
-            $this->createNotFoundException('Exception' . $Exception->getMessage());
         }
-    }
-
-
-    #[Route("/update-is-active/{id}", name:"app_is_active_produit-type")]
-    public function updateIsActive(Request $request, EntityManagerInterface $em, ProduitType $produitType): JsonResponse
-    {
-        if (!$produitType) {
-            throw $this->createNotFoundException('Aucune entité trouvée pour l\'identifiant. '.$id);
-        }
-
-        $produitType->setIsActive(!$produitType->getIsActive());
-        $em->persist($produitType);
-        $em->flush();
-
-        // Renvoyer une réponse JSON avec l'état mis à jour
-        return new JsonResponse(['isActive' => $produitType->getIsActive()]);
     }
 }
