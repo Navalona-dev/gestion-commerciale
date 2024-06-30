@@ -24,7 +24,7 @@ class ProduitCategorieRepository extends ServiceEntityRepository
     {
         $entityManager = $this->getEntityManager();
 
-        $sql = "SELECT id, nom FROM `ProduitCategorie` WHERE `application_id` = ".$this->application->getId()."  order by nom";
+        $sql = "SELECT id, nom, stockRestant FROM `ProduitCategorie` WHERE `application_id` = ".$this->application->getId()."  order by nom";
 
         $query = $this->connection->prepare($sql);
         
@@ -36,7 +36,7 @@ class ProduitCategorieRepository extends ServiceEntityRepository
         }
         return false;
     }
-
+    
     //    /**
     //     * @return ProduitCategorie[] Returns an array of ProduitCategorie objects
     //     */

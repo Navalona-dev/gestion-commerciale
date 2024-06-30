@@ -68,6 +68,12 @@ class Application
     #[ORM\OneToMany(targetEntity: ProduitCategorie::class, mappedBy: 'application')]
     private Collection $produitCategories;
 
+    /**
+     * @var Collection<int, ProduitType>
+     */
+    #[ORM\OneToMany(targetEntity: ProduitType::class, mappedBy: 'application')]
+    private Collection $produitTypes;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -75,6 +81,7 @@ class Application
         $this->products = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->produitCategories = new ArrayCollection();
+        $this->produitTypes = new ArrayCollection();
     }
 
     public static function newApplicationFromInstance($instance = null)
@@ -313,6 +320,36 @@ class Application
             // set the owning side to null (unless already changed)
             if ($produitCategory->getApplication() === $this) {
                 $produitCategory->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProduitType>
+     */
+    public function getProduitTypes(): Collection
+    {
+        return $this->produitTypes;
+    }
+
+    public function addProduitType(ProduitType $produitType): static
+    {
+        if (!$this->produitTypes->contains($produitType)) {
+            $this->produitTypes->add($produitType);
+            $produitType->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduitType(ProduitType $produitType): static
+    {
+        if ($this->produitTypes->removeElement($produitType)) {
+            // set the owning side to null (unless already changed)
+            if ($produitType->getApplication() === $this) {
+                $produitType->setApplication(null);
             }
         }
 

@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\StockRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\StockRepository;
+use App\Exception\PropertyVideException;
 
 #[ORM\Entity(repositoryClass: StockRepository::class)]
 class Stock
@@ -14,7 +15,7 @@ class Stock
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: false)]
     private ?float $qtt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -22,6 +23,15 @@ class Stock
 
     #[ORM\ManyToOne(inversedBy: 'stocks')]
     private ?ProduitCategorie $produitCategorie = null;
+
+    public static function newStock($instance = null)
+    {
+        if (is_null($instance->getQtt()) or empty($instance->getQtt())) {
+            throw new PropertyVideException("Your permission name doesn't empty");
+        }
+
+        return $instance;
+    }
 
     public function getId(): ?int
     {

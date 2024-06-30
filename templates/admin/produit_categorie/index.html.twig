@@ -10,7 +10,7 @@
 </style>
 
 <div class="pagetitle">
-    <h1>Liste produit catégorie </h1>
+    <h1>Liste produit </h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
@@ -26,7 +26,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col-xl-8 col-lg-7 col-md-12 col-sm-12">
-                {#<h5 class="card-title fw-bold">Liste produit catégorie </h5>#}
+                {#<h5 class="card-title fw-bold">Liste produit </h5>#}
               </div>
              
               <div class="col-xl-4 col-lg-5 col-md-12 col-sm-12 mt-4 mb-5">
@@ -47,10 +47,10 @@
                 
                 {% else %}
                     <tr>
-                        <td colspan="2">Aucun enregistrement trouvé</td>
+                        <td colspan="3">Aucun enregistrement trouvé</td>
                        <td></td>
-                       {# <td></td>
                        <td></td>
+                       {#<td></td>
                        <td></td>
                        <td></td>
                        <td></td>
@@ -102,6 +102,9 @@
       $('#tab-profile').removeClass('active');
       $('#tab-produit-categorie').addClass('active');
       $('#tab-compte_1').removeClass('active');
+      $('#tab-produit-type').removeClass('active');
+      $('.tab-produit-type').removeClass('active');
+
       $('#liste-table-produi-categorie').DataTable().ajax.reload();
         $('#liste-table-produi-categorie').DataTable({
             responsive: true,

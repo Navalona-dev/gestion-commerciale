@@ -19,25 +19,16 @@ class StockRepository extends ServiceEntityRepository
     //    /**
     //     * @return Stock[] Returns an array of Stock objects
     //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findByProductCategory($produitCategorie): array
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.produitCategorie', 'pc')
+            ->andWhere('pc.id = :produit_categorie_id')
+            ->setParameter('produit_categorie_id', $produitCategorie->getId())
+            ->orderBy('s.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 
-    //    public function findOneBySomeField($value): ?Stock
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

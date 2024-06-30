@@ -24,14 +24,12 @@ class ProductImage
     #[Vich\UploadableField(mapping:"product_image", fileNameProperty:"image")]
     public ?File $imageFile = null;
 
-    /**
-     * @var Collection<int, ProduitCategorie>
-     */
-    #[ORM\ManyToMany(targetEntity: ProduitCategorie::class, inversedBy: 'productImages')]
-    private Collection $produitCategories;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateCreation = null;
+
+    #[ORM\ManyToOne(inversedBy: 'productImages')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ProduitCategorie $produitCategorie = null;
 
     public function __construct()
     {
@@ -66,30 +64,6 @@ class ProductImage
         return $this->imageFile;
     }
 
-    /**
-     * @return Collection<int, ProduitCategorie>
-     */
-    public function getProduitCategories(): Collection
-    {
-        return $this->produitCategories;
-    }
-
-    public function addProduitCategory(ProduitCategorie $produitCategory): static
-    {
-        if (!$this->produitCategories->contains($produitCategory)) {
-            $this->produitCategories->add($produitCategory);
-        }
-
-        return $this;
-    }
-
-    public function removeProduitCategory(ProduitCategorie $produitCategory): static
-    {
-        $this->produitCategories->removeElement($produitCategory);
-
-        return $this;
-    }
-
     public function getDateCreation(): ?\DateTimeInterface
     {
         return $this->dateCreation;
@@ -98,6 +72,18 @@ class ProductImage
     public function setDateCreation(?\DateTimeInterface $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
+
+        return $this;
+    }
+
+    public function getProduitCategorie(): ?ProduitCategorie
+    {
+        return $this->produitCategorie;
+    }
+
+    public function setProduitCategorie(?ProduitCategorie $produitCategorie): static
+    {
+        $this->produitCategorie = $produitCategorie;
 
         return $this;
     }
