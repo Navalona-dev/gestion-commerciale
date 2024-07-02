@@ -34,7 +34,7 @@ class TypeProduitType extends AbstractType
                 ],
                 'required' => false
             ])
-            ->add('application', EntityType::class, [
+            ->remove('application', EntityType::class, [
                 'class' => Application::class,
                 'choice_label' => 'entreprise',
             ])

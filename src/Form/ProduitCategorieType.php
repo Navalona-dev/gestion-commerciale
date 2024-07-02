@@ -7,6 +7,7 @@ use App\Entity\Application;
 use App\Entity\ProductImage;
 use App\Form\ProduitImageType;
 use App\Entity\ProduitCategorie;
+use App\Entity\ProduitType;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -139,6 +140,14 @@ class ProduitCategorieType extends AbstractType
             ])*/
             ->add('categorie', EntityType::class, [
                 'class' => Categorie::class,
+                'choice_label' => 'nom',
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3 chosen-select'
+                ],
+                'required' => false
+            ])
+            ->add('type', EntityType::class, [
+                'class' => ProduitType::class,
                 'choice_label' => 'nom',
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3 chosen-select'

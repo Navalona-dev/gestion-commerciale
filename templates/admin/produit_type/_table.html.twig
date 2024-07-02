@@ -3,7 +3,6 @@
         <tr id="thead_produit_type" class="text-nowrap">
             <th>Action</th>
             <th>Nom</th>
-            <th>Application</th>
             <th>Activé?</th>
             <th>Date de création</th>
             <th>Description</th>
@@ -15,7 +14,6 @@
                 <a href="#" onclick="return deleteProduitType({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
             </td>
             <td> {{liste.nom}} </td>
-            <td> {{liste.application.entreprise}} </td>
             <td>
                 <a href="#" class="activate-toggle" data-id="{{ liste.id }}" onclick="return setActive({{liste.id}})">
                     {% if liste.isActive == 1 %}
