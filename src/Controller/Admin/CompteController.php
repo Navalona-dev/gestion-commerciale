@@ -91,7 +91,7 @@ class CompteController extends AbstractController
                 if ($request->isXmlHttpRequest()) {
                     // encode the plain password
                 
-                    $this->compteService->add($compte, $genre);
+                    $this->compteService->add($compte,(integer) $genre);
                     $this->compteService->update();
                    
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
@@ -120,6 +120,7 @@ class CompteController extends AbstractController
             if($genre == 1) {
                 $data["html"] = $this->renderView('admin/comptes/new_client.html.twig', [
                     'form' => $form->createView(),
+                    'genre' => $genre
                 ]);
             } elseif($genre == 2) {
                 $data["html"] = $this->renderView('admin/comptes/new_fournisseur.html.twig', [
