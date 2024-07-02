@@ -149,7 +149,7 @@ function showTabCompte(genre = 1) {
     $.ajax({
         type: 'post',
         url: '/admin/comptes/',
-        //data: {},
+        data: {genre: genre},
         success: function(response) {
             $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');

@@ -45,16 +45,16 @@ class CompteController extends AbstractController
     }
 
     #[Route('/', name: '_liste')]
-    public function index()
+    public function index(Request $request)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
         }*/
       
         $data = [];
+        $genre = $request->request->get('genre');
         try {
-            
-            $comptes = $this->compteService->getAllCompte();
+            $comptes = $this->compteService->getAllCompte((int)$genre);
 
             if ($comptes == false) {
                 $comptes = [];
@@ -125,6 +125,7 @@ class CompteController extends AbstractController
             } elseif($genre == 2) {
                 $data["html"] = $this->renderView('admin/comptes/new_fournisseur.html.twig', [
                     'form' => $form->createView(),
+                    'genre' => $genre
                 ]);
             }
            
