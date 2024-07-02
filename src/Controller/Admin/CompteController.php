@@ -170,33 +170,22 @@ class CompteController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/{utilisateur}', name: '_edit')]
-    public function edit(Request $request, User $utilisateur)
+    #[Route('/{compte}', name: '_edit')]
+    public function edit(Request $request, Compte $compte)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
         }*/
         $data = [];
         try {
-            $form = $this->createForm(UserType::class, $utilisateur, ['isEdit' => true]);
+            $form = $this->createForm(CompteType::class, $compte, []);
 
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
-                    if (count($utilisateur->getApplications()) > 0) {
-                        if (null == $utilisateur->getAppActive()) {
-                            $utilisateur->setAppActive($utilisateur->getApplications()[0]);
-                        }
-                        
-                        foreach ($utilisateur->getApplications() as $key => $application) {
-                            $application->addUser($utilisateur);
-                            $this->compteService->persist($application);
-                        }
-                    }
-                   //dd($utilisateur->getAppActive(), count($utilisateur->getApplications()));
-                   
-                   $this->compteService->persist($utilisateur);
+                 
+                   $this->compteService->persist($compte);
                     $this->compteService->update();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
@@ -205,10 +194,24 @@ class CompteController extends AbstractController
             }
 
             $data['exception'] = "";
-            $data["html"] = $this->renderView('admin/utilisateurs/modal_update.html.twig', [
-                'form' => $form->createView(),
-                'id' => $utilisateur->getId(),
-            ]);
+            switch ($compte->getGenre()) {
+                case 1:
+                    $data["html"] = $this->renderView('admin/comptes/modal_update.html.twig', [
+                        'form' => $form->createView(),
+                        'id' => $compte->getId(),
+                    ]);
+                    break;
+                case 2:
+                    $data["html"] = $this->renderView('admin/comptes/modal_update_fournisseur.html.twig', [
+                        'form' => $form->createView(),
+                        'id' => $compte->getId(),
+                    ]);
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+            
             return new JsonResponse($data);
         } catch (PropertyVideException $PropertyVideException) {
             $data['exception'] = $PropertyVideException->getMessage();
@@ -249,8 +252,8 @@ class CompteController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/delete/{utilisateur}', name: '_delete')]
-    public function delete(Request $request, User $utilisateur)
+    #[Route('/delete/{compte}', name: '_delete')]
+    public function delete(Request $request, Compte $compte)
     {
        /* if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -258,7 +261,7 @@ class CompteController extends AbstractController
         try {
            
             if ($request->isXmlHttpRequest()) {
-                $this->compteService->remove($utilisateur);
+                $this->compteService->remove($compte);
                 $this->compteService->update();
                 return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
             }

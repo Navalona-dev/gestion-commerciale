@@ -75,6 +75,11 @@ class CompteService
         $this->entityManager->flush();
     }
 
+    public function persist($compte)
+    {
+        $this->entityManager->persist($compte);
+    }
+
     public function remove($compte)
     {
         $this->entityManager->remove($compte);
