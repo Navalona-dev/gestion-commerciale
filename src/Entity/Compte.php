@@ -2,19 +2,20 @@
 
 namespace App\Entity;
 
-use App\Entity\Gomyclic\Cfa\BulletinCFA;
-use App\Entity\Gomyclic\Cfa\ComptePeriode;
-use App\Entity\Gomyclic\Cfa\EleveResponsableNote;
-use App\Entity\Gomyclic\Cfa\EvaluationCFA;
-use App\Entity\Gomyclic\Rabelais\CompteMatiere;
-use App\Entity\Gomyclic\Rabelais\Diplome;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Gomyclic\Utilisateur;
-use App\Entity\Gomyclic\RappelCompte;
 use App\Repository\CompteRepository;
+use App\Entity\Gomyclic\RappelCompte;
+use App\Entity\Gomyclic\Cfa\BulletinCFA;
+use App\Exception\PropertyVideException;
+use App\Entity\Gomyclic\Rabelais\Diplome;
+use App\Entity\Gomyclic\Cfa\ComptePeriode;
+use App\Entity\Gomyclic\Cfa\EvaluationCFA;
 use Doctrine\Common\Collections\Collection;
+use App\Entity\Gomyclic\Rabelais\CompteMatiere;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Entity\Gomyclic\Cfa\EleveResponsableNote;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -102,7 +103,7 @@ class Compte
     #[ORM\Column(name: "commentaire", type: "text", nullable: true)]
     private $commentaire;
 
-    #[ORM\Column(name: "float", type: "float", nullable: true)]
+    #[ORM\Column(name: "ca", type: "float", nullable: true)]
     private $ca;
 
     #[ORM\ManyToMany(targetEntity: Application::class, inversedBy: 'applicationComptes')]
@@ -122,6 +123,15 @@ class Compte
         $this->affaires = new ArrayCollection();
         $this->compteApplications = new ArrayCollection();
         
+    }
+
+    public static function newCompte($instance = null)
+    {
+        if (is_null($instance->getNom()) or empty($instance->getNom())) {
+            throw new PropertyVideException("Your name doesn't empty");
+        }
+
+        return $instance;
     }
 
     public function getId(): ?int

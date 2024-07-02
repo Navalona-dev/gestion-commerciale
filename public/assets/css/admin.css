@@ -1356,3 +1356,18 @@
   text-transform: uppercase !important;
   font-size: 14px !important;
 }
+
+.filter-icon {
+  background-color: #2a4ce8;
+  padding: 5px 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  font-size: 20px;
+  color: #fff;
+  border-radius: 5px;
+}
+
+.vich-image img {
+  width: 100px;
+  height: 100px;
+}
