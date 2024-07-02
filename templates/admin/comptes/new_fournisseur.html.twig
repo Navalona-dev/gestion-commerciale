@@ -9,14 +9,8 @@
             <div class="modal-body">
                 
                 {{ form_start(form, {'attr': {'id': 'newFournisseur', 'action': path('comptes_create') }}) }}
+                
                     <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                            <div class="form-group">
-                                <label for="" class="mb-2">Application</label>
-                                <span></span>
-                                {{form_widget(form.application)}}
-                            </div>
-                        </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Nom <sup class="text-danger">*</sup></label>
@@ -25,15 +19,8 @@
                             </div> 
                         </div>
                     </div>
-
-                    <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Chiffre d'affaire</label>
-                                <span></span>
-                                {{ form_widget(form.ca) }}
-                            </div> 
-                        </div>
+                    <input type="hidden" value="{{genre}}" name="genre">
+                    {# <div class="row">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Etat</label>
@@ -41,9 +28,9 @@
                                 {{ form_widget(form.etat) }}
                             </div>
                         </div>
-                    </div> 
+                    </div>  #}
                     <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Statut</label>
                                 <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.statut)}} </span>
@@ -58,15 +45,9 @@
                             </div>
                         </div>
                     </div>
-                    
+{#                     
                     <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Téléphone</label>
-                                <span></span>
-                                {{ form_widget(form.telephone) }}
-                            </div>
-                        </div>
+                      
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Nombre d'affaires</label>
@@ -74,9 +55,16 @@
                                 {{ form_widget(form.nbAffaire) }}
                             </div>
                         </div>
-                    </div>
+                    </div> #}
                     
                     <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Téléphone</label>
+                            <span></span>
+                            {{ form_widget(form.telephone) }}
+                        </div>
+                    </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Adresse</label>
@@ -84,15 +72,15 @@
                                 {{ form_widget(form.adresse) }}
                             </div>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                        {# <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Numéro</label>
                                 <span></span>
                                 {{ form_widget(form.numero) }}
                             </div>
-                        </div>
+                        </div> #}
                     </div>
-                    <div class="form-group">
+                    {# <div class="form-group">
                         <label for="" class="mb-2">Compte application</label>
                         <span></span>
                         {{form_widget(form.compteApplications)}}
@@ -111,9 +99,10 @@
 
                     <div class="form-group mb-3">
                         {{form_widget(form.isLivraison)}}
-                    </div>
+                    </div> #}
+                    
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-sm px-3 mt-3" style="width: 100%;">Ajouter fournisseur</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-3 mt-3" style="width: 100%;">Ajouter client</button>
                     </div>
                 {{ form_end(form) }}
             </div>
@@ -142,7 +131,7 @@
                 contentType: false,
                 success: function (response) {
                     $('#modalNewFournisseur').modal('hide');
-                    var nextLink = $('#sidebar').find('li#clients').find('a');
+                    var nextLink = $('#sidebar').find('li#fournisseur').find('a');
                     setTimeout(function () {
                         toastr.options = {
                             closeButton: true,
