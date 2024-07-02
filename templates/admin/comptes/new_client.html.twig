@@ -9,7 +9,33 @@
                 
                 {{ form_start(form, {'attr': {'id': 'newClient', 'action': path('comptes_create') }}) }}
                 
-                    <div class="row">
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Nom <sup class="text-danger">*</sup></label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.nom)}} </span>
+                        {{ form_widget(form.nom) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Email</label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.email)}} </span>
+                        {{ form_widget(form.email) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Statut</label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.statut)}} </span>
+                        {{ form_widget(form.statut) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Téléphone</label>
+                        <span></span>
+                        {{ form_widget(form.telephone) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Adresse</label>
+                        <span></span>
+                        {{ form_widget(form.adresse) }}
+                    </div>
+
+                    {#<div class="row">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Nom <sup class="text-danger">*</sup></label>
@@ -19,7 +45,7 @@
                         </div>
                     </div>
                     <input type="hidden" value="{{genre}}" name="genre">
-                    {# <div class="row">
+                     <div class="row">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Etat</label>
@@ -27,7 +53,7 @@
                                 {{ form_widget(form.etat) }}
                             </div>
                         </div>
-                    </div>  #}
+                    </div>  
                     <div class="row">
                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
@@ -44,7 +70,7 @@
                             </div>
                         </div>
                     </div>
-{#                     
+                     
                     <div class="row">
                       
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
@@ -54,7 +80,7 @@
                                 {{ form_widget(form.nbAffaire) }}
                             </div>
                         </div>
-                    </div> #}
+                    </div> 
                     
                     <div class="row">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
@@ -71,15 +97,15 @@
                                 {{ form_widget(form.adresse) }}
                             </div>
                         </div>
-                        {# <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Numéro</label>
                                 <span></span>
                                 {{ form_widget(form.numero) }}
                             </div>
-                        </div> #}
+                        </div> 
                     </div>
-                    {# <div class="form-group">
+                     <div class="form-group">
                         <label for="" class="mb-2">Compte application</label>
                         <span></span>
                         {{form_widget(form.compteApplications)}}
