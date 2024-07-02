@@ -18,14 +18,15 @@ class UserService
     private $tokenStorage;
     private $authorization;
     private $entityManager;
-    private $session;
+    private $application;
     public  $isCurrentDossier = false;
 
-    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager)
+    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager, ApplicationManager  $applicationManager)
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
         $this->entityManager = $entityManager;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
     public function add($user, $userPasswordHasher)

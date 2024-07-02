@@ -21,12 +21,13 @@ class CompteService
     private $entityManager;
     private $session;
     public  $isCurrentDossier = false;
-
-    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager)
+    private $application;
+    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager, ApplicationManager  $applicationManager)
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
         $this->entityManager = $entityManager;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
     public function add($instance, $genre)
@@ -36,17 +37,17 @@ class CompteService
         $date = new \DateTime();
 
         $compte->setEtat($instance->getEtat());
-        $compte->setApplication($instance->getApplication());
+        $compte->setApplication($this->application);
         $compte->setDateCreation($date);
         $compte->setStatut($instance->getStatut());
         $compte->setEmail($instance->getEmail());
         $compte->setTelephone($instance->getTelephone());
-        $compte->setNbAffaire($instance->getNbAffaire());
+        $compte->setNbAffaire(0);
         $compte->setAdresse($instance->getAdresse());
-        $compte->setIsLivraison($instance->getIsLivraison());
-        $compte->setNumero($instance->getNumero());
-        $compte->setCommentaire($instance->getCommentaire());
-        $compte->setCa($instance->getCa());
+        $compte->setIsLivraison(false);
+        $compte->setNumero(null);
+        //$compte->setCommentaire($instance->getCommentaire());
+        //$compte->setCa($instance->getCa());
 
         if($genre == 1) {
             $compte->setGenre(1);
@@ -54,14 +55,14 @@ class CompteService
             $compte->setGenre(2);
         }
 
-        foreach($compte->getUtilisateur() as $utilisateur) {
+        /*foreach($compte->getUtilisateur() as $utilisateur) {
             $utilisateur->addCompte($compte);
             $this->entityManager->persist($utilisateur);
         }
 
         foreach($compte->getCompteApplications() as $compteApplication) {
             $this->entityManager->persist($compteApplication);
-        }
+        }*/
 
         $this->entityManager->persist($compte);
         $this->update();

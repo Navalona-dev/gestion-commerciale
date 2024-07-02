@@ -28,7 +28,7 @@ class CompteType extends AbstractType
                     'autocomplete' => 'off'
                 ]
             ])
-            ->add('etat', TextType::class, [
+            ->remove('etat', TextType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3',
                     'autocomplete' => 'off'
@@ -37,18 +37,12 @@ class CompteType extends AbstractType
             ])
             ->add('statut', ChoiceType::class, [
                 'choices' => array_flip(Compte::STATUT),
+                'label' => 'Statut',
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3 chosen-select'
-                ],
-                'choice_label' => function($choice, $key, $value) {
-                    return $value;
-                },
-                'choice_value' => function($choice) {
-                    return array_search($choice, Compte::STATUT);
-                },
-                'placeholder' => 'Sélectionnez un statut',
-                'required' => false
+                ]
             ])
+            
             ->add('email', EmailType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3',
@@ -65,7 +59,7 @@ class CompteType extends AbstractType
                 'required' => false,
             ])
         
-            ->add('nbAffaire', IntegerType::class, [
+            ->remove('nbAffaire', IntegerType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3'
                 ],
@@ -78,24 +72,24 @@ class CompteType extends AbstractType
                 ],
                 'required' => false
             ])
-            ->add('isLivraison', CheckboxType::class, [
+            ->remove('isLivraison', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Livrason?'
             ])
-            ->add('numero', TextType::class, [
+            ->remove('numero', TextType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md',
                     'autocomplete' => 'off',
                 ],
                 'required' => false
             ])
-            ->add('commentaire', TextareaType::class, [
+            ->remove('commentaire', TextareaType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3 ckeditor'
                 ],
                 'required' => false
             ])
-            ->add('ca', NumberType::class, [
+            ->remove('ca', NumberType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3',
                     'step' => '0.01',
@@ -103,7 +97,7 @@ class CompteType extends AbstractType
                 ],
                 'required' => false
             ])
-            ->add('utilisateur', EntityType::class, [
+            ->remove('utilisateur', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => function (User $user) {
                     return $user->getNom() . ' ' . $user->getPrenom();
@@ -113,14 +107,14 @@ class CompteType extends AbstractType
                     'class' => 'form-control form-control-md mb-3'
                 ],
             ])
-            ->add('application', EntityType::class, [
+            ->remove('application', EntityType::class, [
                 'class' => Application::class,
                 'choice_label' => 'entreprise',
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3'
                 ]
             ])
-            ->add('compteApplications', EntityType::class, [
+            ->remove('compteApplications', EntityType::class, [
                 'class' => Application::class,
                 'choice_label' => 'entreprise',
                 'multiple' => true,
