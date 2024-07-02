@@ -1253,7 +1253,7 @@
     margin-bottom: 20px;
   }
 
-  .dataTables_info, .dataTables_paginate paging_simple_numbers {
+  .dataTables_info, .dataTables_paginate.paging_simple_numbers {
     margin-top: 20px;
   }
 

@@ -22,7 +22,7 @@
     <div class="row">
       <div class="col-lg-12">
         {% include 'admin/tab/_nav_tab_produit.html.twig' %}
-        <div class="card">
+        <div class="card p-5">
           <div class="card-body">
             <div class="row">
               <div class="col-xl-8 col-lg-7 col-md-12 col-sm-12">
@@ -106,7 +106,8 @@
       $('.tab-produit-type').removeClass('active');
       $('#tab-stock').removeClass('active');
 
-      $('#liste-table-produi-categorie').DataTable().ajax.reload();
+     // $('#liste-table-produi-categorie').DataTable().ajax.reload();
+
         $('#liste-table-produi-categorie').DataTable({
             responsive: true,
             language: {
