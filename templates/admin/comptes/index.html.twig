@@ -23,60 +23,62 @@
       <div class="col-lg-12">
         <div class="card p-5" style="border-radius: 20px;">
           <div class="row">
-            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="user-icon">
-                        <i class="bi bi-person"></i>
-                    </span>
+            <div class="col-xl-10 col-lg-10 col-md-12 col-sm-12">
+              <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="user-icon">
+                            <i class="bi bi-person"></i>
+                        </span>
+                    </div>
+                    <select class="form-control form-control-sm chosen-select" id="user-select">
+                        <option value="" selected disabled class="option-compte">Nom du client</option>
+                        {% for liste in listes %}
+                          <option value="{{liste.id}}"> {{liste.nom}} </option>
+                        {% endfor %}
+                    </select>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="search-icon">
+                            <i class="bi bi-search"></i>
+                        </span>
+                    </div>
+                  </div>
                 </div>
-                <select class="form-control form-control-sm chosen-select" id="user-select">
-                    <option value="" selected disabled class="option-compte">Nom du client</option>
-                    {% for liste in listes %}
-                      <option value="{{liste.id}}"> {{liste.nom}} </option>
-                    {% endfor %}
-                </select>
-                <div class="input-group-append">
-                    <span class="input-group-text" id="search-icon">
-                        <i class="bi bi-search"></i>
-                    </span>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="user-icon">
+                            <i class="bi bi-calendar"></i>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control form-control-sm date-start" id="user-date-start" placeholder="Date de début" />
+                  </div>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="user-icon">
+                            <i class="bi bi-calendar"></i>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control form-control-sm date-end" id="user-date-end" placeholder="Date fin" />
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="user-icon">
-                        <i class="bi bi-calendar"></i>
-                    </span>
-                </div>
-                <input type="text" class="form-control form-control-sm date-start" id="user-date-start" placeholder="Date de début" />
-              </div>
-            </div>
-            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="user-icon">
-                        <i class="bi bi-calendar"></i>
-                    </span>
-                </div>
-                <input type="text" class="form-control form-control-sm date-end" id="user-date-end" placeholder="Date fin" />
+            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12">
+              <div class="form-group d-flex justify-content-center">
+                <a href="#" class="filter-icon"><i class="bi bi-check"></i></a>
+                <a href="#" class="filter-icon"><i class="bi bi-file-earmark-excel"></i></a>
+                <a href="#" class="filter-icon"><i class="bi bi-arrow-clockwise"></i></a>
+                
               </div>
             </div>
           </div>
         </div>
         <div class="card">
           <div class="card-body">
-            <div class="row">
-              <div class="col-xl-8 col-lg-7 col-md-12 col-sm-12">
-                {#<h5 class="card-title fw-bold">Liste compte </h5>#}
-              </div>
-             
-              <div class="col-xl-4 col-lg-5 col-md-12 col-sm-12 mt-4 mb-5">
-                <button class="btn btn-primary btn-sm" style="width: 100%;"   onclick="return newCompte(true)">Nouveau compte </button>
-              </div>
-              
-            </div>
             <table class="table table-striped" id="liste-table-compte" style="width: 100%;">
               <thead>
                     {% include 'admin/comptes/_table.html.twig' with { 'type': 'thead' } %}
@@ -104,8 +106,7 @@
 
       </div>
     </div>
-    <div id="blocModalCompteEmpty">
-            </div>
+
   </section>
 
   <script>
@@ -143,23 +144,6 @@
         scrollCollapse: false,
       });
     });
-
-    function newCompte(isNew = false) {
-            $.ajax({
-                url: '/admin/comptes/new',
-                type: 'POST',
-                data: {isNew: isNew},
-                success: function (response) {
-                    $("#blocModalCompteEmpty").empty();
-                    $("#blocModalCompteEmpty").append(response.html);
-                    $('#modalNewCompte').modal('show');
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'ajout de la compte.');
-                }
-            });
-    }
 
      //date-picker
 

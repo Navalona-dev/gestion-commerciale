@@ -21,17 +21,52 @@ class CompteService
     private $entityManager;
     private $session;
     public  $isCurrentDossier = false;
-
-    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager)
+    private $application;
+    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager, ApplicationManager  $applicationManager)
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
         $this->entityManager = $entityManager;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
-    public function add($compte)
+    public function add($instance, $genre)
     {
+        $compte = Compte::newCompte($instance);
+
+        $date = new \DateTime();
+
+        $compte->setEtat($instance->getEtat());
+        $compte->setApplication($this->application);
+        $compte->setDateCreation($date);
+        $compte->setStatut($instance->getStatut());
+        $compte->setEmail($instance->getEmail());
+        $compte->setTelephone($instance->getTelephone());
+        $compte->setNbAffaire(0);
+        $compte->setAdresse($instance->getAdresse());
+        $compte->setIsLivraison(false);
+        $compte->setNumero(null);
+        //$compte->setCommentaire($instance->getCommentaire());
+        //$compte->setCa($instance->getCa());
+
+        if($genre == 1) {
+            $compte->setGenre(1);
+        } elseif($genre == 2) {
+            $compte->setGenre(2);
+        }
+
+        /*foreach($compte->getUtilisateur() as $utilisateur) {
+            $utilisateur->addCompte($compte);
+            $this->entityManager->persist($utilisateur);
+        }
+
+        foreach($compte->getCompteApplications() as $compteApplication) {
+            $this->entityManager->persist($compteApplication);
+        }*/
+
         $this->entityManager->persist($compte);
+        $this->update();
+        unset($instance);
         return $compte;
     }
 

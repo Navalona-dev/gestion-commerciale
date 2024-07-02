@@ -3,16 +3,18 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
+use App\Entity\Compte;
 use App\Form\UserType;
+use App\Form\CompteType;
 use App\Form\ProfilType;
 use App\Service\AccesService;
-use App\Service\ApplicationManager;
 use App\Service\CompteService;
 use App\Form\AccesExtranetType;
+use App\Service\ApplicationManager;
 use App\Exception\PropertyVideException;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMInvalidArgumentException;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,16 +45,16 @@ class CompteController extends AbstractController
     }
 
     #[Route('/', name: '_liste')]
-    public function index()
+    public function index(Request $request)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
         }*/
       
         $data = [];
+        $genre = $request->request->get('genre');
         try {
-            
-            $comptes = $this->compteService->getAllCompte();
+            $comptes = $this->compteService->getAllCompte((int)$genre);
 
             if ($comptes == false) {
                 $comptes = [];
@@ -78,20 +80,35 @@ class CompteController extends AbstractController
         }*/
         $data = [];
         try {
-            $user = new User();
-            $form = $this->createForm(UserType::class, $user);
+            $compte = new Compte();
+            $form = $this->createForm(CompteType::class, $compte);
 
             $form->handleRequest($request);
 
+            $genre = $request->request->get('genre');
+
             if ($form->isSubmitted() && $form->isValid()) {
-                
                 if ($request->isXmlHttpRequest()) {
                     // encode the plain password
                 
-                    $this->compteService->add($user, $userPasswordHasher);
+                    $this->compteService->add($compte,(integer) $genre);
                     $this->compteService->update();
                    
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                }
+
+                if($genre == 1) {
+                    $this->addFlash('success', 'Création client "' . $compte->getNom() . '" avec succès.');
+                    return $this->redirectToRoute('comptes_liste', [
+                        'genre' => 1
+                    ]);
+
+                } elseif($genre == 2) {
+                $this->addFlash('success', 'Création fournisseur "' . $compte->getNom() . '" avec succès.');
+                    return $this->redirectToRoute('comptes_liste', [
+                        'genre' => 2
+                    ]);
+
                 }
         
                 //$this->addFlash('success', 'Création privilege "' . $user->getTitle() . '" avec succès.');
@@ -99,9 +116,19 @@ class CompteController extends AbstractController
             }
 
             $data['exception'] = "";
-            $data["html"] = $this->renderView('admin/utilisateurs/new.html.twig', [
-                'form' => $form->createView(),
-            ]);
+
+            if($genre == 1) {
+                $data["html"] = $this->renderView('admin/comptes/new_client.html.twig', [
+                    'form' => $form->createView(),
+                    'genre' => $genre
+                ]);
+            } elseif($genre == 2) {
+                $data["html"] = $this->renderView('admin/comptes/new_fournisseur.html.twig', [
+                    'form' => $form->createView(),
+                    'genre' => $genre
+                ]);
+            }
+           
            
             return new JsonResponse($data);
         } catch (PropertyVideException $PropertyVideException) {

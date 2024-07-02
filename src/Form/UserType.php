@@ -44,10 +44,13 @@ class UserType extends AbstractType
 
         $builder
            
-            ->add('email', EmailType::class, ['label' => 'Email', 'attr' => [
+            ->add('email', EmailType::class, [
+                'label' => 'Email', 
+                'attr' => [
                 'required' => true,
                 'class' => 'form-control',
-                'placeholder' => ''
+                'placeholder' => '',
+                'autocomplete' => 'off'
             ]])
             
             ->add('civilite', ChoiceType::class, [
@@ -65,12 +68,14 @@ class UserType extends AbstractType
             ->add('nom', TextType::class, ['label' => 'Nom', 'attr' => [
                 'required' => true,
                 'class' => 'form-control',
-                'placeholder' => ''
+                'placeholder' => '',
+                'autocomplete' => 'off'
         ]])
             ->add('prenom', TextType::class, ['label' => 'Prenom', 'attr' => [
                 'required' => true,
                 'class' => 'form-control',
-                'placeholder' => ''
+                'placeholder' => '',
+                'autocomplete' => 'off'
         ]])
             /*->add('username', TextType::class, ['label' => 'Username', 'attr' => [
                 'required' => true,
@@ -80,7 +85,8 @@ class UserType extends AbstractType
             ->add('telephone', TextType::class, ['label' => 'Email', 'attr' => [
                 'required' => false,
                 'class' => 'form-control',
-                'placeholder' => ''
+                'placeholder' => '',
+                'autocomplete' => 'off'
         ]]);
         /*if ($options['isUsernameAlreadyExist']) {
             $builder->add('isUsernameAlreadyExist', HiddenType::class, [
