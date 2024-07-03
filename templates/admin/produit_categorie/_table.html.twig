@@ -3,9 +3,10 @@
         <tr id="thead_produit_categorie" class="text-nowrap">
             <th>Action</th>
             <th>Nom</th>
+            <th>Référence</th>
             <th>Stock restant</th>
-            
-            {# <th>Référence</th>
+
+            {# 
             <th>PrixHt</th>
             <th>Tva</th>
             <th>Quantité</th>
@@ -23,20 +24,27 @@
         {% elseif type == "tbody" %}
         <tr id="tbody_produit_categorie" class="text-nowrap">
             <td>
-                <div class="dropdown text-decoration-none" id="dropdown-product"><a href="#"><span><i class="bi bi-list fs-5 text-black"></i></span></a>
-                    <ul style="list-style: none;">
+                <div class="dropdown">
+                    <a class="btn btn-outline-primary dropdown-toggle text-black btn-list" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="bi bi-list"></i>
+                    </a>
+                  
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <li><a href="#" onclick="return openModalUpdateProduitCategorie({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-pencil-fill"></i>Modifier</a></li>
                         <li><a href="#" onclick="return deleteProduitCategorie({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-trash text-danger"></i>Supprimer</a></li>
                         <li><a href="#tab-stock" onclick="return listStock({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-box-seam"></i>Liste stock</a></li>
                         <li><a href="#tab-produit-image" onclick="return listImage({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-image"></i>Liste image</a></li>
-                        <li><a href="#" onclick="return transfertProduit({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-arrow-left-right"></i>Liste image</a></li>
+                        <li><a href="#" onclick="return transfertProduit({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-arrow-left-right"></i>Transferer</a></li>
+                   
                     </ul>
-                </div>
+                  </div>
+               
             </td>
             <td> {{liste.nom}} </td>
+            <td> {{liste.reference}} </td>
             <td> {{liste.stockRestant}} </td>
-            
-            {# <td> {{liste.reference}} </td>
+
+            {# 
             <td> {{liste.prixHt}} </td>
             <td> {{liste.tva}} </td>
             <td> {{liste.qtt}} </td>
@@ -168,6 +176,29 @@
 
          });
  }
+
+
+ function transfertProduit(id = null) {
+        $.ajax({
+                url: '/admin/produit/categorie/transfert/'+id,
+                type: 'POST',
+                data: {id: id},
+                success: function (response) {
+                    if (response.html != "") {
+                        $("#blocModalProduitCategorieEmpty").empty();
+                        $("#blocModalProduitCategorieEmpty").append(response.html);
+
+                        $('#modalTransfertProduitCategorie').modal('show');
+
+                    }
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la mise à jour de la catégorie.');
+                }
+            });
+    }
 
    
 </script>
