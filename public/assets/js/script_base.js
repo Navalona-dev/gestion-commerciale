@@ -9,7 +9,7 @@ function newCompte(isNew = false, genre = 1) {
             genre: genre 
         },
         success: function (response) {
-            console.log(genre);
+    
             $("#blocModalCompteEmpty_" + genre).empty();
             $("#blocModalCompteEmpty_" + genre).append(response.html);
             if(genre == 1) {

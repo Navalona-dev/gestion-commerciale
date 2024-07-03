@@ -142,10 +142,9 @@ class CompteController extends AbstractController
                 $nbCompte = $session->get('nbCompte_'.$genre);
             }
 
-            $comptesAssoc = $this->compteService->searchCompteRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, false);
-           // $comptes = $this->compteService->getAllCompte((int)$genre, 0, 25, $nomCompte);
-          
-           $data = $tabAllIdCompte = [];
+           $comptesAssoc = $this->compteService->searchCompteRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, false);
+        
+           $data = [];
 
             if ($comptesAssoc) {
                 $k = 0;
@@ -199,7 +198,6 @@ class CompteController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
                     // encode the plain password
-                
                     $this->compteService->add($compte,(integer) $genre);
                     $this->compteService->update();
                    
@@ -413,7 +411,7 @@ class CompteController extends AbstractController
         }
     }
 
-    #[Route("/update-is-active/{id}", name:"app_is_active_user")]
+    /*#[Route("/update-is-active/{id}", name:"app_is_active_user")]
     public function updateIsActive(Request $request, EntityManagerInterface $em, User $user): JsonResponse
     {
         if (!$user) {
@@ -426,5 +424,5 @@ class CompteController extends AbstractController
 
         // Renvoyer une réponse JSON avec l'état mis à jour
         return new JsonResponse(['isActive' => $user->getIsActive()]);
-    }
+    }*/
 }
