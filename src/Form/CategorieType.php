@@ -17,7 +17,7 @@ class CategorieType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('stock', TextType::class, [
+            ->remove('stock', TextType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3',
                     'autocomplete' => 'off'

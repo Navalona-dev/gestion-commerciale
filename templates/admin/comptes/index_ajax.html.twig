@@ -1,0 +1,89 @@
+ <div class="card-body">
+          <table class="table table-striped" id="liste-table-compte-ajax" style="width: 100%;">
+            <thead>
+                  {% include 'admin/comptes/_table.html.twig' with { 'type': 'thead' } %}
+            </thead>
+            <tbody>
+              {% if listes|length > 0 %}
+
+                {% for liste in listes %}
+                    {% include 'admin/comptes/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
+                {% endfor %}
+              
+              {% else %}
+                  <tr>
+                      <td>Aucun enregistrement trouvé</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                  </tr>
+              {% endif %}
+              
+            </tbody>
+          </table>
+
+        </div>
+<script type="text/javascript">
+  $(document).ready(function(){
+    var nomCompte = $("#nom_compte").val();
+    var dateDu = $("#dateDu").val();
+    var dateAu = $("#dateAu").val();
+    var genre = {{genre}};
+    $('#liste-table-compte-ajax').DataTable({
+            pageLength: 25,
+            responsive: true,
+            processing: true,
+            serverSide: true,
+            bStateSave: false,
+            language: {
+                'url': 'https://cdn.datatables.net/plug-ins/1.10.20/i18n/French.json',
+            },
+            dom: '<"d-flex justify-content-between"f>t<"d-flex justify-content-between"i<"d-flex"lp>>',
+            //order: [[ 0, 'desc']],
+            ordering: true,
+            searching: { "regex": true },
+            columnDefs: [
+                {  // set default column settings
+                    'orderable': false
+
+                }
+            ],
+            lengthMenu: [ [5, 10, 25, 50, 100, 500, 2000], [5, 10, 25, 50, 100, 500, 2000] ],
+            ajax: {
+                type: 'POST',
+                url: "/admin/comptes/search-compte-datatable/from-ajax",
+                dataType: "json",
+                data: {genre: genre, nomCompte: nomCompte, limit: 25, dateDu: dateDu, dateAu: dateAu },
+                complete: function (result) {
+                   /* var jsonData = result.responseJSON;
+                    var listeIdCompte = jsonData["idComptes"];
+                    var ids = listeIdCompte.join(",");
+                    $("#linkSendMail").attr("onclick", "iframe_url('/mail/new?action=cc_id_compte&id_comptes="+ids+"&id_affaire=1'); return false;");*/
+                   // $(".loadBody").css('display', 'none');
+
+                  /*  $('.i-checks').iCheck({
+                        checkboxClass: 'icheckbox_square-green',
+                        radioClass: 'iradio_square-green'
+                    });
+
+                    $("input[name='selectTout']").on('ifChanged', function () {
+
+                        var _this = jQuery(this);
+
+                        if (_this.is(':checked')) {
+                            $("input[name^='compteList']").each(function (index) {
+                                $(this).iCheck('check');
+                            });
+                        } else {
+                            $("input[name^='compteList']").each(function (index) {
+                                $(this).iCheck('uncheck');
+                            });
+                        }
+                    });*/
+                    //return false;
+                }
+
+            },
+
+        });
+  });
+</script>

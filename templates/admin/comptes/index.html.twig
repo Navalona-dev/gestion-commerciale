@@ -32,12 +32,14 @@
                             <i class="bi bi-person"></i>
                         </span>
                     </div>
-                    <select class="form-control form-control-sm chosen-select" id="user-select">
+                      <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" />
+                       <input id="genre" type="hidden" name="genre" value="{{genre}}" />
+                    {# <select class="form-control form-control-sm chosen-select" id="user-select">
                         <option value="" selected disabled class="option-compte">Nom du client</option>
                         {% for liste in listes %}
                           <option value="{{liste.id}}"> {{liste.nom}} </option>
                         {% endfor %}
-                    </select>
+                    </select> #}
                     <div class="input-group-append">
                         <span class="input-group-text" id="search-icon">
                             <i class="bi bi-search"></i>
@@ -52,7 +54,7 @@
                             <i class="bi bi-calendar"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control form-control-sm date-start" id="user-date-start" placeholder="Date de début" />
+                    <input type="text" class="form-control form-control-sm date-start" id="dateDu" placeholder="Date de début" />
                   </div>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
@@ -62,14 +64,14 @@
                             <i class="bi bi-calendar"></i>
                         </span>
                     </div>
-                    <input type="text" class="form-control form-control-sm date-end" id="user-date-end" placeholder="Date fin" />
+                    <input type="text" class="form-control form-control-sm date-end" id="dateAu" placeholder="Date fin" />
                   </div>
                 </div>
               </div>
             </div>
             <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12">
               <div class="form-group d-flex justify-content-center">
-                <a href="#" class="filter-icon"><i class="bi bi-check"></i></a>
+                <a href="#" onclick="return searchCompte({{genre}})" class="filter-icon"><i class="bi bi-check"></i></a>
                 <a href="#" class="filter-icon"><i class="bi bi-file-earmark-excel"></i></a>
                 <a href="#" class="filter-icon"><i class="bi bi-arrow-clockwise"></i></a>
                 
@@ -77,7 +79,7 @@
             </div>
           </div>
         </div>
-        <div class="card p-5">
+        <div class="card p-5" id="compteList">
           <div class="card-body">
             <table class="table table-striped" id="liste-table-compte" style="width: 100%;">
               <thead>
@@ -106,11 +108,47 @@
 
       </div>
     </div>
-
+ <div id="blocModalCompteEmpty">
+            </div>
   </section>
 
   <script>
-    
+    function searchCompte(genre = 1) {
+      var nomCompte = $("#nom_compte").val();
+      var genre = $("#genre").val();
+      
+      $.ajax({
+                url: '/admin/comptes/search',
+                type: 'post',
+                data: {nomCompte: nomCompte, genre: genre},
+                success: function (response) {
+                  
+                 $("#compteList").empty();
+                 $("#compteList").append(response.html);
+                    /*$('#modalNewClient').modal('hide');
+                    var nextLink = $('#sidebar').find('li#clients').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Enregistrement effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }*/
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout d\'un client.');
+                }
+        });
+    }
     //datatable
     $(document).ready(function() {
  $('.tab-compte_1').addClass('active');

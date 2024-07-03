@@ -8,10 +8,10 @@
             </div>
             <div class="modal-body">
                 {{ form_start(form, {'attr': {'id': 'updateProduitType', 'action': path('types_edit', {'produitType': id}) }}) }}
-                    <div class="form-group mb-3">
+                    {# <div class="form-group mb-3">
                         <label for="" class="mb-2">Application</label>
                         {{ form_widget(form.application) }}
-                    </div>  
+                    </div>   #}
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Nom <sup class="text-danger">*</sup> </label>
                         <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.nom)}} </span>

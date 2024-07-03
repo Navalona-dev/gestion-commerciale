@@ -73,7 +73,7 @@ class CompteRepository extends ServiceEntityRepository
 
         if (null != $nom) {
             $query = $query->andWhere("c.nom LIKE :nom OR c.adresse LIKE :nom OR
-            c.telephone LIKE :nom OR c.email LIKE :nom OR DATE_FORMAT(c.dateCreation, '%d/%m/%Y') LIKE :nom")
+            c.telephone LIKE :nom OR c.email LIKE :nom")
                 ->setParameter('nom', '%' . $nom . '%');
         }
 
@@ -123,7 +123,7 @@ class CompteRepository extends ServiceEntityRepository
         $query->orderBy('c.dateCreation', 'DESC');
         
         $result = $query->getQuery()->getResult();
-
+       
         return $result;
     }
 
@@ -489,37 +489,15 @@ class CompteRepository extends ServiceEntityRepository
     }
 
     public function searchCompteRawSql(
+        $genre = null,
         $nom = null,
-        $tags = null,
         $dateDu = null,
         $dateAu = null,
-        $typeClient = null,
-        $typeContrat = null,
-        $typeProjet = null,
-        $typePaiement = null,
-        $produit = null,
-        $collaborateur = null,
-        $ville = null,
+        $etat = null,
         $limit = null,
         $pg = 1,
         $order = null,
-        $utilisateur = null,
-        $parcours = null,
-        $filtreCa = null,
-        $filtreMarge = null,
-        $filtreCaSup = null,
-        $filtreMargeSup = null,
-        $etapes = null,
-        $cp = null,
-        $bp = null,
-        $etat = null,
-        $parcoursEnr = null,
         $isCount = false,
-        $tagUniqueMulti = null,
-        $tabIdTags = null,
-        $tabIdTagsNom = null,
-        $nomContact = null,
-        $autresComptesApplication = null
     ) {
         ini_set('memory_limit', '-1');
         ini_set('max_execution_time', '-1');
@@ -529,52 +507,22 @@ class CompteRepository extends ServiceEntityRepository
         $parameterType = [];
 
         if (!$isCount) {
-            $select = "SELECT compte.*, GROUP_CONCAT(CONCAT('|',compte_tag.tag_id,'|') ORDER BY compte_tag.tag_id ASC) AS tagIds, GROUP_CONCAT(CONCAT('|',Tag.tag,'|') ORDER BY Tag.tag ASC) AS tagNoms FROM Compte compte";
+            $select = "SELECT compte.* FROM compte compte";
         } else {
-            if ($this->application->getId() == 62) {
-                $select = "SELECT COUNT(compte.id) as nbCompte, compte.id as idCompte, compte.email as emailCompte, compte.code_postal as codePostalCompte, compte.nom as nomCompte, compte.telephone as telephoneCompte, GROUP_CONCAT(CONCAT('|',compte_tag.tag_id,'|') ORDER BY compte_tag.tag_id ASC) AS tagIds, GROUP_CONCAT(CONCAT('|',nomContact,'|')) AS nomContacts, GROUP_CONCAT(CONCAT('|',prenomContact,'|')) AS prenomContacts, GROUP_CONCAT(CONCAT('|',telephoneContact,'|')) AS telephoneContacts , GROUP_CONCAT(CONCAT('|',portableContact,'|')) AS portableContacts FROM Compte compte";
-            } else {
-                $select = "SELECT COUNT(compte.id) as nbCompte, compte.id as idCompte, GROUP_CONCAT(CONCAT('|',compte_tag.tag_id,'|') ORDER BY compte_tag.tag_id ASC) AS tagIds FROM Compte compte";
-            }
+            $select = "SELECT COUNT(compte.id) as nbCompte, compte.id as idCompte, compte.email as emailCompte, compte.nom as nomCompte, compte.telephone as telephoneCompte FROM compte compte";
         }
-        $conditions = self::conditionConcatener($conditions, "compte.application_id = :applicationId AND (compte.archive IS NULL OR compte.archive = 0)");
+        $conditions = self::conditionConcatener($conditions, "compte.application_id = :applicationId");
 
 
         $parameters['applicationId'] = $this->application->getId();
         $parameterType['applicationId'] = ParameterType::INTEGER;
 
-        $collaborateurDroit = $this->droitService->getListUtilisateurCollaborateurAllowed(1, null);
-
-        if (null != $collaborateur and $collaborateur != "") {
-            $joins .= " JOIN compte_utilisateurcollaborateur ON compte_utilisateurcollaborateur.compte_id = compte.id
-                        JOIN UtilisateurCollaborateur ON  UtilisateurCollaborateur.id = compte_utilisateurcollaborateur.utilisateurcollaborateur_id ";
-            $conditions = self::conditionConcatener($conditions, "UtilisateurCollaborateur.utilisateur_id = :collaborateur");
-            $parameters['collaborateur'] = $collaborateur;
-            $parameterType['collaborateur'] = ParameterType::INTEGER;
-        } elseif ($collaborateurDroit) {
-            $joins .= " JOIN compte_utilisateurcollaborateur ON compte_utilisateurcollaborateur.compte_id = compte.id
-                       JOIN UtilisateurCollaborateur ON  UtilisateurCollaborateur.id = compte_utilisateurcollaborateur.utilisateurcollaborateur_id ";
-            $conditions = self::conditionConcatener($conditions, "UtilisateurCollaborateur.id IN (:collaborateur)");
-            $parameters['collaborateur'] = $collaborateurDroit;
-            $parameterType['collaborateur'] = Connection::PARAM_INT_ARRAY;
-        }
-
         if (null != $nom) {
-            $conditions = self::conditionConcatener($conditions, '(compte.nom like :nom or compte.boite_postale like :nom or compte.ville like :nom or compte.adresse like :nom or
-                           compte.telephone like :nom or compte.email like :nom or DATE_FORMAT(compte.dateCreation, "%d/%m/%Y") LIKE :nom)');
+            $conditions = self::conditionConcatener($conditions, '(compte.nom like :nom or compte.adresse like :nom or
+                           compte.telephone like :nom or compte.email like :nom)');
             $parameters['nom'] = '%' . trim($nom) . '%';
             $parameterType['nom'] = ParameterType::STRING;
         }
-
-        $joins .= " LEFT JOIN compte_tag ON compte_tag.compte_id = compte.id ";
-        $joins .= " LEFT JOIN Tag ON Tag.id = compte_tag.tag_id ";
-
-        if (null != $tags) {
-            $conditions = self::conditionConcatener($conditions, "compte_tag.tag_id in (:tags)");
-            $parameters['tags'] = $tabIdTags;
-            $parameterType['tags'] = Connection::PARAM_INT_ARRAY;
-        }
-
 
         if (null != $dateDu && null != $dateAu) {
             $conditions = self::conditionConcatener($conditions, "compte.dateCreation >= :dateDu");
@@ -594,374 +542,41 @@ class CompteRepository extends ServiceEntityRepository
             $parameterType['dateAu'] = ParameterType::STRING;
         }
 
-        if ($typeClient != "") {
-            if ($typeClient != "tout") {
-                $conditions = self::conditionConcatener($conditions, "compte.genre = :typeClient");
-                $parameters['typeClient'] = $typeClient;
-                $parameterType['typeClient'] = ParameterType::INTEGER;
-            }
+        if ($genre != "") {
+            $conditions = self::conditionConcatener($conditions, "compte.genre = :typeClient");
+            $parameters['typeClient'] = $genre;
+            $parameterType['typeClient'] = ParameterType::INTEGER;
+            
         }
 
-
-        if (null != $typeContrat || null != $typeProjet || null != $typePaiement || null != $produit || null != $filtreCa || null != $filtreMarge || null != $filtreCaSup || null != $filtreMargeSup || null != $etapes || null != $parcours || null != $parcoursEnr) {
-            $joins .= " JOIN Affaire ON affaire.compte_id = compte.id ";
-
-            if (null != $typeContrat) {
-                $conditions = self::conditionConcatener($conditions, "Affaire.prestation = :typeContrat");
-                $parameters['typeContrat'] = $typeContrat;
-                $parameterType['typeContrat'] = ParameterType::STRING;
-            }
-
-            if (null != $typeProjet) {
-                $conditions = self::conditionConcatener($conditions, "Affaire.projet = :typeProjet");
-                $parameters['typeProjet'] = $typeProjet;
-                $parameterType['typeProjet'] = ParameterType::STRING;
-            }
-
-            if (null != $typePaiement) {
-                $conditions = self::conditionConcatener($conditions, "Affaire.paiement = :typePaiement");
-                $parameters['typePaiement'] = $typePaiement;
-                $parameterType['typePaiement'] = ParameterType::STRING;
-            }
-
-            if (null != $produit) {
-                $joins .= " JOIN produit_affaire ON produit_affaire.affaire_id = Affaire.id ";
-                $joins .= " JOIN Produit ON Produit.id = produit_affaire.affaire_id ";
-
-                $conditions = self::conditionConcatener($conditions, "Produit.produitCatalogue_id  = :produit");
-                $parameters['produit'] = $produit;
-                $parameterType['produit'] = ParameterType::INTEGER;
-            }
-
-            if (null != $parcours) {
-                $joins .= " LEFT JOIN Parcours ON Parcours.affaire_id = Affaire.id ";
-                $parcoursConditionData = [
-                    0 => "demandeContactCandidat",
-                    1 => "priseDeContact",
-                    11 => "pcQualification",
-                    12 => "pcRepondeurPlaquette",
-                    13 => "pcR1",
-                    14 => "pcR2",
-                    15 => "pcClasser",
-                    2 => "dossierCandidature",
-                    21 => "envoiCandidature",
-                    22 => "dcSmsEnvoye",
-                    23 => "dcIncomplet",
-                    24 => "receptionCandidature",
-                    25 => "dcR1SuiteEnvoi",
-                    26 => "dcR2SuiteEnvoi",
-                    27 => "dcClasser",
-                    3 => "restitution",
-                    31 => "resValidationProfil",
-                    311 => "resIssuePlus",
-                    3111 => "resRdvFixe",
-                    3112 => "resZommRdv",
-                    3113 => "res3Qinterv",
-                    3114 => "res3QCand",
-                    312 => "resIssueMoins",
-                    3121 => "resMailRefusCadidature",
-                    4 => "journeeDecouverte",
-                    41 => "jdFixee",
-                    42 => "jdAttenteConfirmation",
-                    43 => "jdZoomCandidat",
-                    44 => "jdZoomFranchiseur",
-                    5 => "envoiDip",
-                    51 => "dipPostJd",
-                    52 => "dipCandidat",
-                    53 => "dipDocSigne",
-                    6 => "entretienIndividuel",
-                    61 => "eiFixe",
-                    62 => "eiZoom",
-                    7 => "etatLocalMarche",
-                    71 => "envoiElm",
-                    72 => "suiviEnvoiElm",
-                    8 => "immersion",
-                    81 => "jiFranchiseFixe",
-                    82 => "jiFranchiseurFixe",
-                    9 => "debrief",
-                    91 => "debriefCandidat",
-                    92 => "debriefFranchiseur",
-                    93 => "debriefReflexion",
-                    94 => "debriefDecision",
-                    10 => "signatureContrat",
-                    101 => "signatureContratReservation",
-                    102 => "signatureContratFranchise",
-                    103 => "scFormationInitiale",
-                    104 => "scAgencePointVente",
-                    110 => "facturation",
-                    111 => "facturationACompte",
-                    1111 => "facPreparation",
-                    1112 => "facValide",
-                    1113 => "facEnvoiFranchiseur",
-                    1114 => "facConfirmationReception",
-                    112 => "facFinale",
-                    1121 => "facFinalePreparation",
-                    1122 => "facFinaleValide",
-                    1123 => "facFinaleFranchiseur",
-                    1124 => "facFinaleConfirmationReception",
-                    120 => "reglement",
-                    121 => "reglementReglee",
-                    122 => "reglementMailFranchiseur",
-                    123 => "reglementTelFranchiseur",
-                    130 => "stop",
-                    131 => "abandonCandidat",
-                    132 => "choixAutreReseau",
-                    133 => "pasDemandeActivite",
-                    134 => "nonSuiteEchangeTel",
-                    135 => "pasProjetCreation",
-                    136 => "pasCapitalDepart",
-                    137 => "pasPlusNouvelle",
-                    138 => "refusCabinet",
-                    139 => "refusFranchiseur",
-                    13101 => "nonAbouti",
-                    1311 => "concurrence",
-                    1312 => "secteurPasDispo",
-                ];
-
-                foreach ($parcoursConditionData as $key => $field) {
-                    if (in_array($key, $parcours)) {
-                        $conditions = self::conditionConcatener($conditions, sprintf('Parcours.%s IS NOT NULL', $field));
-                    }
-                }
-            }
-
-            if (null != $parcoursEnr) {
-                $joins .= " LEFT JOIN ParcoursEnr on ParcoursEnr.affaire_id = Affaire.id ";
-                $parcoursEnrConditionData = [
-                    '01' => 'ahValidee',
-                    '02' => 'appel1',
-                    '03' => 'appel2',
-                    '04' => 'cofrac',
-                    '05' => 'devisOffreSigne',
-                    '06' => 'ahEnvoyee',
-                    '07' => 'devisOffreEnvoye',
-                    '08' => 'installationPlanifiee',
-                    '09' => 'installationTerminee',
-                    '10' => 'ko',
-                    '11' => 'visiteTechniquePlanifiee',
-                    '12' => 'vtOk',
-                ];
-
-                foreach ($parcoursEnrConditionData as $key => $field) {
-                    if (in_array($key, $parcoursEnr)) {
-                        $conditions = self::conditionConcatener($conditions, sprintf('ParcoursEnr.%s IS NOT NULL', $field));
-                    }
-                }
-            }
-
-            if (null != $etapes) {
-
-                $joins .= " LEFT JOIN Etapes ON Etapes.affaire_id = Affaire.id ";
-                $etapeConditionData = [
-                    '12' => 'receptionCandidature',
-                    '13' => 'presentationEnvoyee',
-                    '14' => 'appelValidation',
-                    '15' => 'nonRetour',
-                    '16' => 'dossierCandidatureRecu',
-                    '17' => 'accordConfidentialiteSigne',
-                    '18' => 'entretienTelephonique',
-                    '19' => 'testPersonnalite',
-                    '20' => 'rdvReunion',
-                    '21' => 'visitePilote',
-                    '22' => 'validationClient',
-                    '23' => 'dipSigne',
-                    '24' => 'previsionnelRealise',
-                    '25' => 'rzSignee',
-                    '26' => 'bailSigne',
-                    '27' => 'contratAffiliationSigne',
-                    '28' => 'arretCandidature',
-                ];
-
-                foreach ($etapeConditionData as $key => $field) {
-                    if (in_array($key, $etapes)) {
-                        $conditions = self::conditionConcatener($conditions, sprintf('Etapes.%s IS NOT NULL', $field));
-                    }
-                }
-            }
-        }
-
-        if (null != $ville) {
-            $conditions = self::conditionConcatener($conditions, "(compte.adresse LIKE :ville or compte.code_postal like :ville or compte.ville like :ville)");
-            $parameters['ville'] = '%' . $ville . '%';
-            $parameterType['ville'] = ParameterType::STRING;
-        }
         if (null != $limit) {
             $sqlLimit = ' LIMIT ' . intval($limit) . ' OFFSET ' . intval($pg);
             //$parameters['sqlLimit'] =  intval($limit);
             //$parameters['pg'] =  intval($pg);
         }
-        if (null != $utilisateur) {
-            $joins .= " JOIN compte_utilisateur ON compte_utilisateur.compte_id = compte.id ";
-            $conditions = self::conditionConcatener($conditions, "compte_utilisateur.utilisateur = :utilisateur");
-            $parameters['utilisateur'] = $utilisateur->getId();
-            $parameterType['utilisateur'] = ParameterType::INTEGER;
-        }
-
-        if (null != $nomContact) {
-            $joins .= " JOIN (select utilisateur_id,compte_id from compte_utilisateur) cptU  ON cptU.compte_id = compte.id JOIN ( select id, nom, prenom from Utilisateur where nom LIKE '%" . trim($nomContact) . "%' or prenom LIKE '%" . trim($nomContact) . "%') ut ON cptU.utilisateur_id = ut.id";
-        }
-        if ($this->application->getId() == 62) {
-            $joins .= " LEFT JOIN (select utilisateur_id,compte_id, nomContact, prenomContact, telephoneContact, portableContact  from compte_utilisateur cptU JOIN ( select id, nom as nomContact, prenom as prenomContact,telephone as telephoneContact, portable as portableContact from Utilisateur) ut ON cptU.utilisateur_id = ut.id ) usr ON usr.compte_id = compte.id";
-        }
-
-
-        if (null != $filtreCaSup && null == $filtreCa) {
-            $conditions = self::conditionConcatener($conditions, "Affaire.ca > :ca");
-            $parameters['ca'] = $filtreCaSup;
-            $parameterType['ca'] = ParameterType::STRING;
-        }
-        if (null != $filtreCa && null == $filtreCaSup) {
-            $conditions = self::conditionConcatener($conditions, "Affaire.ca <= :ca");
-            $parameters['ca'] = $filtreCa;
-            $parameterType['ca'] = ParameterType::STRING;
-        }
-        if (null != $filtreCa && null != $filtreCaSup) {
-            $conditions = self::conditionConcatener($conditions, "Affaire.ca > :caSup AND Affaire.ca <= :caInf");
-            $parameters['caSup'] = $filtreCaSup;
-            $parameterType['caSup'] = ParameterType::STRING;
-            $parameters['caInf'] = $filtreCa;
-            $parameterType['caInf'] = ParameterType::STRING;
-        }
-        if (null != $filtreMargeSup && null == $filtreMarge) {
-            $conditions = self::conditionConcatener($conditions, "((Affaire.ca - Affaire.cout)*100)/Affaire.ca > :marge");
-            $parameters['marge'] = $filtreMargeSup;
-            $parameterType['marge'] = ParameterType::STRING;
-        }
-        if (null != $filtreMarge && null == $filtreMargeSup) {
-            $conditions = self::conditionConcatener($conditions, "((Affaire.ca - Affaire.cout)*100)/Affaire.ca < :marge");
-            $parameters['marge'] = $filtreMarge;
-            $parameterType['marge'] = ParameterType::STRING;
-        }
-        if (null != $filtreMarge && null != $filtreMargeSup) {
-            $conditions = self::conditionConcatener($conditions, "((Affaire.ca - Affaire.cout)*100)/Affaire.ca > :margeSup AND ((Affaire.ca - Affaire.cout)*100)/Affaire.ca <= :margeInf");
-            $parameters['margeSup'] = $filtreMargeSup;
-            $parameterType['margeSup'] = ParameterType::STRING;
-            $parameters['margeInf'] = $filtreMarge;
-            $parameterType['margeInf'] = ParameterType::STRING;
-        }
-
-        if (null != $cp) {
-            if (@preg_match("/;/", $cp)) {
-                $tabCp = explode(";", $cp);
-                $cp = $tabCp;
-            }
-            if (is_array($cp)) {
-                $cpCondition = "";
-
-                foreach ($cp as $k => $unCp) {
-                    if ($k == 0) $cpCondition = "(";
-                    $cpCondition .= " compte.code_postal LIKE :unCp" . $k;
-
-                    if ($k < count($cp) - 1) {
-                        $cpCondition .= " OR ";
-                    } else {
-                        $cpCondition .= " )";
-                    }
-
-                    $parameters['unCp' . $k] = "" . $unCp . "%";
-                    $parameterType['unCp' . $k] = ParameterType::STRING;
-                }
-
-
-                $conditions = self::conditionConcatener($conditions, $cpCondition);
-            } else {
-                $conditions = self::conditionConcatener($conditions, "compte.code_postal LIKE :cp");
-                $parameters["cp"] = "" . $cp . "%";
-                $parameterType["cp"] = ParameterType::STRING;
-            }
-        }
-
-        if (null != $bp) {
-            $conditions = self::conditionConcatener($conditions, "compte.boite_postale LIKE :bp");
-            $parameters['bp'] = "%" . $bp . "%";
-            $parameterType["bp"] = ParameterType::STRING;
-        }
-
+        
         //filtre par etat
         if (null != $etat) {
 
-            if ($etat == "pre") {
-                $conditions = self::conditionConcatener($conditions, "(compte.etat LIKE :etat OR compte.etat IS NULL)");
-            } else {
-                $conditions = self::conditionConcatener($conditions, "compte.etat LIKE :etat");
-            }
+            $conditions = self::conditionConcatener($conditions, "compte.etat LIKE :etat");
 
             $parameters['etat'] = "%" . $etat . "%";
             $parameterType["etat"] = ParameterType::STRING;
         }
 
-        /**
-         * Get all compte partenaire
-         */
-        if (!is_null(($autresComptesApplication)) && !empty($autresComptesApplication)) {
-            $conditions .= " OR compte.id IN (" . $autresComptesApplication . ")";
-        }
-        /**
-         * End get all compte partenaire
-         */
 
         $conditions .= ' group by compte.id ';
 
-        if ($tagUniqueMulti == "unique" and count($tabIdTags) > 0) {
+        
+        $tabOrder = [
+            0 => 'compte.dateCreation',
+            1 => 'compte.nom',
+            2 => 'compte.email',
+            3 => 'compte.telephone',
+            4 => 'compte.adresse',
 
-            $havingCond = ' HAVING (';
-
-            if ($this->application->getId() == 54) {
-                foreach ($tabIdTagsNom as $i => $tagNom) {
-                    $havingCond .= ' tagNoms like :tagNom' . $i;
-                    $parameters['tagNom' . $i] = '%|' . $tagNom . '|%';
-                    $parameterType["tagNom" . $i] = ParameterType::STRING;
-
-                    if ($i < count($tabIdTagsNom) - 1) {
-                        $havingCond .= " AND ";
-                    } else {
-                        $havingCond .= " )";
-                    }
-                }
-
-                $conditions .= ' ' . $havingCond;
-            } else {
-                if (count($tabIdTags) == 1) {
-                    $tabIdTagsFormatted = '|' . $tabIdTags[0] . '|';
-                } else {
-                    $tabIdTagsFormatted = '|' . implode('|,|', $tabIdTags) . '|';
-                }
-                $conditions .= ' HAVING (tagIds = :tagIds)';
-                $parameters['tagIds'] = $tabIdTagsFormatted;
-                $parameterType["tagIds"] = ParameterType::STRING;
-            }
-        }
-
-        if ($this->application->getId() == 8) {
-            $tabOrder = [
-                0 => 'compte.dateCreation',
-                1 => 'compte.nom',
-                2 => 'compte.email',
-                3 => 'compte.telephone',
-                4 => 'compte.boite_postale',
-                5 => 'compte.ville'
-            ];
-        } elseif ($this->application->getId() == 27) {
-            $tabOrder = [
-                0 => 'compte.dateCreation',
-                1 => 'compte.nom',
-                2 => 'compte.email',
-                3 => 'compte.telephone',
-                4 => 'compte.pays',
-                5 => 'compte.ca',
-                6 => 'compte.marge',
-                7 => 'compte.nbAffaire'
-            ];
-        } else {
-            $tabOrder = [
-                0 => 'compte.dateCreation',
-                1 => 'compte.nom',
-                2 => 'compte.email',
-                3 => 'compte.telephone',
-                4 => 'compte.adresse',
-
-            ];
-        }
+        ];
+        
 
 
         if (isset($order[0]['column'])) {
@@ -992,16 +607,8 @@ class CompteRepository extends ServiceEntityRepository
         try {
 
             if ($isCount) {
-                if ($this->application->getId() == 62) {
-                    $listId = $connection->fetchAllAssociative($rawSql, $parameters, $parameterType);
-                    $tab = [];
-                    $total = count($listId);
-                    $tab['total'] = $total;
-                    $tab['listIdCompte'] = $listId;
-                    return $tab;
-                } else {
-                    return $connection->fetchOne('SELECT COUNT(*) AS nbCompte FROM (' . $rawSql . ') AS ROWS_LINE ', $parameters, $parameterType);
-                }
+                return $connection->fetchOne('SELECT COUNT(*) AS nbCompte FROM (' . $rawSql . ') AS ROWS_LINE ', $parameters, $parameterType);
+                
             }
 
             return $connection->fetchAllAssociative($rawSql, $parameters, $parameterType);

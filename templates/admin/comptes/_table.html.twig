@@ -11,21 +11,31 @@
             <td> {{liste.adresse|slice(0,50)|raw}} </td>
             
             <td>
-                <a href="#" onclick="return openModalUpdatecompte({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
-                <a href="#" onclick="return deleteCompte({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
+                <a href="#" onclick="return openModalUpdatecompte({{liste.id}}, {{liste.genre}})"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return deleteCompte({{liste.id}}, {{liste.genre}})"><i class="bi bi-trash text-danger"></i></a>
             </td>
         </tr>
          {% endif %}
 <script>
     
-    function deleteCompte(id = null) {
-        if (confirm('Voulez vous vraiment supprimer cette compte?')) {
+    function deleteCompte(id = null, genre = 1) {
+        let currentCompte = "clients";
+        let titleCompte = "client";
+        if (genre == 2) {
+            currentCompte = "fournisseur";
+            titleCompte = "fournisseur";
+        }
+        if (confirm('Voulez vous vraiment supprimer cet '+titleCompte+'?')) {
             $.ajax({
                 url: '/admin/comptes/delete/'+id,
                 type: 'POST',
                 data: {category: id},
                 success: function (response) {
-                    var nextLink = $('#sidebar').find('li#compte').find('a');
+                    let currentCompte = "clients";
+                    if (genre == 2) {
+                        currentCompte = "fournisseur";
+                    }
+                    var nextLink = $('#sidebar').find('li#'+currentCompte).find('a');
                     setTimeout(function () {
                         toastr.options = {
                             closeButton: true,
@@ -50,17 +60,21 @@
         }
     }
 
-    function openModalUpdatecompte(id = null) {
+    function openModalUpdatecompte(id = null, genre = 1) {
         $.ajax({
                 url: '/admin/comptes/'+id,
                 type: 'POST',
                 data: {id: id},
                 success: function (response) {
                     if (response.html != "") {
+                        let currentCompte = "modalUpdateClient";
+                        if (genre == 2) {
+                            currentCompte = "modalUpdateFournisseur";
+                        }
                         $("#blocModalCompteEmpty").empty();
                         $("#blocModalCompteEmpty").append(response.html);
 
-                        $('#modalUpdateCompte').modal('show');
+                        $('#'+currentCompte).modal('show');
                     }
                     
                 },

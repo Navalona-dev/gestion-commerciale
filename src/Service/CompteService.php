@@ -75,14 +75,29 @@ class CompteService
         $this->entityManager->flush();
     }
 
+    public function persist($compte)
+    {
+        $this->entityManager->persist($compte);
+    }
+
     public function remove($compte)
     {
         $this->entityManager->remove($compte);
     }
 
-    public function getAllCompte($genre = 1, $start = 0, $limit = 0, $search = "")
+    public function find($id)
     {
-        return $this->entityManager->getRepository(Compte::class)->searchCompte(null, null,null , $genre, $limit, $start, $search);
+        return $this->entityManager->getRepository(Compte::class)->find($id);
+    }
+
+    public function getAllCompte($genre = 1, $start = 1, $limit = 0, $nomCompte = "")
+    {
+        return $this->entityManager->getRepository(Compte::class)->searchCompte($nomCompte, null,null , $genre, $limit, $start);
+    }
+
+    public function searchCompteRawSql($genre, $nom, $dateDu, $dateAu, $etat, $start, $limit, $order, $isCount)
+    {
+        return $this->entityManager->getRepository(Compte::class)->searchCompteRawSql($genre, $nom, $dateDu,$dateAu, $etat, $limit, $start, $order, $isCount);
     }
 
     public function getNombreTotalCompte()

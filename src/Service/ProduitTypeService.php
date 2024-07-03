@@ -20,12 +20,14 @@ class ProduitTypeService
     private $entityManager;
     private $session;
     public  $isCurrentDossier = false;
+    private $application;
 
-    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager)
+    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager, ApplicationManager  $applicationManager)
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
         $this->entityManager = $entityManager;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
     public function add($instance)
@@ -34,7 +36,7 @@ class ProduitTypeService
 
         $date = new \DateTime();
 
-        $produitType->setApplication($instance->getApplication());
+        $produitType->setApplication($this->application);
         $produitType->setDateCreation($date);
         $produitType->setIsActive($instance->getIsActive());
         $produitType->setDescription($instance->getDescription());
