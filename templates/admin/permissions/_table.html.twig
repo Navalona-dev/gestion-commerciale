@@ -8,8 +8,8 @@
         {% elseif type == "tbody" %}
         <tr id="tbody_permission" class="text-nowrap">
             <td>
-                <a href="#" onclick="return openModalUpdatePermission({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
-                <a href="#" onclick="return deletePermission({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
+                <a href="#" onclick="return openModalUpdatePermission({{liste.id}})" class="mx-1"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return deletePermission({{liste.id}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>
             </td>
             <td> {{liste.title}} </td>
             <td> {{liste.description|slice(0,50)|raw}} </td>

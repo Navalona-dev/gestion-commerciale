@@ -23,10 +23,15 @@
         {% elseif type == "tbody" %}
         <tr id="tbody_produit_categorie" class="text-nowrap">
             <td>
-                <a href="#" onclick="return openModalUpdateProduitCategorie({{liste.id}})" class="mx-1"><i class="bi bi-pencil-fill"></i></a>
-                <a href="#" onclick="return deleteProduitCategorie({{liste.id}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>
-                <a href="#tab-stock" onclick="return listStock({{liste.id}})" title="Liste stock" class="mx-1"><i class="bi bi-box-seam"></i></a>
-                <a href="#tab-produit-image" onclick="return listImage({{liste.id}})" title="Liste image" class="mx-1"><i class="bi bi-image"></i></a>
+                <div class="dropdown text-decoration-none" id="dropdown-product"><a href="#"><span><i class="bi bi-list fs-5 text-black"></i></span></a>
+                    <ul style="list-style: none;">
+                        <li><a href="#" onclick="return openModalUpdateProduitCategorie({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-pencil-fill"></i>Modifier</a></li>
+                        <li><a href="#" onclick="return deleteProduitCategorie({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-trash text-danger"></i>Supprimer</a></li>
+                        <li><a href="#tab-stock" onclick="return listStock({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-box-seam"></i>Liste stock</a></li>
+                        <li><a href="#tab-produit-image" onclick="return listImage({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-image"></i>Liste image</a></li>
+                        <li><a href="#" onclick="return transfertProduit({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-arrow-left-right"></i>Liste image</a></li>
+                    </ul>
+                </div>
             </td>
             <td> {{liste.nom}} </td>
             <td> {{liste.stockRestant}} </td>

@@ -10,8 +10,8 @@
         {% elseif type == "tbody" %}
         <tr id="tbody_categorie" class="text-nowrap">
             <td>
-                <a href="#" onclick="return openModalUpdateCategorie({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
-                <a href="#" onclick="return deleteCategorie({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
+                <a href="#" onclick="return openModalUpdateCategorie({{liste.id}})" class="mx-1"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return deleteCategorie({{liste.id}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>
             </td>
             <td> {{liste.nom}} </td>
             <td> {{liste.etat}} </td>

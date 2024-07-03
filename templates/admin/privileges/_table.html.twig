@@ -8,9 +8,9 @@
         {% elseif type == "tbody" %}
         <tr id="tbody_privilege" class="text-nowrap">
             <td>
-                <a href="#" onclick="return openModalAssignationPrivilege({{liste.id}})"><i class="bi bi-person-check"></i></a>
-                 <a href="#" onclick="return openModalUpdatePrivilege({{liste.id}})"><i class="bi bi-pencil-fill"></i></a>
-                 <a href="#" onclick="return deletePrivilege({{liste.id}})"><i class="bi bi-trash text-danger"></i></a>
+                <a href="#" onclick="return openModalAssignationPrivilege({{liste.id}})" class="mx-1"><i class="bi bi-person-check"></i></a>
+                 <a href="#" onclick="return openModalUpdatePrivilege({{liste.id}})" class="mx-1"><i class="bi bi-pencil-fill"></i></a>
+                 <a href="#" onclick="return deletePrivilege({{liste.id}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>
              </td>
             <td> {{liste.title}} </td>
             <td> {{liste.description|slice(0,50)|raw}} </td>
