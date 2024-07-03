@@ -26,6 +26,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -61,9 +62,117 @@ class CompteController extends AbstractController
             }
             $data["html"] = $this->renderView('admin/comptes/index.html.twig', [
                 'listes' => $comptes,
+                'genre' => $genre
             ]);
             
             return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+    
+    #[Route('/search', name: '_search')]
+    public function search(Request $request)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+      
+        $data = [];
+        $genre = $request->request->get('genre');
+        $nomCompte = $request->request->get('nomCompte');
+        try {
+            $comptes = $this->compteService->getAllCompte((int)$genre);
+
+            if ($comptes == false) {
+                $comptes = [];
+            }
+            $data["html"] = $this->renderView('admin/comptes/index_ajax.html.twig', [
+                'listes' => $comptes,
+                'genre' => $genre
+            ]);
+            
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/search-compte-datatable/from-ajax', name: '_search_ajax')]
+    public function searchAjax(Request $request, SessionInterface $session)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+      
+        $data = [];
+        $genre = $request->request->get('genre');
+        $nomCompte = $request->request->get('nomCompte');
+        $dateDu = $request->get('dateDu');
+        $dateAu = $request->get('dateAu');
+        $start = $request->get('start');
+        $draw = $request->get('draw');
+        $search = $request->get('search');
+        $order = $request->get('order');
+        $length = $request->get('length');
+        try {
+            if (null != $dateDu) {
+                $dateDuExplode = explode("/", $dateDu);
+                $dateDu = new \DateTime($dateDuExplode[2] . "-" . $dateDuExplode[1] . "-" . $dateDuExplode[0]);
+            }
+    
+            $dateAu = $request->get('dateAu');
+    
+            if (null != $dateAu) {
+                $dateAuExplode = explode("/", $dateAu);
+                $dateAu = new \DateTime($dateAuExplode[2] . "-" . $dateAuExplode[1] . "-" . $dateAuExplode[0]);
+            }
+
+            if ($start == 0) {
+                $nbCompte = $this->compteService->searchCompteRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, true);
+              
+                $session->set('nbCompte_'.$genre, $nbCompte);
+            } else {
+                $nbCompte = $session->get('nbCompte_'.$genre);
+            }
+
+            $comptesAssoc = $this->compteService->searchCompteRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, false);
+           // $comptes = $this->compteService->getAllCompte((int)$genre, 0, 25, $nomCompte);
+          
+           $data = $tabAllIdCompte = [];
+
+            if ($comptesAssoc) {
+                $k = 0;
+                foreach ($comptesAssoc as $compteArray) {
+                    $compte = $this->compteService->find($compteArray['id']);
+                    $data[$k][] = $compte->getNom();
+                    $data[$k][] = $compte->getAdresse();
+                    $textEdit = "<ul class=\"list-unstyled action m-0\">
+                            <li>
+                        
+                            <a onclick=\"return openModalUpdatecompte(" . $compte->getId() . ", " . $compte->getGenre() . ");\" class=\"\"><i class=\"bi bi-pencil-fill\"></i></a>
+                        
+                                <a class=\"text-danger\" href=\"#\" onclick=\"return deleteCompte(" . $compte->getId() . ", " . $compte->getGenre() . ");\"><span class=\"bi bi-trash text-danger\" aria-hidden=\"true\" ></span></a>
+                            </li>
+                        </ul>";
+
+                $data[$k][] = $textEdit;
+                $k++;
+                }
+            }
+           
+            return new JsonResponse([
+                'draw' => $draw,
+                "recordsTotal" => $nbCompte,
+                "recordsFiltered" => $nbCompte,
+                "data" => $data
+            ]);
         } catch (\Exception $Exception) {
             $data["exception"] = $Exception->getMessage();
             $data["html"] = "";
@@ -304,121 +413,6 @@ class CompteController extends AbstractController
         }
     }
 
-    #[Route('/profile/user', name: '_profile')]
-    public function displayTabProfil(
-        Request                 $request,
-        UserPasswordHasherInterface $passwordEncoder,
-        TokenStorageInterface $tokenStorage,
-        ValidatorInterface $validator
-    ): Response
-    {
-       
-        $data = [];
-        try {
-           
-            $user = $tokenStorage->getToken()->getUser();
-            
-            //$user = $this->compteService->findUserById($currentUser->getId());
-            $form = $this->createForm(ProfilType::class, $user);
-          
-            $formAcces = $this->createForm(AccesExtranetType::class, $user);
-            $form->handleRequest($request);
-            $formAcces->handleRequest($request);
-          
-            if ($form->isSubmitted() && $form->isValid()) {
-
-                $directoryPublicCopy = $this->getParameter('kernel.project_dir'). '/public/uploads/avatar/';
-               
-                if ($request->isXmlHttpRequest()) {
-                   
-                    $this->compteService->update();
-                    $data["html"] = $this->renderView('admin/profile/profile.html.twig', [
-                        'profil' => $user,
-                        'form' => $form->createView(),
-                        'formAcces' => $formAcces->createView(),
-                        'utilisateurId' => $user->getId()
-                    ]);
-                    return new JsonResponse($data);
-                }
-                //$this->compteService->update();
-                //$this->addFlash('success', 'Votre profil a été enregistré avec succès !');
-    
-                //return $this->redirect('/admin/utilisateurs/profile/user/#tab-profile');
-            } 
-            
-            if ($formAcces->isSubmitted() && $formAcces->isValid()) {
-                if($request->request->get('acces_extranet_new_password') != "" && $request->request->get('acces_extranet_new_password') != null) {
-                    $user->setPassword(
-                        $passwordEncoder->hashPassword(
-                            $user,
-                            $request->request->get('acces_extranet_new_password')
-                        )
-                    );
-               }
-               if ($request->isXmlHttpRequest()) {
-                $this->compteService->update();
-                $data["html"] = $this->renderView('admin/profile/profile.html.twig', [
-                    'profil' => $user,
-                    'form' => $form->createView(),
-                    'formAcces' => $formAcces->createView(),
-                    'utilisateurId' => $user->getId()
-                ]);
-                return new JsonResponse($data);
-            }
-               //$this->compteService->update();
-               //$this->addFlash('success', 'Votre profil a été enregistré avec succès !');
-    
-               // return $this->redirect('/admin/utilisateurs/profile/user/#tab-profile');
-            }
-    
-            $data["html"] = $this->renderView('admin/profile/profile.html.twig', [
-                'profil' => $user,
-                'form' => $form->createView(),
-                'formAcces' => $formAcces->createView(),
-                'utilisateurId' => $user->getId()
-            ]);
-    
-            return new JsonResponse($data);
-                
-        } catch (PropertyVideException $PropertyVideException) {
-            $data['exception'] = $PropertyVideException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
-        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
-            $data['exception'] = $UniqueConstraintViolationException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            throw $this->createNotFoundException('Exception' . $UniqueConstraintViolationException->getMessage());
-        } catch (MappingException $MappingException) {
-            $data['exception'] = $MappingException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            $this->createNotFoundException('Exception' . $MappingException->getMessage());
-        } catch (ORMInvalidArgumentException $ORMInvalidArgumentException) {
-            $data['exception'] = $ORMInvalidArgumentException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            $this->createNotFoundException('Exception' . $ORMInvalidArgumentException->getMessage());
-        } catch (UnsufficientPrivilegeException $UnsufficientPrivilegeException) {
-            $data['exception'] = $UnsufficientPrivilegeException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            $this->createNotFoundException('Exception' . $UnsufficientPrivilegeException->getMessage());
-        }catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
-            $data['exception'] = $NotNullConstraintViolationException->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            $this->createNotFoundException('Exception' . $NotNullConstraintViolationException->getMessage());
-        } catch (\Exception $Exception) {
-            $data['exception'] = $Exception->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
-            $this->createNotFoundException('Exception' . $Exception->getMessage());
-        }
-        return new JsonResponse($data);
-    }
-
     #[Route("/update-is-active/{id}", name:"app_is_active_user")]
     public function updateIsActive(Request $request, EntityManagerInterface $em, User $user): JsonResponse
     {
@@ -433,33 +427,4 @@ class CompteController extends AbstractController
         // Renvoyer une réponse JSON avec l'état mis à jour
         return new JsonResponse(['isActive' => $user->getIsActive()]);
     }
-
-    /**
-     * @Route("/profile", name="_profile")
-     */
-   /* public function profile(Request $request, UserPasswordEncoderInterface $passwordEncoder)
-    {
-        $user = $this->getUser();
-
-        $form = $this->createForm(UserType::class, $user, ['isProfile' => true]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            if ($form->get('password')->getData()) {
-                $user->setPassword($passwordEncoder->encodePassword($user, $form->get('password')->getData()));
-            }
-            $this->compteService->update();
-            $request->getSession()->getFlashBag()->add("success", "Votre profile a été modifié");
-      
-            return $this->render('user/profile.html.twig', [
-                'form' => $form->createView(),
-                'user' => $user,
-            ]);
-        }
-        return $this->render('user/profile.html.twig', [
-            'form' => $form->createView(),
-            'user' => $user,
-        ]);
-    }*/
 }
