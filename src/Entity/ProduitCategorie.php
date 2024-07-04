@@ -12,6 +12,28 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ProduitCategorieRepository::class)]
 class ProduitCategorie
 {
+    const uniteVenteGros = [
+        'sac' => 'Sac',
+        'flacon' => 'Flacon',
+        'granule' => 'Granule',
+        'sht' => 'SHT',
+        'pippette' => 'Pippette',
+        'spray' => 'Spray',
+        'bloc' => 'Bloc',
+        'boite' => 'Boîte'
+    ];
+
+    const uniteVenteDetails = [
+        'unite' => 'Unité',
+        'l' => 'L',
+        'ml' => 'ML',
+        'cc' => 'CC',
+        'Kg' => 'Kg',
+        'G' => 'G',
+        'sachet' => 'Sachet',
+        'cp' => 'Comprimé'
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -93,6 +115,12 @@ class ProduitCategorie
      */
     #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'produitCategorie')]
     private Collection $productImages;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $presentationDetail = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $presentationGros = null;
 
     public function __construct()
     {
@@ -430,6 +458,30 @@ class ProduitCategorie
                 $productImage->setProduitCategorie(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPresentationDetail(): ?float
+    {
+        return $this->presentationDetail;
+    }
+
+    public function setPresentationDetail(?float $presentationDetail): static
+    {
+        $this->presentationDetail = $presentationDetail;
+
+        return $this;
+    }
+
+    public function getPresentationGros(): ?float
+    {
+        return $this->presentationGros;
+    }
+
+    public function setPresentationGros(?float $presentationGros): static
+    {
+        $this->presentationGros = $presentationGros;
 
         return $this;
     }
