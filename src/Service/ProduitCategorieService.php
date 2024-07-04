@@ -85,6 +85,18 @@ class ProduitCategorieService
 
     public function remove($produitCategorie)
     {
+        $stocks = $produitCategorie->getStocks();
+
+        foreach($stocks as $stock) {
+            $this->entityManager->remove($stock);
+        }
+
+        $images = $produitCategorie->getProductImages();
+
+        foreach($images as $image) {
+            $this->entityManager->remove($image);
+        }
+
         $this->entityManager->remove($produitCategorie);
         $this->update();
     }
@@ -105,6 +117,76 @@ class ProduitCategorieService
             return $produitCategorie;
         }
         return null;
+    }
+
+    public function updateStockRestant($oldProduitCategorie, $quantity)
+    {
+        $oldStockRestant = $oldProduitCategorie->getStockRestant();
+        $newStockRestant = $oldStockRestant - $quantity;
+        if ($newStockRestant < 0) {
+            $oldProduitCategorie->setStockRestant(0);
+        } else {
+            $oldProduitCategorie->setStockRestant($newStockRestant);
+        }
+        $this->entityManager->persist($oldProduitCategorie);
+
+    }
+
+    public function updateStockNewApplication($productReferenceExists, $quantity)
+    {
+        $oldStockRestantNewApp = $productReferenceExists->getStockRestant();
+        $newStockRestantNewApp = $oldStockRestantNewApp + $quantity;
+        $productReferenceExists->setStockRestant($newStockRestantNewApp);
+
+        $date = new \DateTime();
+
+        $stock = new Stock();
+        $stock->setProduitCategorie($productReferenceExists);
+        $stock->setQtt($quantity);
+        $stock->setDateCreation($date);
+
+        $this->entityManager->persist($productReferenceExists);
+    }
+
+    public function addNewProductForNewApplication($oldProduitCategorie, $quantity, $application)
+    {
+        $productReferenceExists = new ProduitCategorie();
+
+        $date = new \DateTime();
+
+        $productReferenceExists->setNom($oldProduitCategorie->getNom())
+                            ->setApplication($application)
+                            ->setReference($oldProduitCategorie->getReference())
+                            ->setCategorie($oldProduitCategorie->getCategorie())
+                            ->setType($oldProduitCategorie->getType())
+                            ->setTva($oldProduitCategorie->getTva())
+                            ->setQtt($oldProduitCategorie->getQtt())
+                            ->setStockRestant($quantity)
+                            ->setStockMin($oldProduitCategorie->getStockMin())
+                            ->setStockMax($oldProduitCategorie->getStockMax())
+                            ->setUniteVenteGros($oldProduitCategorie->getUniteVenteGros())
+                            ->setUniteVenteDetail($oldProduitCategorie->getUniteVenteDetail())
+                            ->setPrixVenteGros($oldProduitCategorie->getPrixVenteGros())
+                            ->setPrixVenteDetail($oldProduitCategorie->getPrixVenteDetail())
+                            ->setPrixTTC($oldProduitCategorie->getPrixTTC())
+                            ->setPrixAchat($oldProduitCategorie->getPrixAchat())
+                            ->setPrixHt($oldProduitCategorie->getPrixHt())
+                            ->setDateCreation($date);
+
+                        foreach ($oldProduitCategorie->getProductImages() as $productImage) {
+                            $productImage->setProduitCategorie($productReferenceExists);
+                            $productImage->setDateCreation($date);
+                            $em->persist($productImage);
+                        }
+
+                        $stock = new Stock();
+                        $stock->setProduitCategorie($productReferenceExists);
+                        $stock->setQtt($quantity);
+                        $stock->setDateCreation($date);
+
+                        $this->entityManager->persist($stock);
+                        $this->entityManager->persist($productReferenceExists);
+
     }
 
 }

@@ -1,0 +1,73 @@
+{% form_theme form 'admin/produit_categorie/_collection.html.twig' %}
+
+<div class="modal fade" id="modalTransfertProduitCategorie" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content p-4 modal-produit-categorie">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Transferer produit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                {{ form_start(form, {'attr': {'id': 'transfertProduitCategorie', 'action': path('produit_categories_transfert', {'produitCategorie': id}) }}) }}
+                    
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Application</label>
+                        <span class="text-danger"> {{form_errors(form.application)}} </span>
+                        {{form_widget(form.application)}}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Quantité</label>
+                        <span class="text-danger"> {{form_errors(form.qtt)}} </span>
+                        {{form_widget(form.qtt)}}
+                    </div>
+                        
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Transférer produit</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+<script>
+   
+    $(document).ready(function () {
+       $('#transfertProduitCategorie').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: form.serialize(),
+                success: function (response) {
+                    $('#modalTransfertProduitCategorie').modal('hide');
+                    var nextLink = $('#sidebar').find('li#produit-categorie').find('a');
+                    //
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Mise à jour effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    showTabProduitCategorie();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la mise à jour de la catégorie.');
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

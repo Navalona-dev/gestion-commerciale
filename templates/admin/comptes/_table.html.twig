@@ -11,8 +11,8 @@
             <td> {{liste.adresse|slice(0,50)|raw}} </td>
             
             <td>
-                <a href="#" onclick="return openModalUpdatecompte({{liste.id}}, {{liste.genre}})"><i class="bi bi-pencil-fill"></i></a>
-                <a href="#" onclick="return deleteCompte({{liste.id}}, {{liste.genre}})"><i class="bi bi-trash text-danger"></i></a>
+                <a href="#" onclick="return openModalUpdatecompte({{liste.id}}, {{liste.genre}})" class="mx-1"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return deleteCompte({{liste.id}}, {{liste.genre}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>
             </td>
         </tr>
          {% endif %}

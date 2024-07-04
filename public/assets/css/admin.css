@@ -61,7 +61,8 @@
   # Page Title
   --------------------------------------------------------------*/
   .pagetitle {
-    margin-bottom: 10px;
+    margin-bottom: 30px;
+    margin-top: 40px;
   }
   
   .pagetitle h1 {
@@ -1370,4 +1371,22 @@
 .vich-image img {
   width: 100px;
   height: 100px;
+}
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+  border: 2px solid #2a4ce8 !important;
+  border-bottom: none !important;
+}
+
+thead {
+  background-color: #2a4ce8;
+  color: #fff;
+}
+
+thead tr th, tbody tr td {
+  text-align: center !important;
+}
+
+.btn-list:hover, .btn-list:focus {
+  background-color: #fff !important;
 }

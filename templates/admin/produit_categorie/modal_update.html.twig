@@ -85,10 +85,10 @@
                                 {{form_widget(form.uniteVenteGros)}}
                             </div>
                         </div>
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
-                                <label for="" class="mb-2">Unité vente détail</label>
-                                {{form_widget(form.uniteVenteDetail)}}
+                                <label for="" class="mb-2">Présentation gros</label>
+                                {{form_widget(form.presentationGros)}}
                             </div>
                         </div>
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
@@ -100,12 +100,29 @@
                     </div>
 
                     <div class="row">
+
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Unité vente détail</label>
+                                {{form_widget(form.uniteVenteDetail)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Présentation détail</label>
+                                {{form_widget(form.presentationDetail)}}
+                            </div>
+                        </div>
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Prix vente détail</label>
                                 {{form_widget(form.prixVenteDetail)}}
                             </div>
                         </div>
+                        
+                       
+                    </div>
+                     <div class="row">
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Prix TTC</label>
@@ -118,12 +135,13 @@
                                 {{form_widget(form.prixAchat)}}
                             </div>
                         </div>
-                       
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="" class="mb-2">PrixHt</label>
-                        {{form_widget(form.prixHt)}}
-                    </div>
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Prix HT</label>
+                                {{form_widget(form.prixHt)}}
+                            </div>
+                        </div>
+                     </div>
                
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Description</label>
