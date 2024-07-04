@@ -205,7 +205,7 @@ class ProduitCategorieService
                         foreach ($oldProduitCategorie->getProductImages() as $productImage) {
                             $productImage->setProduitCategorie($productReferenceExists);
                             $productImage->setDateCreation($date);
-                            $em->persist($productImage);
+                            $this->entityManager->persist($productImage);
                         }
 
                         $stock = new Stock();
