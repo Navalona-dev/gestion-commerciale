@@ -28,7 +28,8 @@ class ProduitCategorie
         'l' => 'L',
         'ml' => 'ML',
         'cc' => 'CC',
-        'sachet' => 'Sachet'
+        'sachet' => 'Sachet',
+        'cp' => 'Comprimé'
     ];
 
     #[ORM\Id]
