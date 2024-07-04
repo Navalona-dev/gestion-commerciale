@@ -9,6 +9,7 @@ use App\Entity\ProduitCategorie;
 use App\Form\ProduitCategorieType;
 use App\Service\ApplicationManager;
 use App\Exception\PropertyVideException;
+use App\Form\UpdateProduitCategorieType;
 use App\Service\ProduitCategorieService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ApplicationRepository;
@@ -137,7 +138,7 @@ class ProduitCategorieController extends AbstractController
         }*/
         $data = [];
         try {
-            $form = $this->createForm(ProduitCategorieType::class, $produitCategorie, []);
+            $form = $this->createForm(UpdateProduitCategorieType::class, $produitCategorie, []);
 
             $form->handleRequest($request);
 

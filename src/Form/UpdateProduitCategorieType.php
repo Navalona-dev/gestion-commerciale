@@ -4,9 +4,7 @@ namespace App\Form;
 
 use App\Entity\Compte;
 use App\Entity\Categorie;
-use App\Entity\Application;
 use App\Entity\ProduitType;
-use App\Entity\ProductImage;
 use App\Form\ProduitImageType;
 use App\Entity\ProduitCategorie;
 use Doctrine\ORM\EntityRepository;
@@ -19,7 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
-class ProduitCategorieType extends AbstractType
+class UpdateProduitCategorieType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -65,13 +63,7 @@ class ProduitCategorieType extends AbstractType
                 ],
                 'required' => false
             ])
-            ->add('stockRestant', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control form-control-md mb-3',
-                    'autocomplete' => 'off'
-                ],
-                'required' => false
-            ])
+          
             ->add('stockMin', TextType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3',
@@ -144,18 +136,6 @@ class ProduitCategorieType extends AbstractType
                 ],
                 'required' => false
             ])
-            /*->add('application', EntityType::class, [
-                'class' => Application::class,
-                'choice_label' => 'entreprise',
-                'attr' => [
-                    'class' => 'form-control form-control-md mb-3 chosen-select'
-                ],
-                'required' => true,
-                'query_builder' => function(EntityRepository $er) {
-                    return $er->createQueryBuilder('a')
-                        ->where('a.isActive = true'); 
-                }
-            ])*/
             ->add('categorie', EntityType::class, [
                 'class' => Categorie::class,
                 'choice_label' => 'nom',

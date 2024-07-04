@@ -36,6 +36,27 @@
                     <div class="row">
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
+                                <label for="" class="mb-2">Fournisseur</label>
+                                {{form_widget(form.comptes)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Stock minimum</label>
+                                {{form_widget(form.stockMin)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Stock maximum</label>
+                                {{form_widget(form.stockMax)}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
                                 <label for="" class="mb-2">Code</label>
                                 {{form_widget(form.reference)}}
                             </div>
@@ -57,27 +78,6 @@
                         
                     </div>
                  
-                    <div class="row">
-                        
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Stock Restant</label>
-                                {{form_widget(form.stockRestant)}}
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Stock minimum</label>
-                                {{form_widget(form.stockMin)}}
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Stock maximum</label>
-                                {{form_widget(form.stockMax)}}
-                            </div>
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
