@@ -33,7 +33,12 @@
                         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Fournisseur</label>
-                                {{form_widget(form.comptes)}}
+                                {# {{form_widget(form.comptes)}} #}
+                                <select id="produit_categorie_comptes" name="produit_categorie_compte" class="form-control form-control-md mb-3 chosen-select form-select" style="display: none;">
+                                    {% for fournisseur in fournisseurs %}
+                                    <option value="{{fournisseur.id}}">{{fournisseur.nom}}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
 
@@ -171,7 +176,7 @@
 <script>
   
     $(document).ready(function () {
-    
+        
        $('#newProduitCategorie').on('submit', function (e) {
             e.preventDefault();
             let form = $(this);
