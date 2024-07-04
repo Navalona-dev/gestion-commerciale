@@ -37,6 +37,16 @@ class ProduitCategorieRepository extends ServiceEntityRepository
         return false;
     }
     
+    public function getAllFournisseur()
+    {
+        
+        $sql = "SELECT c.nom, c.id FROM compte as c WHERE c.genre = 2 ORDER BY c.dateCreation DESC";
+        
+        $query = $this->connection->executeQuery($sql);
+        return $query->fetchAll();
+
+    }
+
     //    /**
     //     * @return ProduitCategorie[] Returns an array of ProduitCategorie objects
     //     */

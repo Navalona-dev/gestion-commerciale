@@ -72,12 +72,22 @@ class ProduitCategorieController extends AbstractController
         try {
             $produitCategorie = new ProduitCategorie();
             $form = $this->createForm(ProduitCategorieType::class, $produitCategorie);
-
+            $fournisseurs = $this->produitCategorieService->getAllFournisseur();
+            
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                
                 if ($request->isXmlHttpRequest()) {
+                    
+                    $idFournisseur = $request->get("produit_categorie_compte");
+                    if(isset($idFournisseur) && !empty($idFournisseur)) {
+                        $fournisseur = $this->produitCategorieService->getFournisseurById($idFournisseur);
+                        if ($fournisseur) {
+                            $produitCategorie->addCompte($fournisseur);
+                            $fournisseur->addProduitCategory($produitCategorie);
+                            $this->produitCategorieService->persist($fournisseur);
+                        }
+                    }
                     $produitCategorie->setApplication($this->application);
                     $this->produitCategorieService->add($produitCategorie);
 
@@ -91,6 +101,7 @@ class ProduitCategorieController extends AbstractController
             $data['exception'] = "";
             $data["html"] = $this->renderView('admin/produit_categorie/new.html.twig', [
                 'form' => $form->createView(),
+                'fournisseurs' => $fournisseurs
             ]);
            
             return new JsonResponse($data);
@@ -139,11 +150,35 @@ class ProduitCategorieController extends AbstractController
         $data = [];
         try {
             $form = $this->createForm(UpdateProduitCategorieType::class, $produitCategorie, []);
-
+            $fournisseurs = $this->produitCategorieService->getAllFournisseur();
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
+                    $idFournisseur = $request->get("produit_categorie_compte");
+                    if(isset($idFournisseur) && !empty($idFournisseur)) {
+                        $tabIdComptes = [];
+                        if (count($produitCategorie->getComptes()) > 0) {
+                            foreach ($produitCategorie->getComptes() as $key => $compte) {
+                                if (!in_array($compte->getId(), $tabIdComptes)) {
+                                    array_push($tabIdComptes,$compte->getId() );
+                                }
+                                $produitCategorie->removeCompte($compte);
+                            }
+                        }
+                  
+                        if (!in_array(( integer)$idFournisseur, $tabIdComptes)) {
+                            
+                            $fournisseur = $this->produitCategorieService->getFournisseurById($idFournisseur);
+                        
+                            if ($fournisseur) {
+                                $produitCategorie->addCompte($fournisseur);
+                                $fournisseur->addProduitCategory($produitCategorie);
+                                $this->produitCategorieService->persist($fournisseur);
+                            }
+                        }
+                        
+                    }
                     $this->produitCategorieService->update();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
@@ -155,6 +190,8 @@ class ProduitCategorieController extends AbstractController
             $data["html"] = $this->renderView('admin/produit_categorie/modal_update.html.twig', [
                 'form' => $form->createView(),
                 'id' => $produitCategorie->getId(),
+                'fournisseurs' => $fournisseurs,
+                'fournisseurId' => (null != $produitCategorie->getComptes()[0] ? $produitCategorie->getComptes()[0]->getId(): "0")
             ]);
             return new JsonResponse($data);
         } catch (PropertyVideException $PropertyVideException) {

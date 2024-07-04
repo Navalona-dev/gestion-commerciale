@@ -37,7 +37,12 @@
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Fournisseur</label>
-                                {{form_widget(form.comptes)}}
+                                <select id="produit_categorie_comptes" name="produit_categorie_compte" class="form-control form-control-md mb-3 chosen-select form-select" style="display: none;">
+                                <option value="0">Choisir fournisseur</option>
+                                    {% for fournisseur in fournisseurs %}
+                                    <option value="{{fournisseur.id}}">{{fournisseur.nom}}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
@@ -164,8 +169,11 @@
 {% block javascripts %}
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 <script>
-   
     $(document).ready(function () {
+        {% if fournisseurId != "0" %}
+   $('#produit_categorie_comptes').val({{fournisseurId}});
+   $('.chosen-select').trigger('chosen:updated');
+        {% endif %}
        $('#updateProduitCategorie').on('submit', function (e) {
             e.preventDefault();
             let form = $(this);
