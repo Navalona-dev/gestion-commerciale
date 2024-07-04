@@ -81,6 +81,9 @@ $(document).ready(function() {
     if (anchorName === "tab-produit-image") {
         listImageByProduitSession();
     }
+    if (anchorName === "tab-import-produit") {
+        showTabImportProduit();
+    }
 
 });
 
@@ -104,6 +107,8 @@ function listImageByProduitSession() {
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -134,6 +139,8 @@ function listStockByProduitSession() {
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -161,6 +168,8 @@ function showTabCompte(genre = 1) {
             $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+
             // Hide all compte tabs
             $('[id^="tab-compte_"]').removeClass('active').empty();
 
@@ -208,6 +217,7 @@ function showTabProfile() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -240,6 +250,7 @@ function showTabApplication() {
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  
                  $(".loadBody").css('display', 'none');
              },
@@ -272,6 +283,7 @@ function showTabUtilisateur() {
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -304,6 +316,7 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -336,6 +349,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -368,6 +382,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -400,7 +415,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
-
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -433,6 +448,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -466,6 +482,8 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+
 
                  $(".loadBody").css('display', 'none');
              },
@@ -498,6 +516,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -508,7 +527,37 @@ function showTabPermission() {
          });
  }
 
+ function showTabImportProduit() {
+    $.ajax({
+             type: 'post',
+             url: '/admin/import/produit/',
+             //data: {},
+             success: function (response) {
+                 $("#tab-import-produit").empty();
+                 $("#tab-import-produit").append(response.html);
+                 $('.sidebar-nav a[href="#tab-import-produit"]').tab('show');
+                 $("#tab-import-produit").addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').removeClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $(".loadBody").css('display', 'none');
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
 
+         });
+ }
 
 
 

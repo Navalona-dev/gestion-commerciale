@@ -206,6 +206,38 @@
             });
         });
     });
+
+    $(document).ready(function() {
+        $("#update-image").click(function() {
+
+        const index = +$('#widgets-counter-update').val();
+
+        const tmpl = $('#update_produit_categorie_productImages').data('prototype').replace(/__name__/g, index);
+
+        $('#update_produit_categorie_productImages').append(tmpl);
+
+        $('#widgets-counter-update').val(index + 1);
+
+        handleDelete();
+        });
+
+        function handleDelete(){
+        $('a[data-action="remove"]').click(function() {
+            const target = this.dataset.target;
+            $(target).remove();
+        });
+        }
+
+        function updateCounter() {
+        const count = +$('#update_produit_categorie_productImages div.form-group').length;
+
+        $('#widgets-counter-update').val(count);
+        }
+
+        updateCounter();
+        handleDelete();
+    })
+    
 </script>
 
 {% endblock %}
