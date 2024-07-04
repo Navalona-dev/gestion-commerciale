@@ -28,7 +28,10 @@ class ProduitCategorie
         'l' => 'L',
         'ml' => 'ML',
         'cc' => 'CC',
-        'sachet' => 'Sachet'
+        'Kg' => 'Kg',
+        'G' => 'G',
+        'sachet' => 'Sachet',
+        'cp' => 'Comprimé'
     ];
 
     #[ORM\Id]
@@ -119,11 +122,18 @@ class ProduitCategorie
     #[ORM\Column(nullable: true)]
     private ?float $presentationGros = null;
 
+    /**
+     * @var Collection<int, Compte>
+     */
+    #[ORM\ManyToMany(targetEntity: Compte::class, inversedBy: 'produitCategories')]
+    private Collection $comptes;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
         $this->productImages = new ArrayCollection();
         $this->stocks = new ArrayCollection();
+        $this->comptes = new ArrayCollection();
     }
 
     public static function newProduitCategorie($instance = null)
@@ -479,6 +489,30 @@ class ProduitCategorie
     public function setPresentationGros(?float $presentationGros): static
     {
         $this->presentationGros = $presentationGros;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Compte>
+     */
+    public function getComptes(): Collection
+    {
+        return $this->comptes;
+    }
+
+    public function addCompte(Compte $compte): static
+    {
+        if (!$this->comptes->contains($compte)) {
+            $this->comptes->add($compte);
+        }
+
+        return $this;
+    }
+
+    public function removeCompte(Compte $compte): static
+    {
+        $this->comptes->removeElement($compte);
 
         return $this;
     }

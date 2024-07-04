@@ -115,6 +115,12 @@ class Compte
     #[ORM\OneToMany(targetEntity: ModeReglement::class, mappedBy: 'compte')]
     private Collection $modeReglements;
 
+    /**
+     * @var Collection<int, ProduitCategorie>
+     */
+    #[ORM\ManyToMany(targetEntity: ProduitCategorie::class, mappedBy: 'comptes')]
+    private Collection $produitCategories;
+
 
     public function __construct()
     {
@@ -122,6 +128,7 @@ class Compte
         $this->dateCreation = new \DateTime('now');
         $this->affaires = new ArrayCollection();
         $this->compteApplications = new ArrayCollection();
+        $this->produitCategories = new ArrayCollection();
         
     }
 
@@ -450,6 +457,33 @@ class Compte
             if ($modeReglement->getCompte() === $this) {
                 $modeReglement->setCompte(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProduitCategorie>
+     */
+    public function getProduitCategories(): Collection
+    {
+        return $this->produitCategories;
+    }
+
+    public function addProduitCategory(ProduitCategorie $produitCategory): static
+    {
+        if (!$this->produitCategories->contains($produitCategory)) {
+            $this->produitCategories->add($produitCategory);
+            $produitCategory->addCompte($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduitCategory(ProduitCategorie $produitCategory): static
+    {
+        if ($this->produitCategories->removeElement($produitCategory)) {
+            $produitCategory->removeCompte($this);
         }
 
         return $this;

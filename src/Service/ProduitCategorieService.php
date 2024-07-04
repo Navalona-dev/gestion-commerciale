@@ -123,13 +123,40 @@ class ProduitCategorieService
     {
         $oldStockRestant = $oldProduitCategorie->getStockRestant();
         $newStockRestant = $oldStockRestant - $quantity;
+        
         if ($newStockRestant < 0) {
             $oldProduitCategorie->setStockRestant(0);
         } else {
             $oldProduitCategorie->setStockRestant($newStockRestant);
         }
+        
         $this->entityManager->persist($oldProduitCategorie);
 
+        $stocks = $oldProduitCategorie->getStocks();
+        $remainingQuantity = $quantity;
+        
+        // Parcourir les stocks en commençant par le dernier
+        for ($i = count($stocks) - 1; $i >= 0; $i--) {
+            $stock = $stocks[$i];
+            $stockQuantity = $stock->getQtt();
+            
+            if ($stockQuantity >= $remainingQuantity) {
+                $qtt = $stockQuantity - $remainingQuantity;
+                if($qtt < 0) {
+                    $stock->setQtt(0);
+                } else {
+                    $stock->setQtt($qtt);
+                }
+
+                $this->entityManager->persist($stock);
+                break;
+
+            } else {
+                $remainingQuantity -= $stockQuantity;
+                $stock->setQtt(0);
+                $this->entityManager->persist($stock);
+            }
+        }
     }
 
     public function updateStockNewApplication($productReferenceExists, $quantity)
@@ -144,6 +171,8 @@ class ProduitCategorieService
         $stock->setProduitCategorie($productReferenceExists);
         $stock->setQtt($quantity);
         $stock->setDateCreation($date);
+
+        $this->entityManager->persist($stock);
 
         $this->entityManager->persist($productReferenceExists);
     }

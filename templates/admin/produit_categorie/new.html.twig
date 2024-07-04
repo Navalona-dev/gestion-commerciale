@@ -12,22 +12,28 @@
                 {{ form_start(form, {'attr': {'id': 'newProduitCategorie', 'action': path('produit_categories_create') }}) }}
                     
                     <div class="row">
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Nom</label>
                                 {{form_widget(form.nom)}}
                             </div>
                         </div>
-                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Catégorie</label>
                                 {{form_widget(form.categorie)}}
                             </div>
                         </div>
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Type</label>
                                 {{form_widget(form.type)}}
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Fournisseur</label>
+                                {{form_widget(form.comptes)}}
                             </div>
                         </div>
 
@@ -119,8 +125,6 @@
                                 {{form_widget(form.prixVenteDetail)}}
                             </div>
                         </div>
-                        
-                       
                     </div>
                      <div class="row">
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">

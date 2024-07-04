@@ -1278,9 +1278,14 @@
       right: 1rem;
   }
 
- .modal-user, .modal-application, .modal-produit-categorie {
+ .modal-user, .modal-application {
   width: 180% !important;
   margin-left: -12rem !important;
+ }
+
+ .modal-produit-categorie {
+  width: 250% !important;
+  margin-left: -23rem !important;
  }
 
  .img-app {
@@ -1390,3 +1395,5 @@ thead tr th, tbody tr td {
 .btn-list:hover, .btn-list:focus {
   background-color: #fff !important;
 }
+
+
