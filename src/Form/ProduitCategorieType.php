@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -84,17 +85,19 @@ class ProduitCategorieType extends AbstractType
                 ],
                 'required' => false
             ])
-            ->add('uniteVenteGros', TextType::class, [
+            ->add('uniteVenteGros', ChoiceType::class, [
+                'choices' => array_flip(ProduitCategorie::uniteVenteGros),
+                'label' => 'Statut',
                 'attr' => [
-                    'class' => 'form-control form-control-md mb-3',
-                    'autocomplete' => 'off'
+                    'class' => 'form-control form-control-md mb-3 chosen-select'
                 ],
                 'required' => false
             ])
-            ->add('uniteVenteDetail', TextType::class, [
+            ->add('uniteVenteDetail', ChoiceType::class, [
+                'choices' => array_flip(ProduitCategorie::uniteVenteDetails),
+                'label' => 'Statut',
                 'attr' => [
-                    'class' => 'form-control form-control-md mb-3',
-                    'autocomplete' => 'off'
+                    'class' => 'form-control form-control-md mb-3 chosen-select'
                 ],
                 'required' => false
             ])
@@ -106,6 +109,20 @@ class ProduitCategorieType extends AbstractType
                 'required' => false
             ])
             ->add('prixVenteDetail', TextType::class, [
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
+                ],
+                'required' => false
+            ])
+            ->add('presentationDetail', TextType::class, [
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
+                ],
+                'required' => false
+            ])
+            ->add('presentationGros', TextType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3',
                     'autocomplete' => 'off'
