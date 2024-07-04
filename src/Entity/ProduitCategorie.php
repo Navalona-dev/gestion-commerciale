@@ -117,10 +117,10 @@ class ProduitCategorie
     private Collection $productImages;
 
     #[ORM\Column(nullable: true)]
-    private ?float $presentationDetail = null;
+    private ?string $presentationDetail = null;
 
     #[ORM\Column(nullable: true)]
-    private ?float $presentationGros = null;
+    private ?string $presentationGros = null;
 
     /**
      * @var Collection<int, Compte>
@@ -469,24 +469,24 @@ class ProduitCategorie
         return $this;
     }
 
-    public function getPresentationDetail(): ?float
+    public function getPresentationDetail(): ?string
     {
         return $this->presentationDetail;
     }
 
-    public function setPresentationDetail(?float $presentationDetail): static
+    public function setPresentationDetail(?string $presentationDetail): static
     {
         $this->presentationDetail = $presentationDetail;
 
         return $this;
     }
 
-    public function getPresentationGros(): ?float
+    public function getPresentationGros(): ?string
     {
         return $this->presentationGros;
     }
 
-    public function setPresentationGros(?float $presentationGros): static
+    public function setPresentationGros(?string $presentationGros): static
     {
         $this->presentationGros = $presentationGros;
 
