@@ -182,7 +182,7 @@ class ProduitCategorieType extends AbstractType
                 'required' => false
                 
             ])
-            ->add('comptes', EntityType::class, [
+            ->remove('comptes', EntityType::class, [
                 'class' => Compte::class,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('c')

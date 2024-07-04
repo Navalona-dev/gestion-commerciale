@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use App\Entity\Compte;
 use App\Entity\Stock;
 use Doctrine\ORM\EntityManager;
 use App\Entity\ProduitCategorie;
@@ -78,6 +79,11 @@ class ProduitCategorieService
         return $produitCategorie;
     }
 
+    public function persist($entity)
+    {
+        $this->entityManager->persist($entity);
+    }
+
     public function update()
     {
         $this->entityManager->flush();
@@ -116,9 +122,28 @@ class ProduitCategorieService
         if ($produitCategorie) {
             return $produitCategorie;
         }
-        return null;
+        return false;
     }
 
+    public function getAllFournisseur()
+    {
+        $produitCategorie = $this->entityManager->getRepository(ProduitCategorie::class)->getAllFournisseur();
+        if ($produitCategorie) {
+            return $produitCategorie;
+        }
+        return false;
+    }
+
+    public function getFournisseurById($id)
+    {
+        $compte = $this->entityManager->getRepository(Compte::class)->find($id);
+        if ($compte) {
+            return $compte;
+        }
+        return false;
+    }
+
+    
     public function updateStockRestant($oldProduitCategorie, $quantity)
     {
         $oldStockRestant = $oldProduitCategorie->getStockRestant();
@@ -205,7 +230,7 @@ class ProduitCategorieService
                         foreach ($oldProduitCategorie->getProductImages() as $productImage) {
                             $productImage->setProduitCategorie($productReferenceExists);
                             $productImage->setDateCreation($date);
-                            $em->persist($productImage);
+                            $this->entityManager->persist($productImage);
                         }
 
                         $stock = new Stock();
