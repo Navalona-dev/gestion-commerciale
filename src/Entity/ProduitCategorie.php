@@ -28,6 +28,8 @@ class ProduitCategorie
         'l' => 'L',
         'ml' => 'ML',
         'cc' => 'CC',
+        'Kg' => 'Kg',
+        'G' => 'G',
         'sachet' => 'Sachet',
         'cp' => 'Comprimé'
     ];
