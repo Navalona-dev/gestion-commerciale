@@ -84,7 +84,7 @@ class ProduitCategorie
     #[ORM\Column(nullable: true)]
     private ?float $prixAchat = null;
 
-    #[ORM\ManyToOne(inversedBy: 'produitCategories')]
+    #[ORM\ManyToOne(inversedBy: 'produitCategories', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Application $application = null;
 
@@ -127,6 +127,12 @@ class ProduitCategorie
      */
     #[ORM\ManyToMany(targetEntity: Compte::class, inversedBy: 'produitCategories')]
     private Collection $comptes;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $volumeGros = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $volumeDetail = null;
 
     public function __construct()
     {
@@ -513,6 +519,30 @@ class ProduitCategorie
     public function removeCompte(Compte $compte): static
     {
         $this->comptes->removeElement($compte);
+
+        return $this;
+    }
+
+    public function getVolumeGros(): ?float
+    {
+        return $this->volumeGros;
+    }
+
+    public function setVolumeGros(?float $volumeGros): static
+    {
+        $this->volumeGros = $volumeGros;
+
+        return $this;
+    }
+
+    public function getVolumeDetail(): ?float
+    {
+        return $this->volumeDetail;
+    }
+
+    public function setVolumeDetail(?float $volumeDetail): static
+    {
+        $this->volumeDetail = $volumeDetail;
 
         return $this;
     }
