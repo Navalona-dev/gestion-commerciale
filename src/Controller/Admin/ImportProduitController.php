@@ -8,6 +8,7 @@ use App\Entity\ProduitType;
 use App\Service\AccesService;
 use App\Service\ExcelImporter;
 use App\Entity\ProduitCategorie;
+use App\Entity\Stock;
 use App\Service\ApplicationManager;
 use App\Repository\CompteRepository;
 use App\Repository\CategorieRepository;
@@ -179,11 +180,23 @@ class ImportProduitController extends AbstractController
                             $produitCategorie->setApplication($this->application);
             
                             $produitCategorie->setDateCreation($date);
-            
+                            
+                            $stock = new Stock();
+                            $stockRestant = isset($dataProduct[14]) ? trim($dataProduct[14]) : null;
+                            $stock->setDateCreation($date);
+                            if (null != $stockRestant) {
+                                $stock->setQtt(floatval($stockRestant));
+                            } else {
+                                $stock->setQtt(0);
+                            }
+                            $produitCategorie->setStockRestant(floatval($stockRestant));
+                            $produitCategorie->addStock($stock);
+                            $this->em->persist($stock);
                             $this->em->persist($produitCategorie);
                             
                         } else {
                             $produitCategorie = $existingProduitCategorie;
+                            //$produitCategorie->getStock()
                         }
                     }
                     $this->em->flush();

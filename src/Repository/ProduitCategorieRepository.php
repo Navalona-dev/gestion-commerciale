@@ -40,7 +40,7 @@ class ProduitCategorieRepository extends ServiceEntityRepository
     public function getAllFournisseur()
     {
         
-        $sql = "SELECT c.nom, c.id FROM compte as c WHERE c.genre = 2 ORDER BY c.dateCreation DESC";
+        $sql = "SELECT c.nom, c.id FROM compte as c WHERE c.genre = 2 and c.application_id = ".$this->application->getId()." ORDER BY c.dateCreation DESC";
         
         $query = $this->connection->executeQuery($sql);
         return $query->fetchAll();

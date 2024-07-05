@@ -38,7 +38,7 @@ class CategorieType extends AbstractType
                 ],
                 'required' => true
             ])
-            ->add('application', EntityType::class, [
+            ->remove('application', EntityType::class, [
                 'class' => Application::class,
                 'choice_label' => 'entreprise',
                 'query_builder' => function(EntityRepository $er) {

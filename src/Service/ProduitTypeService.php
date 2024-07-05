@@ -60,8 +60,8 @@ class ProduitTypeService
 
     public function getAllProduitTypes()
     {
-        $produitTypes = $this->entityManager->getRepository(ProduitType::class)->findAll();
-        if (count($produitTypes) > 0) {
+        $produitTypes = $this->entityManager->getRepository(ProduitType::class)->getAllTypes();
+        if ($produitTypes != false && count($produitTypes) > 0) {
             return $produitTypes;
         }
         return false;

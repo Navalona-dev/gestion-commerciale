@@ -9,6 +9,7 @@ use App\Entity\ProduitType;
 use App\Entity\ProductImage;
 use App\Form\ProduitImageType;
 use App\Entity\ProduitCategorie;
+use App\Service\ApplicationManager;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -18,11 +19,18 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class ProduitCategorieType extends AbstractType
-{
+{   
+    private $application;
+    public function __construct(ApplicationManager $applicationManager)
+    {
+        $this->application = $applicationManager->getApplicationActive();
+    }
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $application = $this->application;
         $builder
             ->add('nom', TextType::class, [
                 'attr' => [
@@ -109,6 +117,20 @@ class ProduitCategorieType extends AbstractType
                 ],
                 'required' => false
             ])
+            ->add('volumeGros', NumberType::class, [
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
+                ],
+                'required' => false
+            ])
+            ->add('volumeDetail', NumberType::class, [
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
+                ],
+                'required' => false
+            ])
             ->add('prixVenteDetail', TextType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3',
@@ -162,6 +184,12 @@ class ProduitCategorieType extends AbstractType
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3 chosen-select'
                 ],
+                'query_builder' => function(EntityRepository $er)  use ($application) {
+                    return $er->createQueryBuilder('c')
+                    ->andWhere('c.application = :application')
+                    ->setParameter('application', $application)
+                    ->orderBy('c.nom', 'ASC');
+                },
                 'required' => false
             ])
             ->add('type', EntityType::class, [
@@ -170,6 +198,12 @@ class ProduitCategorieType extends AbstractType
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3 chosen-select'
                 ],
+                'query_builder' => function(EntityRepository $er)  use ($application) {
+                    return $er->createQueryBuilder('c')
+                    ->andWhere('c.application = :application')
+                    ->setParameter('application', $application)
+                    ->orderBy('c.nom', 'ASC');
+                },
                 'required' => false
             ])
             ->add('productImages', CollectionType::class, [

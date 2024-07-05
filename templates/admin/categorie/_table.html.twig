@@ -4,7 +4,6 @@
             <th>Action</th>
             <th>Nom</th>
             <th>Etat</th>
-            <th>Application</th>
             <th>Date de création</th>
         </tr>
         {% elseif type == "tbody" %}
@@ -15,7 +14,6 @@
             </td>
             <td> {{liste.nom}} </td>
             <td> {{liste.etat}} </td>
-            <td> {{liste.application.entreprise}} </td>
             <td> {{liste.dateCreation|date('d-m-Y')}} </td>
             
         </tr>

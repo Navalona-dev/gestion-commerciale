@@ -505,6 +505,7 @@ function showTabPermission() {
                  $("#tab-produit-type").append(response.html);
                  $('.sidebar-nav a[href="#tab-produit-type"]').tab('show');
                  $("#tab-produit-type").addClass('active');
+                 
                  $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').removeClass('collapsed');
                  $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');

@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Doctrine\ORM\EntityRepository;
 use App\Entity\Permission;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class PrivilegeAssignationPermissionType extends AbstractType
 {

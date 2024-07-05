@@ -19,12 +19,13 @@ class CategorieService
     private $entityManager;
     private $session;
     public  $isCurrentDossier = false;
-
-    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager)
+    private $application;
+    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager, ApplicationManager  $applicationManager)
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
         $this->entityManager = $entityManager;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
     public function add($instance)
@@ -34,7 +35,7 @@ class CategorieService
         $date = new \DateTime();
 
         $categorie->setEtat($instance->getEtat());
-        $categorie->setApplication($instance->getApplication());
+        $categorie->setApplication($this->application);
         $categorie->setDateCreation($date);
         $categorie->setStock($instance->getStock());
 
@@ -57,8 +58,8 @@ class CategorieService
 
     public function getAllCategories()
     {
-        $categories = $this->entityManager->getRepository(Categorie::class)->findAll();
-        if (count($categories) > 0) {
+        $categories = $this->entityManager->getRepository(Categorie::class)->getAllCategories();
+        if ($categories != false && count($categories) > 0) {
             return $categories;
         }
         return false;
