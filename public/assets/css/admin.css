@@ -1396,4 +1396,17 @@
   background-color: #fff !important;
 }
 
+.import-content {
+  border: 1px solid #2a4ce8; 
+  border-radius: 30px;
+}
+
+.import-icon {
+  padding: 20px 23px; 
+  border-radius: 100%; 
+  border: 1px solid #2a4ce8;
+  font-size: 30px;
+  cursor: pointer;
+}
+
 

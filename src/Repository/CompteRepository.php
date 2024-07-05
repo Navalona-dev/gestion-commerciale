@@ -1079,4 +1079,19 @@ class CompteRepository extends ServiceEntityRepository
             return 0;
         }
     }
+
+    public function findNameCompteByApplication($application): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.nom') 
+            ->innerJoin('c.application', 'a') 
+            ->andWhere('a.id = :application') 
+            ->andWhere('c.genre = :genre') 
+            ->setParameter('application', $application)
+            ->setParameter('genre', 2)
+            ->groupBy('c.nom', 'c.application', 'c.genre') 
+            ->orderBy('c.nom', 'ASC') 
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -47,28 +47,15 @@ class ProduitCategorieRepository extends ServiceEntityRepository
 
     }
 
-    //    /**
-    //     * @return ProduitCategorie[] Returns an array of ProduitCategorie objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?ProduitCategorie
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findReferenceProduitByApplication($application): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.reference') 
+            ->innerJoin('p.application', 'a') 
+            ->andWhere('a.id = :application') 
+            ->setParameter('application', $application)
+            ->orderBy('p.reference', 'ASC') 
+            ->getQuery()
+            ->getResult();
+    }
 }

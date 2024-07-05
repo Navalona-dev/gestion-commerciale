@@ -84,7 +84,7 @@ class ProduitCategorie
     #[ORM\Column(nullable: true)]
     private ?float $prixAchat = null;
 
-    #[ORM\ManyToOne(inversedBy: 'produitCategories')]
+    #[ORM\ManyToOne(inversedBy: 'produitCategories', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Application $application = null;
 
@@ -117,16 +117,22 @@ class ProduitCategorie
     private Collection $productImages;
 
     #[ORM\Column(nullable: true)]
-    private ?float $presentationDetail = null;
+    private ?string $presentationDetail = null;
 
     #[ORM\Column(nullable: true)]
-    private ?float $presentationGros = null;
+    private ?string $presentationGros = null;
 
     /**
      * @var Collection<int, Compte>
      */
     #[ORM\ManyToMany(targetEntity: Compte::class, inversedBy: 'produitCategories')]
     private Collection $comptes;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $volumeGros = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $volumeDetail = null;
 
     public function __construct()
     {
@@ -469,24 +475,24 @@ class ProduitCategorie
         return $this;
     }
 
-    public function getPresentationDetail(): ?float
+    public function getPresentationDetail(): ?string
     {
         return $this->presentationDetail;
     }
 
-    public function setPresentationDetail(?float $presentationDetail): static
+    public function setPresentationDetail(?string $presentationDetail): static
     {
         $this->presentationDetail = $presentationDetail;
 
         return $this;
     }
 
-    public function getPresentationGros(): ?float
+    public function getPresentationGros(): ?string
     {
         return $this->presentationGros;
     }
 
-    public function setPresentationGros(?float $presentationGros): static
+    public function setPresentationGros(?string $presentationGros): static
     {
         $this->presentationGros = $presentationGros;
 
@@ -513,6 +519,30 @@ class ProduitCategorie
     public function removeCompte(Compte $compte): static
     {
         $this->comptes->removeElement($compte);
+
+        return $this;
+    }
+
+    public function getVolumeGros(): ?float
+    {
+        return $this->volumeGros;
+    }
+
+    public function setVolumeGros(?float $volumeGros): static
+    {
+        $this->volumeGros = $volumeGros;
+
+        return $this;
+    }
+
+    public function getVolumeDetail(): ?float
+    {
+        return $this->volumeDetail;
+    }
+
+    public function setVolumeDetail(?float $volumeDetail): static
+    {
+        $this->volumeDetail = $volumeDetail;
 
         return $this;
     }
