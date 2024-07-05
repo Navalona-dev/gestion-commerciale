@@ -64,11 +64,8 @@ class ImportProduitController extends AbstractController
                 $file = $request->files->get('file');
                 $spreadsheet = IOFactory::load($file);
 
-                $batchSize = 20; // Ajustez la taille du batch selon vos besoins
-                $i = 0;
-
                 $sheet = $spreadsheet->getActiveSheet();
-
+              
                 foreach ($sheet->getRowIterator() as $index => $row) {
                     if ($index == 1) {
                         continue;
@@ -83,91 +80,85 @@ class ImportProduitController extends AbstractController
 
                     // Traiter la catégorie
                     $dataCategorie = isset($dataProduct[0]) ? trim($dataProduct[0]) : null;
-
-                    $categories = $this->categorieRepository->findNameCategoriesByApplication($this->application);
-
+                    $dataCategorie = trim($dataCategorie);
+                    
                     $existingCategorie = $this->categorieRepository->findOneBy(['nom' => $dataCategorie, 'application' => $this->application]);
-                    $categorieName = $existingCategorie ? $existingCategorie->getNom() : null;
-
+                 
                     if ($dataCategorie !== null) {
-                        $categorie = null;
+                       
                     //dd($dataCategorie, $categorieName,in_array($categorieName, array_column($categories, 'nom')), array_column($categories, 'nom'), $categories);
                         // Vérifie si $categorieName est dans $categories
-                        if ($categorieName !== null && in_array($categorieName, array_column($categories, 'nom'))) {
-                            $categorie = $existingCategorie;   
-                            //dd('hello');           
-                        } else {
-                            //dd('cc');
+                 
+                        if ($existingCategorie == null) {
+                            $categorie = null;
                             // Si la catégorie n'existe pas dans la base de données
                             $categorie = new Categorie();
                             $categorie->setNom($dataCategorie);
                             $categorie->setDateCreation($date);
                             $categorie->setApplication($this->application);
                             $this->em->persist($categorie);
+                        } else {
+                            $categorie = $existingCategorie;
                         }
                         
                     }
-                    //dd('ici');
                     //$this->em->flush();
-                        //dd($dataCategorie, $categorieName, $categories);
+                    //dd($existingCategorie, $categorie);
+                   
+                       
 
 
                     //traiter le type
                     $dataType = isset($dataProduct[2]) ? trim($dataProduct[2]) : null;
-                    $types = $this->typeRepository->findNameTypeByApplication($this->application);
+                    
 
                     $existingType = $this->typeRepository->findOneBy(['nom' => $dataType, 'application' => $this->application]);
-                    $typeName = $existingType ? $existingType->getNom() : null;
-
+                    
                     if($dataType !== null) {
 
                         $type = null;
     
                         //si le type existe déjà dans la base de données
-                        if($typeName !== null && in_array($typeName, array_column($types, 'nom'))) {
-                            $type = $existingType;
-                        } else {
+                        if ($existingType == null) {
                             $type = new ProduitType();
                             $type->setNom($dataType);
                             $type->setDateCreation($date);
                             $type->setApplication($this->application);
+                            $type->setIsActive(true);
                             $this->em->persist($type);
+                        } else {
+                            $type = $existingType;
                         }
                     }
-                    
-
+                   
                     //traiter le compte
                     $dataCompte = isset($dataProduct[1]) ? trim($dataProduct[1]) : null;
-                    $comptes = $this->compteRepository->findNameCompteByApplication($this->application);
+                    
                     $existingCompte = $this->compteRepository->findOneBy(['nom' => $dataCompte, 'application' => $this->application, 'genre' => 2]);
-                    $compteName = $existingCompte ? $existingCompte->getNom() : null;
-
+                    
                     if ($dataCompte !== null) {
                         $compte = null;
-                        if ($compteName !== null && in_array($compteName, array_column($comptes, 'nom'))) {
-                            $compte = $existingCompte;
-                        } else {
+                        if ($existingCompte == null) {
                             $compte = new Compte();
                             $compte->setNom($dataCompte);
                             $compte->setApplication($this->application);
                             $compte->setDateCreation($date);
                             $compte->setGenre(2);
                             $this->em->persist($compte);
+                        } else {
+                            $compte = $existingCompte;
                         }
                     }
+                    
 
                     //traiter le produit
                     $dataReference = isset($dataProduct[4]) ? trim($dataProduct[4]) : null;
-                    $produits = $this->produitCategorieRepo->findReferenceProduitByApplication($this->application);
+                    
                     $existingProduitCategorie = $this->produitCategorieRepo->findOneBy(['reference' => $dataReference, 'application' => $this->application]);
-                    $produitReference = $existingProduitCategorie ? $existingProduitCategorie->getReference() : null;
-          
-
+                   
                     if($dataReference !== null) {
                         $produitCategorie = null;
-                        if($produitReference !== null && in_array($produitReference, array_column($produits, 'reference'))) {
-                            $produitCategorie = $existingProduitCategorie;
-                        } else {
+                        if ($existingProduitCategorie == null) {
                             $produitCategorie = new ProduitCategorie();
     
                             $produitCategorie->setCategorie($categorie ?? null);
@@ -176,31 +167,30 @@ class ImportProduitController extends AbstractController
                             $produitCategorie->setNom($dataProduct[3]);
                             $produitCategorie->setReference($dataProduct[4] ?? null);
                             $produitCategorie->setPresentationGros($dataProduct[5] ?? null);
-                            $produitCategorie->setPrixAchat(floatval($dataProduct[6] ?? 0.0));
-                            $produitCategorie->setPrixVenteGros(floatval($dataProduct[7] ?? 0.0));
-                            $produitCategorie->setPrixVenteDetail(floatval($dataProduct[8] ?? 0.0));
-                            $produitCategorie->setPresentationDetail($dataProduct[9]);
+                            $produitCategorie->setUniteVenteGros($dataProduct[6] ?? null);
+                            $produitCategorie->setVolumeGros(floatval($dataProduct[7]) ?? 0.0);
+                            $produitCategorie->setPrixAchat(floatval($dataProduct[8] ?? 0.0));
+                            
+                            $produitCategorie->setPrixVenteGros(floatval($dataProduct[9] ?? 0.0));
+                            $produitCategorie->setPrixVenteDetail(floatval($dataProduct[10] ?? 0.0));
+                            $produitCategorie->setPresentationDetail($dataProduct[11]);
+                            $produitCategorie->setUniteVenteDetail($dataProduct[12]);
+                            $produitCategorie->setVolumeDetail(floatval($dataProduct[13]));
                             $produitCategorie->setApplication($this->application);
             
                             $produitCategorie->setDateCreation($date);
             
                             $this->em->persist($produitCategorie);
+                            
+                        } else {
+                            $produitCategorie = $existingProduitCategorie;
                         }
                     }
                     $this->em->flush();
-                    dd('ici');
-                    // Batch processing
-                    if (($i % $batchSize) === 0) {
-                        $this->em->flush(); // Flush the batch to the database
-                        $this->em->clear(); // Detach all objects from Doctrine to free up memory
-                    }
-                    $i++;
                 }
-    
-                $this->em->flush();
-    
+                
                 $this->addFlash('success', 'Importation produit avec succès.');
-                return $this->redirectToRoute('imports_liste');
+                return $this->redirect("/admin#tab-produit-categorie");
             }
 
            

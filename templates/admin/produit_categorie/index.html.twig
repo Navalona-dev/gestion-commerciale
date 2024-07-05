@@ -103,7 +103,7 @@
       $('.tab-produit-type').removeClass('active');
       $('#tab-stock').removeClass('active');
       $('.tab-import-produit').removeClass('active');
-      $('#tab-import-produit').removeClass('active');
+      $('#tab-import-produit').css('display', 'none');
 
      // $('#liste-table-produi-categorie').DataTable().ajax.reload();
 
@@ -117,7 +117,7 @@
             pageLength: 10,
             scrollCollapse: false,
         });
-    }).ajax.reload();
+    });
 
     function newProduitCategorie(isNew = false) {
             $.ajax({
