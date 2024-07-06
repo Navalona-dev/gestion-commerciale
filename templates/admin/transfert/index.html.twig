@@ -10,41 +10,42 @@
 </style>
 
 <div class="pagetitle">
-    <h1>Liste utilisateur </h1>
+    <h1>Liste transfert </h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
         <li class="breadcrumb-item active">Liste</li>
       </ol>
     </nav>
-</div>
+  </div>
 <section class="section">
     <div class="row">
       <div class="col-lg-12">
-        {% include 'admin/tab/_nav_tab_user.html.twig' %}
+
         <div class="card">
           <div class="d-flex justify-content-end mb-3 pt-2 px-2" title="Nouveau">
-            <button class="btn btn-primary" onclick="return newUtilisateur(true)">
+            <a class="btn btn-primary mx-3" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()"><i class="bi bi-list"></i> </a>
+            <button class="btn btn-primary" onclick="return transfertProduit({{produitCategory.id}})">
                  <i class="bi bi-plus-circle ml-2"></i>
             </button>
           </div>
           <div class="card-body px-5 pb-5">
-            <table class="table table-striped" id="liste-table-utilisateur" style="width: 100%;">
+            <table class="table table-striped" id="liste-table-transfert" style="width: 100%;">
               <thead>
-                    {% include 'admin/utilisateurs/_table.html.twig' with { 'type': 'thead' } %}
+                    {% include 'admin/transfert/_table.html.twig' with { 'type': 'thead' } %}
               </thead>
               <tbody>
                 {% if listes|length > 0 %}
 
                   {% for liste in listes %}
-                      {% include 'admin/utilisateurs/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
+                      {% include 'admin/transfert/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
                   {% endfor %}
                 
                 {% else %}
                     <tr>
-                        <td>Aucun enregistrement trouvé</td>
-                         <td>&nbsp;</td>
-                          <td>&nbsp;</td>
+                        <td colspan="3">Aucun enregistrement trouvé</td>
+                        <td></td>
+                        <td></td>
                     </tr>
                 {% endif %}
                 
@@ -56,37 +57,44 @@
 
       </div>
     </div>
-    <div id="blocModalUtilisateurEmpty">
-            </div>
+    <div id="blocModalTransfertEmpty">
+    </div>
   </section>
 
   <script>
-  
     //datatable
     
     $(document).ready(function() {
-      $('.tab-user').addClass('active');
-      $('.tab-permission').removeClass('active');
-      $('.tab-privilege').removeClass('active');
-      $('.tab-cat-permission').removeClass('active');
-      $('#tab-dashboard').removeClass('active');
-      $('#tab-profile').removeClass('active');
-      $('#tab-utilisateur').addClass('active');
-      $('#tab-permission').removeClass('active');
-      $('#tab-privilege').removeClass('active');
-      $('#categorie-permission').removeClass('active');
-      $('#tab-application').removeClass('active');
+    $('#tab-transfert-produit').css('display', 'block');
       $('.tab-categorie').removeClass('active');
       $('#tab-produit-categorie').removeClass('active');
       $('.tab-produit-categorie').removeClass('active');
-      $('#tab-categorie').removeClass('active');  
-      $('#tab-compte_1').removeClass('active');
-      $('#tab-produit-type').removeClass('active');
-            $('#tab-transfert-produit').css('display', 'none');
+      $('#tab-categorie').removeClass('active');
 
+      $('.tab-user').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
 
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
       
-      $('#liste-table-utilisateur').DataTable({
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+     
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+      
+      
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+       $('#tab-compte_1').removeClass('active');
+      $('#tab-produit-type').removeClass('active');
+      $('.tab-produit-type').removeClass('active');
+      $('#tab-stock').removeClass('active');
+
+      //listStockByProduitSession();
+      $('#liste-table-transfert').DataTable({
         responsive: true,
         language: {
           url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
@@ -98,21 +106,27 @@
       });
     });
 
-    function newUtilisateur(isNew = false) {
-            $.ajax({
-                url: '/admin/utilisateurs/new',
+    function transfertProduit(id = null) {
+        $.ajax({
+                url: '/admin/produit/categorie/transfert/'+id,
                 type: 'POST',
-                data: {isNew: isNew},
+                data: {id: id},
                 success: function (response) {
-                    $("#blocModalUtilisateurEmpty").empty();
-                    $("#blocModalUtilisateurEmpty").append(response.html);
-                    $('#modalNewUtilisateur').modal('show');
+                    if (response.html != "") {
+                        $("#blocModalTransfertEmpty").empty();
+                        $("#blocModalTransfertEmpty").append(response.html);
+
+                        $('#modalTransfertProduitCategorie').modal('show');
+
+                    }
+                    
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'ajout d\'utilisateur.');
+                    alert('Erreur lors de la mise à jour de la catégorie.');
                 }
             });
     }
-  
+
+
   </script>

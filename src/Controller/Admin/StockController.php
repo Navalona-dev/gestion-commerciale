@@ -203,8 +203,13 @@ class StockController extends AbstractController
         try {
            
             if ($request->isXmlHttpRequest()) {
-                $stockService->remove($stock, $produitCategorie);
-                return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                if($produitCategorie->getStockRestant() <= $stock->getQtt) {
+                    return new JsonResponse(['status' => 'error'], Response::HTTP_OK);
+
+                } else {
+                    $stockService->remove($stock, $produitCategorie);
+                    return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                }
             } 
                 
         } catch (PropertyVideException $PropertyVideException) {

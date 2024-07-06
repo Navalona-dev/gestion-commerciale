@@ -1409,4 +1409,15 @@
   cursor: pointer;
 }
 
+.quantity-title {
+  font-size: 20px;
+  text-align: center;
+}
+
+.quantity-count span, .quantity-count a {
+  border: 1px solid #2a4ce8;
+  border-radius: 5px;
+  color: #000;
+}
+
 

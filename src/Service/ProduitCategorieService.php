@@ -1,14 +1,21 @@
 <?php
 namespace App\Service;
 
-use App\Entity\Compte;
 use App\Entity\Stock;
+use App\Entity\Compte;
+use App\Entity\Categorie;
+use App\Entity\Transfert;
+use App\Entity\ProduitType;
 use Doctrine\ORM\EntityManager;
 use App\Entity\ProduitCategorie;
+use App\Repository\CompteRepository;
 use App\Service\AuthorizationManager;
+use App\Repository\CategorieRepository;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\ProduitTypeRepository;
 use App\Exception\ActionInvalideException;
+use App\Repository\ProductImageRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -21,12 +28,27 @@ class ProduitCategorieService
     private $entityManager;
     private $session;
     public  $isCurrentDossier = false;
+    private $categorieRepo;
+    private $typeRepo;
+    private $imageRepo;
+    private $compteRepo;
 
-    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager)
+    public function __construct(
+        AuthorizationManager $authorization, 
+        TokenStorageInterface  $TokenStorageInterface, 
+        EntityManagerInterface $entityManager,
+        CategorieRepository $categorieRepo,
+        ProduitTypeRepository $typeRepo,
+        ProductImageRepository $imageRepo,
+        CompteRepository $compteRepo)
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
         $this->entityManager = $entityManager;
+        $this->categorieRepo = $categorieRepo;
+        $this->typeRepo = $typeRepo;
+        $this->imageRepo = $imageRepo;
+        $this->compteRepo = $compteRepo;
     }
 
     public function add($instance)
@@ -143,6 +165,18 @@ class ProduitCategorieService
         return false;
     }
 
+    public function addTransfert($produitCategorie, $newApplication, $quantity)
+    {
+        $transfert = new Transfert();
+        $transfert->setProduitCategorie($produitCategorie);
+        $transfert->setOldApplication($produitCategorie->getApplication());
+        $transfert->setApplication($newApplication);
+        $transfert->setQuantity($quantity);
+        $transfert->setDateCreation(new \DateTime());
+
+        $this->entityManager->persist($transfert);
+    }
+
     
     public function updateStockRestant($oldProduitCategorie, $quantity)
     {
@@ -157,7 +191,7 @@ class ProduitCategorieService
         
         $this->entityManager->persist($oldProduitCategorie);
 
-        $stocks = $oldProduitCategorie->getStocks();
+        /*$stocks = $oldProduitCategorie->getStocks();
         $remainingQuantity = $quantity;
         
         // Parcourir les stocks en commençant par le dernier
@@ -181,7 +215,7 @@ class ProduitCategorieService
                 $stock->setQtt(0);
                 $this->entityManager->persist($stock);
             }
-        }
+        }*/
     }
 
     public function updateStockNewApplication($productReferenceExists, $quantity)
@@ -204,15 +238,73 @@ class ProduitCategorieService
 
     public function addNewProductForNewApplication($oldProduitCategorie, $quantity, $application)
     {
-        $productReferenceExists = new ProduitCategorie();
+        $newProduitCategorie = new ProduitCategorie();
 
         $date = new \DateTime();
 
-        $productReferenceExists->setNom($oldProduitCategorie->getNom())
+        $categorie = $oldProduitCategorie->getCategorie();
+        $type = $oldProduitCategorie->getType();
+
+        $existingCategorie = $this->categorieRepo->findOneBy(['nom' => $categorie->getNom(), 'application' => $application]);
+        $existingType = $this->typeRepo->findOneBy(['nom' => $type->getNom(), 'application' => $application]);
+       
+        $comptes = $oldProduitCategorie->getComptes();
+        $existingComptes = [];
+
+        foreach ($comptes as $compte) {
+            $existingCompte = $this->compteRepo->findOneBy(['nom' => $compte->getNom(), 'application' => $application]);
+    
+            if ($existingCompte) {
+                $newProduitCategorie->addCompte($existingCompte);
+            } else {
+                $newCompte = new Compte();
+                $newCompte->setNom($compte->getNom());
+                $newCompte->setGenre(2);
+                $newCompte->setEtat($compte->getEtat() ?: null);
+                $newCompte->setStatut($compte->getStatut() ?: null);
+                $newCompte->setEmail($compte->getEmail() ?: null);
+                $newCompte->setTelephone($compte->getTelephone() ?: null);
+                $newCompte->setDateCreation(new \DateTime());
+    
+                $this->entityManager->persist($newCompte);
+                $newProduitCategorie->addCompte($newCompte);
+            }
+        }
+    
+        //verifier si la categorie existe déjà dans l'application
+        if($existingCategorie) {
+            $newProduitCategorie->setCategorie($existingCategorie);
+        } else {
+            //si la categorie n'existe pas encore
+            $newCategorie = new Categorie();
+            $newCategorie->setNom($categorie->getNom());
+            $newCategorie->setApplication($application);
+            $newCategorie->setDateCreation(new \DateTime());
+            $this->entityManager->persist($newCategorie);
+
+            $newProduitCategorie->setCategorie($newCategorie);
+
+        }
+
+        //verifier si le type existe déjà dans l'application
+        if($existingType) {
+            $newProduitCategorie->setType($existingType);
+        } else {
+            //si le type n'existe pas encore dans la base de données
+            $newType = new ProduitType();
+            $newType->setNom($type->getNom());
+            $newType->setDescription($type->getDescription() ?: null);
+            $newType->setApplication($application);
+            $newType->setIsActive(true);
+            $newType->setDateCreation(new \DateTime());
+
+            $this->entityManager->persist($newType);
+            $newProduitCategorie->setType($newType);
+        }
+
+        $newProduitCategorie->setNom($oldProduitCategorie->getNom())
                             ->setApplication($application)
                             ->setReference($oldProduitCategorie->getReference())
-                            ->setCategorie($oldProduitCategorie->getCategorie())
-                            ->setType($oldProduitCategorie->getType())
                             ->setTva($oldProduitCategorie->getTva())
                             ->setQtt($oldProduitCategorie->getQtt())
                             ->setStockRestant($quantity)
@@ -228,18 +320,18 @@ class ProduitCategorieService
                             ->setDateCreation($date);
 
                         foreach ($oldProduitCategorie->getProductImages() as $productImage) {
-                            $productImage->setProduitCategorie($productReferenceExists);
+                            $productImage->setProduitCategorie($newProduitCategorie);
                             $productImage->setDateCreation($date);
                             $this->entityManager->persist($productImage);
                         }
 
                         $stock = new Stock();
-                        $stock->setProduitCategorie($productReferenceExists);
+                        $stock->setProduitCategorie($newProduitCategorie);
                         $stock->setQtt($quantity);
                         $stock->setDateCreation($date);
 
                         $this->entityManager->persist($stock);
-                        $this->entityManager->persist($productReferenceExists);
+                        $this->entityManager->persist($newProduitCategorie);
 
     }
 

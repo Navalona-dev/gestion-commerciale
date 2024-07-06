@@ -85,6 +85,10 @@ $(document).ready(function() {
         showTabImportProduit();
     }
 
+    if (anchorName === "tab-transfert-produit") {
+        listTransfertByProduitSession();
+    }
+
 });
 
 function listImageByProduitSession() {
@@ -108,6 +112,7 @@ function listImageByProduitSession() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -140,6 +145,40 @@ function listStockByProduitSession() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+
+                 $(".loadBody").css('display', 'none');
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
+
+         });
+ }
+
+ function listTransfertByProduitSession() {
+    $.ajax({
+             type: 'post',
+             url: '/admin/transfert/refresh/produit',
+             //data: {},
+             success: function (response) {
+                 $("#tab-transfert-produit").empty();
+                 $("#tab-transfert-produit").append(response.html);
+                 $("#tab-transfert-produit").css('display', 'block');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-stock"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -169,6 +208,7 @@ function showTabCompte(genre = 1) {
             $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
 
             // Hide all compte tabs
             $('[id^="tab-compte_"]').removeClass('active').empty();
@@ -218,6 +258,7 @@ function showTabProfile() {
                  $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -251,6 +292,7 @@ function showTabApplication() {
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  
                  $(".loadBody").css('display', 'none');
              },
@@ -284,6 +326,7 @@ function showTabUtilisateur() {
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -317,6 +360,7 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -350,6 +394,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -383,6 +428,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -416,6 +462,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -449,6 +496,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -483,6 +531,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
 
 
                  $(".loadBody").css('display', 'none');
@@ -520,6 +569,8 @@ function showTabPermission() {
                  //$('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $(".tab-import-produit").removeClass('active');
                  $("#tab-import-produit").removeClass('active');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -553,6 +604,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                 
                  $(".loadBody").css('display', 'none');
              },
@@ -564,5 +616,5 @@ function showTabPermission() {
          });
  }
 
-
+ 
 

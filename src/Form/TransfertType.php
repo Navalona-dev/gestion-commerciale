@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Transfert;
 use App\Entity\Application;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -21,7 +22,7 @@ class TransfertType extends AbstractType
                 ],
                 'choice_label' => 'entreprise'
             ])
-            ->add('qtt', NumberType::class, [
+            ->add('quantity', NumberType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3',
                     'autocomplete' => 'off'
@@ -34,7 +35,8 @@ class TransfertType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            // Configure your form options here
+            'data_class' => Transfert::class,
+            
         ]);
     }
 }

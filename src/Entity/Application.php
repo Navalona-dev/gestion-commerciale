@@ -74,6 +74,12 @@ class Application
     #[ORM\OneToMany(targetEntity: ProduitType::class, mappedBy: 'application')]
     private Collection $produitTypes;
 
+    /**
+     * @var Collection<int, Transfert>
+     */
+    #[ORM\OneToMany(targetEntity: Transfert::class, mappedBy: 'application')]
+    private Collection $transferts;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -82,6 +88,7 @@ class Application
         $this->categories = new ArrayCollection();
         $this->produitCategories = new ArrayCollection();
         $this->produitTypes = new ArrayCollection();
+        $this->transferts = new ArrayCollection();
     }
 
     public static function newApplicationFromInstance($instance = null)
@@ -350,6 +357,36 @@ class Application
             // set the owning side to null (unless already changed)
             if ($produitType->getApplication() === $this) {
                 $produitType->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Transfert>
+     */
+    public function getTransferts(): Collection
+    {
+        return $this->transferts;
+    }
+
+    public function addTransfert(Transfert $transfert): static
+    {
+        if (!$this->transferts->contains($transfert)) {
+            $this->transferts->add($transfert);
+            $transfert->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransfert(Transfert $transfert): static
+    {
+        if ($this->transferts->removeElement($transfert)) {
+            // set the owning side to null (unless already changed)
+            if ($transfert->getApplication() === $this) {
+                $transfert->setApplication(null);
             }
         }
 

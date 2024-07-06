@@ -286,7 +286,6 @@ class ProduitCategorieController extends AbstractController
     public function transfert(
         $produitCategorie,
         Request $request, 
-        ApplicationRepository $applicationRepo,
         ProduitCategorieRepository $produitCategorieRepo,
         EntityManagerInterface $em,
         ProduitCategorieService $produitCategorieService) {
@@ -304,10 +303,10 @@ class ProduitCategorieController extends AbstractController
                 $date = new \DateTime();
 
                 $formData = $form->getData();
-                $application = $formData['application'];
-                $quantity = $formData['qtt'];
+                $newApplication = $formData->getApplication();
+                $quantity = $formData->getQuantity();
 
-                $produits = $produitCategorieRepo->findBy(['application' => $application]);
+                $produits = $produitCategorieRepo->findBy(['application' => $newApplication]);
 
                 // Condition pour vérifier si $produitReference existe dans $produits
                 $productReferenceExists = null;
@@ -316,6 +315,14 @@ class ProduitCategorieController extends AbstractController
                         $productReferenceExists = $produit;
                         break;
                     }
+                }
+
+                //ajout transfert
+                if($oldProduitCategorie->getStockRestant() <= $quantity) {
+                    return new JsonResponse(['status' => 'error', Response::HTTP_OK]);
+                    
+                } else {
+                    $produitCategorieService->addTransfert($oldProduitCategorie, $newApplication, $quantity);
                 }
 
                 // Mise à jour du stock restant de l'ancienne catégorie de produit
@@ -329,7 +336,7 @@ class ProduitCategorieController extends AbstractController
                         
                     } else {
                         // Création d'une nouvelle catégorie de produit pour l'application cible
-                        $produitCategorieService->addNewProductForNewApplication($oldProduitCategorie, $quantity, $application);
+                        $produitCategorieService->addNewProductForNewApplication($oldProduitCategorie, $quantity, $newApplication);
                     }
 
                     $produitCategorieService->update();

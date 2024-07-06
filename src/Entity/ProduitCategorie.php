@@ -134,12 +134,19 @@ class ProduitCategorie
     #[ORM\Column(nullable: true)]
     private ?float $volumeDetail = null;
 
+    /**
+     * @var Collection<int, Transfert>
+     */
+    #[ORM\OneToMany(targetEntity: Transfert::class, mappedBy: 'produitCategorie')]
+    private Collection $transferts;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
         $this->productImages = new ArrayCollection();
         $this->stocks = new ArrayCollection();
         $this->comptes = new ArrayCollection();
+        $this->transferts = new ArrayCollection();
     }
 
     public static function newProduitCategorie($instance = null)
@@ -543,6 +550,36 @@ class ProduitCategorie
     public function setVolumeDetail(?float $volumeDetail): static
     {
         $this->volumeDetail = $volumeDetail;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Transfert>
+     */
+    public function getTransferts(): Collection
+    {
+        return $this->transferts;
+    }
+
+    public function addTransfert(Transfert $transfert): static
+    {
+        if (!$this->transferts->contains($transfert)) {
+            $this->transferts->add($transfert);
+            $transfert->setProduitCategorie($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransfert(Transfert $transfert): static
+    {
+        if ($this->transferts->removeElement($transfert)) {
+            // set the owning side to null (unless already changed)
+            if ($transfert->getProduitCategorie() === $this) {
+                $transfert->setProduitCategorie(null);
+            }
+        }
 
         return $this;
     }
