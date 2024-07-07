@@ -8,6 +8,7 @@ use App\Service\AccesService;
 use App\Entity\ProduitCategorie;
 use App\Form\ProduitCategorieType;
 use App\Service\ApplicationManager;
+use App\Form\UpdatePriceProductType;
 use App\Exception\PropertyVideException;
 use App\Form\UpdateProduitCategorieType;
 use App\Service\ProduitCategorieService;
@@ -286,7 +287,6 @@ class ProduitCategorieController extends AbstractController
     public function transfert(
         $produitCategorie,
         Request $request, 
-        ApplicationRepository $applicationRepo,
         ProduitCategorieRepository $produitCategorieRepo,
         EntityManagerInterface $em,
         ProduitCategorieService $produitCategorieService) {
@@ -296,6 +296,10 @@ class ProduitCategorieController extends AbstractController
             $oldProduitCategorie = $produitCategorieRepo->findOneBy(['id' => $produitCategorie]);
             $produitReference = $oldProduitCategorie->getReference();
 
+            $oldApplication = $oldProduitCategorie->getApplication();
+
+            $oldApplicationName = $oldApplication->getEntreprise();
+
             $form = $this->createForm(TransfertType::class);
 
             $form->handleRequest($request);
@@ -303,11 +307,13 @@ class ProduitCategorieController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $date = new \DateTime();
 
-                $formData = $form->getData();
-                $application = $formData['application'];
-                $quantity = $formData['qtt'];
+                $isChangePrice = $request->get('is_change_price');
 
-                $produits = $produitCategorieRepo->findBy(['application' => $application]);
+                $formData = $form->getData();
+                $newApplication = $formData->getApplication();
+                $quantity = $formData->getQuantity();
+
+                $produits = $produitCategorieRepo->findBy(['application' => $newApplication]);
 
                 // Condition pour vérifier si $produitReference existe dans $produits
                 $productReferenceExists = null;
@@ -318,6 +324,14 @@ class ProduitCategorieController extends AbstractController
                     }
                 }
 
+                //ajout transfert
+                if($oldProduitCategorie->getStockRestant() <= $quantity) {
+                    return new JsonResponse(['status' => 'error', Response::HTTP_OK]);
+                    
+                } else {
+                    $produitCategorieService->addTransfert($oldProduitCategorie, $newApplication, $quantity);
+                }
+
                 // Mise à jour du stock restant de l'ancienne catégorie de produit
                 
                 $produitCategorieService->updateStockRestant($oldProduitCategorie, $quantity);
@@ -325,11 +339,11 @@ class ProduitCategorieController extends AbstractController
                 if ($request->isXmlHttpRequest()) {
                     if ($productReferenceExists) {
                         // Mise à jour du stock pour l'application cible si le produit existe
-                        $produitCategorieService->updateStockNewApplication($productReferenceExists, $quantity);
+                        $produitCategorieService->updateStockNewApplication($productReferenceExists, $quantity, $isChangePrice);
                         
                     } else {
                         // Création d'une nouvelle catégorie de produit pour l'application cible
-                        $produitCategorieService->addNewProductForNewApplication($oldProduitCategorie, $quantity, $application);
+                        $produitCategorieService->addNewProductForNewApplication($oldProduitCategorie, $quantity, $newApplication, $isChangePrice);
                     }
 
                     $produitCategorieService->update();
@@ -342,6 +356,7 @@ class ProduitCategorieController extends AbstractController
             $data["html"] = $this->renderView('admin/produit_categorie/modal_transfert.html.twig', [
                 'form' => $form->createView(),
                 'id' => $oldProduitCategorie->getId(),
+                'applicationName' => $oldApplicationName
             ]);
             return new JsonResponse($data);
         } catch (PropertyVideException $PropertyVideException) {
@@ -375,6 +390,60 @@ class ProduitCategorieController extends AbstractController
             $data['exception'] = $Exception->getMessage();
             $data["html"] = "";
             return new JsonResponse($data);
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/edit/prix/{produitCategorie}', name: '_edit_price')]
+    public function updatePrice(Request $request, ProduitCategorie $produitCategorie, EntityManagerInterface $em)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
+        }*/
+        $data = [];
+        try {
+            $form = $this->createForm(UpdatePriceProductType::class, $produitCategorie, []);
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                if ($request->isXmlHttpRequest()) {
+                    $notifications = $produitCategorie->getNotifications();
+                    foreach($notifications as $notification) {
+                        $notification->setIsView(true);
+                        $em->persist($notification);
+                    }
+                    $produitCategorie->setIsChangePrix(false);
+
+                    $this->produitCategorieService->update();
+                    return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                }
+                
+            }
+
+            $data['exception'] = "";
+            $data["html"] = $this->renderView('admin/transfert/modal_update_price.html.twig', [
+                'form' => $form->createView(),
+                'id' => $produitCategorie->getId(),
+            ]);
+            return new JsonResponse($data);
+        } catch (PropertyVideException $PropertyVideException) {
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
+            throw $this->createNotFoundException('Exception' . $UniqueConstraintViolationException->getMessage());
+        } catch (MappingException $MappingException) {
+            $this->createNotFoundException('Exception' . $MappingException->getMessage());
+        } catch (ORMInvalidArgumentException $ORMInvalidArgumentException) {
+            $this->createNotFoundException('Exception' . $ORMInvalidArgumentException->getMessage());
+        } catch (UnsufficientPrivilegeException $UnsufficientPrivilegeException) {
+            $this->createNotFoundException('Exception' . $UnsufficientPrivilegeException->getMessage());
+        } catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
+            $this->createNotFoundException('Exception' . $NotNullConstraintViolationException->getMessage());
+        } catch (\Exception $Exception) {
+            $data['exception'] = $Exception->getMessage();
+            $data["html"] = "";
+           
             $this->createNotFoundException('Exception' . $Exception->getMessage());
         }
         return new JsonResponse($data);

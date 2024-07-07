@@ -30,6 +30,8 @@
 <script>
     
     function deleteProduitType(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         if (confirm('Voulez vous vraiment supprimer ce type de produit?')) {
             $.ajax({
                 url: '/admin/produit/type/delete/'+id,
@@ -52,6 +54,9 @@
                     if (nextLink.length > 0) {
                         nextLink.click();
                     }
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
                     showTabProduitType();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -63,6 +68,8 @@
     }
 
     function openModalUpdateProduitType(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         $.ajax({
                 url: '/admin/produit/type/edit/'+id,
                 type: 'POST',
@@ -73,6 +80,10 @@
                         $("#blocModalProduitTypeEmpty").append(response.html);
 
                         $('#modalUpdateProduitType').modal('show');
+
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
 
                     }
                     

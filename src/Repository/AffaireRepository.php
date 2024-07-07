@@ -48,6 +48,69 @@ class AffaireRepository extends ServiceEntityRepository
         
     }
 
+    public function searchAffaire(
+        $nom = null,
+        $dateDu = null,
+        $dateAu = null,
+        $limit = null,
+        $pg = 1
+    ) {
+        $query = $this->createQueryBuilder('a')
+            //->join('a.application', 'a')
+            ->where('a.application = :application')
+            ->setParameter('application', $this->application);
+
+        if (null != $nom) {
+            $query = $query->andWhere("a.nom LIKE :nom")
+                ->setParameter('nom', '%' . $nom . '%');
+        }
+
+        if (null != $dateDu && null != $dateAu) {
+            $query = $query->andWhere('a.dateCreation >= :dateDu AND a.dateCreation <= :dateAu')
+                ->setParameter('dateDu', $dateDu->format("Y-m-d"))
+                ->setParameter('dateAu', $dateAu->format("Y-m-d"));
+        } elseif (null != $dateDu && null == $dateAu) {
+            $query = $query->andWhere('a.dateCreation >= :dateDu')
+                ->setParameter('dateDu', $dateDu->format("Y-m-d"));
+        } elseif (null == $dateDu && null != $dateAu) {
+            $query = $query->andWhere('a.dateCreation <= :dateAu')
+                ->setParameter('dateAu', $dateAu->format("Y-m-d"));
+        }
+
+        if (null != $limit) {
+            $query = $query->setMaxResults($limit)
+                ->setFirstResult($pg);
+        }
+
+        //filtre par etat
+        /*if (null != $etat) {
+
+            if ($etat == "pre") {
+                $query = $query->andWhere("a.etat LIKE :etat OR a.etat IS NULL");
+            } else {
+                $query = $query->andWhere("a.etat LIKE :etat");
+            }
+
+            $query = $query->setParameter('etat', '%' . $etat . '%');
+        }*/
+
+        $tabOrder = [
+            0 => 'a.dateCreation',
+            1 => 'a.nom',
+            2 => 'a.email',
+            3 => 'a.telephone',
+            4 => 'a.adresse',
+
+        ];
+        
+ 
+        $query->orderBy('a.dateCreation', 'DESC');
+        
+        $result = $query->getQuery()->getResult();
+       
+        return $result;
+    }
+
     // /**
     //  * @return Affaire[] Returns an array of Affaire objects
     //  */

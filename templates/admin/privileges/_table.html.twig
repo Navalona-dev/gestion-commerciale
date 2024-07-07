@@ -19,6 +19,8 @@
 <script>
     
     function deletePrivilege(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         if (confirm('Voulez vous vraiment supprimer cet privilege?')) {
             $.ajax({
                 url: '/admin/privileges/delete/'+id,
@@ -41,6 +43,9 @@
                     if (nextLink.length > 0) {
                         nextLink.click();
                     }
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -52,6 +57,8 @@
 
 
     function openModalAssignationPrivilege(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         $.ajax({
                 url: '/admin/privileges/assignation/permission/'+id,
                 type: 'POST',
@@ -62,6 +69,9 @@
                         $("#blocModalPrivilegeEmpty").append(response.html);
 
                         $('#modalAssignationPrivilege').modal('show');
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
                     }
                     
                 },
@@ -73,6 +83,8 @@
     }
 
     function openModalUpdatePrivilege(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         $.ajax({
                 url: '/admin/privileges/'+id,
                 type: 'POST',
@@ -85,7 +97,9 @@
                         console.log('oo');
                         $('#modalUpdatePrivilege').modal('show');
 
-                        console.log('ici');
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
                     }
                     
                 },

@@ -115,19 +115,12 @@ class StockService
         $qtt = $stock->getQtt();
 
         $stockProduit = $stockRestant - $qtt;
-
-        if($stockRestant < $qtt || $stockRestant == $qtt) {
-
-            $message = 'Vous ne pouvez pas faire cette action parce que le stock restant du produit est inférieur à ce quantité!!';
-        
-        } else {
             
-            $this->entityManager->remove($stock);
+        $this->entityManager->remove($stock);
 
-            $produitCategorie->setStockRestant($stockProduit);
+        $produitCategorie->setStockRestant($stockProduit);
 
-            $this->entityManager->persist($produitCategorie);
-        }
+        $this->entityManager->persist($produitCategorie);
 
         $this->update();
     }

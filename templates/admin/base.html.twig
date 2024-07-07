@@ -2,6 +2,8 @@
 <html>
     <head>
         <meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
         <title>Gestion commerciale - {% block title %}{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
         {# <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> #}
@@ -37,13 +39,11 @@
             {% block body %}{% endblock %}
         </main>
         <script src="{{ asset('assets/js/jquery-3.6.0.js') }}"></script>
+        <script src="{{asset('assets/vendor/popper/popper.min.js')}}"></script>
+        <script src="{{asset('assets/vendor/bootstrap/js/bootstrap.min.js')}}"></script>
 		<script src="{{ asset('assets/js/jquery-ui.js') }}"></script>
-
         <script type="text/javascript" src="{{ asset('plugins/ckeditor/ckeditor.js') }}"></script>
-
-        {# <script src="{{ asset('assets/vendor/jquery/jquery.min.js')}}"></script> #}
         <script src="{{asset('assets/vendor/apexcharts/apexcharts.min.js')}}"></script>
-        <script src="{{asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
         <script src="{{asset('assets/vendor/chart.js/chart.umd.js')}}"></script>
         <script src="{{asset('assets/vendor/echarts/echarts.min.js')}}"></script>
         <script src="{{asset('assets/vendor/quill/quill.min.js')}}"></script>

@@ -42,7 +42,7 @@
                   {% endfor %}
                 
                 {% else %}
-                    <tr>
+                    <tr class="text-nowrap">
                         <td colspan="4">Aucun enregistrement trouvé</td>
                         <td></td>
                         <td></td>
@@ -88,6 +88,8 @@
      
       $('#tab-permission').removeClass('active');
       $('#tab-privilege').removeClass('active');
+            $('#tab-transfert-produit').css('display', 'none');
+
       
       
       $('#tab-application').removeClass('active');

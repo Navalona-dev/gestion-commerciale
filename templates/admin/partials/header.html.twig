@@ -23,8 +23,10 @@
     </div>
 
     <div class="dropdown">
-      <button class="btn btn-primary dropdown-toggle btn-sm px-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Ajouter
+      <button class="btn btn-primary dropdown-toggle btn-sm px-4 btn-add-header" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-plus-circle"></i>
+        <span class="mx-2">Ajouter</span>
+
       </button>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="#" onclick="return newCompte(true, 1)">Ajouter un client</a></li>
@@ -40,153 +42,13 @@
             <i class="bi bi-search"></i>
           </a>
         </li>
-{#
-        <li class="nav-item dropdown">
 
-          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-            <i class="bi bi-bell"></i>
-            <span class="badge bg-primary badge-number">4</span>
-          </a>
-
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-            <li class="dropdown-header">
-              You have 4 new notifications
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-exclamation-circle text-warning"></i>
-              <div>
-                <h4>Lorem Ipsum</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>30 min. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-x-circle text-danger"></i>
-              <div>
-                <h4>Atque rerum nesciunt</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>1 hr. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-check-circle text-success"></i>
-              <div>
-                <h4>Sit rerum fuga</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>2 hrs. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-info-circle text-primary"></i>
-              <div>
-                <h4>Dicta reprehenderit</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>4 hrs. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li class="dropdown-footer">
-              <a href="#">Show all notifications</a>
-            </li>
-
-          </ul>
-
-        </li> #}
-
-       {# <li class="nav-item dropdown">
-
-          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-            <i class="bi bi-chat-left-text"></i>
-            <span class="badge bg-success badge-number">3</span>
-          </a>
-
-           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
-            <li class="dropdown-header">
-              You have 3 new messages
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="message-item">
-              <a href="#">
-                <img src="{{asset('assets/img/messages-1.jpg')}}" alt="" class="rounded-circle">
-                <div>
-                  <h4>Maria Hudson</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>4 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="message-item">
-              <a href="#">
-                <img src="{{asset('assets/img/messages-2.jpg')}}" alt="" class="rounded-circle">
-                <div>
-                  <h4>Anna Nelson</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>6 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="message-item">
-              <a href="#">
-                <img src="{{asset('assets/img/messages-3.jpg')}}" alt="" class="rounded-circle">
-                <div>
-                  <h4>David Muldon</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>8 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="dropdown-footer">
-              <a href="#">Show all messages</a>
-            </li>
-
-          </ul> 
-
-        </li>#}
 
         <li class="nav-item dropdown pe-3">
           <a class="nav-link nav-profile d-flex align-items-center pe-0 dropdown-title" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-ui-checks-grid"></i>
           </a>
-          <ul class="py-3 px-4 dropdown-menu dropdown-menu-end dropdown-menu-arrow profile row list-app custom-dropdown-width">
+          <ul class="py-3 px-4 dropdown-menu dropdown-menu-end dropdown-menu-arrow profile list-app custom-dropdown-width">
             <div class="mt-3 mb-5">
               <input type="text" name="search-app" id="search-app" class="form-control form-control-sm" placeholder="Nom d'application">
             </div>
@@ -195,7 +57,7 @@
             <div class="row" id="app-list">
               {% if applications %}
                 {% for application in applications %}
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                  <div class="col-4  mb-3">
                       <a class="app-content" href="{{ path('applications_change_appli', {'id': application.id}) }}?uri={{ app.request.uri }}">
                         <div class="d-flex justify-content-center">
                           <img src="{{asset('assets/img/logo.png')}}" alt="" class="img-fluid img-app">
@@ -213,84 +75,118 @@
           <a class="nav-link nav-profile d-flex align-items-center pe-0 dropdown-title" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-laptop"></i>
           </a>
-          <ul class="p-4 dropdown-menu dropdown-menu-end dropdown-menu-arrow profile row list-app custom-dropdown-width">
+          <ul class="p-4 dropdown-menu dropdown-menu-end dropdown-menu-arrow profile list-app custom-dropdown-width">
             <div class="row">
-              {# <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+              {# <div class="col-4 mb-3">
                   <a href="#" class="work-post-content">
                     <div class="d-flex justify-content-center">
                       <i class="bi-tags icons"></i>
                     </div>
-                  <p class="text-center text-nowrap"><small>Categories</small></p>
+                  <p class="text-center tesmall>Categories</small></p>
                   </a>
               </div> #}
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+              <div class="col-4 mb-3">
                 <a href="#tab-utilisateur" onClick="return showTabUtilisateur()" class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-person icons"></i>
                   </div>
-                  <p class="text-center text-nowrap"><small>Utilisateurs</small></p>
+                  <p class="text-center"><small>Utilisateurs</small></p>
                 </a>
               </div>
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+              <div class="col-4 mb-3">
                 <a href="#tab-application" onClick="return showTabApplication()" class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-app icons"></i>
                   </div>
-                  <p class="text-center text-nowrap"><small>Applications</small></p>
+                  <p class="text-center"><small>Applications</small></p>
                 </a>
               </div>
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+              <div class="col-4 mb-3">
                 <a href="#tab-permission" onClick="return showTabPermission()" class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-shield-lock icons"></i>
                   </div>
-                  <p class="text-center text-nowrap"><small>Permissions</small></p>
+                  <p class="text-center"><small>Permissions</small></p>
                 </a>
               </div>
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+              <div class="col-4 mb-3">
                 <a href="#tab-privilege" onClick="return showTabPrivilege()" class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-award icons"></i>
                   </div>
-                  <p class="text-center text-nowrap"><small>Privilèges</small></p>
+                  <p class="text-center"><small>Privilèges</small></p>
                 </a>
               </div>
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+              <div class="col-4 mb-3">
                 <a href="#tab-categorie-permission" onClick="return showTabCategoriePermission()" class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-folder icons"></i>
                   </div>
-                  <p class="text-center text-nowrap"><small>Catégorie permission</small></p>
+                  <p class="text-center"><small>Catégorie permission</small></p>
                 </a>
               </div>
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
-                <a href="#" onClick="return showTabProduitCategorie()"  class="work-post-content">
+              <div class="col-4 mb-3">
+                <a href="#tab-produit-categorie" onClick="return showTabProduitCategorie()"  class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-basket icons"></i>
                   </div>
-                  <p class="text-center text-nowrap"><small>Produits</small></p>
+                  <p class="text-center"><small>Produits</small></p>
                 </a>
               </div>
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
-                <a class="work-post-content" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()">
-                  <div class="d-flex justify-content-center">
-                    <i class="bi bi-bag icons"></i>
-                  </div>
-                  <p class="text-center text-nowrap"><small>Produit catégorie</small></p>
-                </a>
-              </div>
-
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+              <div class="col-4 mb-3">
                 <a class="work-post-content" href="#tab-import-produit" onClick="return showTabImportProduit()">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-upload icons"></i>
                   </div>
-                  <p class="text-center text-nowrap"><small>Import</small></p>
+                  <p class="text-center"><small>Import</small></p>
                 </a>
               </div>
               
             </div>
           </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-bell text-black"></i>
+            <span class="badge badge-number {% if countNotif > 0 %} badge-animation {% endif %} "> {{countNotif}} </span>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+            <li class="dropdown-header">
+              Vous avez {{countNotif}} notifications
+              <a href="#"><span class="badge rounded-pill p-2 ms-2">Voir tous</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            {% for notification in notifications %}
+            <a href="#" onclick="return openModalUpdatePriceProduit({{notification.produitCategorie.id}})">
+              <li class="notification-item">
+                <i class="bi bi-exclamation-circle text-danger"></i>
+                <div>
+                    <h4 class="text-black">Prix à changer</h4>
+                    <p>{{ notification.message }}</p>
+                    <p>{{ notification.dateCreation|format_date }}</p>
+                </div>
+                
+            </li>
+            </a>
+              
+              <li>
+                  <hr class="dropdown-divider">
+              </li>
+          {% endfor %}
+
+
+            <li class="dropdown-footer">
+              <a href="#">Voir tous les notifications</a>
+            </li>
+
+          </ul>
+
         </li>
            
         <li class="nav-item dropdown pe-3">

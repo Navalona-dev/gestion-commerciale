@@ -18,6 +18,8 @@
 <script>
     
     function deletePermission(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         if (confirm('Voulez vous vraiment supprimer cette permission?')) {
             $.ajax({
                 url: '/admin/permissions/delete/'+id,
@@ -40,6 +42,9 @@
                     if (nextLink.length > 0) {
                         nextLink.click();
                     }
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -50,6 +55,8 @@
     }
 
     function openModalUpdatePermission(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         $.ajax({
                 url: '/admin/permissions/'+id,
                 type: 'POST',
@@ -60,6 +67,9 @@
                         $("#blocModalPermissionEmpty").append(response.html);
 
                         $('#modalUpdatePermission').modal('show');
+                        if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
                     }
                     
                 },

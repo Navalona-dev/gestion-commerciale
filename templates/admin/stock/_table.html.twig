@@ -19,6 +19,8 @@
 <script>
     
     function deleteStock(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         if (confirm('Voulez vous vraiment supprimer stock?')) {
             $.ajax({
                 url: '/admin/stock/delete/'+id,
@@ -31,13 +33,22 @@
                             closeButton: true,
                             progressBar: true,
                             showMethod: 'slideDown',
-                            timeOut: 1000
+                            timeOut: 2000
                         };
+
+                        if (response && response.status === 'success') {
                         toastr.success('Avec succèss', 'Suppression effectuée');
 
+                        } else {
+                            toastr.error('Suppression échouée, la quantité est supérieur ou égale au stock restant')
+
+                        }
                         //$(".loadBody").css('display', 'none');
 
                     }, 800);
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
                    listStockByProduitSession();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -49,6 +60,8 @@
     }
 
     function openModalUpdateStock(id = null, oldQtt = null) {
+        var anchorName = document.location.hash.substring(1);
+
         $.ajax({
                 url: '/admin/stock/edit/'+id,
                 type: 'POST',
@@ -59,6 +72,9 @@
                         $("#blocModalStockEmpty").append(response.html);
 
                         $('#modalUpdateStock').modal('show');
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
 
                     }
                     

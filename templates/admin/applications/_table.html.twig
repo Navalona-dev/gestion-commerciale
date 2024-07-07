@@ -29,6 +29,8 @@
 <script>
     
     function deleteApplication(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         if (confirm('Voulez vous vraiment supprimer cette application?')) {
             $.ajax({
                 url: '/admin/applications/delete/'+id,
@@ -51,6 +53,9 @@
                     if (nextLink.length > 0) {
                         nextLink.click();
                     }
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -61,6 +66,8 @@
     }
 
     function openModalUpdateApplication(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         $.ajax({
                 url: '/admin/applications/'+id,
                 type: 'POST',
@@ -71,6 +78,9 @@
                         $("#blocModalApplicationEmpty").append(response.html);
 
                         $('#modalUpdateApplication').modal('show');
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
 
                     }
                     

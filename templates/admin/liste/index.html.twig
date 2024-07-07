@@ -41,7 +41,7 @@
                 {% for liste in listes %}
                     {% include 'admin/category_permission/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
                 {% else %}
-                    <tr>
+                    <tr class="text-nowrap">
                         <td>Aucun enregistrement trouvé</td>
                     </tr>
                 {% endfor %}

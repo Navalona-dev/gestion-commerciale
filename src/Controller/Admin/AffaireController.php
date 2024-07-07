@@ -8,7 +8,7 @@ use App\Form\UserType;
 use App\Form\CompteType;
 use App\Form\ProfilType;
 use App\Service\AccesService;
-use App\Service\CompteService;
+use App\Service\AffaireService;
 use App\Form\AccesExtranetType;
 use App\Service\ApplicationManager;
 use App\Exception\PropertyVideException;
@@ -31,38 +31,37 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-#[Route('/admin/comptes', name: 'comptes')]
-class CompteController extends AbstractController
+#[Route('/admin/affaires', name: 'affaires')]
+class AffaireController extends AbstractController
 {
-    private $compteService;
+    private $affaireService;
     private $accesService;
     private $application;
 
-    public function __construct(CompteService $compteService, ApplicationManager $applicationManager, AccesService $accesService)
+    public function __construct(AffaireService $affaireService, ApplicationManager $applicationManager, AccesService $accesService)
     {
-        $this->compteService = $compteService;
+        $this->affaireService = $affaireService;
         $this->accesService = $accesService;
         $this->application = $applicationManager->getApplicationActive();
     }
 
-    #[Route('/', name: '_liste')]
-    public function index(Request $request)
+    #[Route('/{compte}', name: '_liste')]
+    public function index(Compte $compte, Request $request)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
         }*/
       
         $data = [];
-        $genre = $request->request->get('genre');
         try {
-            $comptes = $this->compteService->getAllCompte((int)$genre);
+            $affaires = $this->affaireService->getAllAffaire($compte);
 
-            if ($comptes == false) {
-                $comptes = [];
+            if ($affaires == false) {
+                $affaires = [];
             }
-            $data["html"] = $this->renderView('admin/comptes/index.html.twig', [
-                'listes' => $comptes,
-                'genre' => $genre
+            $data["html"] = $this->renderView('admin/affaires/index.html.twig', [
+                'listes' => $affaires,
+                'compte' => $compte
             ]);
             
             return new JsonResponse($data);
@@ -85,7 +84,7 @@ class CompteController extends AbstractController
         $genre = $request->request->get('genre');
         $nomCompte = $request->request->get('nomCompte');
         try {
-            $comptes = $this->compteService->getAllCompte((int)$genre);
+            $comptes = $this->affaireService->getAllCompte((int)$genre);
 
             if ($comptes == false) {
                 $comptes = [];
@@ -135,22 +134,22 @@ class CompteController extends AbstractController
             }
 
             if ($start == 0) {
-                $nbCompte = $this->compteService->searchCompteRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, true);
+                $nbCompte = $this->affaireService->searchCompteRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, true);
               
                 $session->set('nbCompte_'.$genre, $nbCompte);
             } else {
                 $nbCompte = $session->get('nbCompte_'.$genre);
             }
 
-           $comptesAssoc = $this->compteService->searchCompteRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, false);
+           $comptesAssoc = $this->affaireService->searchCompteRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, false);
         
            $data = [];
 
             if ($comptesAssoc) {
                 $k = 0;
                 foreach ($comptesAssoc as $compteArray) {
-                    $compte = $this->compteService->find($compteArray['id']);
-                    $data[$k][] = "<a href=\"" . $this->generateUrl('affaires_liste', ['compte' => $compte->getId()]) . "\">" . $compte->getNom() . "</a>";
+                    $compte = $this->affaireService->find($compteArray['id']);
+                    $data[$k][] = $compte->getNom();
                     $data[$k][] = $compte->getAdresse();
                     $textEdit = "<ul class=\"list-unstyled action m-0\">
                             <li>
@@ -198,8 +197,8 @@ class CompteController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
                     // encode the plain password
-                    $this->compteService->add($compte,(integer) $genre);
-                    $this->compteService->update();
+                    $this->affaireService->add($compte,(integer) $genre);
+                    $this->affaireService->update();
                    
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
@@ -292,8 +291,8 @@ class CompteController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
                  
-                   $this->compteService->persist($compte);
-                    $this->compteService->update();
+                   $this->affaireService->persist($compte);
+                    $this->affaireService->update();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
                 //$this->addFlash('success', 'Modification utilisateur  "' . $utilisateur->getTitle() . '" avec succès.');
@@ -368,8 +367,8 @@ class CompteController extends AbstractController
         try {
            
             if ($request->isXmlHttpRequest()) {
-                $this->compteService->remove($compte);
-                $this->compteService->update();
+                $this->affaireService->remove($compte);
+                $this->affaireService->update();
                 return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
             }
                 

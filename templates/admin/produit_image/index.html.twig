@@ -43,7 +43,7 @@
                   {% endfor %}
                 
                 {% else %}
-                    <tr>
+                    <tr class="text-nowrap">
                         <td colspan="3">Aucun enregistrement trouvé</td>
                         <td></td>
                         <td></td>
@@ -94,6 +94,8 @@
 
       $('.tab-import-produit').removeClass('active');
       $('#tab-import-produit').removeClass('active');
+            $('#tab-transfert-produit').css('display', 'none');
+
 
       //listStockByProduitSession();
       $('#liste-table-produit-image').DataTable({

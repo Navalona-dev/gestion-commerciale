@@ -671,6 +671,10 @@
     .toggle-sidebar .sidebar span {
       display: block !important;
     }
+
+    .toggle-quantity-title {
+      font-size: 16px !important;
+    }
   }
   
   .sidebar-nav {
@@ -1388,7 +1392,7 @@
   color: #fff;
 }
 
-.dataTables_scrollHeadInner thead tr th, .dataTables_scrollHeadInner tbody tr td {
+.dataTables_scrollHeadInner thead tr th, .dataTables_scrollBody tbody tr td {
   text-align: center !important;
 }
 
@@ -1409,4 +1413,116 @@
   cursor: pointer;
 }
 
+.quantity-title {
+  font-size: 20px;
+  text-align: center;
+}
 
+.quantity-count span, .quantity-count a {
+  border: 1px solid #2a4ce8;
+  border-radius: 5px;
+  color: #000;
+}
+
+.card-quantity {
+  border-radius: 20px;
+}
+
+.nav-tabs .nav-item i {
+  display: none;
+}
+
+.badge {
+  background-color: #2a4ce8;
+}
+
+@keyframes fade-in-out {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.badge-animation {
+  animation: fade-in-out 2s ease-in-out infinite;
+  background-color: #d30a0a !important;
+}
+
+.notifications {
+  margin-right: -17rem !important;
+}
+
+@media screen and (max-width: 750px) {
+  .btn-add-header {
+    margin-left: 4rem !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .btn-add-header span {
+    display: none !important;
+  }
+
+  .header .bi-search {
+    display: none !important;
+  }
+
+  #main {
+    margin-left: 0 !important;
+  }
+
+  .sidebar {
+    width: 300px !important;
+  }
+
+  .sidebar .nav-item span {
+    display: block !important;
+  }
+
+  .custom-dropdown-width {
+    min-width: 350px !important;
+    margin-left: 2rem !important;
+  }
+
+  .pagetitle {
+    text-align: center !important;
+  }
+
+  .breadcrumb {
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  .modal-user, .modal-application, .modal-produit-categorie {
+    width: 100% !important;
+    margin-left: 0 !important;
+   }
+
+   #produit_categorie_comptes {
+    display: block !important;
+   }
+
+   .nav-tabs .nav-item i {
+    display: block !important;
+  }
+
+  .nav-tabs .nav-item span {
+    display: none;
+  }
+
+  .nav-tabs .nav-item a.nav-link {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+
+  .dataTables_length, .dataTables_info {
+    display: none !important;
+  }
+
+  .dataTables_paginate.paging_simple_numbers {
+    margin-left: -2rem !important;
+  }
+
+  .dataTables_filter input {
+    width: 150px !important;
+  }
+}

@@ -41,7 +41,7 @@
                   {% endfor %}
                 
                 {% else %}
-                    <tr>
+                    <tr class="text-nowrap">
                         <td colspan="4">Aucun enregistrement trouvé</td>
                         <td></td>
                         <td></td>
@@ -85,6 +85,8 @@
       $('#tab-produit-type').removeClass('active');
       $('.tab-import-produit').removeClass('active');
       $('#tab-import-produit').removeClass('active');
+            $('#tab-transfert-produit').css('display', 'none');
+
 
       $('#liste-table-application').DataTable({
         responsive: true,
