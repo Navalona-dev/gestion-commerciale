@@ -7,7 +7,7 @@
         </tr>
         {% elseif type == "tbody" %}
         <tr id="tbody_compte" class="text-nowrap">
-            <td> {{liste.nom}} </td>
+            <td> <a href="{{ path('affaires_liste', {'compte': liste.id }) }}">{{ liste.nom }}</a> </a></td>
             <td> {{liste.adresse|slice(0,50)|raw}} </td>
             
             <td>

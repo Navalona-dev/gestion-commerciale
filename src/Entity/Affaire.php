@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Exception\PropertyVideException;
 use App\Repository\AffaireRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
@@ -150,6 +151,15 @@ class Affaire
         $this->dateCreation = new \DateTime('now');
         $this->paiement = 'non';
         $this->abonnement = 'noncommence';
+    }
+
+    public static function newAffaire($instance = null, $compte = null)
+    {
+        if (is_null($instance->getNom()) or empty($instance->getNom())  or is_null($compte->getNom()) or empty($compte->getNom())) {
+            throw new PropertyVideException("Your name doesn't empty");
+        }
+
+        return $instance;
     }
 
     public function getId(): ?int
