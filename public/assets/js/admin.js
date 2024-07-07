@@ -45,6 +45,13 @@
   if (select('.toggle-sidebar-btn')) {
     on('click', '.toggle-sidebar-btn', function(e) {
       select('body').classList.toggle('toggle-sidebar')
+      // Sélectionner tous les éléments avec la classe 'quantity-title'
+      const quantityTitles = document.querySelectorAll('.quantity-title');
+      
+      // Appliquer le toggle à chaque élément
+      quantityTitles.forEach(function(quantityTitle) {
+        quantityTitle.classList.toggle('toggle-quantity-title');
+      });
     })
   }
 

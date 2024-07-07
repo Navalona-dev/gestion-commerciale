@@ -29,19 +29,19 @@
         {% endfor %}
 
           <div class="row mb-5">
-            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12">
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
               <div class="card p-3 card-quantity shadow">
                 <h4 class="fw-bold quantity-title">Quantités</h4>
                 <p class="d-flex justify-content-center mt-3 quantity-count"> <span class="py-1 px-3">{{totalStock}}</span>  </p>
               </div>
             </div>
-            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12">
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
               <div class="card p-3 card-quantity shadow">
                 <h4 class="fw-bold quantity-title">Quantités restant</h4>
                 <p class="d-flex justify-content-center mt-3 quantity-count"> <span class="py-1 px-3">{{produitCategory.stockRestant}}</span> </p>
               </div>
             </div>
-            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12">
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
               <a href="#tab-transfert-produit" class="text-black" onclick="return listTransfert({{produitCategory.id}})">
                 <div class="card p-3 card-quantity shadow">
                   <h4 class="fw-bold quantity-title">Quantités transferés</h4>
@@ -53,7 +53,7 @@
                 </div>
               </a>
             </div>
-            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12">
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
               <div class="card p-3 card-quantity shadow">
                 <h4 class="fw-bold quantity-title">Quantités vendu</h4>
                 <p class="d-flex justify-content-center mt-3 quantity-count"> <span class="py-1 px-3">100</span></p>
@@ -81,7 +81,7 @@
                   {% endfor %}
                 
                 {% else %}
-                    <tr>
+                    <tr class="text-nowrap">
                         <td colspan="3">Aucun enregistrement trouvé</td>
                         <td></td>
                         <td></td>
