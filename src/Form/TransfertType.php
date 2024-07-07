@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Entity\Transfert;
 use App\Entity\Application;
+use Doctrine\ORM\EntityRepository;
+use App\Service\ApplicationManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -12,6 +14,14 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class TransfertType extends AbstractType
 {
+    private $application;
+
+    public function __construct(
+        ApplicationManager $applicationManager
+    )
+    {
+        $this->application = $applicationManager->getApplicationActive();
+    }
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -20,7 +30,12 @@ class TransfertType extends AbstractType
                 'attr' => [
                     'class' => 'form-control form-control-md chosen-select mb-3'
                 ],
-                'choice_label' => 'entreprise'
+                'choice_label' => 'entreprise',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('a')
+                        ->andWhere('a != :currentApplication')
+                        ->setParameter('currentApplication', $this->application);
+                },
             ])
             ->add('quantity', NumberType::class, [
                 'attr' => [

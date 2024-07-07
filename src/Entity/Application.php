@@ -80,6 +80,12 @@ class Application
     #[ORM\OneToMany(targetEntity: Transfert::class, mappedBy: 'application')]
     private Collection $transferts;
 
+    /**
+     * @var Collection<int, Notification>
+     */
+    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'application')]
+    private Collection $notifications;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -89,6 +95,7 @@ class Application
         $this->produitCategories = new ArrayCollection();
         $this->produitTypes = new ArrayCollection();
         $this->transferts = new ArrayCollection();
+        $this->notifications = new ArrayCollection();
     }
 
     public static function newApplicationFromInstance($instance = null)
@@ -387,6 +394,36 @@ class Application
             // set the owning side to null (unless already changed)
             if ($transfert->getApplication() === $this) {
                 $transfert->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notification $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            // set the owning side to null (unless already changed)
+            if ($notification->getApplication() === $this) {
+                $notification->setApplication(null);
             }
         }
 

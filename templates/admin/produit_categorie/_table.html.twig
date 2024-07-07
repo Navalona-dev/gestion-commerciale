@@ -5,7 +5,7 @@
             <th>Nom</th>
             <th>Référence</th>
             <th>Stock restant</th>
-
+            <th>Prix à changer?</th>
             {# 
             <th>PrixHt</th>
             <th>Tva</th>
@@ -43,6 +43,13 @@
             <td> {{liste.nom}} </td>
             <td> {{liste.reference}} </td>
             <td> {{liste.stockRestant}} </td>
+            <td>
+                {% if liste.isChangePrix == 0 or liste.isChangePrix is null %}
+                    Non
+                {% else %}
+                    <a href="#" onclick="return openModalUpdatePriceProduit({{liste.id}})">Oui</a>
+                {% endif %}
+            </td>
 
             {# 
             <td> {{liste.prixHt}} </td>
@@ -93,7 +100,7 @@
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de la suppression de la catégorie.');
+                    alert('Erreur lors de la suppression de produit.');
                 }
             });
         }
@@ -122,7 +129,7 @@
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de la mise à jour de la catégorie.');
+                    alert('Erreur lors de la mise à jour de produit.');
                 }
             });
     }
@@ -158,38 +165,38 @@
  }
 
 
- function listImage(id = null) {
-    $.ajax({
-             type: 'post',
-             url: '/admin/produit/image/'+id,
-             //data: {},
-             success: function (response) {
-                 $("#tab-produit-image").empty();
-                 $("#tab-produit-image").append(response.html);
-                 $("#tab-produit-image").addClass('active');
-                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
-                 $(".loadBody").css('display', 'none');
-             },
-             error: function () {
-                // $(".loadBody").css('display', 'none');
-                 $(".chargementError").css('display', 'block');
-             }
+    function listImage(id = null) {
+        $.ajax({
+                type: 'post',
+                url: '/admin/produit/image/'+id,
+                //data: {},
+                success: function (response) {
+                    $("#tab-produit-image").empty();
+                    $("#tab-produit-image").append(response.html);
+                    $("#tab-produit-image").addClass('active');
+                    $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                    $(".loadBody").css('display', 'none');
+                },
+                error: function () {
+                    // $(".loadBody").css('display', 'none');
+                    $(".chargementError").css('display', 'block');
+                }
 
-         });
- }
+            });
+    }
 
 
- function transfertProduit(id = null) {
+    function transfertProduit(id = null) {
     var anchorName = document.location.hash.substring(1);
 
         $.ajax({
@@ -212,7 +219,35 @@
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de la mise à jour de la catégorie.');
+                    alert('Erreur lors de transfert de produit.');
+                }
+            });
+    }
+
+    function openModalUpdatePriceProduit(id = null) {
+    var anchorName = document.location.hash.substring(1);
+
+        $.ajax({
+                url: '/admin/produit/categorie/edit/prix/'+id,
+                type: 'POST',
+                data: {id: id},
+                success: function (response) {
+                    if (response.html != "") {
+                        $("#blocModalProduitCategorieEmpty").empty();
+                        $("#blocModalProduitCategorieEmpty").append(response.html);
+
+                        $('#modalUpdatePriceProduct').modal('show');
+
+                        if (anchorName) {
+                                window.location.hash = anchorName;
+                        }
+
+                    }
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la mise à jour de prix.');
                 }
             });
     }

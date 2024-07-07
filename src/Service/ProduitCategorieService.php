@@ -6,6 +6,7 @@ use App\Entity\Compte;
 use App\Entity\Categorie;
 use App\Entity\Transfert;
 use App\Entity\ProduitType;
+use App\Entity\Notification;
 use Doctrine\ORM\EntityManager;
 use App\Entity\ProduitCategorie;
 use App\Repository\CompteRepository;
@@ -218,13 +219,28 @@ class ProduitCategorieService
         }*/
     }
 
-    public function updateStockNewApplication($productReferenceExists, $quantity)
+    public function updateStockNewApplication($productReferenceExists, $quantity, $isChangePrice)
     {
         $oldStockRestantNewApp = $productReferenceExists->getStockRestant();
         $newStockRestantNewApp = $oldStockRestantNewApp + $quantity;
         $productReferenceExists->setStockRestant($newStockRestantNewApp);
 
         $date = new \DateTime();
+
+        if($isChangePrice) {
+            $productReferenceExists->setIsChangePrix(true);
+
+            //créer une nouvelle notification
+            $message = "Le prix du produit transféré doit être modifié en raison des nouvelles conditions d'application.";
+                
+            $notification = new Notification();
+            $notification->setApplication($application);
+            $notification->setMessage($message);
+            $notification->setDateCreation(new \DateTime());
+            $notification->setProduitCategorie($productReferenceExists);
+
+            $this->entityManager->persist($notification);
+        }
 
         $stock = new Stock();
         $stock->setProduitCategorie($productReferenceExists);
@@ -236,7 +252,7 @@ class ProduitCategorieService
         $this->entityManager->persist($productReferenceExists);
     }
 
-    public function addNewProductForNewApplication($oldProduitCategorie, $quantity, $application)
+    public function addNewProductForNewApplication($oldProduitCategorie, $quantity, $application, $isChangePrice)
     {
         $newProduitCategorie = new ProduitCategorie();
 
@@ -329,6 +345,22 @@ class ProduitCategorieService
                         $stock->setProduitCategorie($newProduitCategorie);
                         $stock->setQtt($quantity);
                         $stock->setDateCreation($date);
+
+                        //verifier si la case isChangePrix est activé
+                        if($isChangePrice) {
+                            $newProduitCategorie->setIsChangePrix(true);
+                
+                            //créer une nouvelle notification
+                            $message = "Le prix du produit transféré doit être modifié en raison des nouvelles conditions d'application.";
+                
+                            $notification = new Notification();
+                            $notification->setApplication($application);
+                            $notification->setMessage($message);
+                            $notification->setDateCreation(new \DateTime());
+                            $notification->setProduitCategorie($newProduitCategorie);
+                
+                            $this->entityManager->persist($notification);
+                        }
 
                         $this->entityManager->persist($stock);
                         $this->entityManager->persist($newProduitCategorie);

@@ -140,6 +140,15 @@ class ProduitCategorie
     #[ORM\OneToMany(targetEntity: Transfert::class, mappedBy: 'produitCategorie')]
     private Collection $transferts;
 
+    /**
+     * @var Collection<int, Notification>
+     */
+    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'produitCategorie')]
+    private Collection $notifications;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isChangePrix = null;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
@@ -147,6 +156,7 @@ class ProduitCategorie
         $this->stocks = new ArrayCollection();
         $this->comptes = new ArrayCollection();
         $this->transferts = new ArrayCollection();
+        $this->notifications = new ArrayCollection();
     }
 
     public static function newProduitCategorie($instance = null)
@@ -580,6 +590,48 @@ class ProduitCategorie
                 $transfert->setProduitCategorie(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setProduitCategorie($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notification $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            // set the owning side to null (unless already changed)
+            if ($notification->getProduitCategorie() === $this) {
+                $notification->setProduitCategorie(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getIsChangePrix(): ?bool
+    {
+        return $this->isChangePrix;
+    }
+
+    public function setIsChangePrix(?bool $isChangePrix): static
+    {
+        $this->isChangePrix = $isChangePrix;
 
         return $this;
     }

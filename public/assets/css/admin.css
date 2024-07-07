@@ -1392,7 +1392,7 @@
   color: #fff;
 }
 
-.dataTables_scrollHeadInner thead tr th, .dataTables_scrollHeadInner tbody tr td {
+.dataTables_scrollHeadInner thead tr th, .dataTables_scrollBody tbody tr td {
   text-align: center !important;
 }
 
@@ -1432,6 +1432,24 @@
   display: none;
 }
 
+.badge {
+  background-color: #2a4ce8;
+}
+
+@keyframes fade-in-out {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.badge-animation {
+  animation: fade-in-out 2s ease-in-out infinite;
+  background-color: #d30a0a !important;
+}
+
+.notifications {
+  margin-right: -17rem !important;
+}
 
 @media screen and (max-width: 750px) {
   .btn-add-header {
