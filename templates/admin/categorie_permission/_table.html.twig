@@ -18,6 +18,8 @@
 <script>
     
     function deleteCategoryPermission(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         if (confirm('Voulez vous vraiment supprimer cette catégorie permission?')) {
             $.ajax({
                 url: '/admin/categorypermission/delete/'+id,
@@ -40,6 +42,9 @@
                     if (nextLink.length > 0) {
                         nextLink.click();
                     }
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -50,6 +55,8 @@
     }
 
     function openModalUpdateCategoryPermission(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         $.ajax({
                 url: '/admin/categorypermission/'+id,
                 type: 'POST',
@@ -59,6 +66,9 @@
                         $("#blocModalEmpty").empty();
                         $("#blocModalEmpty").append(response.html);
                         $('#modalUpdateCategoryPermission').modal('show');
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
                     }
                     
                 },

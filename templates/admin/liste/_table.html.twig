@@ -193,6 +193,8 @@
 <script>
     
     function deleteEntity(id = null, menu = null) {
+        var anchorName = document.location.hash.substring(1);
+        
         if (confirm('Voulez vous vraiment supprimer cet '+ menu +'?')) {
             $.ajax({
                 url: '/data/delete/'+id,
@@ -215,6 +217,9 @@
                     if (nextLink.length > 0) {
                         nextLink.click();
                     }
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -225,6 +230,8 @@
     }
 
     function openModalUpdateEntity(id = null, menu = null) {
+        var anchorName = document.location.hash.substring(1);
+
         $.ajax({
                 url: '/data/update/'+id,
                 type: 'POST',
@@ -233,6 +240,9 @@
                     $("#blocModalEmpty").empty();
                     $("#blocModalEmpty").append(response);
                     $('#modalUpdate').modal('show');
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -242,6 +252,8 @@
     }
 
     function setActive(id) {
+        var anchorName = document.location.hash.substring(1);
+
         $.ajax({
             url: '/admin/liste/update-is-active/' + id,
             method: 'POST', 
@@ -252,6 +264,9 @@
                     icon.removeClass('text-danger').addClass('text-success').removeClass('bi-x-circle-fill').addClass('bi-check-circle-fill');
                 } else {
                     icon.removeClass('text-success').addClass('text-danger').removeClass('bi-check-circle-fill').addClass('bi-x-circle-fill');
+                }
+                if (anchorName) {
+                    window.location.hash = anchorName;
                 }
             },
             error: function(xhr, status, error) {

@@ -27,4 +27,21 @@ div .btn-submit:hover {
   background-color: #2a4ce8 !important;
 }
 
+@media screen and (max-width: 750px) {
+  .login-content {
+    margin-left: 1rem !important;
+    margin-right: 1rem !important;
+    margin-top: 100px !important;
+  }
+
+  body {
+    background: none !important;
+  }
+
+  .title {
+    color: #2a4ce8 !important;
+    font-size: 30px !important;
+  }
+}
+
 

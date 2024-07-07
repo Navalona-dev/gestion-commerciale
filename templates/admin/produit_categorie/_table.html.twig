@@ -63,6 +63,8 @@
 <script>
     
     function deleteProduitCategorie(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
         if (confirm('Voulez vous vraiment supprimer cet produit catégorie?')) {
             $.ajax({
                 url: '/admin/produit/categorie/delete/'+id,
@@ -85,6 +87,9 @@
                     if (nextLink.length > 0) {
                         nextLink.click();
                     }
+                    if (anchorName) {
+                                window.location.hash = anchorName;
+                        }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -95,6 +100,8 @@
     }
 
     function openModalUpdateProduitCategorie(id = null) {
+    var anchorName = document.location.hash.substring(1);
+
         $.ajax({
                 url: '/admin/produit/categorie/'+id,
                 type: 'POST',
@@ -105,6 +112,10 @@
                         $("#blocModalProduitCategorieEmpty").append(response.html);
 
                         $('#modalUpdateProduitCategorie').modal('show');
+
+                        if (anchorName) {
+                                window.location.hash = anchorName;
+                        }
 
                     }
                     
@@ -179,6 +190,8 @@
 
 
  function transfertProduit(id = null) {
+    var anchorName = document.location.hash.substring(1);
+
         $.ajax({
                 url: '/admin/produit/categorie/transfert/'+id,
                 type: 'POST',
@@ -189,6 +202,10 @@
                         $("#blocModalProduitCategorieEmpty").append(response.html);
 
                         $('#modalTransfertProduitCategorie').modal('show');
+
+                        if (anchorName) {
+                                window.location.hash = anchorName;
+                        }
 
                     }
                     
