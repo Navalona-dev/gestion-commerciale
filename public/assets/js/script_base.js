@@ -91,6 +91,35 @@ $(document).ready(function() {
 
 });
 
+function openModalUpdatePriceProduit(id = null) {
+    var anchorName = document.location.hash.substring(1);
+
+        $.ajax({
+                url: '/admin/produit/categorie/edit/prix/'+id,
+                type: 'POST',
+                data: {id: id},
+                success: function (response) {
+                    if (response.html != "") {
+                        $("#blocModalPriceProduitEmpty").empty();
+                        $("#blocModalPriceProduitEmpty").append(response.html);
+
+                        $('#modalUpdatePriceProduct').modal('show');
+
+                        if (anchorName) {
+                                window.location.hash = anchorName;
+                        }
+
+                    }
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la mise à jour de prix.');
+                }
+            });
+    }
+
+
 function listImageByProduitSession() {
     $.ajax({
              type: 'post',
