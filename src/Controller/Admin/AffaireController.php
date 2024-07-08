@@ -54,6 +54,7 @@ class AffaireController extends AbstractController
       
         $data = [];
         try {
+
             $affaires = $this->affaireService->getAllAffaire($compte);
 
             if ($affaires == false) {
@@ -61,7 +62,8 @@ class AffaireController extends AbstractController
             }
             $data["html"] = $this->renderView('admin/affaires/index.html.twig', [
                 'listes' => $affaires,
-                'compte' => $compte
+                'compte' => $compte,
+
             ]);
             
             return new JsonResponse($data);

@@ -7,7 +7,7 @@
         </tr>
         {% elseif type == "tbody" %}
         <tr id="tbody_compte" class="text-nowrap">
-            <td> <a href="{{ path('affaires_liste', {'compte': liste.id }) }}">{{ liste.nom }}</a> </a></td>
+            <td> <a href="#affaires" onclick="return showTabAffaireByCompte({{liste.id}}, {{liste.genre}})">{{ liste.nom }}</a> </a></td>
             <td> {{liste.adresse|slice(0,50)|raw}} </td>
             
             <td>
@@ -15,6 +15,16 @@
                 <a href="#" onclick="return deleteCompte({{liste.id}}, {{liste.genre}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>
             </td>
         </tr>
+        <script>
+            $(document).ready(function() {
+                var anchorName = document.location.hash.substring(1);
+                if (anchorName === "affaires") {
+                    compteId = {{liste.id}};
+                    compteGenre = {{liste.genre}};
+                    showTabAffaireByCompte(compteId, compteGenre);
+                }
+            });
+        </script>
          {% endif %}
 <script>
     
@@ -84,4 +94,31 @@
                 }
             });
     }
+
+    function showTabAffaireByCompte(id = null, genre = 1) {
+    $.ajax({
+        type: 'post',
+        url: '/admin/affaires/'+id,
+        data: {
+            id: id,
+            genre: genre
+        },
+        success: function(response) {
+            // Show the selected compte tab
+            if (genre == 1) {
+                $('.compte-title').text("clients");
+                $('.option-compte').text('Nom du client');
+            } else if (genre == 2) {
+                $('.compte-title').text("fournisseurs");
+                $('.option-compte').text('Nom du fournisseur');
+
+            }
+
+            $(".loadBody").css('display', 'none');
+        },
+        error: function() {
+            $(".chargementError").css('display', 'block');
+        }
+    });
+}
 </script>
