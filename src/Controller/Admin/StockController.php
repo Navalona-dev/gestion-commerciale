@@ -195,39 +195,45 @@ class StockController extends AbstractController
     #[Route('/delete/{stock}', name: '_delete')]
     public function delete(Request $request, StockService $stockService, Stock $stock)
     {
-       /* if (!$this->accesService->insufficientPrivilege('oatf')) {
-            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
-        }*/
         $produitCategorie = $stock->getProduitCategorie();
-
+    
         try {
-           
+            $totalQttTransfert = 0;
+            $totalQttStock = 0;
+    
+            $transferts = $produitCategorie->getTransferts();
+            $stocks = $produitCategorie->getStocks();
+    
+            foreach ($stocks as $stck) {
+                $qttStock = $stck->getQtt();
+                $totalQttStock += $qttStock;
+            }
+    
+            foreach ($transferts as $transfert) {
+                $qttTransfert = $transfert->getQuantity();
+                $totalQttTransfert += $qttTransfert;
+            }
+    
+            $totalQttStock = intVal($totalQttStock);
+            $totalQttTransfert = intVal($totalQttTransfert);
+    
             if ($request->isXmlHttpRequest()) {
-                if($produitCategorie->getStockRestant() <= $stock->getQtt) {
-                    return new JsonResponse(['status' => 'error'], Response::HTTP_OK);
-
+                // Conditions de validation avant suppression
+                if ($produitCategorie->getStockRestant() <= $stock->getQtt()) {
+                    return new JsonResponse(['status' => 'error', 'message' => 'Le stock restant est inférieur ou égal à la quantité de stock à supprimer.'], Response::HTTP_OK);
+                } elseif ($totalQttStock <= $totalQttTransfert) {
+                    return new JsonResponse(['status' => 'error', 'message' => 'La quantité totale en stock est inférieure ou égale à la quantité totale transférée.'], Response::HTTP_OK);
+                } elseif ($totalQttStock - $stock->getQtt() <= $totalQttTransfert) {
+                    return new JsonResponse(['status' => 'error', 'message' => 'La quantité totale en stock moins la quantité de stock à supprimer est inférieure ou égale à la quantité totale transférée.'], Response::HTTP_OK);
                 } else {
+                    // Suppression du stock
                     $stockService->remove($stock, $produitCategorie);
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
-            } 
-                
-        } catch (PropertyVideException $PropertyVideException) {
-            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
-        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
-            throw $this->createNotFoundException('Exception' . $UniqueConstraintViolationException->getMessage());
-        } catch (MappingException $MappingException) {
-            $this->createNotFoundException('Exception' . $MappingException->getMessage());
-        } catch (ORMInvalidArgumentException $ORMInvalidArgumentException) {
-            $this->createNotFoundException('Exception' . $ORMInvalidArgumentException->getMessage());
-        } catch (UnsufficientPrivilegeException $UnsufficientPrivilegeException) {
-            $this->createNotFoundException('Exception' . $UnsufficientPrivilegeException->getMessage());
-        } catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
-            $this->createNotFoundException('Exception' . $NotNullConstraintViolationException->getMessage());
-        } catch (\Exception $Exception) {
-            $data['exception'] = $Exception->getMessage();
-            $data["html"] = "";
-            return new JsonResponse($data);
+            }
+    
+        } catch (\Exception $e) {
+            return new JsonResponse(['status' => 'error', 'message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

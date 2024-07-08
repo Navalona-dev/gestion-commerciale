@@ -40,7 +40,7 @@
                         toastr.success('Avec succèss', 'Suppression effectuée');
 
                         } else {
-                            toastr.error('Suppression échouée, la quantité est supérieur ou égale au stock restant')
+                            toastr.error(response.message)
 
                         }
                         //$(".loadBody").css('display', 'none');

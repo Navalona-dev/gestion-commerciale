@@ -337,16 +337,8 @@ class ProduitCategorieController extends AbstractController
                 $produitCategorieService->updateStockRestant($oldProduitCategorie, $quantity);
 
                 if ($request->isXmlHttpRequest()) {
-                    if ($productReferenceExists) {
-                        // Mise à jour du stock pour l'application cible si le produit existe
-                        $produitCategorieService->updateStockNewApplication($productReferenceExists, $quantity, $isChangePrice);
-                        
-                    } else {
-                        // Création d'une nouvelle catégorie de produit pour l'application cible
-                        $produitCategorieService->addNewProductForNewApplication($oldProduitCategorie, $quantity, $newApplication, $isChangePrice);
-                    }
 
-                    $produitCategorieService->update();
+                    $produitCategorieService->addNewProductForNewApplication($productReferenceExists, $oldProduitCategorie, $quantity, $newApplication, $isChangePrice);
 
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
