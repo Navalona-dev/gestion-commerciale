@@ -60,11 +60,23 @@ class AffaireController extends AbstractController
             if ($affaires == false) {
                 $affaires = [];
             }
-            $data["html"] = $this->renderView('admin/affaires/index.html.twig', [
-                'listes' => $affaires,
-                'compte' => $compte,
 
-            ]);
+            $genre = $compte->getGenre();
+
+            if($genre == 1) {
+                $data["html"] = $this->renderView('admin/affaires/index_client.html.twig', [
+                    'listes' => $affaires,
+                    'compte' => $compte,
+                    'genre' => $genre
+                ]);
+            } elseif($genre == 2) {
+                $data["html"] = $this->renderView('admin/affaires/index_fournisseur.html.twig', [
+                    'listes' => $affaires,
+                    'compte' => $compte,
+                    'genre' => $genre
+    
+                ]);
+            }
             
             return new JsonResponse($data);
         } catch (\Exception $Exception) {

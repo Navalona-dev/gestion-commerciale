@@ -156,7 +156,7 @@
     }
     //datatable
     $(document).ready(function() {
- $('.tab-compte_1').addClass('active');
+      $('.tab-compte_1').addClass('active');
        $('.tab-user').addClass('active');
       $('.tab-permission').removeClass('active');
       $('.tab-privilege').removeClass('active');
@@ -177,8 +177,9 @@
       $('#tab-stock').removeClass('active');
       $('.tab-import-produit').removeClass('active');
       $('#tab-import-produit').removeClass('active');
-            $('#tab-transfert-produit').css('display', 'none');
-
+       $('#tab-transfert-produit').css('display', 'none');
+       $('#affaires_client').removeClass('active').empty();
+       $('#affaires_fournisseur').removeClass('active').empty();
 
 
       $('#liste-table-compte').DataTable({

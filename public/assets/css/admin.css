@@ -1451,6 +1451,81 @@
   margin-right: -17rem !important;
 }
 
+.affaire-title {
+  color: #04176d;
+}
+
+.fiche-text {
+  color: #04176d;
+}
+
+.affaire-btn {
+  border-radius: 30px;
+}
+
+.text-affaire i, .text-affaire span {
+  font-size: 17px !important;
+}
+
+.affaire-result i {
+  background-color: #2a4ce8;
+  padding: 6px 12px;
+  color: #fff;
+  border-radius: 10px;
+}
+
+.order-number {
+  border: 1px solid #2a4ce8;
+  color: #2a4ce8;
+  width: 270px;
+}
+
+.action-icon {
+  padding: 6px 10px;
+  border-radius: 100%;
+  color: #fff;
+}
+
+.action-text {
+  font-size: 10px;
+}
+
+.label-status {
+  font-size: 10px;
+}
+
+.menu-icon a i {
+  color: #212f3d;
+  padding: 4px 8px;
+  border: 1px solid #212f3d;
+}
+
+.status option, .status select {
+  font-size: 12px;
+}
+
+.action-produit {
+  margin-right: 20px;
+}
+
+.info-produit h4 {
+  color: #04176d;
+}
+
+.info-produit .date {
+  color: #000;
+  font-size: 14px;
+}
+
+.affaire-produit {
+  position: relative;
+}
+
+.affaire-header {
+  border-radius: 20px;
+  margin-bottom: 50px;
+}
+
 @media screen and (max-width: 750px) {
   .btn-add-header {
     margin-left: 4rem !important;
@@ -1524,5 +1599,13 @@
 
   .dataTables_filter input {
     width: 150px !important;
+  }
+
+  .affaire-title {
+    text-align: center !important;
+  }
+
+  .fiche-text {
+    margin-bottom: 15px !important;
   }
 }

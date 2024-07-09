@@ -1,4 +1,3 @@
-   
         {% if type == "thead" %}
         <tr id="thead_compte" class="text-nowrap">
             <th>Nom</th>
@@ -6,8 +5,14 @@
             <th>Action</th>
         </tr>
         {% elseif type == "tbody" %}
+        
         <tr id="tbody_compte" class="text-nowrap">
-            <td> <a href="#affaires" onclick="return showTabAffaireByCompte({{liste.id}}, {{liste.genre}})">{{ liste.nom }}</a> </a></td>
+            
+            <td> 
+                <a {% if genre == 1 %} href="#affaires_client" {% elseif genre == 2 %} href="#affaires_fournisseur" {% endif %} onclick="return listAffaireByCompte({{liste.id}}, {{liste.genre}})">
+                    {{ liste.nom }}
+                </a> 
+            </td>
             <td> {{liste.adresse|slice(0,50)|raw}} </td>
             
             <td>
@@ -15,18 +20,54 @@
                 <a href="#" onclick="return deleteCompte({{liste.id}}, {{liste.genre}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>
             </td>
         </tr>
-        <script>
-            $(document).ready(function() {
-                var anchorName = document.location.hash.substring(1);
-                if (anchorName === "affaires") {
-                    compteId = {{liste.id}};
-                    compteGenre = {{liste.genre}};
-                    showTabAffaireByCompte(compteId, compteGenre);
-                }
-            });
-        </script>
+        
          {% endif %}
 <script>
+
+function listAffaireByCompte(id = null, genre = 1) {
+    //var anchorName = document.location.hash.substring(1);
+
+    $.ajax({
+            type: 'post',
+            url: '/admin/affaires/'+id,
+            data: {
+                id: id,
+                genre: genre
+            },
+            success: function (response) {
+                if(genre == 1){
+                    $("#affaires_client").empty();
+                    $("#affaires_client").append(response.html);
+                    $("#affaires_client").addClass('active');
+                } else if(genre == 2) {
+                    $("#affaires_fournisseur").empty();
+                    $("#affaires_fournisseur").append(response.html);
+                    $("#affaires_fournisseur").addClass('active');
+                }
+
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
+                
+                $(".loadBody").css('display', 'none');
+
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+            }
+
+        });
+}
     
     function deleteCompte(id = null, genre = 1) {
         let currentCompte = "clients";
@@ -95,30 +136,4 @@
             });
     }
 
-    function showTabAffaireByCompte(id = null, genre = 1) {
-    $.ajax({
-        type: 'post',
-        url: '/admin/affaires/'+id,
-        data: {
-            id: id,
-            genre: genre
-        },
-        success: function(response) {
-            // Show the selected compte tab
-            if (genre == 1) {
-                $('.compte-title').text("clients");
-                $('.option-compte').text('Nom du client');
-            } else if (genre == 2) {
-                $('.compte-title').text("fournisseurs");
-                $('.option-compte').text('Nom du fournisseur');
-
-            }
-
-            $(".loadBody").css('display', 'none');
-        },
-        error: function() {
-            $(".chargementError").css('display', 'block');
-        }
-    });
-}
 </script>

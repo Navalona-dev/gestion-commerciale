@@ -89,39 +89,7 @@ $(document).ready(function() {
         listTransfertByProduitSession();
     }
 
-    if (anchorName === "affaires") {
-        showTabAffaireByCompte(id = null, genre = 1);
-    }
-
-
 });
-
-function showTabAffaireByCompte(id = null, genre = 1) {
-    $.ajax({
-        type: 'post',
-        url: '/admin/affaires/'+id,
-        data: {
-            id: id,
-            genre: genre
-        },
-        success: function(response) {
-            // Show the selected compte tab
-            if (genre == 1) {
-                $('.compte-title').text("clients");
-                $('.option-compte').text('Nom du client');
-            } else if (genre == 2) {
-                $('.compte-title').text("fournisseurs");
-                $('.option-compte').text('Nom du fournisseur');
-
-            }
-
-            $(".loadBody").css('display', 'none');
-        },
-        error: function() {
-            $(".chargementError").css('display', 'block');
-        }
-    });
-}
 
 function openModalUpdatePriceProduit(id = null) {
     var anchorName = document.location.hash.substring(1);
