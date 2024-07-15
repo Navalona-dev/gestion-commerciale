@@ -100,111 +100,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4 col-12">
-                                <a href="#">
-                                    <div class="info-produit">
-                                        <h4 class="fw-bold mb-3">
-                                            <i class="bi bi-lock"></i>
-                                            <span class="">Produit 1</span>
-                                        </h4>
-                                        <p class="date mb-3">
-                                            <i class="bi bi-calendar-date-fill"></i>
-                                            <span class="">2024/07/09</span>
-                                        </p>
-                                        <p class="order-number py-1 px-2 mb-3">
-                                            <i class="bi bi-info-circle-fill"></i>
-                                            <span class="mx-2">Commande n°0000</span>
-                                        </p>
-                                        <p class="text-danger">
-                                            0,00 € HT
-                                        </p>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-4 col-12 mb-5">
-                                <div class="container mt-5 ">
-                                    <div class="action-produit d-flex justify-content-around">
-                                        <a href="#" class="d-flex flex-column align-items-center mx-2">
-                                            <i class="bi bi-info-circle bg-info text-black action-icon"></i>
-                                            <span class="action-text">Information</span>
-                                        </a>
-                                        <a href="#" class="d-flex flex-column align-items-center mx-2">
-                                            <i class="bi bi-coin text-black bg-warning action-icon"></i>
-                                            <span class="action-text">Financier</span>
-                                        </a>
-                                        <a href="#" class="d-flex flex-column align-items-center mx-2">
-                                            <i class="bi bi-file-earmark-pdf bg-danger action-icon"></i>
-                                            <span class="action-text">Document</span>
-                                        </a>
-                                        <a href="#" class="d-flex flex-column align-items-center mx-3">
-                                            <i class="bi bi-check-circle-fill bg-success action-icon"></i>
-                                            <span class="action-text">Tâche</span>
-                                        </a>
-                                        <a href="#" class="d-flex flex-column align-items-center mx-3">
-                                            <i class="bi bi-journal-text bg-primary action-icon"></i>
-                                            <span class="action-text">Notes</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-12">
-                                <div class="menu_produit">
-                                    <div class="menu-icon mb-3">
-                                        <div class="form-group">
-                                            <a href="#"><i class="bi bi-skip-end-fill"></i></a>
-                                            <a href="#"><i class="bi bi-pencil-square"></i></a>
-                                            <a href="#"><i class="bi bi-bell-fill"></i></a>
-                                            <a href="#"><i class="bi bi-calendar-fill"></i></a>
-                                            <a href="#"><i class="bi bi-hourglass-split"></i></a>
-                                            <a href="#"><i class="bi bi-send"></i></a>
-                                            <a href="#"><i class="bi bi-star-fill"></i></a>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4 col-12 status">
-                                            <label for="" class="mb-2 label-status">Statut devis</label>
-                                            <select name="status-devis" id="status-devis" class="form-control form-control-sm">
-                                                <option value="1">Gagné</option>
-                                                <option value="2">Perdu</option>
-                                                <option value="3">Terminé</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4 col-12 status">
-                                            <label for="" class="mb-2 label-status">Statut projet</label>
-                                            <select name="status-projet" id="status-projet" class="form-control form-control-sm">
-                                                <option value="1">Gagné</option>
-                                                <option value="2">Perdu</option>
-                                                <option value="3">Terminé</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4 col-12 status">
-                                            <label for="" class="mb-2 label-status">Statut paiement</label>
-                                            <select name="status-paiement" id="status-paiement" class="form-control form-control-sm">
-                                                <option value="1">Gagné</option>
-                                                <option value="2">Perdu</option>
-                                                <option value="3">Terminé</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="affaire-produit card shadow p-4 mb-3 position-relative">
-                        <div class="filter position-absolute top-0 end-0 p-3">
-                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                <li class="dropdown-header text-start">
-                                    <h6>Filter</h6>
-                                </li>
-                                <li><a class="dropdown-item" href="#">Today</a></li>
-                                <li><a class="dropdown-item" href="#">This Month</a></li>
-                                <li><a class="dropdown-item" href="#">This Year</a></li>
-                            </ul>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4 col-12">
-                                <a href="#">
+                                <a href="#tab-financier-affaire" onclick="return financier()">
                                     <div class="info-produit">
                                         <h4 class="fw-bold mb-3">
                                             <i class="bi bi-lock"></i>
@@ -227,15 +123,15 @@
                             <div class="col-md-4 col-12 mb-5">
                                 <div class="container mt-5 ">
                                     <div class="action-produit d-flex justify-content-around">
-                                        <a href="#" class="d-flex flex-column align-items-center mx-2">
+                                        <a href="#tab-info-affaire" onclick="return information()" class="d-flex flex-column align-items-center mx-2">
                                             <i class="bi bi-info-circle bg-info text-black action-icon"></i>
                                             <span class="action-text">Information</span>
                                         </a>
-                                        <a href="#" class="d-flex flex-column align-items-center mx-2">
+                                        <a href="#tab-financier-affaire" onclick="return financier()" class="d-flex flex-column align-items-center mx-2">
                                             <i class="bi bi-coin text-black bg-warning action-icon"></i>
                                             <span class="action-text">Financier</span>
                                         </a>
-                                        <a href="#" class="d-flex flex-column align-items-center mx-2">
+                                        {#<a href="#" class="d-flex flex-column align-items-center mx-2">
                                             <i class="bi bi-file-earmark-pdf bg-danger action-icon"></i>
                                             <span class="action-text">Document</span>
                                         </a>
@@ -246,7 +142,7 @@
                                         <a href="#" class="d-flex flex-column align-items-center mx-3">
                                             <i class="bi bi-journal-text bg-primary action-icon"></i>
                                             <span class="action-text">Notes</span>
-                                        </a>
+                                        </a>#}
                                     </div>
                                 </div>
                             </div>
@@ -264,24 +160,24 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-4 col-12 status">
-                                            <label for="" class="mb-2 label-status">Statut devis</label>
+                                        <div class="col-md-6 col-12 status">
+                                            <label for="" class="mb-2 label-status">Status devis</label>
                                             <select name="status-devis" id="status-devis" class="form-control form-control-sm">
                                                 <option value="1">Gagné</option>
                                                 <option value="2">Perdu</option>
                                                 <option value="3">Terminé</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-4 col-12 status">
-                                            <label for="" class="mb-2 label-status">Statut projet</label>
+                                        {#<div class="col-md-4 col-12 status">
+                                            <label for="" class="mb-2 label-status">Status projet</label>
                                             <select name="status-projet" id="status-projet" class="form-control form-control-sm">
                                                 <option value="1">Gagné</option>
                                                 <option value="2">Perdu</option>
                                                 <option value="3">Terminé</option>
                                             </select>
-                                        </div>
-                                        <div class="col-md-4 col-12 status">
-                                            <label for="" class="mb-2 label-status">Statut paiement</label>
+                                        </div>#}
+                                        <div class="col-md-6 col-12 status">
+                                            <label for="" class="mb-2 label-status">Status paiement</label>
                                             <select name="status-paiement" id="status-paiement" class="form-control form-control-sm">
                                                 <option value="1">Gagné</option>
                                                 <option value="2">Perdu</option>
@@ -338,5 +234,6 @@ $(document).ready(function() {
     $('#tab-import-produit').css('display', 'none');
       
     });
-   
+
+
 </script>

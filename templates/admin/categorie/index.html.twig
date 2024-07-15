@@ -91,15 +91,16 @@
       $('#tab-transfert-produit').css('display', 'none');
       $('#affaires_client').removeClass('active').empty();
        $('#affaires_fournisseur').removeClass('active').empty();
-
-      
+       $('#tab-info-affaire').removeClass('active').empty();
+      $('#tab-financier-affaire').removeClass('active').empty();
       
       $('#tab-application').removeClass('active');
       $('#tab-profile').removeClass('active');
        $('#tab-compte_1').removeClass('active');
       $('#tab-produit-type').removeClass('active');
       $('.tab-produit-type').removeClass('active');
-  $('#tab-import-produit').css('display', 'none');
+      $('#tab-import-produit').css('display', 'none');
+
       $('#liste-table-categorie').DataTable({
         responsive: true,
         language: {

@@ -1,0 +1,248 @@
+<section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+           <div class="row">
+            <div class="col-md-2 col-12">
+                <div class="card-tag shadow py-3 px-3">
+                    <p><a href="#" class="text-black">Tag</a></p>
+                    <p><a href="#" class="text-black">Contact</a></p>
+                    <p><a href="#" class="text-black">Pipeline</a></p>
+                </div>
+                <h6 class="my-3 mx-3"><i class="bi bi-cash-coin"></i><span class="mx-2">Financier</span></h6>
+                <div class="card-financier py-3 px-3 shadow">
+                    <p><a href="#" class="text-black">Rentabilité</a></p>
+                    <p><a href="#" class="text-black">Factures</a></p>
+                    <p><a href="#" class="text-black">Bon de livraison</a></p>
+                </div>
+                <h6 class="my-3 mx-3"><a href="#" class="text-black"><i class="bi bi-bell-fill"></i><span class="mx-2">Rappel</span></a></h6>
+                <h6 class="my-3 mx-3"><a href="#" class="text-black"><i class="bi bi-calendar4"></i><span class="mx-2">Tâches</span></a></h6>
+                <h6 class="my-3 mx-3"><a href="#" class="text-black"><i class="bi bi-list"></i><span class="mx-2">Gantt</span></a></h6>
+                <h6 class="my-3 mx-3"><a href="#" class="text-black"><i class="bi bi-stickies-fill"></i><span class="mx-2">Notes</span></a></h6>
+                <h6 class="my-3 mx-3"><a href="#" class="text-black"><i class="bi bi-file-text-fill"></i><span class="mx-2">Document</span></a></h6>
+                <h6 class="my-3 mx-3"><a href="#" class="text-black"><i class="bi bi-send-fill"></i><span class="mx-2">Mail</span></a></h6>
+                <h6 class="my-3 mx-3"><a href="#" class="text-black"><i class="bi bi-file-earmark-bar-graph-fill"></i><span class="mx-2">Reporting</span></a></h6>
+                <h6 class="my-3 mx-3"><a href="#" class="text-black"><i class="bi bi-globe2"></i><span class="mx-2">Universign</span></a></h6>
+                <h6 class="my-3 mx-3"><a href="#" class="text-black"><i class="bi bi-star-fill"></i><span class="mx-2">Evaluation</span></a></h6>
+                <div class="card-question py-3 px-3 shadow">
+                    <p><a href="#" class="text-black">Question de satisfaction</a></p>
+                    <p><a href="#" class="text-black">Questionnaire 2</a></p>
+                    <p><a href="#" class="text-black">Pièces du candidat</a></p>
+                </div>
+            </div>
+            <div class="col-md-10 col-12">
+                <div class="card p-5">
+                    <div class="date">
+                        <div class="row">
+                            <div class="col-md-5 col-12">
+                                <p class="fw-bold fs-5"><i class="bi bi-archive-fill text-primary"></i><span class="mx-2 text-primary">Date devis:</span><span class="text-warning">15/07/2024</span></p>
+                            </div>
+                            <div class="col-md-5 col-12">
+                                <p class="fw-bold fs-5"><i class="bi bi-archive-fill text-primary"></i><span class="mx-2 text-primary">Date commande:</span><span class="text-warning">15/07/2024</span></p>
+                            </div>
+                            <div class="col-md-2 col-12"></div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="object">
+                        <label for="" class="mb-2 fw-bold">Objet commande</label>
+                        <textarea name="order-object" id="order-object" class="form-control form-control-md ckeditor"></textarea>
+                        <button type="submit" class="btn btn-primary btn-sm px-3 mt-3 btn-save-object">Enregistrer</button>
+                    </div>
+                    <div class="row justify-content-end align-items-center">
+                        <div class="col-auto">
+                            <input type="checkbox" name="drag-and-drop" id="drag-and-drop" checked>
+                            <label for="drag-and-drop">Activer le 'drag and drop' de la ligne</label>
+                        </div>
+                        <div class="col-auto">
+                            <div class="dropdown">
+                                <a href="#" class="dropdown-toggle btn btn-primary btn-sm btn-drop" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-list"></i>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    <li><a class="dropdown-item" href="#">PDF</a></li>
+                                    <li><a class="dropdown-item" href="#">Excel</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="financier-produit mt-4">
+                        <table class="table">
+                            <thead>
+                                <tr class="bg-light">
+                                    <th></th>
+                                    <th>Ref</th>
+                                    <th style="width: 200px;">Intitulé</th>
+                                    <th>Qté</th>
+                                    <th>PU(HT)</th>
+                                    <th>Remise</th>
+                                    <th>PT(HT)</th>
+                                    <th>TVA</th>
+                                    <th>Action</th>
+                                    <th class="text-center"><input type="checkbox" name="" id="" class="large-checkbox" style="margin-top: 5px !important;"></th>
+                                </tr>
+                            
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="align-middle text-center">1</td>
+                                    <td class="align-middle text-center">Ref14589</td>
+                                    <td class="align-middle" style="width: 200px;">Produit 1</td>
+                                    <td class="align-middle text-center">3</td>
+                                    <td class="align-middle text-center">0,00€</td>
+                                    <td class="align-middle text-danger text-center">--</td>
+                                    <td class="align-middle text-center">0,00€</td>
+                                    <td class="align-middle text-center">20%</td>
+                                    <td>
+                                        <a href="#" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
+                                        <a href="#" class="action-plus d-block text-center mb-2"><i class="bi bi-plus"></i></a>
+                                        <a href="#" class="action-list d-block text-center mb-2"><i class="bi bi-list-ul"></i></a>
+                                        <a href="#" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
+                                    </td>
+                                    
+                                    <td class="align-middle">
+                                        <input type="checkbox" name="" id="" class="d-block large-checkbox mb-2">
+                                        <a href="#" class="d-block action-files align-middle text-center"><i class="bi bi-file-earmark-arrow-down-fill"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-3 mb-4 float-end">
+                            <input type="checkbox" name="drag-and-drop" id="drag-and-drop" checked>
+                            <label for="drag-and-drop">Activer le 'drag and drop' de la ligne</label>
+                        </div>
+                        
+                    </div>
+                    <div class="financier-info">
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <div class="mb-4">
+                                    <a href="#" class="text-primary financier-icon"><i class="bi bi-list-ul"></i></a>
+                                    <a href="#" class="text-danger financier-icon"><i class="bi bi-database-fill-check"></i></a>
+                                    <a href="#" class="text-info icon-t">t</a>
+                                    <a href="#" class="text-success financier-icon"><i class="bi bi-file-earmark-excel-fill"></i></a>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-md-6 col-12">
+                                        <p>Date valable jusqu'au : </p>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <input type="text" name="" id="" class="date-available form-control form-control-md" placeholder="jj/mm/aaaa">
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-md-6 col-12">
+                                        <p>Status : </p>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <select name="" id="" class="form-control form-control-md">
+                                            <option value="commande">commande</option>
+                                            <option value="devis">devis</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="box" style="border: 1px solid #5a5858; margin-left: 15px;">
+                                    <div class="row box-content px-3">
+                                        <div class="col-md-10 col-12 align-middle">
+                                            <p class="mt-4">Montant HT : </p>
+                                        </div>
+                                        <div class="col-md-2 col-12 align-middle">
+                                            <p class="mt-4">0,00€</p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row box-content px-3">
+                                        <div class="col-md-10 col-12 align-middle">
+                                            <p class="mt-3">TVA : </p>
+                                        </div>
+                                        <div class="col-md-2 col-12 align-middle">
+                                            <p class="mt-3">0,00€</p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row box-content px-3">
+                                        <div class="col-md-10 col-12 align-middle">
+                                            <p>Montant TTC : </p>
+                                        </div>
+                                        <div class="col-md-2 col-12 align-middle">
+                                            <p class="text-success">0,00€</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mt-4">
+                                    <a href="#" class="btn btn-outline-primary btn-sm btn-add-financier"><i class="bi bi-plus"></i><span class="mx-2">Ajouter une remise</span></a>
+                                    <a href="#" class="btn btn-outline-warning btn-sm btn-add-financier mx-3"><i class="bi bi-plus"></i><span class="mx-2">Ajouter une option</span></a>
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           </div>
+        </div>
+       
+    </div>
+   
+  </section>
+
+  <script>
+    $(document).ready(function() {
+    $('#tab-compte_1').removeClass('active').empty();
+    $('#tab-compte_2').removeClass('active').empty();
+    $('#affaires_fournisseur').removeClass('active').empty();
+    $('#affaires_client').removeClass('active').empty();
+      $('.tab-categorie').removeClass('active');
+      $('#tab-produit-categorie').removeClass('active');
+      $('.tab-produit-categorie').removeClass('active');
+      $('#tab-categorie').removeClass('active');
+      $('.tab-import-produit').removeClass('active');
+      $('#tab-import-produit').removeClass('active');
+
+      $('.tab-user').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
+      
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+     
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+       $('#tab-transfert-produit').css('display', 'none');
+     
+      
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-produit-type').removeClass('active');
+      $('.tab-produit-type').removeClass('active');
+      $('#tab-import-produit').css('display', 'none');
+      $('#tab-info-affaire').removeClass('active');
+      $('#tab-financier-affaire').addClass('active');
+      
+      
+    });
+
+    $(document).ready(function() {
+  var dateFormat = 'dd/mm/yyyy';
+  var dateNow = new Date();
+  dateNow.setDate(dateNow.getDate() + 1)
+
+  $('.date-available').datepicker({
+      format: dateFormat,
+      todayHighlight: true,
+      daysOfWeekDisabled: '0',
+      startDate: dateNow,
+      language: 'fr',
+      autoclose: true,
+
+  });
+
+});
+   
+  </script>

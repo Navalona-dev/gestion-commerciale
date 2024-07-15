@@ -89,6 +89,14 @@ $(document).ready(function() {
         listTransfertByProduitSession();
     }
 
+    if (anchorName === "tab-info-affaire") {
+        information();
+    }
+
+    if (anchorName === "tab-financier-affaire") {
+        financier();
+    }
+
 });
 
 function openModalUpdatePriceProduit(id = null) {
@@ -646,6 +654,67 @@ function showTabPermission() {
 
          });
  }
+
+ function information() {
+    $.ajax({
+            type: 'get',
+            url: '/admin/affaires/information',
+            //data: {},
+            success: function (response) {
+                $("#tab-info-affaire").empty();
+                $("#tab-info-affaire").append(response.html);
+                $("#tab-info-affaire").addClass('active');
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $(".loadBody").css('display', 'none');
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+            }
+
+        });
+}
+
+
+function financier() {
+    $.ajax({
+            type: 'get',
+            url: '/admin/affaires/financier',
+            //data: {},
+            success: function (response) {
+                $("#tab-financier-affaire").empty();
+                $("#tab-financier-affaire").append(response.html);
+                $("#tab-financier-affaire").addClass('active');
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $(".loadBody").css('display', 'none');
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+            }
+
+        });
+}
 
  
 

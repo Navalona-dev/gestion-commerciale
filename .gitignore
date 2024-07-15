@@ -9,6 +9,7 @@
 /vendor/
 .vscode
 .env
+migrations
 
 ###< symfony/framework-bundle ###
 

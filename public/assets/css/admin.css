@@ -1526,6 +1526,113 @@
   margin-bottom: 50px;
 }
 
+.affaire-info-tag .info {
+  color: #2a4ce8;
+}
+
+.card-tag, .card-financier, .card-question {
+  background-color: #e2effc;
+}
+
+.data-info {
+  background-color: #e2effc;
+  width: 100%;
+  padding-left: 10px;
+  box-sizing: border-box;
+}
+
+
+.affaire-info .info-title {
+  color: #2a4ce8;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.btn-outline-primary {
+  border: 1px solid #2a4ce8;
+  color: #000;
+}
+
+.btn-outline-primary:hover {
+  background-color: #2a4ce8 !important;
+  border: 1px solid #fff;
+  color: #fff;
+}
+
+.btn-outline-warning {
+  border: 1px solid  #ffc107  ;
+}
+
+.btn-outline-warning:hover {
+  background-color: #ffc107;
+  color: #000;
+  border: 1px solid #fff;
+}
+
+.btn-drop {
+  background-color: #ffc107 !important;
+}
+
+.action-pencil {
+  border: 1px solid #198754;
+  color: #198754;
+}
+
+.action-plus {
+  border: 1px solid #0d6efd;
+  color: #0d6efd;
+}
+
+.action-list {
+  border: 1px solid #0dcaf0;
+  color: #0dcaf0;
+}
+
+.action-trash {
+  border: 1px solid #dc3545;
+  color: #dc3545;
+}
+
+.btn-save-object {
+  border-radius: 20px;
+}
+
+.financier-icon {
+  padding: 6px 8px;
+  border: 1px solid #444343c7;
+  margin-right: 10px;
+}
+
+.icon-t {
+  border: 1px solid #444343c7;
+  padding: 6px 13px;
+  margin-right: 10px;
+}
+
+.btn-add-financier {
+  border-radius: 20px;
+}
+
+.large-checkbox {
+  width: 15px;  /* largeur personnalisée */
+  height: 15px; /* hauteur personnalisée */
+  transform: scale(1.5); /* agrandit la checkbox tout en maintenant les proportions */
+  -webkit-transform: scale(1.5); /* support pour les anciens navigateurs WebKit */
+  -moz-transform: scale(1.5); /* support pour les anciens navigateurs Mozilla */
+  -ms-transform: scale(1.5); /* support pour les anciens navigateurs Internet Explorer */
+  -o-transform: scale(1.5); /* support pour les anciens navigateurs Opera */
+  margin: 10px; /* marge optionnelle pour l'espacement */
+}
+
+.action-files {
+  border: 1px solid #198754;
+  color: #198754;
+  width: 30px;
+  height: 30px;
+  padding-top: 3px;
+  margin-left: 5px;
+}
+
 @media screen and (max-width: 750px) {
   .btn-add-header {
     margin-left: 4rem !important;

@@ -5,14 +5,15 @@ namespace App\Controller\Admin;
 use App\Entity\User;
 use App\Entity\Compte;
 use App\Form\UserType;
+use App\Entity\Affaire;
 use App\Form\CompteType;
 use App\Form\ProfilType;
 use App\Service\AccesService;
-use App\Service\AffaireService;
 use App\Form\AccesExtranetType;
+use App\Service\AffaireService;
 use App\Service\ApplicationManager;
-use App\Exception\PropertyVideException;
 
+use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,10 +24,10 @@ use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -43,6 +44,52 @@ class AffaireController extends AbstractController
         $this->affaireService = $affaireService;
         $this->accesService = $accesService;
         $this->application = $applicationManager->getApplicationActive();
+    }
+
+    #[Route('/information', name: '_information')]
+    public function info(Request $request)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+      
+        $data = [];
+        try {
+
+            $data["html"] = $this->renderView('admin/affaires/information.html.twig', [
+                //'affaire' => $affaire,
+            ]);
+            
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/financier', name: '_financier')]
+    public function financier(Request $request)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+      
+        $data = [];
+        try {
+
+            $data["html"] = $this->renderView('admin/affaires/financier.html.twig', [
+                //'affaire' => $affaire,
+            ]);
+            
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
     }
 
     #[Route('/{compte}', name: '_liste')]
@@ -424,18 +471,4 @@ class AffaireController extends AbstractController
         }
     }
 
-    /*#[Route("/update-is-active/{id}", name:"app_is_active_user")]
-    public function updateIsActive(Request $request, EntityManagerInterface $em, User $user): JsonResponse
-    {
-        if (!$user) {
-            throw $this->createNotFoundException('Aucune entité trouvée pour l\'identifiant. '.$id);
-        }
-
-        $user->setIsActive(!$user->getIsActive());
-        $em->persist($user);
-        $em->flush();
-
-        // Renvoyer une réponse JSON avec l'état mis à jour
-        return new JsonResponse(['isActive' => $user->getIsActive()]);
-    }*/
 }
