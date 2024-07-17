@@ -1633,6 +1633,10 @@
   margin-left: 5px;
 }
 
+.card-search {
+  height: 50vh;
+}
+
 @media screen and (max-width: 750px) {
   .btn-add-header {
     margin-left: 4rem !important;

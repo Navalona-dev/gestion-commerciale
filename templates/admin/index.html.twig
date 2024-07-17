@@ -3,6 +3,8 @@
 {% block title %}Mon profil | CVB {% endblock %}
 
 {% block body %}
+        <div class="id-affaire" data-affaire="{{idAffaire}}"></div>
+        <div class="id-compte" data-compte="{{idCompte}}"></div>
 
         <div id="tab-dashboard" class="tab-pane active">
                 {% include 'admin/dashboard/index.html.twig' %}
@@ -50,6 +52,8 @@
         <div id="tab-info-affaire">
         </div>
         <div id="tab-financier-affaire">
+        </div>
+        <div id="blocModaAffaireEmpty">
         </div>
 
 {% endblock %}

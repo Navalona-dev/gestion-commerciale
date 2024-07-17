@@ -1,6 +1,6 @@
 
 <section class="section">
-    <span id="id-compte" data-id="{{compte.id}}"></span>
+    {#<span id="id-compte" data-id="{{compte.id}}"></span>#}
 
     <div class="row">
       <div class="col-lg-12">
@@ -28,10 +28,21 @@
                 </div>
                 <div class="col-md-3 col-12 mb-4">
                     <div class="d-flex justify-content-center">
-                        <button class="btn btn-primary btn-sm px-3 affaire-btn" onclick="return newAffaire({{compte.id}})">
+                        {#<button class="btn btn-primary btn-sm px-3 affaire-btn" onclick="return newAffaire({{compte.id}})">
                             <i class="bi bi-plus-circle-dotted"></i>
                             Ajouter une affaire
-                        </button>
+                        </button>#}
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle btn-sm px-4 affaire-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="bi bi-plus-circle"></i>
+                              <span class="mx-2">Ajouter</span>
+                      
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="#" onclick="return newAffaire({{compte.id}})">Un devis</a></li>
+                              <li><a class="dropdown-item" href="#" >Une commande</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -125,7 +136,7 @@
                             <div class="col-md-4 col-12 mb-5">
                                 <div class="container mt-5 ">
                                     <div class="action-produit d-flex justify-content-around">
-                                        <a href="#tab-info-affaire" onclick="return information()" class="d-flex flex-column align-items-center mx-2">
+                                        <a href="#tab-info-affaire" onclick="return information({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
                                             <i class="bi bi-info-circle bg-info text-black action-icon"></i>
                                             <span class="action-text">Information</span>
                                         </a>
@@ -197,27 +208,10 @@
         </div>
       </div>
     </div>
-    <div id="blocModaAffaireEmpty">
-    </div>
+
   </section>
 
   <script>
-
-function newAffaire(idCompte = null) {
-            $.ajax({
-                url: '/admin/affaires/new/'+idCompte,
-                type: 'POST',
-                success: function (response) {
-                    $("#blocModaAffaireEmpty").empty();
-                    $("#blocModaAffaireEmpty").append(response.html);
-                    $('#modalNewAffaire').modal('show');
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'ajout affaire.');
-                }
-            });
-    }
 
     function searchAffaire(idCompte = null) {
         var affaireType = $('#affaire-type').val();

@@ -47,15 +47,21 @@ class ProduitCategorieRepository extends ServiceEntityRepository
 
     }
 
-    public function findReferenceProduitByApplication($application): array
+    public function findProductsByCompteAndApplication($compte, $application): array
     {
         return $this->createQueryBuilder('p')
-            ->select('p.reference') 
-            ->innerJoin('p.application', 'a') 
-            ->andWhere('a.id = :application') 
-            ->setParameter('application', $application)
-            ->orderBy('p.reference', 'ASC') 
+            ->innerJoin('p.comptes', 'c')
+            ->innerJoin('p.application', 'a')
+            ->andWhere('c.id = :compteId')
+            ->andWhere('a.id = :applicationId')
+            ->setParameter('compteId', $compte->getId())
+            ->setParameter('applicationId', $application->getId())
+            ->orderBy('p.id', 'ASC')
             ->getQuery()
             ->getResult();
     }
+    
+
+
+
 }

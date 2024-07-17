@@ -341,4 +341,10 @@ class ProduitCategorieService
     }
 
 
+    public function getAllProduitByCompteAndApplication($compte, $application)
+    {
+        return $this->entityManager->getRepository(ProduitCategorie::class)->findProductsByCompteAndApplication($compte, $application);
+    }
+
+    
 }

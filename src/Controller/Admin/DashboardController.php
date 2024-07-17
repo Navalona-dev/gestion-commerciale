@@ -3,10 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Form\AdminType;
+use App\Service\AccesService;
 use App\Entity\PasswordUpdate;
 use App\Form\PasswordUpdateType;
 use App\Repository\TypeRepository;
 use App\Repository\AdminRepository;
+use App\Service\ApplicationManager;
 use App\Service\HeaderDataProvider;
 use App\Repository\ContactRepository;
 use App\Repository\MessageRepository;
@@ -14,13 +16,12 @@ use App\Repository\ProductRepository;
 use Symfony\Component\Form\FormError;
 use App\Repository\CategoryRepository;
 use App\Repository\SocialLinkRepository;
-use App\Service\AccesService;
-use App\Service\ApplicationManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -38,9 +39,14 @@ class DashboardController extends AbstractController
     }
 
     #[Route('/admin', name: 'app_admin')]
-    public function index(Request $request, HeaderDataProvider $headerDataProvider)
+    public function index(
+        Request $request, 
+        HeaderDataProvider $headerDataProvider,
+        SessionInterface $session)
     {
         $headerData = $headerDataProvider->getHeaderData();
+        $idAffaire = $session->get('idAffaire');
+        $idCompte = $session->get('idCompte');
 
         if ($request->isXmlHttpRequest()) {
             try {
@@ -58,8 +64,12 @@ class DashboardController extends AbstractController
             return new JsonResponse($data);
         } 
 
+        //dd($idAffaire);
+
         $_data = array_merge($headerData, [
             'listes' => [],
+            'idAffaire' => $idAffaire,
+            'idCompte' => $idCompte
         ]);
 
         return $this->render('admin/index.html.twig', $_data);

@@ -9,7 +9,7 @@
         <tr id="tbody_compte" class="text-nowrap">
             
             <td> 
-                <a {% if genre == 1 %} href="#affaires_client" {% elseif genre == 2 %} href="#affaires_fournisseur" {% endif %} onclick="return listAffaireByCompte({{liste.id}}, {{liste.genre}})">
+                <a {% if genre == 1 %} href="#affaires_client" onclick="return listAffaireByCompte({{liste.id}}, {{liste.genre}})" {% elseif genre == 2 %} href="#affaires_fournisseur"  onclick="return listProduitByCompte({{liste.id}})" {% endif %}>
                     {{ liste.nom }}
                 </a> 
             </td>
@@ -68,7 +68,7 @@ function listAffaireByCompte(id = null, genre = 1) {
 
         });
 }
-    
+
     function deleteCompte(id = null, genre = 1) {
         let currentCompte = "clients";
         let titleCompte = "client";

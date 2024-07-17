@@ -2,27 +2,28 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Affaire;
 use App\Entity\User;
 use App\Entity\Compte;
 use App\Form\UserType;
+use App\Entity\Affaire;
 use App\Form\CompteType;
 use App\Form\ProfilType;
+use App\Form\AffaireType;
 use App\Service\AccesService;
+use App\Service\CompteService;
 use App\Form\AccesExtranetType;
+
 use App\Service\AffaireService;
 use App\Service\ApplicationManager;
-
+use App\Repository\CompteRepository;
 use App\Exception\PropertyVideException;
+use App\Service\ProduitCategorieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Exception\UnsufficientPrivilegeException;
-use App\Form\AffaireType;
-use App\Repository\CompteRepository;
-use App\Service\CompteService;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpClient\Exception\ServerException;
@@ -49,29 +50,6 @@ class AffaireController extends AbstractController
         $this->application = $applicationManager->getApplicationActive();
     }
 
-    #[Route('/information', name: '_information')]
-    public function info(Request $request)
-    {
-        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
-            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
-        }*/
-      
-        $data = [];
-        try {
-
-            $data["html"] = $this->renderView('admin/affaires/information.html.twig', [
-                //'affaire' => $affaire,
-            ]);
-            
-            return new JsonResponse($data);
-        } catch (\Exception $Exception) {
-            $data["exception"] = $Exception->getMessage();
-            $data["html"] = "";
-            $this->createNotFoundException('Exception' . $Exception->getMessage());
-        }
-        return new JsonResponse($data);
-    }
-
     #[Route('/financier', name: '_financier')]
     public function financier(Request $request)
     {
@@ -96,7 +74,10 @@ class AffaireController extends AbstractController
     }
 
     #[Route('/refresh', name: '_liste_refresh')]
-    public function indexRefresh(CompteService $compteService, Request $request, SessionInterface $session)
+    public function indexRefresh(
+        CompteService $compteService, 
+        Request $request, 
+        SessionInterface $session)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -516,4 +497,71 @@ class AffaireController extends AbstractController
         }
     }
 
+    #[Route('/information/{id}', name: '_information')]
+    public function info(
+        Request $request, 
+        Affaire $affaire,
+        SessionInterface $session)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+      
+        $data = [];
+        try {
+
+            $idAffaire = $session->set('idAffaire', $affaire->getId());
+
+            $compte = $affaire->getCompte();
+
+            $data["html"] = $this->renderView('admin/affaires/information.html.twig', [
+                'affaire' => $affaire,
+                'id' => $affaire->getId(),
+                'compte' => $compte
+            ]);
+            
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/produit/{compte}', name: '_liste_produit')]
+    public function listeProduit(
+        Compte $compte, 
+        Request $request, 
+        SessionInterface $session,
+        ProduitCategorieService $produitCategorieService)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+
+        $compteId = $session->set('idCompte', $compte->getId());
+      
+        $data = [];
+        try {
+
+            $produitCategories = $produitCategorieService->getAllProduitByCompteAndApplication($compte, $this->application);
+
+            if ($produitCategories == false) {
+                $produitCategories = [];
+            }
+
+            $data["html"] = $this->renderView('admin/affaires/index_fournisseur.html.twig', [
+                'listes' => $produitCategories,
+                'compte' => $compte
+            ]);
+            
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
 }
