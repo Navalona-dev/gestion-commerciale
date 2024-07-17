@@ -363,22 +363,22 @@ class AffaireController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/{compte}', name: '_edit')]
-    public function edit(Request $request, Compte $compte)
+    #[Route('/edit/{affaire}', name: '_edit')]
+    public function edit(Request $request, Affaire $affaire)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
         }*/
         $data = [];
         try {
-            $form = $this->createForm(CompteType::class, $compte, []);
+            $form = $this->createForm(AffaireType::class, $affaire, []);
 
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
                  
-                   $this->affaireService->persist($compte);
+                   $this->affaireService->persist($affaire);
                     $this->affaireService->update();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
@@ -387,23 +387,11 @@ class AffaireController extends AbstractController
             }
 
             $data['exception'] = "";
-            switch ($compte->getGenre()) {
-                case 1:
-                    $data["html"] = $this->renderView('admin/comptes/modal_update.html.twig', [
-                        'form' => $form->createView(),
-                        'id' => $compte->getId(),
-                    ]);
-                    break;
-                case 2:
-                    $data["html"] = $this->renderView('admin/comptes/modal_update_fournisseur.html.twig', [
-                        'form' => $form->createView(),
-                        'id' => $compte->getId(),
-                    ]);
-                    break;
-                default:
-                    # code...
-                    break;
-            }
+           
+            $data["html"] = $this->renderView('admin/affaires/modal_update.html.twig', [
+                'form' => $form->createView(),
+                'id' => $affaire->getId(),
+            ]);
             
             return new JsonResponse($data);
         } catch (PropertyVideException $PropertyVideException) {
@@ -445,8 +433,8 @@ class AffaireController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/delete/{compte}', name: '_delete')]
-    public function delete(Request $request, Compte $compte)
+    #[Route('/delete/{affaire}', name: '_delete')]
+    public function delete(Request $request, Affaire $affaire)
     {
        /* if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -454,7 +442,7 @@ class AffaireController extends AbstractController
         try {
            
             if ($request->isXmlHttpRequest()) {
-                $this->affaireService->remove($compte);
+                $this->affaireService->remove($affaire);
                 $this->affaireService->update();
                 return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
             }

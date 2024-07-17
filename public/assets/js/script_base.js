@@ -200,6 +200,63 @@ function newAffaire(idCompte = null) {
         });
     }
 
+function updateAffaire(id = null) {
+    var anchorName = document.location.hash.substring(1);
+
+    $.ajax({
+        url: '/admin/affaires/edit/'+id,
+        type: 'POST',
+        success: function (response) {
+            $("#blocModaAffaireEmpty").empty();
+            $("#blocModaAffaireEmpty").append(response.html);
+            $('#modalUpdateAffaire').modal('show');
+            if (anchorName) {
+                window.location.hash = anchorName;
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Gérer l'erreur (par exemple, afficher un message d'erreur)
+            alert('Erreur lors de la mise à jour affaire.');
+        }
+    });
+}
+
+function deleteAffaire(id = null) {
+    var anchorName = document.location.hash.substring(1);
+
+    if (confirm('Voulez vous vraiment supprimer cet affaire?')) {
+        $.ajax({
+            url: '/admin/affaires/delete/'+id,
+            type: 'POST',
+            data: {category: id},
+            success: function (response) {
+                var nextLink = $('#sidebar').find('li#affaire').find('a');
+                setTimeout(function () {
+                    toastr.options = {
+                        closeButton: true,
+                        progressBar: true,
+                        showMethod: 'slideDown',
+                        timeOut: 1000
+                    };
+                    toastr.success('Avec succèss', 'Suppression effectuée');
+
+                    //$(".loadBody").css('display', 'none');
+
+                }, 800);
+                if (anchorName) {
+                    window.location.hash = anchorName;
+                }
+                    showTabAffaireClient();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                alert('Erreur lors de la suppression d\'une affaire.');
+            }
+        });
+    }
+}
+
+
 
 function openModalUpdatePriceProduit(id = null) {
     var anchorName = document.location.hash.substring(1);

@@ -1,7 +1,5 @@
 
 <section class="section">
-    {#<span id="id-compte" data-id="{{compte.id}}"></span>#}
-
     <div class="row">
       <div class="col-lg-12">
         <div class="card p-5 affaire-header">
@@ -106,8 +104,8 @@
                                 {# <li class="dropdown-header text-start">
                                     <h6>Filter</h6>
                                 </li> #}
-                                <li><a class="dropdown-item" href="#">Modifier</a></li>
-                                <li><a class="dropdown-item" href="#">Supprimer</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="return updateAffaire({{affaire.id}})">Modifier</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="return deleteAffaire({{affaire.id}})">Supprimer</a></li>
                                 {# <li><a class="dropdown-item" href="#">Dupliquer</a></li> #}
                             </ul>
                         </div>
