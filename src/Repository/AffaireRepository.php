@@ -49,11 +49,13 @@ class AffaireRepository extends ServiceEntityRepository
     }
 
     public function searchAffaire(
-        $nom = null,
+        $compte,
         $dateDu = null,
         $dateAu = null,
         $limit = null,
-        $pg = 1
+        $pg = 1,
+        $statut = null,
+        $nom = null
     ) {
         $query = $this->createQueryBuilder('a')
             //->join('a.application', 'a')
@@ -63,6 +65,16 @@ class AffaireRepository extends ServiceEntityRepository
         if (null != $nom) {
             $query = $query->andWhere("a.nom LIKE :nom")
                 ->setParameter('nom', '%' . $nom . '%');
+        }
+
+        if (null != $statut) {
+            $query = $query->andWhere("a.statut = :statut")
+                ->setParameter('statut', $statut);
+        }
+
+        if (null != $compte) {
+            $query = $query->andWhere("a.compte = :compte")
+                ->setParameter('compte', $compte );
         }
 
         if (null != $dateDu && null != $dateAu) {

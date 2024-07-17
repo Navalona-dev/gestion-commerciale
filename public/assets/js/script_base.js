@@ -32,6 +32,11 @@ function newCompte(isNew = false, genre = 1) {
 
 $(document).ready(function() {
     var anchorName = document.location.hash.substring(1);
+
+    if (anchorName === "affaires_client") {
+        showTabAffaireClient();
+    }
+
     if (anchorName === "tab-categorie-permission") {
         showTabCategoriePermission();
     }
@@ -470,6 +475,47 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
+
+         });
+ }
+ 
+
+ function showTabAffaireClient() {
+    $.ajax({
+             type: 'post',
+             url: '/admin/affaires/refresh',
+             //data: {},
+             success: function (response) {
+                //if(genre == 1){
+                $("#tab-dashboard").removeClass('active');
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $("#affaires_client").empty();
+                $("#affaires_client").append(response.html);
+                $("#affaires_client").addClass('active');
+               /* } else if(genre == 2) {
+                    $("#affaires_fournisseur").empty();
+                    $("#affaires_fournisseur").append(response.html);
+                    $("#affaires_fournisseur").addClass('active');
+                }*/
+              
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
+                
+                $(".loadBody").css('display', 'none');
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');

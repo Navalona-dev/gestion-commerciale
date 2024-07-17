@@ -2,10 +2,10 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Affaire;
 use App\Entity\User;
 use App\Entity\Compte;
 use App\Form\UserType;
-use App\Entity\Affaire;
 use App\Form\CompteType;
 use App\Form\ProfilType;
 use App\Service\AccesService;
@@ -20,6 +20,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Exception\UnsufficientPrivilegeException;
+use App\Form\AffaireType;
+use App\Repository\CompteRepository;
+use App\Service\CompteService;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpClient\Exception\ServerException;
@@ -92,8 +95,58 @@ class AffaireController extends AbstractController
         return new JsonResponse($data);
     }
 
+    #[Route('/refresh', name: '_liste_refresh')]
+    public function indexRefresh(CompteService $compteService, Request $request, SessionInterface $session)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+        $compteId = $session->get('compte');
+       
+        $compte = null;
+        if (null != $compteId) {
+            $compte = $compteService->find($compteId);
+        }
+        
+        $data = [];
+        try {
+            if (null != $compte) {
+                $affaires = $this->affaireService->getAllAffaire($compte);
+
+                if ($affaires == false) {
+                    $affaires = [];
+                }
+
+                $genre = $compte->getGenre();
+                
+                if($genre == 1) {
+                    $data["html"] = $this->renderView('admin/affaires/index_client.html.twig', [
+                        'listes' => $affaires,
+                        'compte' => $compte,
+                        'genre' => $genre
+                    ]);
+                } elseif($genre == 2) {
+                    $data["html"] = $this->renderView('admin/affaires/index_fournisseur.html.twig', [
+                        'listes' => $affaires,
+                        'compte' => $compte,
+                        'genre' => $genre
+        
+                    ]);
+                }
+                return new JsonResponse($data);
+            } else  {
+                throw new \Exception("Compte introuvable");
+            }
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
     #[Route('/{compte}', name: '_liste')]
-    public function index(Compte $compte, Request $request)
+    public function index(Compte $compte, Request $request, SessionInterface $session)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -109,6 +162,8 @@ class AffaireController extends AbstractController
             }
 
             $genre = $compte->getGenre();
+
+            $session->set('compte', $compte->getId());
 
             if($genre == 1) {
                 $data["html"] = $this->renderView('admin/affaires/index_client.html.twig', [
@@ -134,27 +189,27 @@ class AffaireController extends AbstractController
         return new JsonResponse($data);
     }
     
-    #[Route('/search', name: '_search')]
-    public function search(Request $request)
+    #[Route('/search/{compte}', name: '_search')]
+    public function search(Compte $compte, Request $request)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
         }*/
       
         $data = [];
-        $genre = $request->request->get('genre');
-        $nomCompte = $request->request->get('nomCompte');
+        $statut = $request->get('type');
         try {
-            $comptes = $this->affaireService->getAllCompte((int)$genre);
+            $affaires = $this->affaireService->getAllAffaire($compte,1,0, $statut);
 
-            if ($comptes == false) {
-                $comptes = [];
+            if ($affaires == false) {
+                $affaires = [];
             }
-            $data["html"] = $this->renderView('admin/comptes/index_ajax.html.twig', [
-                'listes' => $comptes,
-                'genre' => $genre
+           
+            $data["html"] = $this->renderView('admin/affaires/list_affaire.html.twig', [
+                'listes' => $affaires,
+                'compte' => $compte
             ]);
-            
+           
             return new JsonResponse($data);
         } catch (\Exception $Exception) {
             $data["exception"] = $Exception->getMessage();
@@ -240,62 +295,52 @@ class AffaireController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/new', name: '_create')]
-    public function create(Request $request, UserPasswordHasherInterface $userPasswordHasher)
+    #[Route('/new/{compte}', name: '_create')]
+    public function create(Compte $compte, Request $request, UserPasswordHasherInterface $userPasswordHasher)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
         }*/
         $data = [];
         try {
-            $compte = new Compte();
-            $form = $this->createForm(CompteType::class, $compte);
+            $affaire = new Affaire();
+            $form = $this->createForm(AffaireType::class, $affaire);
 
             $form->handleRequest($request);
-
-            $genre = $request->request->get('genre');
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
                     // encode the plain password
-                    $this->affaireService->add($compte,(integer) $genre);
+                    $this->affaireService->add($affaire, $compte);
                     $this->affaireService->update();
                    
-                    return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                    $affaires = $this->affaireService->getAllAffaire($compte);
+
+                    if ($affaires == false) {
+                        $affaires = [];
+                    }
+
+                    $data["html"] = $this->renderView('admin/affaires/list_affaire.html.twig', [
+                        'compte' => $compte,
+                        'listes' => $affaires
+                    ]);
+                   
+                    return new JsonResponse($data);
+                    
                 }
 
-                if($genre == 1) {
-                    $this->addFlash('success', 'Création client "' . $compte->getNom() . '" avec succès.');
-                    return $this->redirectToRoute('comptes_liste', [
-                        'genre' => 1
-                    ]);
+                $this->addFlash('success', 'Création affaire "' . $affaire->getNom() . '" avec succès.');
+                return $this->redirectToRoute('comptes_liste', [
+                    'genre' => 1
+                ]);
 
-                } elseif($genre == 2) {
-                $this->addFlash('success', 'Création fournisseur "' . $compte->getNom() . '" avec succès.');
-                    return $this->redirectToRoute('comptes_liste', [
-                        'genre' => 2
-                    ]);
-
-                }
-        
-                //$this->addFlash('success', 'Création privilege "' . $user->getTitle() . '" avec succès.');
-                //return $this->redirectToRoute('privilege_liste');
+                
             }
 
-            $data['exception'] = "";
-
-            if($genre == 1) {
-                $data["html"] = $this->renderView('admin/comptes/new_client.html.twig', [
-                    'form' => $form->createView(),
-                    'genre' => $genre
-                ]);
-            } elseif($genre == 2) {
-                $data["html"] = $this->renderView('admin/comptes/new_fournisseur.html.twig', [
-                    'form' => $form->createView(),
-                    'genre' => $genre
-                ]);
-            }
-           
+            $data["html"] = $this->renderView('admin/affaires/new_affaire.html.twig', [
+                'form' => $form->createView(),
+                'compte' => $compte
+            ]);
            
             return new JsonResponse($data);
         } catch (PropertyVideException $PropertyVideException) {

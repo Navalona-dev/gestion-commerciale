@@ -37,15 +37,12 @@ class AffaireService
 
         $date = new \DateTime();
 
-        $affaire->setEtat($instance->getEtat());
+        //$affaire->setEtat($instance->getEtat());
         $affaire->setApplication($this->application);
         $affaire->setDateCreation($date);
-        $affaire->setStatut($instance->getStatut());
-        $affaire->setEmail($instance->getEmail());
-        $affaire->setCompte($instance->getTelephone());
-        $affaire->setNbAffaire(0);
-        $affaire->setPrestation($instance->getPrestation());
-        $affaire->setIsLivraison(false);
+        $affaire->setStatut("devis");
+        $affaire->setCompte($compte);
+        $affaire->setPrestation("Vente");
         $affaire->setNumero(null);
 
         /*foreach($affaire->getUtilisateur() as $utilisateur) {
@@ -83,9 +80,9 @@ class AffaireService
         return $this->entityManager->getRepository(Affaire::class)->find($id);
     }
 
-    public function getAllAffaire($compte = null, $start = 1, $limit = 0)
+    public function getAllAffaire($compte = null, $start = 1, $limit = 0, $statut = null)
     {
-        return $this->entityManager->getRepository(Affaire::class)->searchAffaire($compte, null,null, $limit, $start);
+        return $this->entityManager->getRepository(Affaire::class)->searchAffaire($compte, null,null, $limit, $start, $statut);
     }
 
     public function searchCompteRawSql($genre, $nom, $dateDu, $dateAu, $etat, $start, $limit, $order, $isCount)
