@@ -500,7 +500,7 @@ class AffaireController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/produit/{compte}', name: '_liste_produit')]
+    #[Route('/produit/{compte}', name: '_liste_produit_by_fournisseur')]
     public function listeProduit(
         Compte $compte, 
         Request $request, 

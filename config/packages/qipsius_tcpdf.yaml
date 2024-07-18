@@ -1,0 +1,5 @@
+qipsius_tcpdf:
+    tcpdf:
+        k_path_images: '%kernel.project_dir%/public/images/'
+        k_path_cache: '%kernel.cache_dir%/tcpdf'
+        k_path_url_cache: '%kernel.cache_dir%/tcpdf'

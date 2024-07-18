@@ -7,6 +7,9 @@ parameters:
     AVATAR_BASEPATH: '/uploads/avatar'
     app.path.product_image: /uploads/product
 services:
+    App\Service\TCPDFService:
+        public: true
+        alias: TCPDF
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
