@@ -284,7 +284,10 @@ class AffaireController extends AbstractController
         }*/
         $data = [];
         try {
+            $statut = $request->get('statut');
+            
             $affaire = new Affaire();
+            $affaire->setStatut($statut);
             $form = $this->createForm(AffaireType::class, $affaire);
 
             $form->handleRequest($request);
@@ -320,7 +323,8 @@ class AffaireController extends AbstractController
 
             $data["html"] = $this->renderView('admin/affaires/new_affaire.html.twig', [
                 'form' => $form->createView(),
-                'compte' => $compte
+                'compte' => $compte,
+                'statut' => $statut
             ]);
            
             return new JsonResponse($data);

@@ -119,6 +119,7 @@ function information(id = null) {
                 $("#tab-info-affaire").empty();
                 $("#tab-info-affaire").append(response.html);
                 $("#tab-info-affaire").addClass('active');
+                $("#tab-info-affaire").css('display', 'block');
                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
@@ -179,12 +180,13 @@ function listProduitByCompte(id = null) {
         });
 }
     
-function newAffaire(idCompte = null) {
+function newAffaire(idCompte = null, statut = "devis") {
     var anchorName = document.location.hash.substring(1);
 
         $.ajax({
             url: '/admin/affaires/new/'+idCompte,
             type: 'POST',
+            data: {statut: statut},
             success: function (response) {
                 $("#blocModaAffaireEmpty").empty();
                 $("#blocModaAffaireEmpty").append(response.html);
@@ -865,6 +867,7 @@ function financier() {
                 $("#tab-financier-affaire").empty();
                 $("#tab-financier-affaire").append(response.html);
                 $("#tab-financier-affaire").addClass('active');
+                $("#tab-info-affaire").css('display', 'none');
                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');

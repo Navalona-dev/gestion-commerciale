@@ -40,7 +40,7 @@ class AffaireService
         //$affaire->setEtat($instance->getEtat());
         $affaire->setApplication($this->application);
         $affaire->setDateCreation($date);
-        $affaire->setStatut("devis");
+        //$affaire->setStatut("devis");
         $affaire->setCompte($compte);
         $affaire->setPrestation("Vente");
         $affaire->setNumero(null);

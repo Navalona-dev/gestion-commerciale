@@ -8,7 +8,7 @@
             <div class="modal-body">
                 
                 {{ form_start(form, {'attr': {'id': 'newAffaire', 'action': path('affaires_create', {'compte': compte.id}) }}) }}
-                
+                    <input type="hidden" name="statut" value="{{statut}}">
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Nom <sup class="text-danger">*</sup></label>
                         <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.nom)}} </span>
