@@ -50,29 +50,6 @@ class AffaireController extends AbstractController
         $this->application = $applicationManager->getApplicationActive();
     }
 
-    #[Route('/financier', name: '_financier')]
-    public function financier(Request $request)
-    {
-        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
-            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
-        }*/
-      
-        $data = [];
-        try {
-
-            $data["html"] = $this->renderView('admin/affaires/financier.html.twig', [
-                //'affaire' => $affaire,
-            ]);
-            
-            return new JsonResponse($data);
-        } catch (\Exception $Exception) {
-            $data["exception"] = $Exception->getMessage();
-            $data["html"] = "";
-            $this->createNotFoundException('Exception' . $Exception->getMessage());
-        }
-        return new JsonResponse($data);
-    }
-
     #[Route('/refresh', name: '_liste_refresh')]
     public function indexRefresh(
         CompteService $compteService, 
@@ -285,7 +262,7 @@ class AffaireController extends AbstractController
         $data = [];
         try {
             $statut = $request->get('statut');
-            
+
             $affaire = new Affaire();
             $affaire->setStatut($statut);
             $form = $this->createForm(AffaireType::class, $affaire);
@@ -306,7 +283,8 @@ class AffaireController extends AbstractController
 
                     $data["html"] = $this->renderView('admin/affaires/list_affaire.html.twig', [
                         'compte' => $compte,
-                        'listes' => $affaires
+                        'listes' => $affaires,
+
                     ]);
                    
                     return new JsonResponse($data);
@@ -556,4 +534,105 @@ class AffaireController extends AbstractController
         }
         return new JsonResponse($data);
     }
+
+    #[Route('/financier/{affaire}', name: '_financier')]
+    public function financier(Request $request, Affaire $affaire)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+      
+        $data = [];
+        try {
+
+            $data["html"] = $this->renderView('admin/affaires/financier.html.twig', [
+                'affaire' => $affaire,
+            ]);
+            
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/produit/liste/{affaire}', name: '_liste_produit')]
+    public function listProduits(
+        Request $request,
+        ProduitCategorieService $produitCategorieService,
+        Affaire $affaire)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+        
+        $data = [];
+        try {
+
+            $produitCategories = $produitCategorieService->getAllProduitCategories();
+           
+            $data["html"] = $this->renderView('admin/affaires/liste_produit.html.twig', [
+                'listes' => $produitCategories,
+                'affaire' => $affaire,
+                'compte' => $affaire->getCompte()
+            ]);
+                
+            return new JsonResponse($data);
+           
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/fiche/{compte}', name: '_fiche')]
+    public function ficheClient(
+        Request $request, 
+        Affaire $affaire,
+        SessionInterface $session)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+
+        $compte = $affaire->getCompte();
+
+        $session->set('idCompte', $compte->getId());
+      
+        $data = [];
+        try {
+
+            $form = $this->createForm(AffaireType::class, $affaire, []);
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                if ($request->isXmlHttpRequest()) {
+                 
+                   $this->affaireService->persist($affaire);
+                    $this->affaireService->update();
+                    return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                }
+                //$this->addFlash('success', 'Modification utilisateur  "' . $utilisateur->getTitle() . '" avec succès.');
+                //return $this->redirectToRoute('privilege_liste');
+            }
+
+            $data["html"] = $this->renderView('admin/comptes/fiche_client.html.twig', [
+                'compte' => $compte,
+                'affaire' => $affaire
+            ]);
+            
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
 }

@@ -1,0 +1,145 @@
+<style>
+  .title {
+    color: #0d6efd;
+  }
+
+  .fiche-btn {
+    padding: 6px 12px;
+    color: #fff;
+  }
+
+  .fiche-data {
+    border: 1px solid grey;
+    padding: 10px;
+  }
+</style>
+<section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        {# entete compte #}
+        {% include 'admin/affaires/entete_compte.html.twig' with { 'compte': affaire.compte } %}
+       {# entete affaire #}
+       {% include 'admin/affaires/entete_affaire.html.twig' with { 'affaire': affaire } %}
+        
+        <div class="affaire-recherche mt-5">
+            <div class="row">
+                <div class="col-md-2 col-12">
+                   {% include '/admin/affaires/menu_left.html.twig' with {'affaire': affaire} %}
+                </div>  
+                
+                <div class="col-md-10 col-12">
+                    <div class="card p-5">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="title fw-bold"><i class="bi bi-person-square"></i> <span class="mx-2">Détails du client</span></h4>
+                        <p>Logo du client</p>
+                    </div>
+                      <hr>
+                      <div class="my-5">
+                        <div class="row mb-4">
+                          <div class="col-md-3 col-12">
+                            <p>Nom</p>
+                          </div>
+                          <div class="col-md-9 col-12">
+                            <p class="fiche-data mx-3"> {{compte.nom}} </p>
+                          </div>
+                        </div>
+                        <div class="row mb-4">
+                          <div class="col-md-3 col-12">
+                            <p>Email</p>
+                          </div>
+                          <div class="col-md-9 col-12">
+                            <p class="fiche-data mx-3">
+                              {% if compte.email is not null %}
+                                {{compte.email}}
+                              {% else %}
+                                Aucun
+                              {% endif %}
+                            </p>
+                          </div>
+                        </div>
+                        <div class="row mb-4">
+                          <div class="col-md-3 col-12">
+                            <p>Téléphone</p>
+                          </div>
+                          <div class="col-md-9 col-12">
+                            <p class="fiche-data mx-3">
+                              {% if compte.telephone is not null %}
+                                {{compte.telephone}}
+                              {% else %}
+                                Aucun
+                              {% endif %}
+                            </p>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-3 col-12">
+                            <p>Adresse</p>
+                          </div>
+                          <div class="col-md-9 col-12">
+                            <p class="fiche-data mx-3">
+                              {% if compte.adresse is not null %}
+                                {{compte.adresse}}
+                              {% else %}
+                                Aucun
+                              {% endif %}
+                            </p>
+                          </div>
+                        </div>
+                        <div class="d-flex justify-content-end form-group mt-4">
+                          <a href="#" class="fiche-btn bg-danger mx-2"><i class="bi bi-trash-fill"></i></a>
+                          <a href="#" class="fiche-btn bg-success mx-2"><i class="bi bi-file-earmark-fill"></i></a>
+                          <a href="#" class="btn btn-primary btn-sm px-3 mx-2 text-decoration-underline"><i class="bi bi-plus"></i>d'info</a>
+                        </div>
+                      </div>
+                     
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+      </div>
+    </div>
+   
+  </section>
+
+  <script>
+
+$(document).ready(function() {
+    $('#tab-compte_1').removeClass('active').empty();
+    $('#tab-compte_2').removeClass('active').empty();
+    $('#affaires_fournisseur').removeClass('active').empty();
+    $('#affaires_client').removeClass('active').empty();
+      $('.tab-categorie').removeClass('active');
+      $('#tab-produit-categorie').removeClass('active');
+      $('.tab-produit-categorie').removeClass('active');
+      $('#tab-categorie').removeClass('active');
+      $('.tab-import-produit').removeClass('active');
+      $('#tab-import-produit').removeClass('active');
+
+      $('.tab-user').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
+      
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+     
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+       $('#tab-transfert-produit').css('display', 'none');
+      
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-produit-type').removeClass('active');
+      $('.tab-produit-type').removeClass('active');
+      $('#tab-import-produit').css('display', 'none');
+       $('#tab-financier-affaire').removeClass('active').empty();
+      $('#tab-info-affaire').removeClass('active').empty();
+    $('#tab-fiche-client').addClass('active');
+      
+    });
+   
+</script>

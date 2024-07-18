@@ -425,4 +425,6 @@ class CompteController extends AbstractController
         // Renvoyer une réponse JSON avec l'état mis à jour
         return new JsonResponse(['isActive' => $user->getIsActive()]);
     }*/
+
+
 }

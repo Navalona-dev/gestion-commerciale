@@ -1,0 +1,138 @@
+<style>
+    .modal-list-produit {
+        width: 260% !important;
+        margin-left: -25rem !important;
+    }
+    td {
+        border-bottom: none !important;
+    }
+    select {
+        width: 30% !important;
+    }
+
+    .card-table {
+        background-color: #f6f9ff;
+    }
+</style>
+<div class="modal fade" id="modalListProduitCategorie" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content p-4 modal-list-produit">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau produit depuis le catalogue</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <hr>
+                
+            </div>
+            <div class="modal-body">
+                <div class="form-group d-flex align-items-center mt-5">
+                    <label for="" class="mr-2">Filtrer par :</label>
+                    <select name="" id="" class="form-control form-control-sm">
+                        <option value="Filtre 1">Filtre 1</option>
+                        <option value="Filtre 2">Filtre 2</option>
+                        <option value="Filtre 3">Filtre 3</option>
+                    </select>
+                </div>
+                
+                <div class="card-table mt-5 p-5">
+                    <table class="table table-striped" id="table-liste-produit">
+                        <thead>
+                            <tr class="text-nowrap">
+                                <th>Actions</th>
+                                <th>Ref</th>
+                                <th>Intitulé/Détail</th>
+                                <th>Prix achat HT</th>
+                                <th>Prix HT</th>
+                                <th>% TVA</th>
+                                <th>Prix TTC</th>
+                                <th>Qtt</th>
+                                <th>St.min</th>
+                                <th>Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for liste in listes %}
+                            <tr class="text-nowrap">
+                                <td>
+                                    <a href="#" class=""><i class="bi bi-cart-plus-fill"></i><span class="mx-2">Ajouter</span></a>
+                                </td>
+                                <td> 
+                                    {% if liste.reference is not null %}
+                                        {{liste.reference}} 
+                                    {% endif %}
+                                </td>
+                                <td> {{liste.nom}} </td>
+                                <td> 
+                                    {% if liste.prixAchat is not null %}
+                                        {{liste.prixAchat}} Ar
+                                    {% endif %}
+                                </td>
+                                <td> 
+                                    {% if liste.prixHt is not null %}
+                                        {{liste.prixHt}} Ar 
+                                    {% endif %}
+                                </td>
+                                <td> 
+                                    {% if liste.tva is not null %}
+                                    {{liste.tva}} 
+                                    {% endif %}
+                                </td>
+                                <td> 
+                                    {% if liste.prixTTC is not null %}
+                                        {{liste.prixTTC}} Ar 
+                                    {% endif %}
+                                </td>
+                                <td> 
+                                    {% if liste.qtt is not null  %}
+                                        {{liste.qtt}} 
+                                    {% endif %}
+                                </td>
+                                <td> 
+                                    {% if liste.stockMin is not null %}
+                                        {{liste.stockMin}}
+                                    {% endif %}
+                                 </td>
+                                <td> 
+                                    {% if liste.stockRestant is not null %}
+                                        {{liste.stockRestant}}
+                                    {% endif %} 
+                                </td>
+
+                            </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="10">Aucun enregistrement trouvé</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+
+<script>
+   
+   $(document).ready(function() {
+    $('#table-liste-produit').DataTable({
+        responsive: true,
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+      },
+        border: false,
+        scrollX: '100%',
+        pageLength: 10,
+        scrollCollapse: false,
+      });
+   })
+</script>

@@ -1561,6 +1561,7 @@
 
 .btn-outline-warning {
   border: 1px solid  #ffc107  ;
+  color: #000;
 }
 
 .btn-outline-warning:hover {

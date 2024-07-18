@@ -18,7 +18,13 @@
                     
                     
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-sm px-3 mt-3" style="width: 100%;">Ajouter devis</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-3 mt-3" style="width: 100%;">
+                            {% if statut == 'devis' %}
+                                Ajouter le devis
+                            {% elseif statut == 'commande' %}
+                                Ajouter la commande
+                            {% endif %}
+                        </button>
                     </div>
                 {{ form_end(form) }}
             </div>
