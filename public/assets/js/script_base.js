@@ -35,8 +35,6 @@ $(document).ready(function() {
     var idAffaire = $('.id-affaire').data('affaire');
     var idCompte = $('.id-compte').data('compte');
 
-    console.log('id', idCompte);
-
     if (anchorName === "affaires_client") {
         showTabAffaireClient();
     }
