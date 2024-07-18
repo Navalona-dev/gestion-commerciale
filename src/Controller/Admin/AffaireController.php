@@ -9,10 +9,11 @@ use App\Entity\Affaire;
 use App\Form\CompteType;
 use App\Form\ProfilType;
 use App\Form\AffaireType;
+use App\Form\FicheCompteType;
 use App\Service\AccesService;
 use App\Service\CompteService;
-use App\Form\AccesExtranetType;
 
+use App\Form\AccesExtranetType;
 use App\Service\AffaireService;
 use App\Service\ApplicationManager;
 use App\Repository\CompteRepository;
@@ -593,7 +594,8 @@ class AffaireController extends AbstractController
     public function ficheClient(
         Request $request, 
         Affaire $affaire,
-        SessionInterface $session)
+        SessionInterface $session,
+        EntityManagerInterface $em)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -606,15 +608,15 @@ class AffaireController extends AbstractController
         $data = [];
         try {
 
-            $form = $this->createForm(AffaireType::class, $affaire, []);
+            $form = $this->createForm(FicheCompteType::class, $compte, []);
 
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
                  
-                   $this->affaireService->persist($affaire);
-                    $this->affaireService->update();
+                   $em->persist($compte);
+                    $em->flush();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
                 //$this->addFlash('success', 'Modification utilisateur  "' . $utilisateur->getTitle() . '" avec succès.');
@@ -623,7 +625,8 @@ class AffaireController extends AbstractController
 
             $data["html"] = $this->renderView('admin/comptes/fiche_client.html.twig', [
                 'compte' => $compte,
-                'affaire' => $affaire
+                'affaire' => $affaire,
+                'form' => $form->createView()
             ]);
             
             return new JsonResponse($data);
