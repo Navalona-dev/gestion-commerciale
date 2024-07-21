@@ -146,11 +146,18 @@ class Affaire
     #[ORM\Column(type: "datetime", nullable: true)]
     private $dateModification;
 
+    /**
+     * @var Collection<int, Product>
+     */
+    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'affaires')]
+    private Collection $products;
+
     public function __construct()
     {
         $this->dateCreation = new \DateTime('now');
         $this->paiement = 'non';
         $this->abonnement = 'noncommence';
+        $this->products = new ArrayCollection();
     }
 
     public static function newAffaire($instance = null, $compte = null)
@@ -583,6 +590,33 @@ class Affaire
     public function setDateModification(?\DateTimeInterface $dateModification): self
     {
         $this->dateModification = $dateModification;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): static
+    {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+            $product->addAffaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): static
+    {
+        if ($this->products->removeElement($product)) {
+            $product->removeAffaire($this);
+        }
 
         return $this;
     }

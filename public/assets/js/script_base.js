@@ -863,6 +863,7 @@ function showTabPermission() {
 
 
 function financier(id = null) {
+    
     $.ajax({
             type: 'get',
             url: '/admin/affaires/financier/'+id,

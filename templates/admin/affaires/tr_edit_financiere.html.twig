@@ -1,0 +1,76 @@
+
+ <tr  id="tr_produit_{{ product.id }}" data-id="{{ product.id }}" data-id-affaire="{{ affaire.id }}">
+        {# <td class="index">{{ produit.id }}</td> #}
+        <td class="align-middle text-center">{{product.reference}}</td>
+         <td class="align-middle text-center">{{product.nom}}</td>
+         <td class="align-middle text-center"><input type="hidden" name="idProduit" value="{{ product.id  }}"><input type="text" id="qtt" name="qtt" class="form-control" value="{{ product.qtt  }}"></td>
+          <td class="align-middle text-center">{{product.prixVenteGros}}</td>
+        {# <td>
+            <input type="text" name="reference" class="form-control" value="{{ produit.reference  }}">
+        </td>
+        <td>
+             <textarea id="nom_{{ produit.position }}"  name="nom" class="form-control ckeditor" cols='50' >{{ produit.nom|raw  }}{{ produit.description|raw  }} </textarea>
+
+            <textarea id="descriptif_{{ produit.position }}"  name="descriptif" class="form-control ckeditor" cols='50' ></textarea> 
+
+        </td> #}
+        {# <td>
+            &nbsp;
+
+        </td> 
+        <td>
+            <input type="text" name="qtt" class="form-control" value="{{ produit.qtt  }}">
+        </td>
+
+        <td>
+            <input type="text" name="prixHt" class="form-control" value="{{ produit.puHt  }}">
+
+            <input type="hidden" name="idProduit" value="{{ produit.id  }}">
+        </td>
+        <td>
+            &nbsp;
+        </td>
+
+        <td class="text-center produit_puht_{{ produit.id }}">  {{ (produit.qtt * produit.puht)|formatEuro }} </td>
+
+        <td>
+            <select name="tva" class="form-control">
+                <option value="0">Tva</option>
+                {% for un_tvaVente in tvaVentes %}
+                    <option value="{{ un_tvaVente.tva }}" {% if produit.tva == un_tvaVente.tva %}selected{% endif %}>{{ un_tvaVente.tva }}%</option>
+                {% endfor %}
+            </select>
+        </td>#}
+
+        <td class="text-center  align-items-center">
+             <a href="#" onclick="return editLigneProduct(this, {{ affaire.id }}, {{ product.id }});" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
+             <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
+            {# <a class="d-block" onclick="return addNewProduitV2(this, {{ affaire.id }}, {{ produit.id }}, {{ produit.position }});"  title="Enregistrer" > <img src="/images/Y.png" alt="yes" style="margin-bottom: 30px;"> </a> &nbsp;&nbsp;&nbsp;&nbsp;
+            <button onclick="return deleteProduitAffaire(this,{{ produit.id }}, {{ affaire.id }});" style=" color: rgb(217, 83, 79); cursor: pointer;display: inline-block; background: transparent; border: none" class=""><span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></button> #}
+        </td>
+        {# <td>
+            &nbsp;
+        </td> #}
+    </tr>
+
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        /*$("tr[id^='tr_produit_'] .ckeditor").each(function() {
+            CKEDITOR.replace($(this).attr("id"), {
+                toolbar: [
+                    { name: 'basicstyles', items: [ 'Bold', 'Italic','Underline'*//*,'Styles', 'Format', 'Font', 'FontSize'*/ ] }
+          /*      ],
+                height : 100,
+            });
+        });
+
+        setTimeout(function() {
+            $("div[id^='cke_descriptif_']").css('display', 'none');
+        }, 100);*/
+    });
+
+</script>

@@ -40,10 +40,11 @@
                                 <th>Actions</th>
                                 <th>Ref</th>
                                 <th>Intitulé/Détail</th>
-                                <th>Prix achat HT</th>
-                                <th>Prix HT</th>
-                                <th>% TVA</th>
-                                <th>Prix TTC</th>
+                                <th>Gros?</th>
+                                <th>Prix vente gros</th>
+                                <th>Unite gros</th>
+                                <th>Prix vente detail</th>
+                                 <th>Unite detail</th>
                                 <th>Qtt</th>
                                 <th>St.min</th>
                                 <th>Stock</th>
@@ -53,38 +54,49 @@
                             {% for liste in listes %}
                             <tr class="text-nowrap">
                                 <td>
-                                    <a href="#" class=""><i class="bi bi-cart-plus-fill"></i><span class="mx-2">Ajouter</span></a>
+                                    <a onclick="return addPanier(this, {{ affaire.id }});"
+                                           class="panier"><i class="bi bi-cart-plus-fill"></i>
+                                            <span class="mx-2">Ajouter</span></a>
+                                  
                                 </td>
-                                <td> 
+                                <td><input type="hidden" name="idProduit"
+                                           value="{{ liste.id }}"> 
                                     {% if liste.reference is not null %}
                                         {{liste.reference}} 
                                     {% endif %}
                                 </td>
                                 <td> {{liste.nom}} </td>
                                 <td> 
-                                    {% if liste.prixAchat is not null %}
-                                        {{liste.prixAchat}} Ar
+                                <select name="isGros" class="form-control">
+                                    <option value="">Type vente</option>
+                                    <option value="1">Oui</option>
+                                    <option value="0">Non</option>
+                                </select
+                                 </td>
+                                <td> 
+                                    {% if liste.prixVenteGros is not null %}
+                                        {{liste.prixVenteGros}} Ar 
                                     {% endif %}
                                 </td>
                                 <td> 
-                                    {% if liste.prixHt is not null %}
-                                        {{liste.prixHt}} Ar 
+                                    {% if liste.uniteVenteGros is not null %}
+                                        {{liste.uniteVenteGros}}  
+                                    {% endif %}
+                                </td>
+                                 <td> 
+                                    {% if liste.prixVenteDetail is not null %}
+                                        {{liste.prixVenteDetail}} Ar 
                                     {% endif %}
                                 </td>
                                 <td> 
-                                    {% if liste.tva is not null %}
-                                    {{liste.tva}} 
+                                    {% if liste.uniteVenteDetail is not null %}
+                                        {{liste.uniteVenteDetail}}  
                                     {% endif %}
                                 </td>
                                 <td> 
-                                    {% if liste.prixTTC is not null %}
-                                        {{liste.prixTTC}} Ar 
-                                    {% endif %}
-                                </td>
-                                <td> 
-                                    {% if liste.qtt is not null  %}
-                                        {{liste.qtt}} 
-                                    {% endif %}
+                                        <input type="text" value="{{ liste.qtt }}" name="qttProduit"
+                                               class="form-control">
+                           
                                 </td>
                                 <td> 
                                     {% if liste.stockMin is not null %}

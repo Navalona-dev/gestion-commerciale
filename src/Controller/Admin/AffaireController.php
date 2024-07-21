@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Exception\UnsufficientPrivilegeException;
+use App\Service\ProductService;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpClient\Exception\ServerException;
@@ -43,11 +44,13 @@ class AffaireController extends AbstractController
     private $affaireService;
     private $accesService;
     private $application;
+    private $productService;
 
-    public function __construct(AffaireService $affaireService, ApplicationManager $applicationManager, AccesService $accesService)
+    public function __construct(AffaireService $affaireService, ApplicationManager $applicationManager, AccesService $accesService, ProductService $productService)
     {
         $this->affaireService = $affaireService;
         $this->accesService = $accesService;
+        $this->productService = $productService;
         $this->application = $applicationManager->getApplicationActive();
     }
 
@@ -500,30 +503,6 @@ class AffaireController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/financier/{affaire}', name: '_financier')]
-    public function financier(Request $request, Affaire $affaire, SessionInterface $session)
-    {
-        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
-            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
-        }*/
-        $data = [];
-        try {
-
-            $session->set('idAffaire', $affaire->getId());
-
-            $data["html"] = $this->renderView('admin/affaires/financier.html.twig', [
-                'affaire' => $affaire,
-            ]);
-            
-            return new JsonResponse($data);
-        } catch (\Exception $Exception) {
-            $data["exception"] = $Exception->getMessage();
-            $data["html"] = "";
-            $this->createNotFoundException('Exception' . $Exception->getMessage());
-        }
-        return new JsonResponse($data);
-    }
-
     #[Route('/produit/{compte}', name: '_liste_produit_by_fournisseur')]
     public function listeProduit(
         Compte $compte, 
@@ -551,6 +530,35 @@ class AffaireController extends AbstractController
                 'compte' => $compte
             ]);
             
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/financier/{affaire}', name: '_financier')]
+    public function financier(Request $request, Affaire $affaire, SessionInterface $session)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+      
+        $data = [];
+        try {
+            $session->set('idAffaire', $affaire->getId());
+            $produits = $this->productService->findProduitAffaire($affaire);
+            if ($produits == false) {
+                $produits = [];
+            }
+       
+            $data["html"] = $this->renderView('admin/affaires/financier.html.twig', [
+                'affaire' => $affaire,
+                'produits' => $produits
+            ]);
+          
             return new JsonResponse($data);
         } catch (\Exception $Exception) {
             $data["exception"] = $Exception->getMessage();

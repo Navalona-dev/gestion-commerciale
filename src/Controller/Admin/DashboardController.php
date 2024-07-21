@@ -47,7 +47,7 @@ class DashboardController extends AbstractController
         $headerData = $headerDataProvider->getHeaderData();
         $idAffaire = $session->get('idAffaire');
         $idCompte = $session->get('idCompte');
-
+       
         if ($request->isXmlHttpRequest()) {
             try {
 
