@@ -68,6 +68,7 @@ class ProductService
         $product->setPuHt($instance->getPrixHt());
         $product->setTva($instance->getTva());
         $product->setQtt($data['qtt']);
+        $product->setTypeVente($data['typeVente']);
         /*$product->setStockRestant($instance->getStockRestant());
         $product->setStockMin($instance->getStockMin());
         $product->setStockMax($instance->getStockMax());*/

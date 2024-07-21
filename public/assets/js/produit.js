@@ -6,20 +6,20 @@ function addPanier(elt, idAffaire) {
     var idProduit = $(elt).parent('td').parent('tr').find("input[name='idProduit']").val();
 
     var qtt = $(elt).parent('td').parent('tr').find("input[name='qttProduit']").val();
-
+    
+    var typeVente =  $(elt).parent('td').parent('tr').find("select[name='typeVente']").val();;
     //var prixHt = $(elt).parent('td').parent('tr').find("input[name='prixHt']").val();
 
     //var prixTTC = $(elt).parent('td').parent('tr').find("input[name='prixTTC']").val();
-
     if (qtt === "") {
         alert("Le champ qtt ne doit pas être vide !!");
         return false;
     }
-
+    console.log(typeVente);
     $.ajax({
         type: 'post',
         url: '/admin/product/add-to-affaire',
-        data: {idProduit: idProduit, qtt: qtt, idAffaire: idAffaire},
+        data: {idProduit: idProduit, qtt: qtt, idAffaire: idAffaire, typeVente: typeVente},
         success: function (response) {
             $(elt).parent('td').parent('tr').css('background-color', 'aquamarine');
 

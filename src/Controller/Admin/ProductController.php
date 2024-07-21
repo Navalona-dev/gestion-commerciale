@@ -66,8 +66,14 @@ class ProductController extends AbstractController
         $produitCategorie = $this->produitCategorieService->getCategorieById($idProduit);
 
         $qtt = $this->helpers->tofloat($request->get('qtt'));
+        $typeVente = $request->get('typeVente');
+
+        if ($typeVente == null || $typeVente == "") {
+            $typeVente = "gros";
+        }
         $data = [];
         $data['qtt'] = $qtt;
+        $data['typeVente'] = $typeVente;
         
         //$prixHt = (null != $request->get('prixHt'))?$request->get('prixHt'): null;
 

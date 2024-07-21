@@ -40,7 +40,7 @@
                                 <th>Actions</th>
                                 <th>Ref</th>
                                 <th>Intitulé/Détail</th>
-                                <th>Gros?</th>
+                                <th>Type vente</th>
                                 <th>Prix vente gros</th>
                                 <th>Unite gros</th>
                                 <th>Prix vente detail</th>
@@ -67,11 +67,11 @@
                                 </td>
                                 <td> {{liste.nom}} </td>
                                 <td> 
-                                <select name="isGros" class="form-control">
+                                <select name="typeVente" id="typeVente" class="form-control">
                                     <option value="">Type vente</option>
-                                    <option value="1">Oui</option>
-                                    <option value="0">Non</option>
-                                </select
+                                    <option value="gros">Gros</option>
+                                    <option value="detail">Détail</option>
+                                </select>
                                  </td>
                                 <td> 
                                     {% if liste.prixVenteGros is not null %}

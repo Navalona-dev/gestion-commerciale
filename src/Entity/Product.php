@@ -104,6 +104,9 @@ class Product
     #[ORM\ManyToMany(targetEntity: Affaire::class, inversedBy: 'products')]
     private Collection $affaires;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $typeVente = null;
+
     public function __construct()
     {
         $this->affaires = new ArrayCollection();
@@ -371,6 +374,18 @@ class Product
     public function removeAffaire(Affaire $affaire): static
     {
         $this->affaires->removeElement($affaire);
+
+        return $this;
+    }
+
+    public function getTypeVente(): ?string
+    {
+        return $this->typeVente;
+    }
+
+    public function setTypeVente(?string $typeVente): static
+    {
+        $this->typeVente = $typeVente;
 
         return $this;
     }
