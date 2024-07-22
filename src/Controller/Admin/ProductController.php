@@ -79,6 +79,10 @@ class ProductController extends AbstractController
 
         //$prixTTC = (null != $request->get('prixTTC'))?$request->get('prixTTC'): null;
 
+        if($qtt > $produitCategorie->getStockRestant()) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Le stock restant de ce produit est inférieur à la quantité que vous avez saisissez, veuillez changer la quantité à inférieur ou égale au stock restant'], Response::HTTP_OK);
+        }
+        
         $product = $this->productService->add($produitCategorie, $affaire, $data);
 
         //Mise à jour montant CA affaire
@@ -96,8 +100,6 @@ class ProductController extends AbstractController
 
        
         $template = "reloadFinanciereProduct.html.twig";
-
-       
        
         return $this->render("admin/affaires/".$template, [
             'applicationId' => $this->application->getId(),

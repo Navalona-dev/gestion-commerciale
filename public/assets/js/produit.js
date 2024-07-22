@@ -21,7 +21,23 @@ function addPanier(elt, idAffaire) {
         url: '/admin/product/add-to-affaire',
         data: {idProduit: idProduit, qtt: qtt, idAffaire: idAffaire, typeVente: typeVente},
         success: function (response) {
-            $(elt).parent('td').parent('tr').css('background-color', 'aquamarine');
+            
+            if(response.status == "error") {
+                $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');
+                setTimeout(function () {
+                    toastr.options = {
+                        closeButton: true,
+                        progressBar: true,
+                        showMethod: 'slideDown',
+                        timeOut: 3000
+                    };
+    
+                    toastr.error(response.message);
+    
+                }, 800);
+            } else {
+                $(elt).parent('td').parent('tr').css('background-color', 'aquamarine');
+            }
 
             $("#financiereProduct").empty();
             $("#financiereProduct").replaceWith(response);
@@ -42,6 +58,8 @@ function addPanier(elt, idAffaire) {
 }
 
 function updateLigneProduct(elt, idProduit, idAffaire) {
+    var anchorName = document.location.hash.substring(1);
+
     $(".loadBody").css('display', 'block');
     //$("#financiereProductTab tbody").sortable("destroy");
     $.ajax({
@@ -60,6 +78,10 @@ function updateLigneProduct(elt, idProduit, idAffaire) {
 
             $(".loadBody").css('display', 'none');
 
+            if (anchorName) {
+                window.location.hash = anchorName;
+            }
+
             return false;
         }
     });
@@ -68,6 +90,7 @@ function updateLigneProduct(elt, idProduit, idAffaire) {
 }
 
 function editLigneProduct(elt, idAffaire, idProduit, position = null) {
+    var anchorName = document.location.hash.substring(1);
 
     $("#qtt").css('border', '1px solid #e5e6e7');
 
@@ -87,6 +110,10 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null) {
             $("#financiereProduct").replaceWith(response);
             //updatePositionBdd()
             $(".loadBody").css('display', 'none');
+
+            if (anchorName) {
+                window.location.hash = anchorName;
+            }
         },
         error: function () {
             $(".loadBody").css('display', 'none');
@@ -104,6 +131,8 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null) {
 }
 
 function deleteProduitAffaire(elt, idProduit, idAffaire) {
+    var anchorName = document.location.hash.substring(1);
+
     if (confirm("Voulez vous vraiment supprimer ce produit")) {
         $(".loadBody").css("display", "block");
         $.ajax({
@@ -117,6 +146,10 @@ function deleteProduitAffaire(elt, idProduit, idAffaire) {
                 $("#financiereProduct").replaceWith(response);
 
                 $(".loadBody").css("display", "none");
+
+                if (anchorName) {
+                    window.location.hash = anchorName;
+                }
             },
             error: function () {
                 $(".loadBody").css('display', 'none');

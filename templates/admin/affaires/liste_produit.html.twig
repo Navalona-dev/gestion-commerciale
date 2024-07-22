@@ -1,20 +1,18 @@
 <style>
     .modal-list-produit {
-        width: 260% !important;
+        min-width: 260% !important;
         margin-left: -25rem !important;
     }
     td {
         border-bottom: none !important;
     }
-    select {
-        width: 30% !important;
-    }
+    
 
     .card-table {
         background-color: #f6f9ff;
     }
 </style>
-<div class="modal fade" id="modalListProduitCategorie" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+<div class="modal fade" id="modalListProduitCategorie" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog ">
         <div class="modal-content p-4 modal-list-produit">
             <div class="modal-header modal-header-center">
@@ -24,30 +22,31 @@
                 
             </div>
             <div class="modal-body">
-                <div class="form-group d-flex align-items-center mt-5">
+                {#<div class="form-group d-flex align-items-center mt-5">
                     <label for="" class="mr-2">Filtrer par :</label>
                     <select name="" id="" class="form-control form-control-sm">
                         <option value="Filtre 1">Filtre 1</option>
                         <option value="Filtre 2">Filtre 2</option>
                         <option value="Filtre 3">Filtre 3</option>
                     </select>
-                </div>
+                </div>#}
                 
                 <div class="card-table mt-5 p-5">
-                    <table class="table table-striped" id="table-liste-produit" style="width: 100%;">
+                    <table class="table table-striped" id="table-liste-produit" style="width: 100% !important;">
                         <thead>
-                            <tr class="text-nowrap">
-                                <th>Actions</th>
-                                <th>Ref</th>
-                                <th>Intitulé/Détail</th>
-                                <th>Type vente</th>
-                                <th>Prix vente gros</th>
-                                <th>Unite gros</th>
-                                <th>Prix vente detail</th>
-                                 <th>Unite detail</th>
-                                <th>Qtt</th>
-                                <th>St.min</th>
-                                <th>Stock</th>
+                            <tr>
+                                <th class="text-center text-nowrap">Actions</th>
+                                <th class="text-center text-nowrap">Ref</th>
+                                <th class="text-center text-nowrap">Intitulé/Détail</th>
+                                <th class="text-center text-nowrap">Stock restant</th>
+                                <th class="text-center text-nowrap">Type vente</th>
+                                <th class="text-center text-nowrap">Qtt</th>
+                                <th class="text-center text-nowrap">Prix vente gros</th>
+                                <th class="text-center text-nowrap">Unite gros</th>
+                                <th class="text-center text-nowrap">Prix vente detail</th>
+                                <th class="text-center text-nowrap">Unite detail</th>
+                                <th class="text-center text-nowrap">St.min</th>
+                                <th class="text-center text-nowrap">Stock</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -55,8 +54,8 @@
                             <tr class="text-nowrap">
                                 <td>
                                     <a onclick="return addPanier(this, {{ affaire.id }});"
-                                           class="panier"><i class="bi bi-cart-plus-fill"></i>
-                                            <span class="mx-2">Ajouter</span></a>
+                                           class="panier" style="cursor: pointer;"><i class="bi bi-cart-plus-fill"></i>
+                                            <span class="mx-1">Ajouter</span></a>
                                   
                                 </td>
                                 <td><input type="hidden" name="idProduit"
@@ -66,6 +65,7 @@
                                     {% endif %}
                                 </td>
                                 <td> {{liste.nom}} </td>
+                                <td> {{liste.stockRestant}} </td>
                                 <td> 
                                 <select name="typeVente" id="typeVente" class="form-control">
                                     <option value="">Type vente</option>
@@ -73,6 +73,9 @@
                                     <option value="detail">Détail</option>
                                 </select>
                                  </td>
+                                 <td> 
+                                    <input type="text" value="{{ liste.qtt }}" name="qttProduit" class="form-control">
+                                </td>
                                 <td> 
                                     {% if liste.prixVenteGros is not null %}
                                         {{liste.prixVenteGros}} Ar 
@@ -93,11 +96,7 @@
                                         {{liste.uniteVenteDetail}}  
                                     {% endif %}
                                 </td>
-                                <td> 
-                                        <input type="text" value="{{ liste.qtt }}" name="qttProduit"
-                                               class="form-control">
-                           
-                                </td>
+                                
                                 <td> 
                                     {% if liste.stockMin is not null %}
                                         {{liste.stockMin}}
@@ -112,7 +111,8 @@
                             </tr>
                             {% else %}
                                 <tr>
-                                    <td colspan="10">Aucun enregistrement trouvé</td>
+                                    <td colspan="11">Aucun enregistrement trouvé</td>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -126,6 +126,9 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                    <div class="form-group mt-5">
+                        <button type="button" class="btn btn-primary btn-sm px-5" data-bs-dismiss="modal" aria-label="Close">Terminé</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -136,15 +139,18 @@
 <script>
    
    $(document).ready(function() {
-    $('#table-liste-produit').DataTable({
-        responsive: true,
-        language: {
-          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
-      },
-        border: false,
-        scrollX: '100%',
-        pageLength: 10,
-        scrollCollapse: false,
-      });
-   })
+        var table = $('#table-liste-produit').DataTable({
+            responsive: true,
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+            },
+            scrollX: true,
+            pageLength: 10,
+            scrollCollapse: false,
+        });
+
+        $('#modalListProduitCategorie').on('shown.bs.modal', function () {
+            table.columns.adjust().responsive.recalc();
+        });
+    });
 </script>

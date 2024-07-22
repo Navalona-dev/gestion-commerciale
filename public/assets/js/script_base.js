@@ -1,35 +1,5 @@
 // JavaScript
 
-function newCompte(isNew = false, genre = 1) {
-    $.ajax({
-        url: '/admin/comptes/new',
-        type: 'POST',
-        data: {
-            isNew: isNew,
-            genre: genre 
-        },
-        success: function (response) {
-    
-            $("#blocModalCompteEmpty_" + genre).empty();
-            $("#blocModalCompteEmpty_" + genre).append(response.html);
-            if(genre == 1) {
-                $('#modalNewClient').modal('show');
-                //showTabCompte(1);
-            } else if(genre == 2) {
-                $('#modalNewFournisseur').modal('show');
-                //showTabCompte(2);
-            }
-
-            
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            // Gérer l'erreur (par exemple, afficher un message d'erreur)
-            alert('Erreur lors de l\'ajout de client.');
-        }
-    });
-}
-
-
 $(document).ready(function() {
     var anchorName = document.location.hash.substring(1);
     var idAffaire = $('.id-affaire').data('affaire');
@@ -113,6 +83,36 @@ $(document).ready(function() {
     }
 
 });
+
+
+function newCompte(isNew = false, genre = 1) {
+    $.ajax({
+        url: '/admin/comptes/new',
+        type: 'POST',
+        data: {
+            isNew: isNew,
+            genre: genre 
+        },
+        success: function (response) {
+    
+            $("#blocModalCompteEmpty_" + genre).empty();
+            $("#blocModalCompteEmpty_" + genre).append(response.html);
+            if(genre == 1) {
+                $('#modalNewClient').modal('show');
+                //showTabCompte(1);
+            } else if(genre == 2) {
+                $('#modalNewFournisseur').modal('show');
+                //showTabCompte(2);
+            }
+
+            
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Gérer l'erreur (par exemple, afficher un message d'erreur)
+            alert('Erreur lors de l\'ajout de client.');
+        }
+    });
+}
 
 function information(id = null) {
     $.ajax({

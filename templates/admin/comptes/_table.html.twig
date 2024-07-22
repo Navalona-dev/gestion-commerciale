@@ -70,6 +70,8 @@ function listAffaireByCompte(id = null, genre = 1) {
 }
 
     function deleteCompte(id = null, genre = 1) {
+    var anchorName = document.location.hash.substring(1);
+
         let currentCompte = "clients";
         let titleCompte = "client";
         if (genre == 2) {
@@ -102,6 +104,9 @@ function listAffaireByCompte(id = null, genre = 1) {
                     if (nextLink.length > 0) {
                         nextLink.click();
                     }
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -112,6 +117,8 @@ function listAffaireByCompte(id = null, genre = 1) {
     }
 
     function openModalUpdatecompte(id = null, genre = 1) {
+    var anchorName = document.location.hash.substring(1);
+
         $.ajax({
                 url: '/admin/comptes/'+id,
                 type: 'POST',
@@ -126,6 +133,10 @@ function listAffaireByCompte(id = null, genre = 1) {
                         $("#blocModalCompteEmpty").append(response.html);
 
                         $('#'+currentCompte).modal('show');
+                    }
+
+                    if (anchorName) {
+                        window.location.hash = anchorName;
                     }
                     
                 },
