@@ -41,12 +41,12 @@
                                 <th class="text-center text-nowrap">Stock restant</th>
                                 <th class="text-center text-nowrap">Type vente</th>
                                 <th class="text-center text-nowrap">Qtt</th>
-                                <th class="text-center text-nowrap">Prix vente gros</th>
-                                <th class="text-center text-nowrap">Unite gros</th>
-                                <th class="text-center text-nowrap">Prix vente detail</th>
-                                <th class="text-center text-nowrap">Unite detail</th>
-                                <th class="text-center text-nowrap">St.min</th>
-                                <th class="text-center text-nowrap">Stock</th>
+                                <th class="text-center text-nowrap">Vente gros</th>
+                                {# <th class="text-center text-nowrap">Unite gros</th> #}
+                                <th class="text-center text-nowrap">Vente detail</th>
+                                {# <th class="text-center text-nowrap">Unite detail</th> #}
+                                {# <th class="text-center text-nowrap">St.min</th> #}
+                                {# <th class="text-center text-nowrap">Stock</th> #}
                             </tr>
                         </thead>
                         <tbody>
@@ -78,35 +78,35 @@
                                 </td>
                                 <td> 
                                     {% if liste.prixVenteGros is not null %}
-                                        {{liste.prixVenteGros}} Ar 
+                                        {{liste.prixVenteGros}} Ar {% if liste.uniteVenteGros is not null %} / {{liste.uniteVenteGros}} {% endif %}
                                     {% endif %}
                                 </td>
-                                <td> 
+                                {# <td> 
                                     {% if liste.uniteVenteGros is not null %}
                                         {{liste.uniteVenteGros}}  
                                     {% endif %}
-                                </td>
+                                </td> #}
                                  <td> 
                                     {% if liste.prixVenteDetail is not null %}
-                                        {{liste.prixVenteDetail}} Ar 
+                                        {{liste.prixVenteDetail}} Ar {% if liste.uniteVenteDetail is not null %} / {{liste.uniteVenteDetail}} {% endif %} 
                                     {% endif %}
                                 </td>
-                                <td> 
+                                {# <td> 
                                     {% if liste.uniteVenteDetail is not null %}
                                         {{liste.uniteVenteDetail}}  
                                     {% endif %}
-                                </td>
+                                </td> #}
                                 
-                                <td> 
+                                {# <td> 
                                     {% if liste.stockMin is not null %}
                                         {{liste.stockMin}}
                                     {% endif %}
-                                 </td>
-                                <td> 
+                                 </td> #}
+                                {# <td> 
                                     {% if liste.stockRestant is not null %}
                                         {{liste.stockRestant}}
                                     {% endif %} 
-                                </td>
+                                </td> #}
 
                             </tr>
                             {% else %}
@@ -118,10 +118,10 @@
                                     <td></td>
                                     <td></td>
                                     <td></td>
+                                    {# <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td></td> #}
                                 </tr>
                             {% endfor %}
                         </tbody>

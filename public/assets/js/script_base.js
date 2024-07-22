@@ -872,6 +872,7 @@ function financier(id = null) {
                 $("#tab-financier-affaire").empty();
                 $("#tab-financier-affaire").append(response.html);
                 $("#tab-financier-affaire").addClass('active');
+                $("#tab-financier-affaire").css('display', 'block');
                 $("#tab-info-affaire").css('display', 'none');
                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
@@ -904,6 +905,9 @@ function ficheClient(id = null) {
                 $("#tab-fiche-client").append(response.html);
                 $("#tab-fiche-client").addClass('active');
                 $("#tab-info-affaire").css('display', 'none');
+             
+                
+                console.log("fice");
                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
@@ -915,6 +919,8 @@ function ficheClient(id = null) {
                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $("#entete-affaire").addClass('d-none');
+               
                 $(".loadBody").css('display', 'none');
             },
             error: function () {
@@ -925,5 +931,50 @@ function ficheClient(id = null) {
         });
 }
 
+function listAffaireByCompte(id = null, genre = 1) {
+    //var anchorName = document.location.hash.substring(1);
+    $.ajax({
+            type: 'post',
+            url: '/admin/affaires/'+id,
+            data: {
+                id: id,
+                genre: genre
+            },
+            success: function (response) {
+                if(genre == 1){
+                    $("#affaires_client").empty();
+                    $("#affaires_client").append(response.html);
+                    $("#affaires_client").addClass('active');
+                } else if(genre == 2) {
+                    $("#affaires_fournisseur").empty();
+                    $("#affaires_fournisseur").append(response.html);
+                    $("#affaires_fournisseur").addClass('active');
+                }
+               
+                $("#tab-financier-affaire").css('display', 'none');
+                $("#fiche-client").css('display', 'none');
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
+                
+                $(".loadBody").css('display', 'none');
+
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+            }
+
+        });
+}
  
 

@@ -1,4 +1,4 @@
-<div class="card p-5 affaire-header">
+<div class="card p-5 affaire-header" id="entete-compte">
             <div class="row">
                 <div class="col-md-4 col-12 mb-3">
                     <div class="form-group">
@@ -12,7 +12,7 @@
                                 <i class="bi bi-person-vcard-fill"></i>
                                 <span>Fiche client</span>
                             </a>
-                            <a href="#" class="mb-0 text-danger mx-3 text-affaire">
+                            <a href="#" onclick="return listAffaireByCompte({{compte.id}}, {{compte.genre}})" class="mb-0 text-danger mx-3 text-affaire">
                                 <i class="bi bi-list"></i> 
                                 <span>Liste des projets</span>
                             </a>

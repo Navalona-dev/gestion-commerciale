@@ -13,14 +13,14 @@
     padding: 10px;
   }
 </style>
-<section class="section" id="">
+<section class="section" id="fiche-client">
   <div class="id-compte-fiche-client" data-compte="{{compte.id}}"></div>
     <div class="row">
       <div class="col-lg-12">
         {# entete compte #}
         {% include 'admin/affaires/entete_compte.html.twig' with { 'compte': affaire.compte } %}
        {# entete affaire #}
-       {% include 'admin/affaires/entete_affaire.html.twig' with { 'affaire': affaire } %}
+       
         
         <div class="affaire-recherche mt-5">
             <div class="row">

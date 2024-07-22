@@ -24,50 +24,7 @@
          {% endif %}
 <script>
 
-function listAffaireByCompte(id = null, genre = 1) {
-    //var anchorName = document.location.hash.substring(1);
 
-    $.ajax({
-            type: 'post',
-            url: '/admin/affaires/'+id,
-            data: {
-                id: id,
-                genre: genre
-            },
-            success: function (response) {
-                if(genre == 1){
-                    $("#affaires_client").empty();
-                    $("#affaires_client").append(response.html);
-                    $("#affaires_client").addClass('active');
-                } else if(genre == 2) {
-                    $("#affaires_fournisseur").empty();
-                    $("#affaires_fournisseur").append(response.html);
-                    $("#affaires_fournisseur").addClass('active');
-                }
-
-                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
-                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
-                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
-                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
-                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
-                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
-                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
-                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
-                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
-                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
-                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
-                $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
-                
-                $(".loadBody").css('display', 'none');
-
-            },
-            error: function () {
-                // $(".loadBody").css('display', 'none');
-                $(".chargementError").css('display', 'block');
-            }
-
-        });
-}
 
     function deleteCompte(id = null, genre = 1) {
     var anchorName = document.location.hash.substring(1);
