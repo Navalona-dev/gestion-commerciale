@@ -15,6 +15,8 @@ use App\Service\CompteService;
 
 use App\Form\AccesExtranetType;
 use App\Service\AffaireService;
+use App\Service\ProductService;
+use App\Service\CategorieService;
 use App\Service\ApplicationManager;
 use App\Repository\CompteRepository;
 use App\Exception\PropertyVideException;
@@ -25,7 +27,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Exception\UnsufficientPrivilegeException;
-use App\Service\ProductService;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpClient\Exception\ServerException;
@@ -572,7 +573,8 @@ class AffaireController extends AbstractController
     public function listProduits(
         Request $request,
         ProduitCategorieService $produitCategorieService,
-        Affaire $affaire)
+        Affaire $affaire,
+        CategorieService $categorieService)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
@@ -581,12 +583,15 @@ class AffaireController extends AbstractController
         $data = [];
         try {
 
+            $categories = $categorieService->getAllCategories();
+
             $produitCategories = $produitCategorieService->getAllProduitCategories();
            
             $data["html"] = $this->renderView('admin/affaires/liste_produit.html.twig', [
                 'listes' => $produitCategories,
                 'affaire' => $affaire,
-                'compte' => $affaire->getCompte()
+                'compte' => $affaire->getCompte(),
+                'categories' => $categories
             ]);
                 
             return new JsonResponse($data);

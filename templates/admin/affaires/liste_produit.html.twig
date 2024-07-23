@@ -7,6 +7,9 @@
         border-bottom: none !important;
     }
     
+    #filter_category_chosen {
+        width: 300px !important;
+    }
 
     .card-table {
         background-color: #f6f9ff;
@@ -22,14 +25,14 @@
                 
             </div>
             <div class="modal-body">
-                {#<div class="form-group d-flex align-items-center mt-5">
-                    <label for="" class="mr-2">Filtrer par :</label>
-                    <select name="" id="" class="form-control form-control-sm">
-                        <option value="Filtre 1">Filtre 1</option>
-                        <option value="Filtre 2">Filtre 2</option>
-                        <option value="Filtre 3">Filtre 3</option>
+                <div class="form-group d-flex align-items-center mt-5">
+                    <label for="" class=" text-nowrap" style="margin-right: 15px;">Filtrer par catégorie :</label>
+                    <select name="filter_category" id="filter_category" class="form-control form-control-sm chosen-select" >
+                        {% for categorie in categories %}
+                            <option value="{{categorie.id}}"> {{categorie.nom}} </option>
+                        {% endfor %}
                     </select>
-                </div>#}
+                </div>
                 
                 <div class="card-table mt-5 p-5">
                     <table class="table table-striped" id="table-liste-produit" style="width: 100% !important;">
@@ -51,7 +54,7 @@
                         </thead>
                         <tbody>
                             {% for liste in listes %}
-                            <tr class="text-nowrap">
+                            <tr class="text-nowrap" data-filter="{{ liste.categorie }}">
                                 <td>
                                     <a onclick="return addPanier(this, {{ affaire.id }});"
                                            class="panier" style="cursor: pointer;"><i class="bi bi-cart-plus-fill"></i>
@@ -137,20 +140,37 @@
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 
 <script>
-   
-   $(document).ready(function() {
-        var table = $('#table-liste-produit').DataTable({
-            responsive: true,
-            language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
-            },
-            scrollX: true,
-            pageLength: 10,
-            scrollCollapse: false,
-        });
 
-        $('#modalListProduitCategorie').on('shown.bs.modal', function () {
-            table.columns.adjust().responsive.recalc();
-        });
+$(document).ready(function() {
+    var table = $('#table-liste-produit').DataTable({
+        responsive: true,
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+        },
+        scrollX: true,
+        pageLength: 10,
+        scrollCollapse: false,
     });
+
+    $('#modalListProduitCategorie').on('shown.bs.modal', function () {
+        table.columns.adjust().responsive.recalc();
+    });
+
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            var selectedCategory = $('#filter_category_chosen .chosen-single span').text().trim().toLowerCase();
+            var rowCategory = $(table.row(dataIndex).node()).data('filter').trim().toLowerCase();
+
+            if (!selectedCategory || selectedCategory === rowCategory) {
+                return true;
+            }
+            return false;
+        }
+    );
+
+    $('#filter_category_chosen').on('DOMSubtreeModified', function() {
+        table.draw();
+    });
+});
+
 </script>

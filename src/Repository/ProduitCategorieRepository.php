@@ -24,8 +24,13 @@ class ProduitCategorieRepository extends ServiceEntityRepository
     {
         $entityManager = $this->getEntityManager();
 
-        $sql = "SELECT id, nom, stockRestant, reference, isChangePrix, prixAchat, prixHt, tva, prixTTC, qtt, stockMin, prixVenteGros, prixVenteDetail, uniteVenteGros, uniteVenteDetail FROM `ProduitCategorie` WHERE `application_id` = ".$this->application->getId()."  order by nom";
+        $sql = "SELECT p.id, p.nom, p.stockRestant, p.reference, p.isChangePrix, p.prixAchat, p.prixHt, p.tva, p.prixTTC, p.qtt, p.stockMin, p.prixVenteGros, p.prixVenteDetail, p.uniteVenteGros, p.uniteVenteDetail, p.application_id, c.nom AS categorie 
+        FROM `ProduitCategorie` p 
+        LEFT JOIN `Categorie` c ON p.categorie_id = c.id 
+        WHERE p.application_id = ".$this->application->getId()." 
+        ORDER BY p.nom";
 
+        //dd($sql);
         $query = $this->connection->prepare($sql);
         
         $query = $this->connection->executeQuery($sql);
