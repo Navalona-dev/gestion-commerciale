@@ -319,7 +319,7 @@ function listImageByProduitSession() {
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -352,7 +352,7 @@ function listStockByProduitSession() {
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -465,7 +465,7 @@ function showTabProfile() {
                  $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -501,7 +501,7 @@ function showTabApplication() {
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-                 
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                 
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -535,7 +535,7 @@ function showTabUtilisateur() {
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -569,7 +569,7 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -603,7 +603,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -637,7 +637,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -712,7 +712,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -746,7 +746,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -781,7 +781,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
@@ -819,7 +819,7 @@ function showTabPermission() {
                  $(".tab-import-produit").removeClass('active');
                  $("#tab-import-produit").removeClass('active');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
@@ -854,7 +854,7 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-                
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                
                  $(".loadBody").css('display', 'none');
              },
              error: function () {
