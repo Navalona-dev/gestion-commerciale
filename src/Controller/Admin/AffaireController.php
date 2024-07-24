@@ -652,4 +652,25 @@ class AffaireController extends AbstractController
         return new JsonResponse($data);
     }
 
+    #[Route('/facture/{affaire}', name: '_facture')]
+    public function facture(SessionInterface $session, Affaire $affaire): Response
+    {
+        $session->set('idAffaire', $affaire->getId());
+
+        $data = [];
+        try {
+            
+            $data["html"] = $this->renderView('admin/affaires/facture.html.twig', [
+                'affaire' => $affaire
+            ]);
+           
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+        
+    }
+
 }

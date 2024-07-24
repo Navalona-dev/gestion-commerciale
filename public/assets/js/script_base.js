@@ -86,6 +86,10 @@ $(document).ready(function() {
         showTabFacture();
     }
 
+    if (anchorName === "tab-facture-affaire") {
+        showTabFactureAffaire(idAffaire);
+    }
+
 });
 
 
@@ -1004,6 +1008,41 @@ function showTabFacture() {
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+
+                 $(".loadBody").css('display', 'none');
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
+
+         });
+ }
+
+ function showTabFactureAffaire(id = null) {
+    $.ajax({
+             type: 'post',
+             url: '/admin/affaires/facture/'+id,
+             //data: {},
+             success: function (response) {
+                 $("#tab-facture-affaire").empty();
+                 $("#tab-facture-affaire").append(response.html);
+                 $('.sidebar-nav a[href="#tab-facture-affaire"]').tab('show');
+                 $("#tab-facture-affaire").addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').removeClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
              },
