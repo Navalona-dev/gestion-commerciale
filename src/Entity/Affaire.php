@@ -28,18 +28,19 @@ class Affaire
 
     const PAIEMENT = [
         'non' => 'Non payé',
-        'partiel' => 'Partiel',
-        'litige' => 'En litige',
-        'paye' => 'Payé'
+        //'partiel' => 'Partiel',
+        //'litige' => 'En litige',
+        'paye' => 'Payé',
+        'annule' => 'Annulé'
     ];
 
     const DEVIS = [
         'encours' => 'En cours',
         'gagne' => 'Gagné',
-        'perdu' => 'Perdu',
-        'sansSuite' => 'Sans suite',
-        'termine' => 'Terminé',
-        'envoye' => 'Envoyé'
+        //'perdu' => 'Perdu',
+        //'sansSuite' => 'Sans suite',
+        //'termine' => 'Terminé',
+        //'envoye' => 'Envoyé'
     ];
 
     const ABONNEMENT = [
