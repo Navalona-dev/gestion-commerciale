@@ -86,17 +86,24 @@ class AffaireController extends AbstractController
                     $data["html"] = $this->renderView('admin/affaires/index_client.html.twig', [
                         'listes' => $affaires,
                         'compte' => $compte,
-                        'genre' => $genre
+                        'genre' => $genre,
+                        'count' => count($affaires)
+                       
                     ]);
                 } elseif($genre == 2) {
                     $data["html"] = $this->renderView('admin/affaires/index_fournisseur.html.twig', [
                         'listes' => $affaires,
                         'compte' => $compte,
-                        'genre' => $genre
-        
+                        'genre' => $genre,
+                        'count' => count($affaires)
+                       
                     ]);
                 }
+                // Ajoute la clé 'count' au tableau de données
+                $data['count'] = count($affaires);
+
                 return new JsonResponse($data);
+
             } else  {
                 throw new \Exception("Compte introuvable");
             }
@@ -132,16 +139,20 @@ class AffaireController extends AbstractController
                 $data["html"] = $this->renderView('admin/affaires/index_client.html.twig', [
                     'listes' => $affaires,
                     'compte' => $compte,
-                    'genre' => $genre
+                    'genre' => $genre,
+                    'count' => count($affaires)
                 ]);
             } elseif($genre == 2) {
                 $data["html"] = $this->renderView('admin/affaires/index_fournisseur.html.twig', [
                     'listes' => $affaires,
                     'compte' => $compte,
-                    'genre' => $genre
+                    'genre' => $genre,
+                    'count' => count($affaires)
     
                 ]);
             }
+
+            $data['count'] = count($affaires);
             
             return new JsonResponse($data);
         } catch (\Exception $Exception) {
@@ -170,9 +181,13 @@ class AffaireController extends AbstractController
            
             $data["html"] = $this->renderView('admin/affaires/list_affaire.html.twig', [
                 'listes' => $affaires,
-                'compte' => $compte
+                'compte' => $compte,
+                'count' => count($affaires)
+               
             ]);
            
+            $data['count'] = count($affaires);
+
             return new JsonResponse($data);
         } catch (\Exception $Exception) {
             $data["exception"] = $Exception->getMessage();

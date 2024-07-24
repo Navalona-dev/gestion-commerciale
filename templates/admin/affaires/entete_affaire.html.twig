@@ -26,8 +26,17 @@
                                 <i class="bi bi-info-circle-fill"></i>
                                 <span class="mx-2">{{affaire.statut}} n°{{affaire.id}}</span>
                             </p>
+                            {% set montantHt = 0 %}
+                            {% for product in affaire.products %}
+                                {% if product.typeVente == "gros" %}
+                                {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                                {% else %}
+                                    {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                                {% endif %}
+                            {% endfor %}
+                            
                             <p class="text-danger">
-                                0,00 € HT
+                                {{ montantHt|number_format(2, ',', ' ') }} Ar HT
                             </p>
                         </div>
                     </a>

@@ -44,10 +44,8 @@
                                 <option value="3">Lorem 3</option>
                             </select> #}
                             <div class="affaire-result d-flex justify-content-between align-items-center">
-                                <p class="mb-0">2 résultats</p>
-                              
-                                    <i class="bi bi-arrow-clockwise" onclick="return searchAffaire({{compte.id}})"></i>
-                               
+                                <p class="mb-0"><span id="result-count"> {{count}} </span> résultats</p>
+                                <i class="bi bi-arrow-clockwise" style="cursor: pointer;" onclick="return searchAffaire({{compte.id}})"></i>
                             </div>
                         </div>
                     </div>
@@ -132,10 +130,11 @@
                                     <div class="row">
                                         <div class="col-md-6 col-12 status">
                                             <label for="" class="mb-2 label-status">Statut devis</label>
+                                            {% set statutDevis = constant('App\\Entity\\Affaire::DEVIS') %}
                                             <select name="status-devis" id="status-devis" class="form-control form-control-sm">
-                                                <option value="1">Gagné</option>
-                                                {# <option value="2">Perdu</option> #}
-                                                <option value="3">Terminé</option>
+                                                {% for key,statutDev in statutDevis %}
+                                                <option value="{{key}}">{{statutDev}}</option>
+                                                {% endfor %}
                                             </select>
                                         </div>
                                         {#<div class="col-md-4 col-12 status">
@@ -148,10 +147,11 @@
                                         </div>#}
                                         <div class="col-md-6 col-12 status">
                                             <label for="" class="mb-2 label-status">Statut paiement</label>
+                                            {% set statutPaiement = constant('App\\Entity\\Affaire::PAIEMENT') %}
                                             <select name="status-paiement" id="status-paiement" class="form-control form-control-sm">
-                                                <option value="1">Gagné</option>
-                                                <option value="2">Perdu</option>
-                                                <option value="3">Terminé</option>
+                                            {% for key,statutPaie in statutPaiement %}
+                                                <option value="{{key}}">{{statutPaie}}</option>
+                                                {% endfor %}
                                             </select>
                                         </div>
                                     </div>
@@ -179,6 +179,7 @@
                 success: function (response) {
                      $('#listeAffaire').empty();
                     $("#listeAffaire").append(response.html);
+                    $('#result-count').text(response.count);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)

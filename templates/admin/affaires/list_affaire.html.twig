@@ -75,10 +75,11 @@
                                     <div class="row">
                                         <div class="col-md-4 col-12 status">
                                             <label for="" class="mb-2 label-status">Statut devis</label>
+                                            {% set statutDevis = constant('App\\Entity\\Affaire::DEVIS') %}
                                             <select name="status-devis" id="status-devis" class="form-control form-control-sm">
-                                                <option value="1">Gagné</option>
-                                                {# <option value="2">Perdu</option> #}
-                                                <option value="3">Terminé</option>
+                                                {% for key,statutDev in statutDevis %}
+                                                <option value="{{key}}">{{statutDev}}</option>
+                                                {% endfor %}
                                             </select>
                                         </div>
                                         {# <div class="col-md-4 col-12 status">
@@ -91,10 +92,11 @@
                                         </div> #}
                                         <div class="col-md-4 col-12 status">
                                             <label for="" class="mb-2 label-status">Statut paiement</label>
+                                            {% set statutPaiement = constant('App\\Entity\\Affaire::PAIEMENT') %}
                                             <select name="status-paiement" id="status-paiement" class="form-control form-control-sm">
-                                                <option value="1">Gagné</option>
-                                                {# <option value="2">Perdu</option> #}
-                                                <option value="3">Terminé</option>
+                                            {% for key,statutPaie in statutPaiement %}
+                                                <option value="{{key}}">{{statutPaie}}</option>
+                                                {% endfor %}
                                             </select>
                                         </div>
                                     </div>
