@@ -86,6 +86,12 @@ class Application
     #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'application')]
     private Collection $notifications;
 
+    /**
+     * @var Collection<int, Facture>
+     */
+    #[ORM\OneToMany(targetEntity: Facture::class, mappedBy: 'application')]
+    private Collection $factures;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -96,6 +102,7 @@ class Application
         $this->produitTypes = new ArrayCollection();
         $this->transferts = new ArrayCollection();
         $this->notifications = new ArrayCollection();
+        $this->factures = new ArrayCollection();
     }
 
     public static function newApplicationFromInstance($instance = null)
@@ -424,6 +431,36 @@ class Application
             // set the owning side to null (unless already changed)
             if ($notification->getApplication() === $this) {
                 $notification->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Facture>
+     */
+    public function getFactures(): Collection
+    {
+        return $this->factures;
+    }
+
+    public function addFacture(Facture $facture): static
+    {
+        if (!$this->factures->contains($facture)) {
+            $this->factures->add($facture);
+            $facture->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFacture(Facture $facture): static
+    {
+        if ($this->factures->removeElement($facture)) {
+            // set the owning side to null (unless already changed)
+            if ($facture->getApplication() === $this) {
+                $facture->setApplication(null);
             }
         }
 

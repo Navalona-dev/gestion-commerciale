@@ -107,9 +107,16 @@ class Product
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $typeVente = null;
 
+    /**
+     * @var Collection<int, FactureDetail>
+     */
+    #[ORM\OneToMany(targetEntity: FactureDetail::class, mappedBy: 'product')]
+    private Collection $factureDetails;
+
     public function __construct()
     {
         $this->affaires = new ArrayCollection();
+        $this->factureDetails = new ArrayCollection();
     }
 
     public static function newProduct($instance = null)
@@ -386,6 +393,36 @@ class Product
     public function setTypeVente(?string $typeVente): static
     {
         $this->typeVente = $typeVente;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FactureDetail>
+     */
+    public function getFactureDetails(): Collection
+    {
+        return $this->factureDetails;
+    }
+
+    public function addFactureDetail(FactureDetail $factureDetail): static
+    {
+        if (!$this->factureDetails->contains($factureDetail)) {
+            $this->factureDetails->add($factureDetail);
+            $factureDetail->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFactureDetail(FactureDetail $factureDetail): static
+    {
+        if ($this->factureDetails->removeElement($factureDetail)) {
+            // set the owning side to null (unless already changed)
+            if ($factureDetail->getProduct() === $this) {
+                $factureDetail->setProduct(null);
+            }
+        }
 
         return $this;
     }
