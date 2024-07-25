@@ -6,6 +6,8 @@ use App\Entity\User;
 use App\Entity\Compte;
 use App\Form\UserType;
 use App\Entity\Affaire;
+use App\Entity\Facture;
+use App\Entity\FactureDetail;
 use App\Form\CompteType;
 use App\Form\ProfilType;
 use App\Form\AffaireType;
@@ -27,6 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Exception\UnsufficientPrivilegeException;
+use App\Service\FactureService;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpClient\Exception\ServerException;
@@ -46,13 +49,15 @@ class AffaireController extends AbstractController
     private $accesService;
     private $application;
     private $productService;
+    private $factureService;
 
-    public function __construct(AffaireService $affaireService, ApplicationManager $applicationManager, AccesService $accesService, ProductService $productService)
+    public function __construct(AffaireService $affaireService, ApplicationManager $applicationManager, AccesService $accesService, ProductService $productService, FactureService $factureService)
     {
         $this->affaireService = $affaireService;
         $this->accesService = $accesService;
         $this->productService = $productService;
         $this->application = $applicationManager->getApplicationActive();
+        $this->factureService = $factureService;
     }
 
     #[Route('/refresh', name: '_liste_refresh')]
@@ -688,4 +693,19 @@ class AffaireController extends AbstractController
         
     }
 
+    #[Route('/paiement/{affaire}', name: '_paiement')]
+    public function payer(Affaire $affaire, Request $request): Response
+    {
+        if (count($affaire->getProducts()) > 0) {
+            $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
+            $pdf = $this->factureService->add($affaire, $documentFolder);
+           
+            return new Response($pdf->Output('test.pdf', 'I'), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
+    
+        }
+        dd(count($affaire->getProducts()));
+        return new JsonResponse([]);
+    }
 }

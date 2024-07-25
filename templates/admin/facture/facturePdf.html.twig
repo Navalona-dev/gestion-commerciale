@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+
+    <style type="text/css">
+            <!--  table
+            {
+                width: 100%;
+                border-collapse:collapse;
+                font-size:16px}
+
+            .header td
+            {
+                width: 50%;
+                vertical-align: top}
+
+            .text-left
+            {
+                text-align: left}
+
+            .text-right
+            {
+                text-align: right}
+
+            .text-center
+            {
+                text-align: center}
+
+            .separator
+            {
+                height: 20px;
+                width: 100%}
+
+            .content td
+            {
+                border:solid 1px #CFD1D2;
+                padding: 5px;
+            }
+
+            .content th
+            {
+                border:solid 1px #000000;
+                padding: 5px;
+                background-color: #000000;
+                color: #FFFFFF}
+
+            .ligne1Content
+            {
+                background-color:#57B223}
+
+            .couleurgris
+            {
+                background-color:#DDDDDD;
+                height:auto;
+            }
+
+            .tht, .taxe, .ttc
+            {
+                font-size: 1.2em;
+            }
+
+            .ttc
+            {
+                color:#57B223;
+                font-weight:bold;
+            }
+
+            .couleurverte
+            {
+                background-color: #57B223}
+
+            .couleurmoinsgris
+            {
+                background: #EEEEEE;
+            }
+
+            .taille1
+            {
+                width:40%;
+            }
+
+            .taille2
+            {
+                width:15%;
+            }
+
+            .taille3
+            {
+                width:15%;
+            }
+
+            .taille4
+            {
+                width:20%;
+            }
+
+            .taille5
+            {
+                width:10%;
+            }
+
+            .header1
+            {
+                width:50%}
+
+            .header2
+            {
+                width:50%}
+
+            .tailleligne
+            {
+                height:auto;
+            }
+
+            .taille1, taille2, taille3, taille4, taille5
+            {
+                height:auto;
+            }
+
+            span
+            {
+                font-size:14px;
+                font-weight:bold;
+                color:#57B223;
+            }
+
+            h1, h2, h3
+            {
+                /*color:#57B223;*/
+            }
+
+            .heightTd{
+                padding: 5px;
+                text-align: center;
+                border-radius: 50px;
+            }
+
+            .colorwhite
+            {
+                color:white
+            }
+            footer {
+                position: fixed;
+                bottom: -20px;
+                left: 0px;
+                right: 0px;
+                height: 50px;
+
+                /** Extra personal styles **/
+
+
+                text-align: center;
+                font-size: 10px;
+            }
+        </style>
+
+
+</head>
+
+<body>
+    
+        <table>
+            <tr>
+                <td class="text-lef">
+                    <img src="http://myclicgfx.dev7-1.kubiweb.fr/img/logo_kubiweb.png">
+                </td>
+                <td width="10%">&nbsp;</td>
+
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <table border="1">
+                                    <tr >
+                                        <td class="heightTd">
+                                            Facture
+                                        </td>
+                                    </tr>
+                                    <tr >
+                                        <td class="heightTd">
+                                            {# Remplacé par methode dans facture #}
+                                            {#
+                                            {% if facture.validation %}
+                                                {% if facture.type == "Facture" %}
+                                                    {{ 'FA-'~facture.numero }}
+                                                {% else %}
+                                                    {{ 'AV-'~facture.numero }}
+                                                {% endif %}
+                                            {% else %}
+                                                {{ 'PR-'~facture.id }}
+
+                                            {% endif %}
+                                            #}
+                                            {# {{ facture.shortNumDisplay }} #}
+
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                            <td>
+                                <table  border="1">
+                                    <tr>
+                                        <td class="heightTd">
+                                            Date
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="heightTd">
+                                            {{ facture.date|date('d/m/Y')}}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                            <td>
+                                <table  border="1" >
+                                    <tr>
+                                        <td class="heightTd">
+                                            Client
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="heightTd">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+        <table class="header">
+            <tr>
+                <td class="text-lef" style="font-weight: bold;">
+                    Kubiweb
+                    <br>
+                    15 rue de Chavril
+                    <br/>
+                    69110 Saint Foy les Lyon
+                </td>
+            </tr>
+
+
+        </table>
+        <table>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+         <table class="header">
+            <tr>
+                <td width="70%">&nbsp;</td>
+                <td class="text-lef" style="text-align: center">
+                    {{ compte.nom }}
+                    <br>
+                    {{ compte.adresse }}
+                    <br/>
+                    {# {{ compte.codePostal }} {{ compte.ville }} #}
+                </td>
+            </tr>
+
+
+        </table>
+
+        <table>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+
+        <table class="content">
+            <thead>
+            <tr >
+                <td class="text-left" width="5%">
+                    <b>Ref</b>
+                </td>
+                <td class="text-center taille1" width="50%">
+                    <b>Désignation</b>
+                </td>
+                <td class="text-center ">
+                    <b>Quantité</b>
+                </td>
+                {# <td class="text-center ">
+                    <b>Tva</b>
+                </td> #}
+                <td class="text-center">
+                    <b>puht</b>
+                </td>
+                <td class="text-center">
+                    <b>ptht</b>
+                </td>
+            </tr>
+            </thead>
+            <tbody>
+            {% set montantHt = 0 %}
+            {% set montantTTC = 0 %}
+            {% set montantTva = 0 %}
+            {%  set tauxTva = 0  %}
+     
+            {% for produit in produits %}
+            <tr >
+                <td class="text-left taille1"  valign="top" {% if loop.last %}style="height: 200px;" {% endif %}>
+                    {{ produit.reference }}
+                </td>
+                <td class="text-center taille2" valign="top">
+                    {{ produit.nom }}
+
+                </td>
+                <td class="text-center taille3" valign="top">
+                    {{ produit.qtt }}
+
+                </td>
+                {# <td class="text-center taille5" valign="top">
+                    {{ produit.tva }}%
+
+                </td> #}
+                <td class="text-center taille4" valign="top">
+                    {{ produit.prixVenteGros }}Ar;
+
+                </td>
+                <td class="text-center taille4" valign="top">
+                    {{ produit.qtt * produit.prixVenteGros }}Ar;
+
+                </td>
+            </tr>
+
+                {% set montantHt = montantHt + (produit.qtt * produit.prixVenteGros)  %}
+
+                {# {% set montantTTC = montantTTC + (produit.qtt * produit.prixUnitaire) + ((produit.qtt * produit.prixUnitaire)*produit.tva)/100  %}
+
+                {% set montantTva =  montantTva + ((produit.qtt * produit.prixUnitaire)*produit.tva)/100  %}
+
+                {% set tauxTva =  tauxTva + produit.tva %} #}
+
+            {% endfor %}
+
+
+
+
+
+            </tbody>
+
+        </table>
+        <table>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                {# <td width="40%">
+                    <table border="1">
+                        <tr >
+                            <td>Base HT</td>
+                            <td>Taux TVA </td>
+                            <td>Montant TVA </td>
+                        </tr>
+                        <tr >
+                            <td style="height: 80px;" valign="top">{{ montantHt }}</td>
+                            <td valign="top">{{ (tauxTva/(produits|length))|round(1, 'floor') }}% </td>
+                            <td valign="top">{{ montantTva }} </td>
+                        </tr>
+
+
+
+                    </table>
+                </td> #}
+                <td width="40%">
+                    &nbsp;
+                </td>
+                <td width="30%">
+                    &nbsp;
+                </td>
+
+                <td width="30%">
+                    <table>
+                        {# <tr >
+                            <td style="height: 20px;">Total HT</td>
+                            <td>{{ montantHt }}, 00 €</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 20px;">Total TVA</td>
+                            <td>{{ montantTva }}, 00€</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 20px;">Total TTC</td>
+                            <td>{{ montantTTC }}, 00€</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">&nbsp;</td>
+
+                        </tr> #}
+                        <tr style="font-weight: bold;">
+                            <td>Net à payer</td>
+                            <td>{{ montantHt }} Ar</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+        </table>
+        <table>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+
+
+        {# <table>
+            <tr>
+                <td>TVA acquittée sur les encaissements</td>
+            </tr>
+        </table> #}
+
+        <table>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+        <footer>
+        Nos prix s'entendent toute remise déduite. Nos factures sont payables comptant à réception et sans escompte. Le transfert de propriété des produits et des prestations de services au profit du
+        client sont suspendus jusqu'au paiement intégral du prix en cas de paiement différé. En cas de paiement en retard, les pénalités sont égales à une fois et demi le taux d'intérêt légal.
+    </footer>
+
+</body>
+</html>

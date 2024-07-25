@@ -162,3 +162,29 @@ function deleteProduitAffaire(elt, idProduit, idAffaire) {
 
     return false;
 }
+
+function payer(idAffaire = null) {
+    $(".loadBody").css("display", "block");
+        $.ajax({
+            type: 'post',
+            url: '/admin/affaires/paiement/'+idAffaire,
+            //data: {idProduit: idProduit, idAffaire: idAffaire },
+            success: function (response) {
+                //$(elt).parent('td').parent('tr').remove();
+
+                //$("#financiereProduct").empty();
+                //$("#financiereProduct").replaceWith(response);
+
+                $(".loadBody").css("display", "none");
+
+                if (anchorName) {
+                    window.location.hash = anchorName;
+                }
+            },
+            error: function () {
+                $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+                //alert("Error lors de la suppression");
+            }
+        });
+}

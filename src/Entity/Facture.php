@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Exception\PropertyVideException;
 use App\Repository\FactureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,6 +12,27 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: FactureRepository::class)]
 class Facture
 {
+    const MODE_RGLT = [
+        //'Non precisé' => '',
+        //'par LCR' => 'lcr',
+        //'par prélèvement' => 'prl',
+        //'par chèque' => 'chq',
+        //'par virement' => 'vir'
+        'espece' => 'espece'
+    ];
+
+    const STATUT = [
+        'regle' => 'Réglée',
+        'presenter' => 'Présenter',
+        'reglePartiel' => 'Rglt. partiel',
+    ];
+
+    const ETAT = [
+        'a_regler' => 'A régler',
+        'regle' => 'Réglée',
+        'annule' => 'Annulée',
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -79,6 +101,17 @@ class Facture
     public function __construct()
     {
         $this->factureDetails = new ArrayCollection();
+    }
+
+    public static function newFacture($affaire = null)
+    {
+        if (is_null($affaire->getNom()) or empty($affaire->getNom())  or is_null($affaire->getCompte()->getNom()) or empty($affaire->getCompte()->getNom())) {
+            throw new PropertyVideException("Your name doesn't empty");
+        }
+        $facture = new self();
+        $facture->setAffaire($affaire);
+        $facture->setCompte($affaire->getCompte());
+        return $facture;
     }
 
     public function getId(): ?int
