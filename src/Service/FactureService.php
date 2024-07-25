@@ -99,6 +99,7 @@ class FactureService
             $factureDetail->setReference($product->getReference());
             $factureDetail->setDetail($product->getProduitCategorie()->getNom());
             $factureDetail->setQtt($qtt);
+            $factureDetail->setProduct($product);
             //$factureDetail->setTva($tva);
             $factureDetail->setPrixUnitaire($prix);
             $factureDetail->setPrixTotal($montantHt);

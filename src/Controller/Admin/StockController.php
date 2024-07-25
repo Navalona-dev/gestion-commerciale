@@ -14,6 +14,11 @@ use App\Repository\ProduitCategorieRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Exception\UnsufficientPrivilegeException;
+use App\Helpers\Helpers;
+use App\Service\AccesService;
+use App\Service\ApplicationManager;
+use App\Service\ProductService;
+use App\Service\ProduitCategorieService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
@@ -23,7 +28,21 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 #[Route('/admin/stock', name: 'stocks')]
 class StockController extends AbstractController
 {
-    
+    private $accesService;
+    private $produitCategorieService;
+    private $application;
+    private $helpers;
+    private $productService;
+
+    public function __construct(AccesService $AccesService, ApplicationManager $applicationManager, ProduitCategorieService $produitCategorieService, ProductService $productService, Helpers $helpers)
+    {
+        $this->accesService = $AccesService;
+        $this->produitCategorieService = $produitCategorieService;
+        $this->productService = $productService;
+        $this->application = $applicationManager->getApplicationActive();
+        $this->helpers = $helpers;
+    }
+
     #[Route('/new', name: '_create')]
     public function create(Request $request, StockService $stockService, ProduitCategorieRepository $produitCategorieRepo)
     {
@@ -86,11 +105,13 @@ class StockController extends AbstractController
             if ($stocks == false) {
                 $stocks = [];
             }
-          
+            $allQtt = $stockService->getQuantiteVenduByReferenceProduit($produitCategorie->getReference());
+           
             $data["html"] = $this->renderView('admin/stock/index.html.twig', [
                 'listes' => $stocks,
                 'id' => $produitCategorie->getId(),
                 'produitCategory' => $produitCategorie,
+                'qttVendu' => ($allQtt != false ? $allQtt['qttVendu'] : 0)
             ]);
 
             return new JsonResponse($data);

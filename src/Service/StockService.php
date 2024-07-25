@@ -3,6 +3,7 @@ namespace App\Service;
 
 use App\Entity\Stock;
 use App\Entity\Categorie;
+use App\Entity\FactureDetail;
 use Doctrine\ORM\EntityManager;
 use App\Service\AuthorizationManager;
 use App\Exception\PropertyVideException;
@@ -150,6 +151,15 @@ class StockService
             return $stock;
         }
         return null;
+    }
+
+    public function getQuantiteVenduByReferenceProduit($reference)
+    {
+        $stock = $this->entityManager->getRepository(FactureDetail::class)->getProduitsVenduByReference($reference);
+        if ($stock) {
+            return $stock;
+        }
+        return false;
     }
 
 }

@@ -338,16 +338,20 @@
 
                 </td> #}
                 <td class="text-center taille4" valign="top">
-                    {{ produit.prixVenteGros }}Ar;
-
+                    {% set prix = produit.prixVenteGros %}
+                    {% if produit.typeVente != "gros" %}
+                    {% set prix = produit.prixVenteDetail %}
+                    {% endif %}
+                    
+                    {{ prix }}Ar;
                 </td>
                 <td class="text-center taille4" valign="top">
-                    {{ produit.qtt * produit.prixVenteGros }}Ar;
+                    {{ produit.qtt * prix }}Ar;
 
                 </td>
             </tr>
 
-                {% set montantHt = montantHt + (produit.qtt * produit.prixVenteGros)  %}
+                {% set montantHt = montantHt + (produit.qtt * prix)  %}
 
                 {# {% set montantTTC = montantTTC + (produit.qtt * produit.prixUnitaire) + ((produit.qtt * produit.prixUnitaire)*produit.tva)/100  %}
 
