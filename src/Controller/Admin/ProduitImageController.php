@@ -134,11 +134,15 @@ class ProduitImageController extends AbstractController
     }
 
     #[Route('/{produitCategorie}', name: '_liste')]
-    public function index(Request $request, ProduitCategorie $produitCategorie): Response
+    public function index(
+        Request $request, 
+        ProduitCategorie $produitCategorie,
+        SessionInterface $session): Response
     {   
-        $request->getSession()->set('produitCategorieId', $produitCategorie->getId());
+        $session->set('produitCategorieId', $produitCategorie->getId());
 
         $data = [];
+
         try {
             
             $stocks = $this->produitImageService->getImageByProduit($produitCategorie);

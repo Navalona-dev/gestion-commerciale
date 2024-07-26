@@ -49,7 +49,7 @@
                     if (anchorName) {
                         window.location.hash = anchorName;
                     }
-                   listStockByProduitSession();
+                   listStock(response.idProduit);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -61,7 +61,7 @@
 
     function openModalUpdateStock(id = null, oldQtt = null, totalStock = 0, quantity = 0, qttVendu = 0) {
         var anchorName = document.location.hash.substring(1);
-qttVendu
+        //qttVendu
         $.ajax({
                 url: '/admin/stock/edit/'+id,
                 type: 'POST',

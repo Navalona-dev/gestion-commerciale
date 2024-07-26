@@ -24,7 +24,7 @@
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 
 <script>
-   
+ 
     $(document).ready(function () {
        $('#updateStock').on('submit', function (e) {
             e.preventDefault();
@@ -42,7 +42,7 @@
             }
             
             if (totalQtt < totalQttTraiter || totalQtt > totalQttTraiter) {
-                return false;
+                //return false;
             }
             
             $.ajax({
@@ -64,7 +64,8 @@
                         //$(".loadBody").css('display', 'none');
 
                     }, 800);
-                    listStockByProduitSession();
+                    listStock(response.idProduit);
+                
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)

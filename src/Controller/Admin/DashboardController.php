@@ -47,6 +47,7 @@ class DashboardController extends AbstractController
         $headerData = $headerDataProvider->getHeaderData();
         $idAffaire = $session->get('idAffaire');
         $idCompte = $session->get('idCompte');
+        $idProduit = $session->get('produitCategorieId');
        
         if ($request->isXmlHttpRequest()) {
             try {
@@ -69,7 +70,8 @@ class DashboardController extends AbstractController
         $_data = array_merge($headerData, [
             'listes' => [],
             'idAffaire' => $idAffaire,
-            'idCompte' => $idCompte
+            'idCompte' => $idCompte,
+            'idProduit' => $idProduit
         ]);
 
         return $this->render('admin/index.html.twig', $_data);

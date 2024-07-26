@@ -4,6 +4,7 @@ $(document).ready(function() {
     var anchorName = document.location.hash.substring(1);
     var idAffaire = $('.id-affaire').data('affaire');
     var idCompte = $('.id-compte').data('compte');
+    var idProduit = $('.id-produit').data('produit');
 
     if (anchorName === "affaires_client") {
         showTabAffaireClient();
@@ -51,13 +52,13 @@ $(document).ready(function() {
         showTabProduitType();
     }
 
-    if (anchorName === "tab-stock") {
+   /* if (anchorName === "tab-stock") {
         listStockByProduitSession();
-    }
+    }*/
 
-    if (anchorName === "tab-produit-image") {
+    /*if (anchorName === "tab-produit-image") {
         listImageByProduitSession();
-    }
+    }*/
     if (anchorName === "tab-import-produit") {
         showTabImportProduit();
     }
@@ -88,6 +89,14 @@ $(document).ready(function() {
 
     if (anchorName === "tab-facture-affaire") {
         showTabFactureAffaire(idAffaire);
+    }
+
+    if (anchorName === "tab-stock") {
+        listStock(idProduit);
+    }
+
+    if (anchorName === "tab-produit-image") {
+        listImage(idProduit);
     }
 
 });
@@ -1054,4 +1063,66 @@ function showTabFacture() {
          });
  }
  
+
+ function listStock(id = null) {
+    $.ajax({
+             type: 'post',
+             url: '/admin/stock/'+id,
+             //data: {},
+             success: function (response) {
+                 $("#tab-stock").empty();
+                 $("#tab-stock").append(response.html);
+                 $("#tab-stock").addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $(".loadBody").css('display', 'none');
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
+
+         });
+ }
+
+
+    function listImage(id = null) {
+        $.ajax({
+                type: 'post',
+                url: '/admin/produit/image/'+id,
+                //data: {},
+                success: function (response) {
+                    $("#tab-produit-image").empty();
+                    $("#tab-produit-image").append(response.html);
+                    $("#tab-produit-image").addClass('active');
+                    $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                    $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                    $(".loadBody").css('display', 'none');
+                },
+                error: function () {
+                    // $(".loadBody").css('display', 'none');
+                    $(".chargementError").css('display', 'block');
+                }
+
+            });
+    }
+
 

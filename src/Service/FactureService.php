@@ -187,4 +187,13 @@ class FactureService
     {
         return $this->entityManager->getRepository(Facture::class)->getLastValideFacture();
     }
+
+    public function getAllFactures()
+    {
+        $factures = $this->entityManager->getRepository(Facture::class)->findAll();
+        if (count($factures) > 0) {
+            return $factures;
+        }
+        return false;
+    }
 }

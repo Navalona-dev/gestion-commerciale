@@ -54,10 +54,15 @@
                         };
                         toastr.success('Avec succèss', 'Enregistrement effectuée');
 
+                        // Call listStock function
+                        listStock(response.idProduit);
+                        
+                        // Refresh the page
+                        table.ajax.reload();
+
                         //$(".loadBody").css('display', 'none');
 
                     }, 800);
-                    listStockByProduitSession();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)

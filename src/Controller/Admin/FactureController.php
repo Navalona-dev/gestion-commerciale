@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Service\FactureService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,19 +12,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class FactureController extends AbstractController
 {
     #[Route('/', name: '_liste')]
-    public function index(): Response
+    public function index(FactureService $factureService): Response
     {
 
         $data = [];
         try {
             
-            /*$categories = $categorieService->getAllCategories();
-            if ($categories == false) {
-                $categories = [];
-            }*/
+            $factures = $factureService->getAllFactures();
+            if ($factures == false) {
+                $factures = [];
+            }
            
             $data["html"] = $this->renderView('admin/facture/index.html.twig', [
-                //'listes' => $categories,
+                'listes' => $factures,
             ]);
            
             return new JsonResponse($data);

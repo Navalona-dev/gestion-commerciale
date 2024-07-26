@@ -170,10 +170,11 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for liste in listes %}
                         <tr class="text-nowrap">
                             <td></td>
                             <td></td>
-                            <td></td>
+                            <td> {{liste.numero}} </td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -206,6 +207,25 @@
                                 <input type="checkbox" class="custom-checkbox" name="" id="">
                             </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="15">Aucun enregistrement trouvé</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

@@ -56,7 +56,15 @@
             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
               <div class="card p-3 card-quantity shadow">
                 <h4 class="fw-bold quantity-title">Quantités vendu</h4>
-                <p class="d-flex justify-content-center mt-3 quantity-count"> <span class="py-1 px-3">{{qttVendu}}</span></p>
+                <p class="d-flex justify-content-center mt-3 quantity-count"> 
+                  <span class="py-1 px-3">
+                    {% if qttVendu == 0 %}
+                      0
+                    {% else %}
+                      {{qttVendu}}
+                    {% endif %}
+                  </span>
+                </p>
               </div>
             </div>
           </div>
@@ -140,7 +148,7 @@
 
 
       //listStockByProduitSession();
-      $('#liste-table-stock').DataTable({
+      var table = $('#liste-table-stock').DataTable({
         responsive: true,
         language: {
           url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
@@ -153,7 +161,6 @@
     });
 
     function newStock(isNew = false) {
-      console.log('hello');
             $.ajax({
                 url: '/admin/stock/new',
                 type: 'POST',

@@ -102,7 +102,6 @@ class StockService
         }
         return $stock;
     }
-    
 
     public function update()
     {

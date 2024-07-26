@@ -93,48 +93,19 @@ class StockController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/{produitCategorie}', name: '_liste')]
-    public function index(Request $request, StockService $stockService, ProduitCategorie $produitCategorie): Response
-    {   
-        $request->getSession()->set('produitCategorieId', $produitCategorie->getId());
-
-        $data = [];
-        try {
-            
-            $stocks = $stockService->getStockByProduit($produitCategorie);
-            if ($stocks == false) {
-                $stocks = [];
-            }
-            $allQtt = $stockService->getQuantiteVenduByReferenceProduit($produitCategorie->getReference());
-           
-            $data["html"] = $this->renderView('admin/stock/index.html.twig', [
-                'listes' => $stocks,
-                'id' => $produitCategorie->getId(),
-                'produitCategory' => $produitCategorie,
-                'qttVendu' => ($allQtt != false ? $allQtt['qttVendu'] : 0)
-            ]);
-
-            return new JsonResponse($data);
-        } catch (\Exception $Exception) {
-            $data["exception"] = $Exception->getMessage();
-            $this->createNotFoundException('Exception' . $Exception->getMessage());
-        }
-
-        return new JsonResponse($data);
-        
-    }
-
     #[Route('/edit/{stock}', name: '_edit')]
     public function edit(Request $request, StockService $stockService, Stock $stock, SessionInterface $session)
     {
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
         }*/
-        $oldQtt = $request->get('oldQtt');
+       $oldQtt = $request->get('oldQtt');
         $totalStock = $request->get('totalStock');
         $quantity = $request->get('quantity');
         $qttVendu = $request->get('qttVendu');
         $produitCategorie = $stock->getProduitCategorie();
+        $idProduit = $produitCategorie->getId();
+
         $session->set('stock', $stock->getId());
         $data = [];
         try {
@@ -152,6 +123,8 @@ class StockController extends AbstractController
             }
 
             $data['exception'] = "";
+            $data['idProduit']= $idProduit;
+
             $data["html"] = $this->renderView('admin/stock/modal_update.html.twig', [
                 'form' => $form->createView(),
                 'id' => $stock->getId(),
@@ -161,6 +134,8 @@ class StockController extends AbstractController
                 'quantity' => $quantity,
                 'qttRestant' => ($produitCategorie->getStockRestant() != null ? $produitCategorie->getStockRestant() : 0)
             ]);
+
+
             return new JsonResponse($data);
         } catch (PropertyVideException $PropertyVideException) {
             throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
@@ -181,6 +156,46 @@ class StockController extends AbstractController
             $this->createNotFoundException('Exception' . $Exception->getMessage());
         }
         return new JsonResponse($data);
+    }
+
+    #[Route('/{produitCategorie}', name: '_liste')]
+    public function index(
+        Request $request, 
+        StockService $stockService, 
+        ProduitCategorie $produitCategorie,
+        SessionInterface $session): Response
+    {   
+        $session->set('produitCategorieId', $produitCategorie->getId());
+
+        $idProduit = $produitCategorie->getId();
+
+        $data = [];
+        
+        try {
+            
+            $stocks = $stockService->getStockByProduit($produitCategorie);
+            if ($stocks == false) {
+                $stocks = [];
+            }
+            $allQtt = $stockService->getQuantiteVenduByReferenceProduit($produitCategorie->getReference());
+           
+            $data["html"] = $this->renderView('admin/stock/index.html.twig', [
+                'listes' => $stocks,
+                'id' => $produitCategorie->getId(),
+                'produitCategory' => $produitCategorie,
+                'qttVendu' => ($allQtt != false ? $allQtt['qttVendu'] : 0)
+            ]);
+
+            $data['idProduit'];
+
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+
+        return new JsonResponse($data);
+        
     }
     
     #[Route('/refresh/produit', name: '_refresh')]
@@ -224,7 +239,9 @@ class StockController extends AbstractController
     public function delete(Request $request, StockService $stockService, Stock $stock)
     {
         $produitCategorie = $stock->getProduitCategorie();
-    
+
+        $idProduit = $stock->getProduitCategorie()->getId();
+
         try {
             $totalQttTransfert = 0;
             $totalQttStock = 0;
@@ -256,7 +273,7 @@ class StockController extends AbstractController
                 } else {
                     // Suppression du stock
                     $stockService->remove($stock, $produitCategorie);
-                    return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                    return new JsonResponse(['status' => 'success', 'idProduit' => $idProduit], Response::HTTP_OK);
                 }
             }
     
