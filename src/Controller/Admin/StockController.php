@@ -131,6 +131,9 @@ class StockController extends AbstractController
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
         }*/
         $oldQtt = $request->get('oldQtt');
+        $totalStock = $request->get('totalStock');
+        $quantity = $request->get('quantity');
+        $qttVendu = $request->get('qttVendu');
         $produitCategorie = $stock->getProduitCategorie();
         $session->set('stock', $stock->getId());
         $data = [];
@@ -152,7 +155,11 @@ class StockController extends AbstractController
             $data["html"] = $this->renderView('admin/stock/modal_update.html.twig', [
                 'form' => $form->createView(),
                 'id' => $stock->getId(),
-                'oldQtt' => $stock->getQtt()
+                'oldQtt' => $stock->getQtt(),
+                'totalStock' => $totalStock,
+                'qttVendu' => $qttVendu,
+                'quantity' => $quantity,
+                'qttRestant' => ($produitCategorie->getStockRestant() != null ? $produitCategorie->getStockRestant() : 0)
             ]);
             return new JsonResponse($data);
         } catch (PropertyVideException $PropertyVideException) {

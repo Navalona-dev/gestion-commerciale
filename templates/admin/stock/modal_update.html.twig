@@ -29,6 +29,22 @@
        $('#updateStock').on('submit', function (e) {
             e.preventDefault();
             let form = $(this);
+            var totalStock = {{totalStock}};
+            var quantityTransferer = {{quantity}};
+            var qttRestant = {{qttRestant}};
+            var qttVendu = {{qttVendu}};
+            var totalQttTraiter = qttRestant + quantityTransferer + qttVendu;
+            var qttUpdated = $('#stock_qtt').val();
+            var totalQtt = totalStock;
+            if (null != qttUpdated && qttUpdated != "" && qttUpdated != undefined) {
+                qttUpdated = parseFloat(qttUpdated);
+                totalQtt = totalQtt + qttUpdated;
+            }
+            
+            if (totalQtt < totalQttTraiter || totalQtt > totalQttTraiter) {
+                return false;
+            }
+            
             $.ajax({
                 url: form.attr('action'),
                 type: form.attr('method'),
