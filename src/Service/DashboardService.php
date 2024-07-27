@@ -25,4 +25,10 @@ class DashboardService
         $countAffaire = $this->entityManager->getRepository(Affaire::class)->countAffairesYesterday($paiement, $statut);
         return $countAffaire;
     }
+
+    public function getCountAffairesThisWeek($paiement = null, $statut = null)
+    {
+        $countAffaire = $this->entityManager->getRepository(Affaire::class)->countAffairesThisWeek($paiement, $statut);
+        return $countAffaire;
+    }
 }

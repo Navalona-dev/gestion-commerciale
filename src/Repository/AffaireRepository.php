@@ -208,7 +208,7 @@ class AffaireRepository extends ServiceEntityRepository
      }
  
      // Nombre de commandes cette semaine
-     public function countAffairesThisWeek()
+     public function countAffairesThisWeek($paiement = null, $statut = null)
      {
          $startOfWeek = new \DateTime();
          $startOfWeek->setISODate((int)$startOfWeek->format('o'), (int)$startOfWeek->format('W'));
@@ -217,16 +217,22 @@ class AffaireRepository extends ServiceEntityRepository
          $endOfWeek = clone $startOfWeek;
          $endOfWeek->modify('+7 days');
  
-         return $this->createQueryBuilder('a')
+         $qb = $this->createQueryBuilder('a')
                      ->select('COUNT(a.id)')
-                     ->where('a.createdAt >= :start_of_week')
-                     ->andWhere('a.createdAt < :end_of_week')
-                     ->andWhere('a.isPaid = :isPaid')
+                     ->join('a.factures', 'f')
+                     ->where('f.date >= :start_of_week')
+                     ->andWhere('f.date < :end_of_week')
+                     ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.application = :application_id')
+                     ->andWhere('a.statut = :statut')
                      ->setParameter('start_of_week', $startOfWeek)
                      ->setParameter('end_of_week', $endOfWeek)
-                     ->setParameter('isPaid', true)
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                     ->setParameter('application_id', $this->application->getId())
                      ->getQuery()
                      ->getSingleScalarResult();
+        return $qb;
      }
  
      // Nombre de commandes semaine dernière

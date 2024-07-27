@@ -57,7 +57,7 @@ class DashboardController extends AbstractController
 
         $countAffaireToday = $this->dashboardService->getCountAffairesToday('paye', 'commande');
         $countAffaireYesterday = $this->dashboardService->getCountAffairesYesterday('paye', 'commande');
-
+        $countAffaireThisWeek = $this->dashboardService->getCountAffairesThisWeek('paye', 'commande');
 
         if ($request->isXmlHttpRequest()) {
             try {
@@ -65,7 +65,8 @@ class DashboardController extends AbstractController
                 $_data = array_merge($headerData, [
                     'listes' => [],
                     'countAffaireToday' => $countAffaireToday,
-                    'countAffaireYesterday' => $countAffaireYesterday
+                    'countAffaireYesterday' => $countAffaireYesterday,
+                    'countAffaireThisWeek' => $countAffaireThisWeek
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
