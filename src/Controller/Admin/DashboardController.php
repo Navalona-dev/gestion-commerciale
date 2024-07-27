@@ -6,6 +6,7 @@ use App\Form\AdminType;
 use App\Service\AccesService;
 use App\Entity\PasswordUpdate;
 use App\Form\PasswordUpdateType;
+use App\Service\DashboardService;
 use App\Repository\TypeRepository;
 use App\Repository\AdminRepository;
 use App\Service\ApplicationManager;
@@ -31,11 +32,16 @@ class DashboardController extends AbstractController
     private $categoryPermissionService;
     private $accesService;
     private $application;
+    private $dashboardService;
 
-    public function __construct(ApplicationManager $applicationManager, AccesService $accesService)
+    public function __construct(
+        ApplicationManager $applicationManager, 
+        AccesService $accesService,
+        DashboardService $dashboardService)
     {
         $this->accesService = $accesService;
         $this->application = $applicationManager->getApplicationActive();
+        $this->dashboardService = $dashboardService;
     }
 
     #[Route('/admin', name: 'app_admin')]
@@ -48,12 +54,14 @@ class DashboardController extends AbstractController
         $idAffaire = $session->get('idAffaire');
         $idCompte = $session->get('idCompte');
         $idProduit = $session->get('produitCategorieId');
-       
+
+        $countAffaireToday = $this->dashboardService->getCountAffairesToday('paye', 'commande');
         if ($request->isXmlHttpRequest()) {
             try {
 
                 $_data = array_merge($headerData, [
                     'listes' => [],
+                    'countAffaireToday' => $countAffaireToday
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);

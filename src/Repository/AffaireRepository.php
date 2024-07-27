@@ -151,4 +151,183 @@ class AffaireRepository extends ServiceEntityRepository
         ;
     }
     */
+
+
+     // Nombre de commandes d'aujourd'hui
+     public function countAffairesToday($paiement = null, $statut = null)
+     {
+         $today = new \DateTime();
+         $today->setTime(0, 0, 0);
+         $tomorrow = clone $today;
+         $tomorrow->modify('+1 day');
+
+         $qb = $this->createQueryBuilder('a')
+                     ->select('COUNT(a.id)')
+                     ->join('a.factures', 'f')
+                     ->where('f.date >= :today')
+                     ->andWhere('f.date < :tomorrow')
+                     ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.statut = :statut')
+                     ->andWhere('a.application = :application_id')
+                     ->setParameter('today', $today)
+                     ->setParameter('tomorrow', $tomorrow)
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+
+                    //dd($qb);
+
+                return $qb;
+     }
+ 
+     // Nombre de commandes d'hier
+     public function countAffairesYesterday()
+     {
+         $yesterday = new \DateTime();
+         $yesterday->setTime(0, 0, 0);
+         $yesterday->modify('-1 day');
+         $today = clone $yesterday;
+         $today->modify('+1 day');
+ 
+         return $this->createQueryBuilder('a')
+                     ->select('COUNT(a.id)')
+                     ->where('a.createdAt >= :yesterday')
+                     ->andWhere('a.createdAt < :today')
+                     ->andWhere('a.isPaid = :isPaid')
+                     ->setParameter('yesterday', $yesterday)
+                     ->setParameter('today', $today)
+                     ->setParameter('isPaid', true)
+                     ->getQuery()
+                     ->getSingleScalarResult();
+     }
+ 
+     // Nombre de commandes cette semaine
+     public function countAffairesThisWeek()
+     {
+         $startOfWeek = new \DateTime();
+         $startOfWeek->setISODate((int)$startOfWeek->format('o'), (int)$startOfWeek->format('W'));
+         $startOfWeek->setTime(0, 0, 0);
+ 
+         $endOfWeek = clone $startOfWeek;
+         $endOfWeek->modify('+7 days');
+ 
+         return $this->createQueryBuilder('a')
+                     ->select('COUNT(a.id)')
+                     ->where('a.createdAt >= :start_of_week')
+                     ->andWhere('a.createdAt < :end_of_week')
+                     ->andWhere('a.isPaid = :isPaid')
+                     ->setParameter('start_of_week', $startOfWeek)
+                     ->setParameter('end_of_week', $endOfWeek)
+                     ->setParameter('isPaid', true)
+                     ->getQuery()
+                     ->getSingleScalarResult();
+     }
+ 
+     // Nombre de commandes semaine dernière
+     public function countAffairesLastWeek()
+     {
+         $startOfLastWeek = new \DateTime();
+         $startOfLastWeek->setISODate((int)$startOfLastWeek->format('o'), (int)$startOfLastWeek->format('W') - 1);
+         $startOfLastWeek->setTime(0, 0, 0);
+ 
+         $endOfLastWeek = clone $startOfLastWeek;
+         $endOfLastWeek->modify('+7 days');
+ 
+         return $this->createQueryBuilder('a')
+                     ->select('COUNT(a.id)')
+                     ->where('a.createdAt >= :start_of_last_week')
+                     ->andWhere('a.createdAt < :end_of_last_week')
+                     ->andWhere('a.isPaid = :isPaid')
+                     ->setParameter('start_of_last_week', $startOfLastWeek)
+                     ->setParameter('end_of_last_week', $endOfLastWeek)
+                     ->setParameter('isPaid', true)
+                     ->getQuery()
+                     ->getSingleScalarResult();
+     }
+ 
+     // Nombre de commandes ce mois-ci
+     public function countAffairesThisMonth()
+     {
+         $startOfMonth = new \DateTime('first day of this month');
+         $startOfMonth->setTime(0, 0, 0);
+ 
+         $endOfMonth = new \DateTime('first day of next month');
+         $endOfMonth->setTime(0, 0, 0);
+ 
+         return $this->createQueryBuilder('a')
+                     ->select('COUNT(a.id)')
+                     ->where('a.createdAt >= :start_of_month')
+                     ->andWhere('a.createdAt < :end_of_month')
+                     ->andWhere('a.isPaid = :isPaid')
+                     ->setParameter('start_of_month', $startOfMonth)
+                     ->setParameter('end_of_month', $endOfMonth)
+                     ->setParameter('isPaid', true)
+                     ->getQuery()
+                     ->getSingleScalarResult();
+     }
+ 
+     // Nombre de commandes mois dernier
+     public function countAffairesLastMonth()
+     {
+         $startOfLastMonth = new \DateTime('first day of last month');
+         $startOfLastMonth->setTime(0, 0, 0);
+ 
+         $endOfLastMonth = new \DateTime('first day of this month');
+         $endOfLastMonth->setTime(0, 0, 0);
+ 
+         return $this->createQueryBuilder('a')
+                     ->select('COUNT(a.id)')
+                     ->where('a.createdAt >= :start_of_last_month')
+                     ->andWhere('a.createdAt < :end_of_last_month')
+                     ->andWhere('a.isPaid = :isPaid')
+                     ->setParameter('start_of_last_month', $startOfLastMonth)
+                     ->setParameter('end_of_last_month', $endOfLastMonth)
+                     ->setParameter('isPaid', true)
+                     ->getQuery()
+                     ->getSingleScalarResult();
+     }
+ 
+     // Nombre de commandes cette année
+     public function countAffairesThisYear()
+     {
+         $startOfYear = new \DateTime('first day of January this year');
+         $startOfYear->setTime(0, 0, 0);
+ 
+         $endOfYear = new \DateTime('first day of January next year');
+         $endOfYear->setTime(0, 0, 0);
+ 
+         return $this->createQueryBuilder('a')
+                     ->select('COUNT(a.id)')
+                     ->where('a.createdAt >= :start_of_year')
+                     ->andWhere('a.createdAt < :end_of_year')
+                     ->andWhere('a.isPaid = :isPaid')
+                     ->setParameter('start_of_year', $startOfYear)
+                     ->setParameter('end_of_year', $endOfYear)
+                     ->setParameter('isPaid', true)
+                     ->getQuery()
+                     ->getSingleScalarResult();
+     }
+ 
+     // Nombre de commandes année dernière
+     public function countAffairesLastYear()
+     {
+         $startOfLastYear = new \DateTime('first day of January last year');
+         $startOfLastYear->setTime(0, 0, 0);
+ 
+         $endOfLastYear = new \DateTime('first day of January this year');
+         $endOfLastYear->setTime(0, 0, 0);
+ 
+         return $this->createQueryBuilder('a')
+                     ->select('COUNT(a.id)')
+                     ->where('a.createdAt >= :start_of_last_year')
+                     ->andWhere('a.createdAt < :end_of_last_year')
+                     ->andWhere('a.isPaid = :isPaid')
+                     ->setParameter('start_of_last_year', $startOfLastYear)
+                     ->setParameter('end_of_last_year', $endOfLastYear)
+                     ->setParameter('isPaid', true)
+                     ->getQuery()
+                     ->getSingleScalarResult();
+     }
 }
