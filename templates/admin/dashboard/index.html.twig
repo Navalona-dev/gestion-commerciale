@@ -14,8 +14,8 @@
   </div>
 <section class="section dashboard">
     <div class="row">
-      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-        <div class="card info-card sales-card">
+      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+        <div class="card info-card orders-card">
             <div class="filter">
                 <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -60,7 +60,59 @@
           <span id="count-last-year"> {{countAffaireLastYear | default(0)}} </span>
         </div>
 
-      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+
+        <div class="card info-card produit-card">
+
+          <div class="filter">
+            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+              <li class="dropdown-header text-start">
+                <h6>Filtrer</h6>
+              </li>
+
+              <li><a class="dropdown-item produit-filter" data-period="today-produit">Aujourd'hui</a></li>
+              <li><a class="dropdown-item produit-filter" data-period="yesterday-produit">Hier</a></li>
+              <li><a class="dropdown-item produit-filter" data-period="this-week-produit">Cette semaine</a></li>
+              <li><a class="dropdown-item produit-filter" data-period="last-week-produit">Semaine dernière</a></li>
+              <li><a class="dropdown-item produit-filter" data-period="this-month-produit">Ce mois-ci</a></li>
+              <li><a class="dropdown-item produit-filter" data-period="last-month-produit">Mois dernier</a></li>
+              <li><a class="dropdown-item produit-filter" data-period="this-year-produit">Cette année</a></li>
+              <li><a class="dropdown-item produit-filter" data-period="last-year-produit">Année dernière</a></li>
+            </ul>
+          </div>
+
+          <div class="card-body">
+            <h5 class="card-title">Produits <span id="period-text-produit">| Aujourd'hui</span></h5>
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                <i class="bi bi-box"></i>
+              </div>
+              <div class="ps-3">
+                <h6 id="produit-count">0</h6>
+                {#<span class="text-danger small pt-1 fw-bold">12%</span> 
+                <span class="text-muted small pt-2 ps-1">decrease</span>#}
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div id="produit-data" style="display: none;">
+        <span id="count-produit-today"></span>
+        <span id="count-produit-yesterday"></span>
+        <span id="count-produit-this-week"></span>
+        <span id="count-produit-last-week"></span>
+        <span id="count-produit-this-month"></span>
+        <span id="count-produit-last-month"></span>
+        <span id="count-produit-this-year"></span>
+        <span id="count-produit-last-year"></span>
+      </div>
+
+      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
 
         <div class="card info-card customers-card">
 
@@ -112,33 +164,33 @@
         <span id="count-client-last-year"></span>
       </div>
 
-      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-        <div class="card info-card sales-card">
+      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+        <div class="card info-card stocks-card">
             <div class="filter">
                 <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                     <li class="dropdown-header text-start">
                         <h6>Filtrer</h6>
                     </li>
-                    <li><a class="dropdown-item produit-filter" data-period="today-produit">Aujourd'hui</a></li>
-                    <li><a class="dropdown-item produit-filter" data-period="yesterday-produit">Hier</a></li>
-                    <li><a class="dropdown-item produit-filter" data-period="this-week-produit">Cette semaine</a></li>
-                    <li><a class="dropdown-item produit-filter" data-period="last-week-produit">Semaine dernière</a></li>
-                    <li><a class="dropdown-item produit-filter" data-period="this-month-produit">Ce mois-ci</a></li>
-                    <li><a class="dropdown-item produit-filter" data-period="last-month-produit">Mois dernier</a></li>
-                    <li><a class="dropdown-item produit-filter" data-period="this-year-produit">Cette année</a></li>
-                    <li><a class="dropdown-item produit-filter" data-period="last-year-produit">Année dernière</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="today-stock">Aujourd'hui</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="yesterday-stock">Hier</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="this-week-stock">Cette semaine</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="last-week-stock">Semaine dernière</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="this-month-stock">Ce mois-ci</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="last-month-stock">Mois dernier</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="this-year-stock">Cette année</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="last-year-stock">Année dernière</a></li>
                 </ul>
             </div>
     
             <div class="card-body">
-                <h5 class="card-title">Produits en stock<span id="period-text-produit">| Aujourd'hui</span></h5>
+                <h5 class="card-title">Stocks<span id="period-text-stock">| Aujourd'hui</span></h5>
                 <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="bi bi-basket"></i>
+                        <i class="bi bi-box"></i>
                     </div>
                     <div class="ps-3">
-                        <h6 id="produit-count">0</h6>
+                        <h6 id="stock-count">0</h6>
                         {#<span class="text-success small pt-1 fw-bold" id="percentage-change">0%</span>
                         <span class="text-muted small pt-2 ps-1">variation</span>#}
                     </div>
@@ -147,19 +199,65 @@
         </div>
       </div>
     
-      <div id="produit-categorie-data" style="display: none;">
-        <span id="count-produit-today"></span>
-        <span id="count-produit-yesterday"></span>
-        <span id="count-produit-this-week"></span>
-        <span id="count-produit-last-week"></span>
-        <span id="count-produit-this-month"></span>
-        <span id="count-produit-last-month"></span>
-        <span id="count-produit-this-year"></span>
-        <span id="count-produit-last-year"></span>
+      <div id="stock-data" style="display: none;">
+        <span id="count-stock-today"></span>
+        <span id="count-stock-yesterday"></span>
+        <span id="count-stock-this-week"></span>
+        <span id="count-stock-last-week"></span>
+        <span id="count-stock-this-month"></span>
+        <span id="count-stock-last-month"></span>
+        <span id="count-stock-this-year"></span>
+        <span id="count-stock-last-year"></span>
       </div>
 
-      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-        <div class="card info-card sales-card">
+      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+        <div class="card info-card stock-restant-card">
+            <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                        <h6>Filtrer</h6>
+                    </li>
+                    <li><a class="dropdown-item stock-restant-filter" data-period="today-stock-restant">Aujourd'hui</a></li>
+                    <li><a class="dropdown-item stock-restant-filter" data-period="yesterday-stock-restant">Hier</a></li>
+                    <li><a class="dropdown-item stock-restant-filter" data-period="this-week-stock-restant">Cette semaine</a></li>
+                    <li><a class="dropdown-item stock-restant-filter" data-period="last-week-stock-restant">Semaine dernière</a></li>
+                    <li><a class="dropdown-item stock-restant-filter" data-period="this-month-stock-restant">Ce mois-ci</a></li>
+                    <li><a class="dropdown-item stock-restant-filter" data-period="last-month-stock-restant">Mois dernier</a></li>
+                    <li><a class="dropdown-item stock-restant-filter" data-period="this-year-stock-restant">Cette année</a></li>
+                    <li><a class="dropdown-item stock-restant-filter" data-period="last-year-stock-restant">Année dernière</a></li>
+                </ul>
+            </div>
+    
+            <div class="card-body">
+                <h5 class="card-title">Stocks restants <span id="period-text-stock-restant">| Aujourd'hui</span></h5>
+                <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-bar-chart"></i>
+                    </div>
+                    <div class="ps-3">
+                        <h6 id="stock-restant-count">0</h6>
+                        {#<span class="text-success small pt-1 fw-bold" id="percentage-change">0%</span>
+                        <span class="text-muted small pt-2 ps-1">variation</span>#}
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    
+      <div id="stock-restant-data" style="display: none;">
+        <span id="count-stock-restant-today"></span>
+        <span id="count-stock-restant-yesterday"></span>
+        <span id="count-stock-restant-this-week"></span>
+        <span id="count-stock-restant-last-week"></span>
+        <span id="count-stock-restant-this-month"></span>
+        <span id="count-stock-restant-last-month"></span>
+        <span id="count-stock-restant-this-year"></span>
+        <span id="count-stock-restant-last-year"></span>
+      </div>
+
+      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+        <div class="card info-card produit-vendu-card">
             <div class="filter">
                 <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -193,7 +291,7 @@
         </div>
       </div>
     
-      <div id="produit-commande-data" style="display: none;">
+      <div id="produit-vendu-data" style="display: none;">
         <span id="count-product-today"></span>
         <span id="count-product-yesterday"></span>
         <span id="count-product-this-week"></span>

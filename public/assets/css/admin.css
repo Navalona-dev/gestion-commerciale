@@ -842,12 +842,27 @@
     flex-grow: 0;
   }
   
-  .dashboard .sales-card .card-icon {
-    color: #4154f1;
+  .dashboard .stocks-card .card-icon {
+    color:  #fb0417 ;
+    background: #f6f6fe;
+  }
+
+  .dashboard .produit-vendu-card .card-icon {
+    color:  #fb04ec ;
+    background: #f6f6fe;
+  }
+
+  .dashboard .produit-card .card-icon {
+    color:  #b304fb ;
+    background: #f6f6fe;
+  }
+
+  .dashboard .stock-restant-card .card-icon {
+    color:  #04fbe8 ;
     background: #f6f6fe;
   }
   
-  .dashboard .revenue-card .card-icon {
+  .dashboard .orders-card .card-icon {
     color: #2eca6a;
     background: #e0f8e9;
   }
