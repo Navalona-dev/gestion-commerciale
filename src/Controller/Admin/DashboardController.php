@@ -55,18 +55,24 @@ class DashboardController extends AbstractController
         $idCompte = $session->get('idCompte');
         $idProduit = $session->get('produitCategorieId');
 
+        //count commande
         $countAffaireToday = $this->dashboardService->getCountAffairesToday('paye', 'commande');
         $countAffaireYesterday = $this->dashboardService->getCountAffairesYesterday('paye', 'commande');
         $countAffaireThisWeek = $this->dashboardService->getCountAffairesThisWeek('paye', 'commande');
+        $countAffaireLastWeek = $this->dashboardService->getCountAffairesLastWeek('paye', 'commande');
+        $countAffaireThisMonth = $this->dashboardService->getCountAffairesThisMonth('paye', 'commande');
 
         if ($request->isXmlHttpRequest()) {
             try {
 
                 $_data = array_merge($headerData, [
                     'listes' => [],
+                    //count commande
                     'countAffaireToday' => $countAffaireToday,
                     'countAffaireYesterday' => $countAffaireYesterday,
-                    'countAffaireThisWeek' => $countAffaireThisWeek
+                    'countAffaireThisWeek' => $countAffaireThisWeek,
+                    'countAffaireLastWeek' => $countAffaireLastWeek,
+                    'countAffaireThisMonth' => $countAffaireThisMonth
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);

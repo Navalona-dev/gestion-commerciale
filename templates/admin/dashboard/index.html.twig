@@ -53,8 +53,8 @@
           <span id="count-today"> {{countAffaireToday | default(0)}} </span>
           <span id="count-yesterday"> {{countAffaireYesterday | default(0)}} </span>
           <span id="count-this-week"> {{countAffaireThisWeek |default(0) }} </span>
-          <span id="count-last-week"></span>
-          <span id="count-this-month"></span>
+          <span id="count-last-week"> {{countAffaireLastWeek | default(0)}} </span>
+          <span id="count-this-month"> {{countAffaireThisMonth | default(0)}} </span>
           <span id="count-last-month"></span>
           <span id="count-this-year"></span>
           <span id="count-last-year"></span>
@@ -210,8 +210,6 @@
 
   <script>
     $(document).ready(function() {
-      $('#tab-dashboard').addClass('active');
-
     $('#tab-compte_1').removeClass('active');
     $('#tab-compte_2').removeClass('active');
     
@@ -238,14 +236,18 @@
       $('#tab-privilege').removeClass('active');
        $('#tab-transfert-produit').css('display', 'none');
      
-      
       $('#tab-application').removeClass('active');
       $('#tab-profile').removeClass('active');
       $('#tab-produit-type').removeClass('active');
       $('.tab-produit-type').removeClass('active');
+      $('#tab-financier-affaire').css('display', 'none');
       $('#tab-import-produit').css('display', 'none');
       $('#tab-facture').css('display', 'none');
-        $('#tab-facture-affaire').css('display', 'none');
+      $('#tab-facture-affaire').css('display', 'none');
+      $('#affaires_client').css('display', 'none');
+      $('#tab-info-affaire').css('display', 'none');
+      $('#tab-dashboard').addClass('active');
+
     });
 
     
