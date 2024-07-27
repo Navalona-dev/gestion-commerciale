@@ -2,6 +2,7 @@
 namespace App\Service;
 
 use App\Entity\Affaire;
+use App\Entity\ProduitCategorie;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DashboardService
@@ -61,4 +62,17 @@ class DashboardService
         $countAffaire = $this->entityManager->getRepository(Affaire::class)->countAffairesLastYear($paiement, $statut);
         return $countAffaire;
     }
+
+    public function getCountProductsToday()
+    {
+        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsToday();
+        return $countAffaire;
+    }
+
+    public function getCountProductsYesterday()
+    {
+        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsYesterday();
+        return $countAffaire;
+    }
+
 }

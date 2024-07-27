@@ -50,6 +50,7 @@ class DashboardController extends AbstractController
         HeaderDataProvider $headerDataProvider,
         SessionInterface $session)
     {
+        $anchorName = $request->request->get('anchorName');
         $headerData = $headerDataProvider->getHeaderData();
         $idAffaire = $session->get('idAffaire');
         $idCompte = $session->get('idCompte');
@@ -65,11 +66,22 @@ class DashboardController extends AbstractController
         $countAffaireThisYear = $this->dashboardService->getCountAffairesThisYear('paye', 'commande');
         $countAffaireLastYear = $this->dashboardService->getCountAffairesLastYear('paye', 'commande');
 
+        //count produit
+        $countProduitToday = $this->dashboardService->getCountProductsToday();
+        $countProduitYesterday = $this->dashboardService->getCountProductsYesterday();
+        //dd($countProduitToday);
+
+        $data = [];
+
         if ($request->isXmlHttpRequest()) {
             try {
 
                 $_data = array_merge($headerData, [
                     'listes' => [],
+                    'idAffaire' => $idAffaire,
+                    'idCompte' => $idCompte,
+                    'idProduit' => $idProduit,
+
                     //count commande
                     'countAffaireToday' => $countAffaireToday,
                     'countAffaireYesterday' => $countAffaireYesterday,
@@ -78,28 +90,46 @@ class DashboardController extends AbstractController
                     'countAffaireThisMonth' => $countAffaireThisMonth,
                     'countAffaireLastMonth' => $countAffaireLastMonth,
                     'countAffaireThisYear' => $countAffaireThisYear,
-                    'countAffaireLastYear' => $countAffaireLastYear
+                    'countAffaireLastYear' => $countAffaireLastYear,
+
+                    //count produit
+                    'countProduitToday' => $countProduitToday,
+                    'countProduitYesterday' => $countProduitYesterday
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
             
                 return new JsonResponse($data);
+                
             } catch (\Exception $Exception) {
                 $this->createNotFoundException('Exception' . $Exception->getMessage());
             }
             return new JsonResponse($data);
         } 
 
-        //dd($idAffaire);
-
         $_data = array_merge($headerData, [
             'listes' => [],
             'idAffaire' => $idAffaire,
             'idCompte' => $idCompte,
-            'idProduit' => $idProduit
+            'idProduit' => $idProduit,
+            
+            //count commande
+            'countAffaireToday' => $countAffaireToday,
+            'countAffaireYesterday' => $countAffaireYesterday,
+            'countAffaireThisWeek' => $countAffaireThisWeek,
+            'countAffaireLastWeek' => $countAffaireLastWeek,
+            'countAffaireThisMonth' => $countAffaireThisMonth,
+            'countAffaireLastMonth' => $countAffaireLastMonth,
+            'countAffaireThisYear' => $countAffaireThisYear,
+            'countAffaireLastYear' => $countAffaireLastYear,
+
+            //count produit
+            'countProduitToday' => $countProduitToday,
+            'countProduitYesterday' => $countProduitYesterday
         ]);
 
         return $this->render('admin/index.html.twig', $_data);
+
     }
 
     /**

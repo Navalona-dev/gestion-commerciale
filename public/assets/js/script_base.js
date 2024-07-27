@@ -703,10 +703,11 @@ function showTabPermission() {
  }
 
  function showTabDasboard() {
+    var anchorName = document.location.hash.substring(1);
     $.ajax({
              type: 'post',
              url: '/admin',
-             //data: {},
+             //data: { anchorName: anchorName },
              success: function (response) {
                  $("#tab-dashboard").empty();
                  $("#tab-dashboard").append(response.html);

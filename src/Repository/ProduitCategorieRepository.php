@@ -72,6 +72,48 @@ class ProduitCategorieRepository extends ServiceEntityRepository
     }
     
 
+    // Nombre de produit d'aujourd'hui
+    public function countProductsToday()
+    {
+        $today = new \DateTime();
+        $today->setTime(0, 0, 0);
+        $tomorrow = clone $today;
+        $tomorrow->modify('+1 day');
 
+        $qb = $this->createQueryBuilder('p')
+                    ->select('COUNT(p.id)')
+                    ->where('p.dateCreation >= :today')
+                    ->andWhere('p.dateCreation < :tomorrow')
+                    ->andWhere('p.application = :application_id')
+                    ->setParameter('today', $today)
+                    ->setParameter('tomorrow', $tomorrow)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+
+               return $qb;
+    }
+
+     // Nombre de commandes d'hier
+     public function countProductsYesterday()
+     {
+         $yesterday = new \DateTime();
+         $yesterday->setTime(0, 0, 0);
+         $yesterday->modify('-1 day');
+         $today = clone $yesterday;
+         $today->modify('+1 day');
+ 
+         $qb = $this->createQueryBuilder('p')
+                     ->select('COUNT(p.id)')
+                     ->where('p.dateCreation >= :yesterday')
+                     ->andWhere('p.dateCreation < :today')
+                     ->andWhere('p.application = :application_id')
+                     ->setParameter('yesterday', $yesterday)
+                     ->setParameter('today', $today)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
 
 }
