@@ -291,7 +291,7 @@ class AffaireRepository extends ServiceEntityRepository
      }
  
      // Nombre de commandes mois dernier
-     public function countAffairesLastMonth()
+     public function countAffairesLastMonth($paiement = null, $statut = null)
      {
          $startOfLastMonth = new \DateTime('first day of last month');
          $startOfLastMonth->setTime(0, 0, 0);
@@ -299,16 +299,22 @@ class AffaireRepository extends ServiceEntityRepository
          $endOfLastMonth = new \DateTime('first day of this month');
          $endOfLastMonth->setTime(0, 0, 0);
  
-         return $this->createQueryBuilder('a')
+         $qb = $this->createQueryBuilder('a')
                      ->select('COUNT(a.id)')
-                     ->where('a.createdAt >= :start_of_last_month')
-                     ->andWhere('a.createdAt < :end_of_last_month')
-                     ->andWhere('a.isPaid = :isPaid')
+                     ->join('a.factures', 'f')
+                     ->where('f.date >= :start_of_last_month')
+                     ->andWhere('f.date < :end_of_last_month')
+                     ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.statut = :statut')
+                     ->andWhere('a.application = :application_id')
                      ->setParameter('start_of_last_month', $startOfLastMonth)
                      ->setParameter('end_of_last_month', $endOfLastMonth)
-                     ->setParameter('isPaid', true)
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                     ->setParameter('application_id', $this->application->getId())
                      ->getQuery()
                      ->getSingleScalarResult();
+        return $qb;
      }
  
      // Nombre de commandes cette année
