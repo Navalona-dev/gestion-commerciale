@@ -49,4 +49,10 @@ class DashboardService
         $countAffaire = $this->entityManager->getRepository(Affaire::class)->countAffairesLastMonth($paiement, $statut);
         return $countAffaire;
     }
+
+    public function getCountAffairesThisYear($paiement = null, $statut = null)
+    {
+        $countAffaire = $this->entityManager->getRepository(Affaire::class)->countAffairesThisYear($paiement, $statut);
+        return $countAffaire;
+    }
 }

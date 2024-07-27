@@ -318,7 +318,7 @@ class AffaireRepository extends ServiceEntityRepository
      }
  
      // Nombre de commandes cette année
-     public function countAffairesThisYear()
+     public function countAffairesThisYear($paiement = null, $statut = null)
      {
          $startOfYear = new \DateTime('first day of January this year');
          $startOfYear->setTime(0, 0, 0);
@@ -326,16 +326,22 @@ class AffaireRepository extends ServiceEntityRepository
          $endOfYear = new \DateTime('first day of January next year');
          $endOfYear->setTime(0, 0, 0);
  
-         return $this->createQueryBuilder('a')
+         $qb = $this->createQueryBuilder('a')
                      ->select('COUNT(a.id)')
-                     ->where('a.createdAt >= :start_of_year')
-                     ->andWhere('a.createdAt < :end_of_year')
-                     ->andWhere('a.isPaid = :isPaid')
+                     ->join('a.factures', 'f')
+                     ->where('f.date >= :start_of_year')
+                     ->andWhere('f.date < :end_of_year')
+                     ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.statut = :statut')
+                     ->andWhere('a.application = :application_id')
                      ->setParameter('start_of_year', $startOfYear)
                      ->setParameter('end_of_year', $endOfYear)
-                     ->setParameter('isPaid', true)
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                     ->setParameter('application_id', $this->application->getId())
                      ->getQuery()
                      ->getSingleScalarResult();
+        return $qb;
      }
  
      // Nombre de commandes année dernière
