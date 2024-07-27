@@ -289,7 +289,7 @@ class AffaireController extends AbstractController
             $statut = $request->get('statut');
 
             $affaire = new Affaire();
-            $affaire->setStatut($statut);
+            
             $form = $this->createForm(AffaireType::class, $affaire);
 
             $form->handleRequest($request);
@@ -297,7 +297,7 @@ class AffaireController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
                     // encode the plain password
-                    $this->affaireService->add($affaire, $compte);
+                    $this->affaireService->add($statut, $compte);
                     $this->affaireService->update();
                    
                     $affaires = $this->affaireService->getAllAffaire($compte);
@@ -574,10 +574,19 @@ class AffaireController extends AbstractController
             if ($produits == false) {
                 $produits = [];
             }
-       
+            $facturesValide = [];
+            if ($affaire->getPaiement() != null && count($affaire->getFactures()) > 0) {
+                $factures = $affaire->getFactures();
+                $facturesValide = $factures->filter(function ($item) use ($affaire) {
+                    return ($item->isValid() && 'regle' === $item->getStatut());
+                    
+                });
+            }
+           
             $data["html"] = $this->renderView('admin/affaires/financier.html.twig', [
                 'affaire' => $affaire,
-                'produits' => $produits
+                'produits' => $produits,
+                'factureFile' => (count($facturesValide) > 0 ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
             ]);
           
             return new JsonResponse($data);
@@ -716,7 +725,21 @@ class AffaireController extends AbstractController
             ]);
     
         }
-        dd(count($affaire->getProducts()));
+        return new JsonResponse([]);
+    }
+
+    #[Route('/paiement/annule/{affaire}', name: '_annuler')]
+    public function annulerPaiement(Affaire $affaire, Request $request): Response
+    {
+        if (count($affaire->getProducts()) > 0) {
+            $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/annule/';
+            $pdf = $this->factureService->annuler($affaire, $documentFolder);
+           
+            return new Response($pdf->Output('test.pdf', 'I'), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
+    
+        }
         return new JsonResponse([]);
     }
 }

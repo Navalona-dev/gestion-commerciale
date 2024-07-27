@@ -1,3 +1,51 @@
+ <style>
+   .icon-paye {
+    width: 44px;
+    height: 40px;
+    background-color: #ffc107; 
+    color: #000;
+    font-size: 24px; 
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffc107 !important; 
+    cursor: pointer;
+}
+
+.icon-paye:hover {
+    color: #000;
+}
+
+.icon-detail {
+    width: 44px;
+    height: 40px;
+    color: #000;
+    font-size: 24px; 
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 15px;
+}
+
+.icon-cancel {
+    width: 44px;
+    height: 40px;
+    color: #000;
+    font-size: 24px; 
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 15px;
+    border:none !important;
+}
+
+</style>
+ 
  <div class="col-md-10 col-12" id="financiereProduct">
                 <div class="card p-5">
                     <div class="date">
@@ -8,13 +56,31 @@
                             <div class="col-md-5 col-12">
                                 <p class="fw-bold fs-5"><i class="bi bi-archive-fill text-primary"></i><span class="mx-2 text-primary">Date commande:</span><span class="text-warning">15/07/2024</span></p>
                             </div>
-                             <div class="col-md-2 col-12">
-                                <div class="d-flex justify-content-end">
-                                    <a title="Payé" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="icon-paye d-flex align-items-center justify-content-center border border-secondary">
-                                        <i class="bi bi-credit-card-2-front-fill"></i>
-                                    </a>
+                            {% if affaire.paiement is not null and affaire.paiement == "paye" and factureFile is not null %}
+                        
+                             
+                                <div class="col-md-2 col-12">
+                                     <div class="d-flex justify-content-center">
+                                        <a title="Annuler" target="_blank" href="{{path('affaires_annuler', {'affaire': affaire.id})}}" title="Annuler" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
+                                            <i class="bi bi-x"></i>
+                                        </a>
+                                        <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank" title="Voir dernière facture" class="bg-primary icon-detail text-white">
+									        <i class="bi bi-file-earmark-check-fill"></i>
+                                        </a>
+
+                                    </div>
                                 </div>
-                            </div>
+                                {% else %}
+                                <div class="col-md-2 col-12">
+
+                                   
+                                    <div class="d-flex justify-content-end">
+                                        <a title="Payé" target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="icon-paye d-flex align-items-center justify-content-center border border-secondary">
+                                            <i class="bi bi-credit-card-2-front-fill"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endif %}
                         </div>
                     </div>
                     <hr>

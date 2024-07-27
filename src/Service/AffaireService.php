@@ -31,20 +31,15 @@ class AffaireService
         $this->application = $applicationManager->getApplicationActive();
     }
 
-    public function add($instance, $compte = null)
+    public function add($statut, $compte = null)
     {
-        $affaire = Affaire::newAffaire($instance, $compte);
-
-        $date = new \DateTime();
+        $affaire = Affaire::newAffaire($statut, $compte);
 
         //$affaire->setEtat($instance->getEtat());
         $affaire->setApplication($this->application);
-        $affaire->setDateCreation($date);
-        //$affaire->setStatut("devis");
-        $affaire->setCompte($compte);
         $affaire->setPrestation("Vente");
         $affaire->setNumero(null);
-
+        
         /*foreach($affaire->getUtilisateur() as $utilisateur) {
             $utilisateur->addCompte($affaire);
             $this->entityManager->persist($utilisateur);

@@ -98,6 +98,14 @@ class ProductController extends AbstractController
        
         $produits = $this->productService->findProduitAffaire($affaire);
 
+        $facturesValide = [];
+        if ($affaire->getPaiement() != null && count($affaire->getFactures()) > 0) {
+            $factures = $affaire->getFactures();
+            $facturesValide = $factures->filter(function ($item) use ($affaire) {
+                return ($item->isValid() && 'regle' === $item->getStatut());
+                
+            });
+        }
        
         $template = "reloadFinanciereProduct.html.twig";
        
@@ -106,6 +114,7 @@ class ProductController extends AbstractController
             'affaire' => $affaire,
             'produits' => $produits,
             'statuts' => $affaire::STATUT,
+            'factureFile' => (count($facturesValide) > 0 ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
             /*'projets' => $affaire::PROJET,
             'montantCA' => $montantCA,
             'affaireRemise' => $montantRemise,
@@ -136,13 +145,14 @@ class ProductController extends AbstractController
         $affaire = $this->affaireService->find($idAffaire);
 
         $product = $this->productService->getProductById($idProduit);
-
+        
         $template = "tr_edit_financiere.html.twig";
-
+        
         return $this->render('admin/affaires/' . $template, [
             'affaire' => $affaire,
             'product' => $product,
-            'qttRestant' => ($product->getProduitCategorie()->getStockRestant() != null ? $product->getProduitCategorie()->getStockRestant() : 0)
+            'qttRestant' => ($product->getProduitCategorie()->getStockRestant() != null ? $product->getProduitCategorie()->getStockRestant() : 0),
+            
         ]);
     }
 
@@ -167,6 +177,16 @@ class ProductController extends AbstractController
             $this->productService->persist($product);
             $this->productService->update();
         }
+
+        $facturesValide = [];
+        if ($affaire->getPaiement() != null && count($affaire->getFactures()) > 0) {
+            $factures = $affaire->getFactures();
+            $facturesValide = $factures->filter(function ($item) use ($affaire) {
+                return ($item->isValid() && 'regle' === $item->getStatut());
+                
+            });
+        }
+
         $template = "reloadFinanciereProduct.html.twig";
 
         $produits = $this->productService->findProduitAffaire($affaire);
@@ -176,6 +196,7 @@ class ProductController extends AbstractController
             'affaire' => $affaire,
             'produits' => $produits,
             'statuts' => $affaire::STATUT,
+            'factureFile' => (count($facturesValide) > 0 ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
             /*'projets' => $affaire::PROJET,
             'montantCA' => $montantCA,
             'affaireRemise' => $montantRemise,
@@ -206,6 +227,16 @@ class ProductController extends AbstractController
             $this->productService->remove($product, $affaire);
             $this->productService->update();
         }
+
+        $facturesValide = [];
+        if ($affaire->getPaiement() != null && count($affaire->getFactures()) > 0) {
+            $factures = $affaire->getFactures();
+            $facturesValide = $factures->filter(function ($item) use ($affaire) {
+                return ($item->isValid() && 'regle' === $item->getStatut());
+                
+            });
+        }
+
         $template = "reloadFinanciereProduct.html.twig";
 
         $produits = $this->productService->findProduitAffaire($affaire);
@@ -215,6 +246,7 @@ class ProductController extends AbstractController
             'affaire' => $affaire,
             'produits' => $produits,
             'statuts' => $affaire::STATUT,
+            'factureFile' => (count($facturesValide) > 0 ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
             /*'projets' => $affaire::PROJET,
             'montantCA' => $montantCA,
             'affaireRemise' => $montantRemise,
