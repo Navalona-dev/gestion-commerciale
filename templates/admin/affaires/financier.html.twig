@@ -17,6 +17,33 @@
     color: #000;
 }
 
+.icon-detail {
+    width: 44px;
+    height: 40px;
+    color: #000;
+    font-size: 24px; 
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 15px;
+}
+
+.icon-cancel {
+    width: 44px;
+    height: 40px;
+    color: #000;
+    font-size: 24px; 
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 15px;
+    border:none !important;
+}
+
 </style>
 
 <section class="section">
@@ -48,13 +75,13 @@
                              
                                 <div class="col-md-2 col-12">
                                      <div class="d-flex justify-content-center">
-                                        <a title="Annuler" target="_blank" href="{{path('affaires_annuler', {'affaire': affaire.id})}}" class="icon-paye d-flex align-items-center justify-content-center border border-secondary">
-                                            Annuler
+                                        <a title="Annuler" target="_blank" href="{{path('affaires_annuler', {'affaire': affaire.id})}}" title="Annuler" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
+                                            <i class="bi bi-x"></i>
                                         </a>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank">
-												Voir dernier facture</a>
+                                        <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank" title="Voir dernière facture" class="bg-primary icon-detail text-white">
+									        <i class="bi bi-file-earmark-check-fill"></i>
+                                        </a>
+
                                     </div>
                                 </div>
                                 {% else %}
