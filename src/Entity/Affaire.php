@@ -37,7 +37,7 @@ class Affaire
     const DEVIS = [
         'encours' => 'En cours',
         'gagne' => 'Gagné',
-        //'perdu' => 'Perdu',
+        'perdu' => 'Perdu',
         //'sansSuite' => 'Sans suite',
         //'termine' => 'Terminé',
         //'envoye' => 'Envoyé'

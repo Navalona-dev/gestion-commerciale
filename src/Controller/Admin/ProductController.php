@@ -138,7 +138,7 @@ class ProductController extends AbstractController
         $product = $this->productService->getProductById($idProduit);
 
         $template = "tr_edit_financiere.html.twig";
-
+        
         return $this->render('admin/affaires/' . $template, [
             'affaire' => $affaire,
             'product' => $product,

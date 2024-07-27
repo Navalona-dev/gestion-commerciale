@@ -724,4 +724,19 @@ class AffaireController extends AbstractController
         }
         return new JsonResponse([]);
     }
+
+    #[Route('/paiement/annule/{affaire}', name: '_annuler')]
+    public function annulerPaiement(Affaire $affaire, Request $request): Response
+    {
+        if (count($affaire->getProducts()) > 0) {
+            $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/annule/';
+            $pdf = $this->factureService->annuler($affaire, $documentFolder);
+           
+            return new Response($pdf->Output('test.pdf', 'I'), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
+    
+        }
+        return new JsonResponse([]);
+    }
 }

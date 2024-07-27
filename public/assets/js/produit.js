@@ -122,7 +122,9 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null) {
     }
     
     if (qttRestant != undefined && qttRestant != "") {
+       
         if (parseFloat(qtt) > parseFloat(qttRestant)) {
+           
             $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');
             setTimeout(function () {
                 toastr.options = {
@@ -139,7 +141,7 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null) {
         }
 
     }
-    
+   
     $(".loadBody").css('display', 'block');
     $.ajax({
         type: 'post',

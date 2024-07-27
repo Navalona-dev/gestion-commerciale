@@ -127,6 +127,7 @@ class FactureService
         $affaire->setDatePaiement($date);
         $affaire->setDevisEvol('gagne');
         $affaire->setDateFacture($date);
+        $affaire->setStatut("commande");
         $this->persist($affaire);
         $this->update();
         $pdf->SetCreator(PDF_CREATOR);
@@ -154,6 +155,64 @@ class FactureService
         return $pdf;
     }
 
+    public function annuler($affaire = null, $folder = null)
+    {
+        $factures = $this->findByAffaire($affaire);
+        $facture = $factures[0]; 
+        $pdf = $this->tcpdf;
+        $date = new \DateTime();
+        
+        
+        $facture->setEtat('annule');
+        $facture->setValid(true);
+        $facture->setStatut('annule');
+        $products = $affaire->getProducts();
+        $filename = "Facture(FA-Annuler" . $facture->getNumero() . ").pdf";
+
+        // Sortie du PDF sous forme de réponse HTTP
+        foreach ($products as $key => $product) { 
+            // Gestion stock
+            $produitCategorie = $product->getProduitCategorie();
+            $stock = $produitCategorie->getStockRestant();
+            
+            $qtt = $product->getQtt();
+            $stock = $stock + $qtt;
+            $produitCategorie->setStockRestant($stock);
+          
+            $this->persist($produitCategorie);
+            
+        }
+        
+       
+        $this->persist($facture);
+        $affaire->setDateAnnule($date);
+        $affaire->setDevisEvol('perdu');
+        $this->persist($affaire);
+        $this->update();
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('CVB');
+        $pdf->SetTitle('Facture');
+        //$pdf->SetSubject('Hello, je teste seulement le PDF en utilisant ce bundle TCPDF');
+        //$pdf->SetKeywords('PDF');
+
+        // Ajouter une page
+        $pdf->AddPage();
+
+        // Définir le contenu du PDF
+        
+        $data = [];
+        $data['produits'] = $products;
+        $data['facture'] = $facture;
+        $data['compte'] = $facture->getCompte();
+        
+        $fileName = $folder . $filename;
+
+        $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
+        $pdf->writeHTML($html, true, false, true, false, '');
+        $pdf->Output($fileName, 'F');
+        unset($facture);
+        return $pdf;
+    }
     public function update()
     {
         $this->entityManager->flush();
@@ -167,6 +226,11 @@ class FactureService
     public function remove($entity)
     {
         $this->entityManager->remove($entity);
+    }
+
+    public function findByAffaire($affaire)
+    {
+        return $this->entityManager->getRepository(Facture::class)->findBy(['affaire' => $affaire]);
     }
 
     public function find($id)
