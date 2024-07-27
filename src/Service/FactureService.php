@@ -190,7 +190,16 @@ class FactureService
 
     public function getAllFactures()
     {
-        $factures = $this->entityManager->getRepository(Facture::class)->findAll();
+        $factures = $this->entityManager->getRepository(Facture::class)->getAllFactures();
+        if (count($factures) > 0) {
+            return $factures;
+        }
+        return false;
+    }
+
+    public function getAllFacturesByAffaire($affaireId = null)
+    {
+        $factures = $this->entityManager->getRepository(Facture::class)->getAllFacturesByAffaire($affaireId);
         if (count($factures) > 0) {
             return $factures;
         }

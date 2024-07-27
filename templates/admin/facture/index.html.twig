@@ -28,6 +28,15 @@
         width: 20px;  
         height: 20px; 
     }
+
+    .export-btn {
+        border-radius: 7px;
+        color: #fff;
+    }
+
+    .export-btn:hover {
+        background-color: #ffc107 !important;
+    }
    
   </style>
   
@@ -47,7 +56,7 @@
             <div class="row">
                 <div class="col-md-3 col-12 d-flex align-items-center justify-content-center">
                     <div class="title">
-                        <h3 class="fw-bold">Factures et avoirs clients</h3>
+                        <h3 class="fw-bold">Factures clients</h3>
                     </div>
                 </div>
                 
@@ -64,21 +73,6 @@
                                     <option value="Client 4">Client 4</option>
                                 </select>
                               </div>
-
-                              <div class="input-group mb-3">
-                                <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-person-fill"></i></span>
-                                <select name="filter_collaborateur" id="filter_collaborateur" class="mb-3 form-control form-control-md" style="border-left: none;">
-                                    <option value="" disabled selected><span class="mx-3">CA Collaborateur</span></option>
-                                    <option value="Collaborateur 1">Collaborateur 1</option>
-                                    <option value="Collaborateur 2">Collaborateur 2</option>
-                                    <option value="Collaborateur 3">Collaborateur 3</option>
-                                    <option value="Collaborateur 4">Collaborateur 4</option>
-                                </select>
-                              </div>
-                              
-
-                            
-
                             <p class="d-flex justify-content-end mb-4">Date facture</p>
                             <p class="d-flex justify-content-end mb-3">Date de paiement</p>
                         </div>
@@ -94,45 +88,18 @@
                                 </select>
                               </div>
 
-                              <div class="input-group mb-3">
-                                <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-tags-fill"></i></span>
-                                <select name="filter_facture" id="filter_facture" class="mb-3 form-control form-control-md" style="border-left: none;">
-                                    <option value="" disabled selected><span class="mx-3">Tags...</span></option>
-                                    <option value="Tags 1">Tags 1</option>
-                                    <option value="Tags 2">Tags 2</option>
-                                    <option value="Tags 3">Tags 3</option>
-                                    <option value="Tags 4">Tags 4</option>
-                                </select>
-                              </div>
-
                             <input type="text" name="date_facture" id="date_facture" class="mb-3 form-control form-control-ms date-facture" placeholder="Du dd/mm/yyyy">
                             <input type="text" name="date_paiement" id="date_paiement" class="mb-3 form-control form-control-ms date-facture" placeholder="Du dd/mm/yyyy">
                         </div>
                         <div class="col-md-4 col-12">
                             <div class="input-group mb-3">
-                                <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-file-earmark-text-fill"></i></span>
-                                <select name="filter_facture_2" id="filter_facture_2" class="mb-3 form-control form-control-md" style="border-left: none;">
-                                    <option value="" disabled selected><span class="mx-3">Toutes les factures</span></option>
-                                    <option value="Facture 1">Facture 1</option>
-                                    <option value="Facture 2">Facture 2</option>
-                                    <option value="Facture 3">Facture 3</option>
-                                    <option value="Facture 4">Facture 4</option>
+                                <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-check-circle-fill"></i></span>
+                                <select name="filter_satatus" id="filter_satatus" class="mb-3 form-control form-control-md" style="border-left: none;">
+                                    <option value="" disabled selected><span class="mx-3">Status</span></option>
+                                    <option value="Payé">Payé</option>
+                                    <option value="Non payé">Non payé</option>
                                 </select>
                               </div>
-
-                              <div class="input-group mb-3">
-                                <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-currency-dollar"></i></span>
-                                <select name="filter_reglement" id="filter_reglement" class="mb-3 form-control form-control-md" style="border-left: none;">
-                                    <option value="" disabled selected><span class="mx-3">Règlement</span></option>
-                                    <option value="Règlement 1">Règlement 1</option>
-                                    <option value="Règlement 2">Règlement 2</option>
-                                    <option value="Règlement 3">Règlement 3</option>
-                                    <option value="Règlement 4">Règlement 4</option>
-                                </select>
-                              </div>
-                              
-                            
-                            
                             <input type="text" name="date_facture_end" id="date_facture_end" class="mb-3 form-control form-control-ms date-facture" placeholder="Au dd/mm/yyyy">
                             <input type="text" name="date_paiement_end" id="date_paiement_end" class="mb-3 form-control form-control-ms date-facture" placeholder="Au dd/mm/yyyy">
                         
@@ -149,41 +116,52 @@
 
           <div class="card">
             <div class="card-body p-5">
+                <div class="form-group d-flex justify-content-end mb-4">
+                    <div class="dropdown">
+                        <a class=" export-btn bg-warning p-2 dropdown-toggle text-black btn-list" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                          <i class="bi bi-list"></i>
+                        </a>
+                      
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a href="#" class="dropdown-item"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Exporter</span></a></li>
+                        </ul>
+                      </div>
+                   
+                </div>
                 <table class="table table-striped table-facture-affaire" id="table-facture-affaire" style="width: 100%;">
                     <thead>
                         <tr class="text-nowrap">
+                            <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
+                            <th>Validation</th>
+                            <th>Actions</th>
+                            <th>PDF</th>
                             <th>Date</th>
                             <th>Type</th>
                             <th>N°</th>
                             <th>Compte</th>
-                            <th>Nom</th>
+                            <th>Affaire</th>
                             <th>Prix TTC</th>
                             <th>Prix HT</th>
                             <th>Règlement</th>
                             <th>Status</th>
-                            <th>Réccurence</th>
-                            <th>Tags</th>
-                            <th>PDF</th>
-                            <th>Actions</th>
-                            <th>Validation</th>
-                            <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
+                            <th>Solde</th>
+                            <th>État</th>
+                            <th>Rémise</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for liste in listes %}
                         <tr class="text-nowrap">
-                            <td></td>
-                            <td></td>
-                            <td> {{liste.numero}} </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td><i class="bi bi-plus text-primary"></i></td>
-                            <td><i class="bi bi-file-pdf-fill text-danger fs-4"></i></td>
+                            <td>
+                                <input type="checkbox" class="custom-checkbox" name="" id="">
+                            </td>
+                            <td>
+                                {% if liste.isValid == 0 %}
+                                <a style="cursor: pointer;"><i class="bi bi-x text-danger fs-4"></i></a>
+                                {% elseif liste.isValid == 1 %}
+                                <a style="cursor: pointer;"><i class="bi bi-check text-primary fs-4"></i></a>
+                                {% endif %}
+                            </td>
                             <td class="d-flex align-items-center">
                                 <i class="bi bi-arrow-clockwise"></i>
                                 <div class="dropdown ms-2">
@@ -196,20 +174,24 @@
                                     </ul>
                                 </div>
                             </td>
-                            
-                            <td>
-                                <a style="cursor: pointer;"><i class="bi bi-x text-danger fs-4"></i></a>
-                                <a style="cursor: pointer;"><i class="bi bi-check text-primary fs-4"></i></a>
-                                
-                                
-                            </td>
-                            <td>
-                                <input type="checkbox" class="custom-checkbox" name="" id="">
-                            </td>
+                            <td><i class="bi bi-file-pdf-fill text-danger fs-4"></i></td>
+                            <td> {{liste.dateCreation|date('d-m-Y')}} </td>
+                            <td> {{liste.type}} </td>
+                            <td> {{liste.numero}} </td>
+                            <td> {{liste.compte}} </td>
+                            <td> {{liste.affaire}} </td>
+                            <td> {{liste.prixTtc|number_format(2, ',', ',')}} Ar </td>
+                            <td>{{liste.prixHt|number_format(2, ',', ' ')}} Ar</td>
+                            <td> {{liste.reglement|number_format(2, ',', ' ')}} Ar </td>
+                            <td> {{liste.statut}} </td>
+                            <td> {{liste.solde}} </td>
+                            <td> {{liste.etat}} </td>
+                            <td> {{liste.remise}} </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="15">Aucun enregistrement trouvé</td>
+                            <td colspan="16">Aucun enregistrement trouvé</td>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td></td>

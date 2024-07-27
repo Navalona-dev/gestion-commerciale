@@ -53,5 +53,43 @@ class FactureRepository extends ServiceEntityRepository
         return $tabNumero;
     }
 
-   
+    public function getAllFactures()
+    {
+        $sql = "SELECT f.type, f.numero, f.prixHt, f.prixTtc, f.solde, f.statut, f.reglement, f.numeroCommande, f.etat,
+                f.file, f.dateCreation, f.isValid, f.remise, c.nom as compte, a.nom as affaire
+                FROM `Facture` f 
+                LEFT JOIN `compte` c ON f.compte_id = c.id 
+                LEFT JOIN `affaire` a ON f.affaire_id = a.id 
+                WHERE f.application_id = ".$this->application->getId()." 
+                ORDER BY f.dateCreation DESC";
+
+            $query = $this->connection->prepare($sql);
+        
+            $query = $this->connection->executeQuery($sql);
+    
+            return $query->fetchAll(); 
+    }
+
+    public function getAllFacturesByAffaire($affaireId = null)
+    {
+        $sql = "SELECT f.type, f.numero, f.prixHt, f.prixTtc, f.solde, f.statut, f.reglement, f.numeroCommande, f.etat,
+                f.file, f.dateCreation, f.isValid, f.remise, c.nom as compte, a.nom as affaire
+                FROM `Facture` f 
+                LEFT JOIN `compte` c ON f.compte_id = c.id 
+                LEFT JOIN `affaire` a ON f.affaire_id = a.id 
+                WHERE f.application_id = ".$this->application->getId()."";
+
+                if ($affaireId != null) {
+                    $sql .= " and a.id = ".$affaireId."";
+                }
+
+            $sql .= " ORDER BY f.dateCreation DESC";
+
+
+            $query = $this->connection->prepare($sql);
+        
+            $query = $this->connection->executeQuery($sql);
+    
+            return $query->fetchAll(); 
+    }
 }

@@ -685,11 +685,14 @@ class AffaireController extends AbstractController
     {
         $session->set('idAffaire', $affaire->getId());
 
+        $factures = $this->factureService->getAllFacturesByAffaire($affaire->getId());
+
         $data = [];
         try {
             
             $data["html"] = $this->renderView('admin/affaires/facture.html.twig', [
-                'affaire' => $affaire
+                'affaire' => $affaire,
+                'factures' => $factures
             ]);
            
             return new JsonResponse($data);

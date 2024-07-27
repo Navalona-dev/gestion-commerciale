@@ -94,37 +94,39 @@
                             <table class="table table-striped" id="table-facture" style="width: 100%;">
                                 <thead>
                                     <tr class="text-nowrap">
-                                        <th>Date</th>
-                                        <th>Type</th>
-                                        <th>N°</th>
-                                        <th>Compte</th>
-                                        <th>Nom</th>
-                                        <th>Prix TTC</th>
-                                        <th>Prix HT</th>
-                                        <th>Règlement</th>
-                                        <th>Status</th>
-                                        <th>Réccurence</th>
-                                        <th>Tags</th>
-                                        <th>PDF</th>
-                                        <th>Actions</th>
-                                        <th>Validation</th>
-                                        <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
+                                        <tr class="text-nowrap">
+                                            <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
+                                            <th>Validation</th>
+                                            <th>Actions</th>
+                                            <th>PDF</th>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>N°</th>
+                                            <th>Compte</th>
+                                            <th>Affaire</th>
+                                            <th>Prix TTC</th>
+                                            <th>Prix HT</th>
+                                            <th>Règlement</th>
+                                            <th>Status</th>
+                                            <th>Solde</th>
+                                            <th>État</th>
+                                            <th>Rémise</th>
+                                        </tr>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {% for liste in factures %}
                                     <tr class="text-nowrap">
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td><i class="bi bi-plus text-primary"></i></td>
-                                        <td><i class="bi bi-file-pdf-fill text-danger fs-4"></i></td>
+                                        <td>
+                                            <input type="checkbox" class="custom-checkbox" name="" id="">
+                                        </td>
+                                        <td>
+                                            {% if liste.isValid == 0 %}
+                                            <a style="cursor: pointer;"><i class="bi bi-x text-danger fs-4"></i></a>
+                                            {% elseif liste.isValid == 1 %}
+                                            <a style="cursor: pointer;"><i class="bi bi-check text-primary fs-4"></i></a>
+                                            {% endif %}
+                                        </td>
                                         <td class="d-flex align-items-center">
                                             <i class="bi bi-arrow-clockwise"></i>
                                             <div class="dropdown ms-2">
@@ -137,17 +139,40 @@
                                                 </ul>
                                             </div>
                                         </td>
-                                        
-                                        <td>
-                                            <a style="cursor: pointer;"><i class="bi bi-x text-danger fs-4"></i></a>
-                                            <a style="cursor: pointer;"><i class="bi bi-check text-primary fs-4"></i></a>
-                                            
-                                            
-                                        </td>
-                                        <td>
-                                            <input type="checkbox" class="custom-checkbox" name="" id="">
-                                        </td>
+                                        <td><i class="bi bi-file-pdf-fill text-danger fs-4"></i></td>
+                                        <td> {{liste.dateCreation|date('d-m-Y')}} </td>
+                                        <td> {{liste.type}} </td>
+                                        <td> {{liste.numero}} </td>
+                                        <td> {{liste.compte}} </td>
+                                        <td> {{liste.affaire}} </td>
+                                        <td> {{liste.prixTtc|number_format(2, ',', ',')}} Ar </td>
+                                        <td>{{liste.prixHt|number_format(2, ',', ' ')}} Ar</td>
+                                        <td> {{liste.reglement|number_format(2, ',', ' ')}} Ar </td>
+                                        <td> {{liste.statut}} </td>
+                                        <td> {{liste.solde}} </td>
+                                        <td> {{liste.etat}} </td>
+                                        <td> {{liste.remise}} </td>
                                     </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="16">Aucune facture trouvé</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
