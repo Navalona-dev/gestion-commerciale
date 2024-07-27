@@ -183,7 +183,8 @@
                             <td> {{liste.prixTtc|number_format(2, ',', ',')}} Ar </td>
                             <td>{{liste.prixHt|number_format(2, ',', ' ')}} Ar</td>
                             <td> {{liste.reglement|number_format(2, ',', ' ')}} Ar </td>
-                            <td> {{liste.statut}} </td>
+                            {% set statutPaiement = constant('App\\Entity\\Facture::STATUT') %}
+                            <td> {{statutPaiement[liste.statut]}} </td>
                             <td> {{liste.solde}} </td>
                             <td> {{liste.etat}} </td>
                             <td> {{liste.remise}} </td>

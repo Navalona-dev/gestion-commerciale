@@ -182,8 +182,16 @@
                                 <div class="mb-4">
                                     
                                     <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
+                                {% if affaire.paiement is not null and affaire.paiement == "paye" and factureFile is not null %}
+                                    <a title="Annuler" target="_blank" href="{{path('affaires_annuler', {'affaire': affaire.id})}}" title="Annuler" class="text-danger financier-icon">
+                                        <i class="bi bi-x-square-fill"></i>
+                                    </a>
+                                    <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank" title="Voir dernière facture" class="text-warning financier-icon">
+                                        <i class="bi bi-file-earmark-check-fill"></i>
+                                    </a>
+                                {% else %}
                                     <a style="cursor: pointer;" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
-                                    
+                                {% endif %}
                                     {#<a href="#" class="text-danger financier-icon"><i class="bi bi-database-fill-check"></i></a>
                                     <a href="#" class="text-info icon-t">t</a>
                                     <a href="#" class="text-success financier-icon"><i class="bi bi-file-earmark-excel-fill"></i></a>#}
