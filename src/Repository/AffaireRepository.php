@@ -177,13 +177,11 @@ class AffaireRepository extends ServiceEntityRepository
                      ->getQuery()
                      ->getSingleScalarResult();
 
-                    //dd($qb);
-
                 return $qb;
      }
  
      // Nombre de commandes d'hier
-     public function countAffairesYesterday()
+     public function countAffairesYesterday($paiement = null, $statut = null)
      {
          $yesterday = new \DateTime();
          $yesterday->setTime(0, 0, 0);
@@ -191,16 +189,22 @@ class AffaireRepository extends ServiceEntityRepository
          $today = clone $yesterday;
          $today->modify('+1 day');
  
-         return $this->createQueryBuilder('a')
+         $qb = $this->createQueryBuilder('a')
                      ->select('COUNT(a.id)')
-                     ->where('a.createdAt >= :yesterday')
-                     ->andWhere('a.createdAt < :today')
-                     ->andWhere('a.isPaid = :isPaid')
+                     ->join('a.factures', 'f')
+                     ->where('f.date >= :yesterday')
+                     ->andWhere('f.date < :today')
+                     ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.statut = :statut')
+                     ->andWhere('a.application = :application_id')
                      ->setParameter('yesterday', $yesterday)
                      ->setParameter('today', $today)
-                     ->setParameter('isPaid', true)
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                     ->setParameter('application_id', $this->application->getId())
                      ->getQuery()
                      ->getSingleScalarResult();
+        return $qb;
      }
  
      // Nombre de commandes cette semaine
