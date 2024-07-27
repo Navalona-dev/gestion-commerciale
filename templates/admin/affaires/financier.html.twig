@@ -133,7 +133,9 @@
                                     {# <th class="text-center">Remise</th>
                                     <th class="text-center">PT(HT)</th>
                                     <th class="text-center">TVA</th> #}
+                                    {% if affaire.paiement is not null and affaire.paiement != "paye" or affaire.paiement is null %}
                                     <th class="text-center">Action</th>
+                                    {% endif %}
                                     {# <th class="text-center"><input type="checkbox" name="" id="" class="large-checkbox" style="margin-top: 5px !important;"></th> #}
                                 </tr>
                              
@@ -145,16 +147,18 @@
                                     {# <td class="align-middle text-center">{{product.id}}</td> #}
                                     <td class="align-middle text-center">{{product.reference}}</td>
                                     <td class="align-middle" style="width: 200px;">{{product.nom}}</td>
-                                    <td class="align-middle text-center">{{product.qtt}}</td>
+                                    <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.qtt}}&nbsp;{{product.uniteVenteGros}}{% else %}{{product.uniteVenteDetail}}{% endif %} / {{product.produitCategorie.stockRestant}}</td>
                                     <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(0, '.', ' ')}}{% else %}{{product.prixVenteDetail|number_format(0, '.', ' ')}}{% endif %} Ar</td>
                                     {# <td class="align-middle text-danger text-center">--</td>
                                     <td class="align-middle text-center">0,00€</td>
                                     <td class="align-middle text-center">20%</td> #}
                                     <td>
+                                        {% if affaire.paiement is not null and affaire.paiement != "paye" or affaire.paiement is null %}
                                         <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
                                         {# <a href="#" class="action-plus d-block text-center mb-2"><i class="bi bi-plus"></i></a>
                                         <a href="#" class="action-list d-block text-center mb-2"><i class="bi bi-list-ul"></i></a> #}
                                         <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
+                                        {% endif %}
                                     </td>
                                     {# {% set montantHt = montantHt + (product.qtt * product.puht) - product.remise %} #}
                                     {% if product.typeVente == "gros" %}
