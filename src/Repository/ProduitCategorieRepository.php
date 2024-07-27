@@ -20,7 +20,7 @@ class ProduitCategorieRepository extends ServiceEntityRepository
         $this->connection = $connection;
     }
 
-    public function getProduits()
+    public function getProduits($affairesProduct = [])
     {
         $entityManager = $this->getEntityManager();
 
@@ -28,9 +28,14 @@ class ProduitCategorieRepository extends ServiceEntityRepository
         FROM `ProduitCategorie` p 
         LEFT JOIN `Categorie` c ON p.categorie_id = c.id 
         WHERE p.application_id = ".$this->application->getId()." 
-        ORDER BY p.nom";
+        ";
 
-        //dd($sql);
+        if (count($affairesProduct)> 0) {
+            $sql .= " and p.id NOT IN (".implode(",",$affairesProduct ).")";
+        }
+
+        $sql .= " ORDER BY p.nom";
+        
         $query = $this->connection->prepare($sql);
         
         $query = $this->connection->executeQuery($sql);

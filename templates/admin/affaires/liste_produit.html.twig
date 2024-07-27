@@ -68,7 +68,8 @@
                                     {% endif %}
                                 </td>
                                 <td> {{liste.nom}} </td>
-                                <td> {{liste.stockRestant}} </td>
+                                <td> <input type="hidden" name="qttRestant"
+                                           value="{{ liste.stockRestant }}"> {{liste.stockRestant}} </td>
                                 <td> 
                                 <select name="typeVente" id="typeVente" class="form-control">
                                     <option value="">Type vente</option>
@@ -153,7 +154,9 @@ $(document).ready(function() {
     });
 
     $('#modalListProduitCategorie').on('shown.bs.modal', function () {
-        table.columns.adjust().responsive.recalc();
+        if (table.columns.adjust().responsive != undefined) {
+            table.columns.adjust().responsive.recalc();
+        }
     });
 
     $.fn.dataTable.ext.search.push(

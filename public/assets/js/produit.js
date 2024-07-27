@@ -7,15 +7,35 @@ function addPanier(elt, idAffaire) {
 
     var qtt = $(elt).parent('td').parent('tr').find("input[name='qttProduit']").val();
     
-    var typeVente =  $(elt).parent('td').parent('tr').find("select[name='typeVente']").val();;
-    //var prixHt = $(elt).parent('td').parent('tr').find("input[name='prixHt']").val();
+    var typeVente =  $(elt).parent('td').parent('tr').find("select[name='typeVente']").val();
+    var qttRestant = $(elt).parent('td').parent('tr').find("input[name='qttRestant']").val();
 
+    //var prixHt = $(elt).parent('td').parent('tr').find("input[name='prixHt']").val();
+    
     //var prixTTC = $(elt).parent('td').parent('tr').find("input[name='prixTTC']").val();
     if (qtt === "") {
         alert("Le champ qtt ne doit pas être vide !!");
         return false;
     }
-    console.log(typeVente);
+
+    if (qttRestant != undefined && qttRestant != "") {
+        if (parseFloat(qtt) > parseFloat(qttRestant)) {
+            $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');
+            setTimeout(function () {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 3000
+                };
+
+                toastr.error("Votre qtt ne doit pas superieur au stock !!");
+
+            }, 800);
+            return false;
+        }
+
+    }
     $.ajax({
         type: 'post',
         url: '/admin/product/add-to-affaire',
@@ -95,10 +115,31 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null) {
     $("#qtt").css('border', '1px solid #e5e6e7');
 
     var qtt = $("#qtt").val();
+    var qttRestant = $("#qttRestant").val();
     if (qtt === "" || qtt < 0) {
         $("#qtt").css('border', '1px solid red');
         return false;
     }
+    
+    if (qttRestant != undefined && qttRestant != "") {
+        if (parseFloat(qtt) > parseFloat(qttRestant)) {
+            $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');
+            setTimeout(function () {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 3000
+                };
+
+                toastr.error("Votre qtt ne doit pas superieur au stock !!");
+
+            }, 800);
+            return false;
+        }
+
+    }
+    
     $(".loadBody").css('display', 'block');
     $.ajax({
         type: 'post',

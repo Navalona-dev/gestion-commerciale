@@ -130,9 +130,9 @@ class ProduitCategorieService
         $this->update();
     }
 
-    public function getAllProduitCategories()
+    public function getAllProduitCategories($affairesProduct = [])
     {
-        $produitCategories = $this->entityManager->getRepository(ProduitCategorie::class)->getProduits();
+        $produitCategories = $this->entityManager->getRepository(ProduitCategorie::class)->getProduits($affairesProduct);
         if ($produitCategories != false  && count($produitCategories) > 0) {
             return $produitCategories;
         }

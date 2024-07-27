@@ -3,7 +3,7 @@
         {# <td class="index">{{ produit.id }}</td> #}
         <td class="align-middle text-center">{{product.reference}}</td>
          <td class="align-middle text-center">{{product.nom}}</td>
-         <td class="align-middle text-center"><input type="hidden" name="idProduit" value="{{ product.id  }}"><input type="text" id="qtt" name="qtt" class="form-control" value="{{ product.qtt  }}"></td>
+         <td class="align-middle text-center"><input type="hidden" id="qttRestant" name="qttRestant" value="{{ qttRestant  }}"><input type="hidden" name="idProduit" value="{{ product.id  }}"><input type="text" id="qtt" name="qtt" class="form-control" value="{{ product.qtt  }}"></td>
           <td class="align-middle text-center">{{product.prixVenteGros}}</td>
         {# <td>
             <input type="text" name="reference" class="form-control" value="{{ produit.reference  }}">

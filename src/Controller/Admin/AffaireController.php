@@ -604,8 +604,16 @@ class AffaireController extends AbstractController
         try {
 
             $categories = $categorieService->getAllCategories();
-
-            $produitCategories = $produitCategorieService->getAllProduitCategories();
+            $products = $affaire->getProducts();
+            $tabIdProduitCategorieInAffaires = [];
+            if (count($products) > 0) {
+                foreach ($products as $key => $product) {
+                    if (!in_array($product->getProduitCategorie()->getId(), $tabIdProduitCategorieInAffaires)) {
+                        array_push($tabIdProduitCategorieInAffaires,$product->getProduitCategorie()->getId());
+                    }
+                }
+            }
+            $produitCategories = $produitCategorieService->getAllProduitCategories($tabIdProduitCategorieInAffaires);
            
             $data["html"] = $this->renderView('admin/affaires/liste_produit.html.twig', [
                 'listes' => $produitCategories,

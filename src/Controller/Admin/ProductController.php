@@ -141,7 +141,8 @@ class ProductController extends AbstractController
 
         return $this->render('admin/affaires/' . $template, [
             'affaire' => $affaire,
-            'product' => $product
+            'product' => $product,
+            'qttRestant' => ($product->getProduitCategorie()->getStockRestant() != null ? $product->getProduitCategorie()->getStockRestant() : 0)
         ]);
     }
 
