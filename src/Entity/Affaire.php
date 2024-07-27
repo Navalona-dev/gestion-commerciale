@@ -168,13 +168,23 @@ class Affaire
         $this->factures = new ArrayCollection();
     }
 
-    public static function newAffaire($instance = null, $compte = null)
+    public static function newAffaire($statut = null, $compte = null)
     {
-        if (is_null($instance->getNom()) or empty($instance->getNom())  or is_null($compte->getNom()) or empty($compte->getNom())) {
+        if (is_null($compte->getNom()) or empty($compte->getNom())) {
             throw new PropertyVideException("Your name doesn't empty");
         }
-
-        return $instance;
+        $date = new \DateTime();
+        $affaire = new self();
+        $affaire->setStatut($statut);
+        $affaire->setCompte($compte);
+        $affaire->setDevisEvol('encours');
+        $affaire->setDateCreation($date);
+        if ($statut == "devis") {
+            $affaire->setDateDevis($date);
+        } else {
+            $affaire->setDateCommande($date);
+        }
+        return $affaire;
     }
 
     public function getId(): ?int

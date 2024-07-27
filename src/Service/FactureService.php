@@ -45,7 +45,7 @@ class FactureService
         $facture = Facture::newFacture($affaire);
         $pdf = $this->tcpdf;
         $date = new \DateTime();
-
+        
         $numeroFacture = 1;
         $tabNumeroFacture = $this->getLastValideFacture();
         if (count($tabNumeroFacture) > 0) {
@@ -53,7 +53,7 @@ class FactureService
         }
         $facture->setNumero($numeroFacture);    
         $facture->setApplication($this->application);
-        
+       
         $facture->setEtat('regle');
         $facture->setValid(true);
         $facture->setStatut('regle');
@@ -61,7 +61,7 @@ class FactureService
         $facture->setDate($date);
         $facture->setType("Facture");
         $products = $affaire->getProducts();
-        
+        $filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
         $montantHt = 0;
 
         // Sortie du PDF sous forme de réponse HTTP
@@ -116,18 +116,24 @@ class FactureService
 
             $this->persist($factureDetail);
         }
-
+        
+        $facture->setFile($filename);
         $facture->setSolde($montantHt);
         $facture->setPrixHt($montantHt);	
         $facture->setReglement($montantHt);
         
         $this->persist($facture);
+        $affaire->setPaiement('paye');
+        $affaire->setDatePaiement($date);
+        $affaire->setDevisEvol('gagne');
+        $affaire->setDateFacture($date);
+        $this->persist($affaire);
         $this->update();
         $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetAuthor('Navalona');
-        $pdf->SetTitle('Test PDF');
-        $pdf->SetSubject('Hello, je teste seulement le PDF en utilisant ce bundle TCPDF');
-        $pdf->SetKeywords('PDF');
+        $pdf->SetAuthor('CVB');
+        $pdf->SetTitle('Facture');
+        //$pdf->SetSubject('Hello, je teste seulement le PDF en utilisant ce bundle TCPDF');
+        //$pdf->SetKeywords('PDF');
 
         // Ajouter une page
         $pdf->AddPage();
@@ -139,7 +145,7 @@ class FactureService
         $data['facture'] = $facture;
         $data['compte'] = $facture->getCompte();
         
-        $fileName = $folder . "Facture(FA-" . $facture->getNumero() . ").pdf";
+        $fileName = $folder . $filename;
 
         $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
         $pdf->writeHTML($html, true, false, true, false, '');

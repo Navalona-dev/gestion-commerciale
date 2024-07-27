@@ -86,7 +86,7 @@
                                   {% set statutDevis = constant('App\\Entity\\Affaire::DEVIS') %}
                                 <select name="status-devis" id="status-devis" class="form-control form-control-sm">
                                     {% for key,statutDev in statutDevis %}
-                                    <option value="{{key}}">{{statutDev}}</option>
+                                    <option value="{{key}}" {% if affaire.devisEvol is not null and affaire.devisEvol == key %} selected {% endif %}>{{statutDev}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -103,7 +103,7 @@
                                 {% set statutPaiement = constant('App\\Entity\\Affaire::PAIEMENT') %}
                                 <select name="status-paiement" id="status-paiement" class="form-control form-control-sm">
                                    {% for key,statutPaie in statutPaiement %}
-                                    <option value="{{key}}">{{statutPaie}}</option>
+                                    <option value="{{key}}" {% if affaire.paiement is not null and affaire.paiement == key %} selected {% endif %}>{{statutPaie}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
