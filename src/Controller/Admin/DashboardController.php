@@ -63,6 +63,7 @@ class DashboardController extends AbstractController
         $countAffaireThisMonth = $this->dashboardService->getCountAffairesThisMonth('paye', 'commande');
         $countAffaireLastMonth = $this->dashboardService->getCountAffairesLastMonth('paye', 'commande');
         $countAffaireThisYear = $this->dashboardService->getCountAffairesThisYear('paye', 'commande');
+        $countAffaireLastYear = $this->dashboardService->getCountAffairesLastYear('paye', 'commande');
 
         if ($request->isXmlHttpRequest()) {
             try {
@@ -76,7 +77,8 @@ class DashboardController extends AbstractController
                     'countAffaireLastWeek' => $countAffaireLastWeek,
                     'countAffaireThisMonth' => $countAffaireThisMonth,
                     'countAffaireLastMonth' => $countAffaireLastMonth,
-                    'countAffaireThisYear' => $countAffaireThisYear
+                    'countAffaireThisYear' => $countAffaireThisYear,
+                    'countAffaireLastYear' => $countAffaireLastYear
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
