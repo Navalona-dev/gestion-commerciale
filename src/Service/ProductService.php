@@ -4,6 +4,7 @@ namespace App\Service;
 use App\Entity\Stock;
 use App\Entity\Compte;
 use App\Entity\Categorie;
+use App\Entity\FactureDetail;
 use App\Entity\Transfert;
 use App\Entity\ProduitType;
 use App\Entity\Notification;
@@ -98,11 +99,26 @@ class ProductService
 
     public function remove($product, $affaire)
     {
+        $factureDetail = $this->getFactureDetailByProduct($product->getId());
+        if ($factureDetail != false) {
+            $this->entityManager->remove($factureDetail);
+        }
         $affaire->removeProduct($product);
+        
         $this->persist($affaire);
 
         $this->entityManager->remove($product);
         $this->update();
+    }
+
+    public function getFactureDetailByProduct($productId)
+    {
+        $factureDetail = $this->entityManager->getRepository(FactureDetail::class)->find($productId);
+        
+        if ($factureDetail != null) {
+            return $factureDetail;
+        }
+        return false;
     }
 
     public function getAllProduitCategories()
