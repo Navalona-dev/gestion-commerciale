@@ -69,7 +69,12 @@ class DashboardController extends AbstractController
         //count produit
         $countProduitToday = $this->dashboardService->getCountProductsToday();
         $countProduitYesterday = $this->dashboardService->getCountProductsYesterday();
-        //dd($countProduitToday);
+        $countProduitThisWeek = $this->dashboardService->getCountProductsThisWeek();
+        $countProduitLastWeek = $this->dashboardService->getCountProductsLastWeek();
+        $countProduitThisMonth = $this->dashboardService->getCountProductsThisMonth();
+        $countProduitLastMonth = $this->dashboardService->getCountProductsLastMonth();
+        $countProduitThisYear = $this->dashboardService->getCountProductsThisYear();
+        $countProduitLastYear = $this->dashboardService->getCountProductsLastYear();
 
         $data = [];
 
@@ -94,7 +99,13 @@ class DashboardController extends AbstractController
 
                     //count produit
                     'countProduitToday' => $countProduitToday,
-                    'countProduitYesterday' => $countProduitYesterday
+                    'countProduitYesterday' => $countProduitYesterday,
+                    'countProduitThisWeek' => $countProduitThisWeek,
+                    'countProduitLastWeek' => $countProduitLastWeek,
+                    'countProduitThisMonth' => $countProduitThisMonth,
+                    'countProduitLastMonth' => $countProduitLastMonth,
+                    'countProduitThisYear' => $countProduitThisYear,
+                    'countProduitLastYear' => $countProduitLastYear
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
@@ -125,7 +136,13 @@ class DashboardController extends AbstractController
 
             //count produit
             'countProduitToday' => $countProduitToday,
-            'countProduitYesterday' => $countProduitYesterday
+            'countProduitYesterday' => $countProduitYesterday,
+            'countProduitThisWeek' => $countProduitThisWeek,
+            'countProduitLastWeek' => $countProduitLastWeek,
+            'countProduitThisMonth' => $countProduitThisMonth,
+            'countProduitLastMonth' => $countProduitLastMonth,
+            'countProduitThisYear' => $countProduitThisYear,
+            'countProduitLastYear' => $countProduitLastYear
         ]);
 
         return $this->render('admin/index.html.twig', $_data);

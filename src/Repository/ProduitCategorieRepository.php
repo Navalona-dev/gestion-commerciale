@@ -94,7 +94,7 @@ class ProduitCategorieRepository extends ServiceEntityRepository
                return $qb;
     }
 
-     // Nombre de commandes d'hier
+     // Nombre de produit d'hier
      public function countProductsYesterday()
      {
          $yesterday = new \DateTime();
@@ -115,5 +115,140 @@ class ProduitCategorieRepository extends ServiceEntityRepository
                      ->getSingleScalarResult();
         return $qb;
      }
+
+
+     // Nombre de produit cette semaine
+     public function countProductThisWeek()
+     {
+         $startOfWeek = new \DateTime();
+         $startOfWeek->setISODate((int)$startOfWeek->format('o'), (int)$startOfWeek->format('W'));
+         $startOfWeek->setTime(0, 0, 0);
+ 
+         $endOfWeek = clone $startOfWeek;
+         $endOfWeek->modify('+7 days');
+ 
+         $qb = $this->createQueryBuilder('p')
+                     ->select('COUNT(p.id)')
+                     ->where('p.dateCreation >= :start_of_week')
+                     ->andWhere('p.dateCreation < :end_of_week')
+                     ->andWhere('p.application = :application_id')
+                     ->setParameter('start_of_week', $startOfWeek)
+                     ->setParameter('end_of_week', $endOfWeek)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+      // Nombre de produit semaine dernière
+      public function countProductsLastWeek()
+      {
+          $startOfLastWeek = new \DateTime();
+          $startOfLastWeek->setISODate((int)$startOfLastWeek->format('o'), (int)$startOfLastWeek->format('W') - 1);
+          $startOfLastWeek->setTime(0, 0, 0);
+  
+          $endOfLastWeek = clone $startOfLastWeek;
+          $endOfLastWeek->modify('+7 days');
+  
+          $qb = $this->createQueryBuilder('p')
+                      ->select('COUNT(p.id)')
+                      ->where('p.dateCreation >= :start_of_last_week')
+                      ->andWhere('p.dateCreation < :end_of_last_week')
+                      ->andWhere('p.application = :application_id')
+                      ->setParameter('start_of_last_week', $startOfLastWeek)
+                      ->setParameter('end_of_last_week', $endOfLastWeek)
+                      ->setParameter('application_id', $this->application->getId())
+                      ->getQuery()
+                      ->getSingleScalarResult();
+         return $qb;
+      }
+
+       // Nombre de produit ce mois-ci
+     public function countProductsThisMonth()
+     {
+         $startOfMonth = new \DateTime('first day of this month');
+         $startOfMonth->setTime(0, 0, 0);
+ 
+         $endOfMonth = new \DateTime('first day of next month');
+         $endOfMonth->setTime(0, 0, 0);
+ 
+         $qb = $this->createQueryBuilder('p')
+                     ->select('COUNT(p.id)')
+                     ->where('p.dateCreation >= :start_of_month')
+                     ->andWhere('p.dateCreation < :end_of_month')
+                     ->andWhere('p.application = :application_id')
+                     ->setParameter('start_of_month', $startOfMonth)
+                     ->setParameter('end_of_month', $endOfMonth)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+      // Nombre de produit mois dernier
+      public function countProductsLastMonth()
+      {
+          $startOfLastMonth = new \DateTime('first day of last month');
+          $startOfLastMonth->setTime(0, 0, 0);
+  
+          $endOfLastMonth = new \DateTime('first day of this month');
+          $endOfLastMonth->setTime(0, 0, 0);
+  
+          $qb = $this->createQueryBuilder('p')
+                      ->select('COUNT(p.id)')
+                      ->where('p.dateCreation >= :start_of_last_month')
+                      ->andWhere('p.dateCreation < :end_of_last_month')
+                      ->andWhere('p.application = :application_id')
+                      ->setParameter('start_of_last_month', $startOfLastMonth)
+                      ->setParameter('end_of_last_month', $endOfLastMonth)
+                      ->setParameter('application_id', $this->application->getId())
+                      ->getQuery()
+                      ->getSingleScalarResult();
+         return $qb;
+      }
+
+      // Nombre de produit cette année
+     public function countProductsThisYear($paiement = null, $statut = null)
+     {
+         $startOfYear = new \DateTime('first day of January this year');
+         $startOfYear->setTime(0, 0, 0);
+ 
+         $endOfYear = new \DateTime('first day of January next year');
+         $endOfYear->setTime(0, 0, 0);
+ 
+         $qb = $this->createQueryBuilder('p')
+                     ->select('COUNT(p.id)')
+                     ->where('p.dateCreation >= :start_of_year')
+                     ->andWhere('p.dateCreation < :end_of_year')
+                     ->andWhere('p.application = :application_id')
+                     ->setParameter('start_of_year', $startOfYear)
+                     ->setParameter('end_of_year', $endOfYear)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+      // Nombre de produit année dernière
+      public function countProductsLastYear($paiement = null, $statut = null)
+      {
+          $startOfLastYear = new \DateTime('first day of January last year');
+          $startOfLastYear->setTime(0, 0, 0);
+  
+          $endOfLastYear = new \DateTime('first day of January this year');
+          $endOfLastYear->setTime(0, 0, 0);
+  
+          $qb = $this->createQueryBuilder('p')
+                      ->select('COUNT(p.id)')
+                      ->where('p.dateCreation >= :start_of_last_year')
+                      ->andWhere('p.dateCreation < :end_of_last_year')
+                      ->andWhere('p.application = :application_id')
+                      ->setParameter('start_of_last_year', $startOfLastYear)
+                      ->setParameter('end_of_last_year', $endOfLastYear)
+                      ->setParameter('application_id', $this->application->getId())
+                      ->getQuery()
+                      ->getSingleScalarResult();
+         return $qb;
+      }
 
 }

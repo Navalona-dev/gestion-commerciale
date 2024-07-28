@@ -75,4 +75,40 @@ class DashboardService
         return $countAffaire;
     }
 
+    public function getCountProductsThisWeek()
+    {
+        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductThisWeek();
+        return $countAffaire;
+    }
+
+    public function getCountProductsLastWeek()
+    {
+        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsLastWeek();
+        return $countAffaire;
+    }
+
+    public function getCountProductsThisMonth()
+    {
+        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsThisMonth();
+        return $countAffaire;
+    }
+
+    public function getCountProductsLastMonth()
+    {
+        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsLastMonth();
+        return $countAffaire;
+    }
+
+    public function getCountProductsThisYear()
+    {
+        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsThisYear();
+        return $countAffaire;
+    }
+
+    public function getCountProductsLastYear()
+    {
+        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsLastYear();
+        return $countAffaire;
+    }
+
 }

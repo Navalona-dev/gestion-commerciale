@@ -104,12 +104,12 @@
       <div id="produit-data" style="display: none;">
         <span id="count-produit-today"> {{countProduitToday | default(0)}} </span>
         <span id="count-produit-yesterday"> {{countProduitYesterday | default(0)}} </span>
-        <span id="count-produit-this-week"></span>
-        <span id="count-produit-last-week"></span>
-        <span id="count-produit-this-month"></span>
-        <span id="count-produit-last-month"></span>
-        <span id="count-produit-this-year"></span>
-        <span id="count-produit-last-year"></span>
+        <span id="count-produit-this-week"> {{countProduitThisWeek | default(0)}} </span>
+        <span id="count-produit-last-week"> {{countProduitLastWeek | default(0)}} </span>
+        <span id="count-produit-this-month"> {{countProduitThisMonth | default(0)}} </span>
+        <span id="count-produit-last-month"> {{countProduitLastMonth | default(0)}} </span>
+        <span id="count-produit-this-year"> {{countProduitThisYear | default(0)}} </span>
+        <span id="count-produit-last-year"> {{countProduitLastYear | default(0)}} </span>
       </div>
 
       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
@@ -303,6 +303,8 @@
       </div>
     </div>
   </section>
+
+  <script src="{{ asset('assets/js/jquery-3.6.0.js') }}"></script>
 
   <script src="{{asset('assets/js/filter.js')}}"></script>
 
