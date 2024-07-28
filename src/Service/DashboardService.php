@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use App\Entity\Stock;
 use App\Entity\Affaire;
 use App\Entity\ProduitCategorie;
 use Doctrine\ORM\EntityManagerInterface;
@@ -65,50 +66,62 @@ class DashboardService
 
     public function getCountProductsToday()
     {
-        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsToday();
-        return $countAffaire;
+        $countProduit = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsToday();
+        return $countProduit;
     }
 
     public function getCountProductsYesterday()
     {
-        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsYesterday();
-        return $countAffaire;
+        $countProduit = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsYesterday();
+        return $countProduit;
     }
 
     public function getCountProductsThisWeek()
     {
-        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductThisWeek();
-        return $countAffaire;
+        $countProduit = $this->entityManager->getRepository(ProduitCategorie::class)->countProductThisWeek();
+        return $countProduit;
     }
 
     public function getCountProductsLastWeek()
     {
-        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsLastWeek();
-        return $countAffaire;
+        $countProduit = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsLastWeek();
+        return $countProduit;
     }
 
     public function getCountProductsThisMonth()
     {
-        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsThisMonth();
-        return $countAffaire;
+        $countProduit = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsThisMonth();
+        return $countProduit;
     }
 
     public function getCountProductsLastMonth()
     {
-        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsLastMonth();
-        return $countAffaire;
+        $countProduit = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsLastMonth();
+        return $countProduit;
     }
 
     public function getCountProductsThisYear()
     {
-        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsThisYear();
-        return $countAffaire;
+        $countProduit = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsThisYear();
+        return $countProduit;
     }
 
     public function getCountProductsLastYear()
     {
-        $countAffaire = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsLastYear();
-        return $countAffaire;
+        $countProduit = $this->entityManager->getRepository(ProduitCategorie::class)->countProductsLastYear();
+        return $countProduit;
+    }
+
+    public function getCountStockToday()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStocksToday();
+        return $countStock;
+    }
+
+    public function getCountStockYesterday()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStocksYesterday();
+        return $countStock;
     }
 
 }

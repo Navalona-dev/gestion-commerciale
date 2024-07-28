@@ -251,4 +251,49 @@ class ProduitCategorieRepository extends ServiceEntityRepository
          return $qb;
       }
 
+      // Nombre de stock d'aujourd'hui
+    public function countStocksToday()
+    {
+        $today = new \DateTime();
+        $today->setTime(0, 0, 0);
+        $tomorrow = clone $today;
+        $tomorrow->modify('+1 day');
+
+        $qb = $this->createQueryBuilder('p')
+                    ->select('SUM(s.qtt)')
+                    ->join('p.stocks', 's')
+                    ->where('s.dateCreation >= :today')
+                    ->andWhere('s.dateCreation < :tomorrow')
+                    ->andWhere('p.application = :application_id')
+                    ->setParameter('today', $today)
+                    ->setParameter('tomorrow', $tomorrow)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+
+               return $qb;
+    }
+
+     // Nombre de stock d'hier
+     public function countStocksYesterday()
+     {
+         $yesterday = new \DateTime();
+         $yesterday->setTime(0, 0, 0);
+         $yesterday->modify('-1 day');
+         $today = clone $yesterday;
+         $today->modify('+1 day');
+ 
+         $qb = $this->createQueryBuilder('p')
+                     ->select('SUM(s.qtt)')
+                     ->join('p.stocks', 's')
+                     ->where('s.dateCreation >= :yesterday')
+                     ->andWhere('s.dateCreation < :today')
+                     ->andWhere('p.application = :application_id')
+                     ->setParameter('yesterday', $yesterday)
+                     ->setParameter('today', $today)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
 }

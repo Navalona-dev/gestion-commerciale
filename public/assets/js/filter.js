@@ -33,3 +33,21 @@ $(document).ready(function() {
     // Initial load for today
     updateProduits('today', "Aujourd'hui");
   });
+
+  //filter stock
+  $(document).ready(function() {
+    function updateStocks(period, text) {
+        var count = $('#count-stock-' + period).text();
+        $('#period-text-stock').text('| ' + text);
+        $('#stock-count').text(count);
+    }
+  
+    $('.stock-filter').on('click', function() {
+        var period = $(this).data('period');
+        var text = $(this).text();
+        updateStocks(period, text);
+    });
+  
+    // Initial load for today
+    updateStocks('today', "Aujourd'hui");
+  });

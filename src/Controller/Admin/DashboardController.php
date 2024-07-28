@@ -76,6 +76,11 @@ class DashboardController extends AbstractController
         $countProduitThisYear = $this->dashboardService->getCountProductsThisYear();
         $countProduitLastYear = $this->dashboardService->getCountProductsLastYear();
 
+        //count stock
+        $countStockToday = $this->dashboardService->getCountStockToday();
+        $countStockYesterday = $this->dashboardService->getCountStockYesterday();
+
+
         $data = [];
 
         if ($request->isXmlHttpRequest()) {
@@ -105,7 +110,11 @@ class DashboardController extends AbstractController
                     'countProduitThisMonth' => $countProduitThisMonth,
                     'countProduitLastMonth' => $countProduitLastMonth,
                     'countProduitThisYear' => $countProduitThisYear,
-                    'countProduitLastYear' => $countProduitLastYear
+                    'countProduitLastYear' => $countProduitLastYear,
+                    'countStockToday' => $countStockToday,
+
+                    //count stock
+                    'countStockYesterday' => $countStockYesterday
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
@@ -142,7 +151,11 @@ class DashboardController extends AbstractController
             'countProduitThisMonth' => $countProduitThisMonth,
             'countProduitLastMonth' => $countProduitLastMonth,
             'countProduitThisYear' => $countProduitThisYear,
-            'countProduitLastYear' => $countProduitLastYear
+            'countProduitLastYear' => $countProduitLastYear,
+
+            //count stock
+            'countStockToday' => $countStockToday,
+            'countStockYesterday' => $countStockYesterday
         ]);
 
         return $this->render('admin/index.html.twig', $_data);

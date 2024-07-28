@@ -172,14 +172,14 @@
                     <li class="dropdown-header text-start">
                         <h6>Filtrer</h6>
                     </li>
-                    <li><a class="dropdown-item stock-filter" data-period="today-stock">Aujourd'hui</a></li>
-                    <li><a class="dropdown-item stock-filter" data-period="yesterday-stock">Hier</a></li>
-                    <li><a class="dropdown-item stock-filter" data-period="this-week-stock">Cette semaine</a></li>
-                    <li><a class="dropdown-item stock-filter" data-period="last-week-stock">Semaine dernière</a></li>
-                    <li><a class="dropdown-item stock-filter" data-period="this-month-stock">Ce mois-ci</a></li>
-                    <li><a class="dropdown-item stock-filter" data-period="last-month-stock">Mois dernier</a></li>
-                    <li><a class="dropdown-item stock-filter" data-period="this-year-stock">Cette année</a></li>
-                    <li><a class="dropdown-item stock-filter" data-period="last-year-stock">Année dernière</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="today">Aujourd'hui</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="yesterday">Hier</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="this-week">Cette semaine</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="last-week">Semaine dernière</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="this-month">Ce mois-ci</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="last-month">Mois dernier</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="this-year">Cette année</a></li>
+                    <li><a class="dropdown-item stock-filter" data-period="last-year">Année dernière</a></li>
                 </ul>
             </div>
     
@@ -200,8 +200,8 @@
       </div>
     
       <div id="stock-data" style="display: none;">
-        <span id="count-stock-today"></span>
-        <span id="count-stock-yesterday"></span>
+        <span id="count-stock-today"> {{countStockToday | default(0)}} </span>
+        <span id="count-stock-yesterday"> {{countStockYesterday | default(0)}} </span>
         <span id="count-stock-this-week"></span>
         <span id="count-stock-last-week"></span>
         <span id="count-stock-this-month"></span>
