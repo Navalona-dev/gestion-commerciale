@@ -354,4 +354,141 @@ class DashboardService
         return $countTransfert;
     }
 
+    //chart
+
+    public function getOrdersCountByDayThisWeek($paiement = null, $statut = null): array
+    {
+        $startOfWeek = new \DateTime();
+        $startOfWeek->setISODate((int)$startOfWeek->format('o'), (int)$startOfWeek->format('W'));
+        $startOfWeek->setTime(0, 0, 0);
+
+        $counts = [];
+        for ($i = 1; $i <= 5; $i++) { // Lundi à Vendredi (1 = Lundi, 2 = Mardi, ..., 5 = Vendredi)
+            $dayOfWeek = (clone $startOfWeek)->modify("+$i days -1 day");
+            $counts[] = $this->entityManager->getRepository(Affaire::class)->countOrdersThisWeekByDay($dayOfWeek, $paiement, $statut );
+        }
+
+        return $counts;
+    }
+
+    public function getOrdersCountByDayLastWeek($paiement = null, $statut = null): array
+    {
+        $counts = [];
+        for ($i = 1; $i <= 5; $i++) { // Lundi à Vendredi (1 = Lundi, 2 = Mardi, ..., 5 = Vendredi)
+            $counts[] = $this->entityManager->getRepository(Affaire::class)->countOrdersLastWeekByDay($i, $paiement, $statut );
+            
+        }
+
+        return $counts;
+    }
+
+    // Commandes par mois cette année
+    public function getOrdersCountThisYearByMonth($paiement = null, $statut = null): array
+    {
+        $currentYear = date('Y');
+        $counts = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $counts[] = $this->entityManager->getRepository(Affaire::class)->countOrdersThisYearByMonth($currentYear, $month, $paiement, $statut );
+        }
+        return $counts;
+    }
+
+    // Commandes par mois l'année dernière
+    public function getOrdersCountLastYearByMonth($paiement = null, $statut = null): array
+    {
+        $lastYear = date('Y') - 1;
+        $counts = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $counts[] = $this->entityManager->getRepository(Affaire::class)->countOrdersLastYearByMonth($lastYear, $month, $paiement, $statut );
+        }
+        return $counts;
+    }
+
+    public function getClientsCountByDayThisWeek($genre = null): array
+    {
+        $counts = [];
+        $currentDate = new \DateTime();
+        for ($i = 1; $i <= 5; $i++) { // Lundi à Vendredi (1 = Lundi, 2 = Mardi, ..., 5 = Vendredi)
+            $specificDay = clone $currentDate;
+            $specificDay->setISODate((int)$currentDate->format('o'), (int)$currentDate->format('W'));
+            $specificDay->modify('+' . ($i - 1) . ' days');
+            $counts[] = $this->entityManager->getRepository(Compte::class)->countClientsThisWeekByDay($specificDay, $genre);
+        }
+        return $counts;
+    }
+
+    public function getClientsCountByDayLastWeek($genre): array
+    {
+        $counts = [];
+        for ($i = 1; $i <= 5; $i++) { // Lundi à Vendredi (1 = Lundi, 2 = Mardi, ..., 5 = Vendredi)
+            $counts[] = $this->entityManager->getRepository(Compte::class)->countClientsLastWeekByDay($i, $genre);
+        }
+        return $counts;
+    }
+
+    // Nombre de clients inscrits par mois cette année
+    public function getClientsRegisteredThisYearByMonth($genre): array
+    {
+        $currentYear = date('Y');
+        $counts = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $counts[] = $this->entityManager->getRepository(Compte::class)->countClientsRegisteredThisYearByMonth($currentYear, $month, $genre);
+        }
+        return $counts;
+    }
+
+    // Nombre de clients inscrits par mois l'année dernière
+    public function getClientsRegisteredLastYearByMonth($genre): array
+    {
+        $lastYear = date('Y') - 1;
+        $counts = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $counts[] = $this->entityManager->getRepository(Compte::class)->countClientsRegisteredLastYearByMonth($lastYear, $month, $genre);
+        }
+        return $counts;
+    }
+
+    public function getProductsSoldThisWeekByDay($paiement = null, $statut = null): array
+    {
+        $counts = [];
+        for ($i = 1; $i <= 5; $i++) { // Lundi à Vendredi (1 = Lundi, 2 = Mardi, ..., 5 = Vendredi)
+            $counts[] = $this->entityManager->getRepository(Affaire::class)->countProductsSoldThisWeekByDay($i, $paiement, $statut);
+        }
+
+        return $counts;
+    }
+
+
+    public function getProductsSoldLastWeekByDay($paiement = null, $statut = null): array
+    {
+        $counts = [];
+        for ($i = 1; $i <= 5; $i++) { // Lundi à Vendredi (1 = Lundi, 2 = Mardi, ..., 5 = Vendredi)
+            $counts[] = $this->entityManager->getRepository(Affaire::class)->countProductsSoldLastWeekByDay($i, $paiement, $statut);
+        }
+
+        return $counts;
+    }
+
+    // Produits vendus par mois cette année
+    public function getProductsSoldThisYearByMonth($paiement = null, $statut = null): array
+    {
+        $currentYear = date('Y');
+        $counts = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $counts[] = $this->entityManager->getRepository(Affaire::class)->countProductsSoldThisYearByMonth($currentYear, $month, $paiement, $statut);
+        }
+        return $counts;
+    }
+
+    // Produits vendus par mois l'année dernière
+    public function getProductsSoldLastYearByMonth($paiement = null, $statut = null): array
+    {
+        $lastYear = date('Y') - 1;
+        $counts = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $counts[] = $this->entityManager->getRepository(Affaire::class)->countProductsSoldLastYearByMonth($lastYear, $month, $paiement, $statut);
+        }
+        return $counts;
+    }
+
 }

@@ -1288,4 +1288,98 @@ class CompteRepository extends ServiceEntityRepository
                       ->getSingleScalarResult();
          return $qb;
       }
+
+      //chart
+
+      public function countClientsThisWeekByDay(\DateTime $day, $genre)
+    {
+        $startOfDay = clone $day;
+        $startOfDay->setTime(0, 0, 0);
+
+        $endOfDay = clone $startOfDay;
+        $endOfDay->modify('+1 day');
+
+        return $this->createQueryBuilder('c')
+                    ->select('COUNT(c.id)')
+                    ->where('c.dateCreation >= :start_of_day')
+                    ->andWhere('c.dateCreation < :end_of_day')
+                    ->andWhere('c.genre = :genre')
+                    ->andWhere('c.application = :application_id')
+                    ->setParameter('start_of_day', $startOfDay)
+                    ->setParameter('end_of_day', $endOfDay)
+                    ->setParameter('genre', $genre)
+                      ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+    }
+
+    public function countClientsLastWeekByDay($dayOfWeek, $genre)
+    {
+        $currentDate = new \DateTime();
+        $startOfLastWeek = new \DateTime();
+        $startOfLastWeek->setISODate((int)$currentDate->format('o'), (int)$currentDate->format('W') - 1);
+        $startOfLastWeek->setTime(0, 0, 0);
+
+        $specificDayOfLastWeek = clone $startOfLastWeek;
+        $specificDayOfLastWeek->modify('+' . ($dayOfWeek - 1) . ' days');
+
+        $startOfDay = clone $specificDayOfLastWeek;
+        $startOfDay->setTime(0, 0, 0);
+
+        $endOfDay = clone $startOfDay;
+        $endOfDay->modify('+1 day');
+
+        return $this->createQueryBuilder('c')
+                    ->select('COUNT(c.id)')
+                    ->where('c.dateCreation >= :start_of_day')
+                    ->andWhere('c.dateCreation < :end_of_day')
+                    ->andWhere('c.genre = :genre')
+                    ->andWhere('c.application = :application_id')
+                    ->setParameter('start_of_day', $startOfDay)
+                    ->setParameter('end_of_day', $endOfDay)
+                    ->setParameter('genre', $genre)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+    }
+
+    // Nombre de clients inscrits par mois cette année
+    public function countClientsRegisteredThisYearByMonth($year, $month, $genre)
+    {
+        $startDate = new \DateTime("$year-$month-01 00:00:00");
+        $endDate = clone $startDate;
+        $endDate->modify('last day of this month')->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.dateCreation BETWEEN :start_date AND :end_date')
+            ->andWhere('c.genre = :genre')
+            ->andWhere('c.application = :application_id')
+            ->setParameter('start_date', $startDate)
+            ->setParameter('end_date', $endDate)
+            ->setParameter('genre', $genre)
+            ->setParameter('application_id', $this->application->getId())
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    // Nombre de clients inscrits par mois l'année dernière
+    public function countClientsRegisteredLastYearByMonth($year, $month, $genre)
+    {
+        $startDate = new \DateTime("$year-$month-01 00:00:00");
+        $endDate = clone $startDate;
+        $endDate->modify('last day of this month')->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.dateCreation BETWEEN :start_date AND :end_date')
+            ->andWhere('c.genre = :genre')
+            ->andWhere('c.application = :application_id')
+            ->setParameter('start_date', $startDate)
+            ->setParameter('end_date', $endDate)
+            ->setParameter('genre', $genre)
+            ->setParameter('application_id', $this->application->getId())
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

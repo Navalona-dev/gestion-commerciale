@@ -136,6 +136,22 @@ class DashboardController extends AbstractController
         $countTransfertThisYear = $this->dashboardService->getCountTransfertThisYear();
         $countTransfertLastYear = $this->dashboardService->getCountTransfertLastYear();
 
+        //chart
+        $countOrderByDayThisWeek = $this->dashboardService->getOrdersCountByDayThisWeek('paye', 'commande');
+        $countOrderByDayLastWeek = $this->dashboardService->getOrdersCountByDayLastWeek('paye', 'commande');
+        $countOrderByMonthThisYear = $this->dashboardService->getOrdersCountThisYearByMonth('paye', 'commande');
+        $countOrderByMonthLastYear = $this->dashboardService->getOrdersCountLastYearByMonth('paye', 'commande');
+
+        $countClientByDayThisWeek = $this->dashboardService->getClientsCountByDayThisWeek(1);
+        $countClientByDayLastWeek = $this->dashboardService->getClientsCountByDayLastWeek(1);
+        $countClientByDayThisYear = $this->dashboardService->getClientsRegisteredThisYearByMonth(1);
+        $countClientByDayLastYear = $this->dashboardService->getClientsRegisteredLastYearByMonth(1);
+
+        $countProductsSoldThisWeekByDay = $this->dashboardService->getProductsSoldThisWeekByDay('paye', 'commande');
+        $countProductsSoldLastWeekByDay = $this->dashboardService->getProductsSoldLastWeekByDay('paye', 'commande');
+        $countProductsSoldThisYearByDay = $this->dashboardService->getProductsSoldThisYearByMonth('paye', 'commande');
+        $countProductsSoldLastYearByDay = $this->dashboardService->getProductsSoldLastYearByMonth('paye', 'commande');
+
 
         //dd($countStockRestantToday, $countStockRestantYesterday, $countStockRestantThisWeek, $countStockRestantLastWeek, $countStockRestantThisMonth, $countStockRestantLastMonth, $countStockRestantThisYear, $countStockRestantLastYear);
 
@@ -229,6 +245,22 @@ class DashboardController extends AbstractController
                     'countTransfertLastMonth' => $countTransfertLastMonth,
                     'countTransfertThisYear' => $countTransfertThisYear,
                     'countTransfertLastYear' => $countTransfertLastYear,
+
+                    //chart
+                    'countOrderByDayThisWeek' => array_values($countOrderByDayThisWeek),
+                    'countOrderByDayLastWeek' => array_values($countOrderByDayLastWeek),
+                    'countOrderByMonthThisYear' => array_values($countOrderByMonthThisYear),
+                    'countOrderByMonthLastYear' => array_values($countOrderByMonthLastYear),
+
+                    'countClientByDayThisWeek' => array_values($countClientByDayThisWeek),
+                    'countClientByDayLastWeek' => array_values($countClientByDayLastWeek),
+                    'countClientByDayThisYear' => array_values($countClientByDayThisYear),
+                    'countClientByDayLastYear' => array_values($countClientByDayLastYear),
+
+                    'countProductsSoldThisWeekByDay' => array_values($countProductsSoldThisWeekByDay),
+                    'countProductsSoldLastWeekByDay' => array_values($countProductsSoldLastWeekByDay),
+                    'countProductsSoldThisYearByDay' => array_values($countProductsSoldThisYearByDay),
+                    'countProductsSoldLastYearByDay' => array_values($countProductsSoldLastYearByDay),
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
@@ -326,6 +358,22 @@ class DashboardController extends AbstractController
              'countTransfertLastMonth' => $countTransfertLastMonth,
              'countTransfertThisYear' => $countTransfertThisYear,
              'countTransfertLastYear' => $countTransfertLastYear,
+
+             //chart
+             'countOrderByDayThisWeek' => array_values($countOrderByDayThisWeek),
+            'countOrderByDayLastWeek' => array_values($countOrderByDayLastWeek),
+            'countOrderByMonthThisYear' => array_values($countOrderByMonthThisYear),
+            'countOrderByMonthLastYear' => array_values($countOrderByMonthLastYear),
+
+            'countClientByDayThisWeek' => array_values($countClientByDayThisWeek),
+            'countClientByDayLastWeek' => array_values($countClientByDayLastWeek),
+            'countClientByDayThisYear' => array_values($countClientByDayThisYear),
+            'countClientByDayLastYear' => array_values($countClientByDayLastYear),
+
+            'countProductsSoldThisWeekByDay' => array_values($countProductsSoldThisWeekByDay),
+            'countProductsSoldLastWeekByDay' => array_values($countProductsSoldLastWeekByDay),
+            'countProductsSoldThisYearByDay' => array_values($countProductsSoldThisYearByDay),
+            'countProductsSoldLastYearByDay' => array_values($countProductsSoldLastYearByDay),
         ]);
 
         return $this->render('admin/index.html.twig', $_data);

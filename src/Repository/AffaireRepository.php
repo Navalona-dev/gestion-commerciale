@@ -588,4 +588,221 @@ class AffaireRepository extends ServiceEntityRepository
                     ->getSingleScalarResult();
         return $qb;
     }
+
+    //nombre de commande de cette semaine par jour
+    public function countOrdersThisWeekByDay(\DateTime $day, $paiement = null, $statut = null)
+    {
+        $startOfDay = clone $day;
+        $startOfDay->setTime(0, 0, 0);
+
+        $endOfDay = clone $startOfDay;
+        $endOfDay->modify('+1 day');
+
+        return $this->createQueryBuilder('a')
+                    ->select('COUNT(a.id)')
+                    ->where('a.dateCreation >= :start_of_day')
+                    ->andWhere('a.dateCreation < :end_of_day')
+                    ->andWhere('a.paiement = :paiement')
+                    ->andWhere('a.application = :application_id')
+                    ->andWhere('a.statut = :statut')
+                    ->setParameter('start_of_day', $startOfDay)
+                    ->setParameter('end_of_day', $endOfDay)
+                    ->setParameter('paiement', $paiement)
+                    ->setParameter('statut', $statut)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+    }
+
+    public function countOrdersLastWeekByDay($dayOfWeek, $paiement = null, $statut = null)
+    {
+        $currentDate = new \DateTime();
+        $startOfLastWeek = new \DateTime();
+        $startOfLastWeek->setISODate((int)$currentDate->format('o'), (int)$currentDate->format('W') - 1);
+        $startOfLastWeek->setTime(0, 0, 0);
+        
+        // Calcule le jour spécifique de la semaine dernière
+        $specificDayOfLastWeek = clone $startOfLastWeek;
+        $specificDayOfLastWeek->modify('+' . ($dayOfWeek - 1) . ' days');
+    
+        $startOfDay = clone $specificDayOfLastWeek;
+        $startOfDay->setTime(0, 0, 0);
+    
+        $endOfDay = clone $startOfDay;
+        $endOfDay->modify('+1 day');
+    
+        return $this->createQueryBuilder('a')
+                    ->select('COUNT(a.id)')
+                    ->where('a.dateCreation >= :start_of_day')
+                    ->andWhere('a.dateCreation < :end_of_day')
+                    ->andWhere('a.paiement = :paiement')
+                    ->andWhere('a.application = :application_id')
+                    ->andWhere('a.statut = :statut')
+                    ->setParameter('start_of_day', $startOfDay)
+                    ->setParameter('end_of_day', $endOfDay)
+                    ->setParameter('paiement', $paiement)
+                    ->setParameter('statut', $statut)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+    }
+
+    // Commandes par mois cette année
+    public function countOrdersThisYearByMonth($year, $month, $paiement = null, $statut = null)
+    {
+        $startDate = new \DateTime("$year-$month-01 00:00:00");
+        $endDate = clone $startDate;
+        $endDate->modify('last day of this month')->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->where('a.dateCreation BETWEEN :start_date AND :end_date')
+            ->andWhere('a.paiement = :paiement')
+            ->andWhere('a.application = :application_id')
+            ->andWhere('a.statut = :statut')
+            ->setParameter('start_date', $startDate)
+            ->setParameter('end_date', $endDate)
+            ->setParameter('paiement', $paiement)
+            ->setParameter('statut', $statut)
+            ->setParameter('application_id', $this->application->getId())
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    // Commandes par mois l'année dernière
+    public function countOrdersLastYearByMonth($year, $month, $paiement = null, $statut = null)
+    {
+        $startDate = new \DateTime("$year-$month-01 00:00:00");
+        $endDate = clone $startDate;
+        $endDate->modify('last day of this month')->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->where('a.dateCreation BETWEEN :start_date AND :end_date')
+            ->andWhere('a.paiement = :paiement')
+            ->andWhere('a.application = :application_id')
+            ->andWhere('a.statut = :statut')
+            ->setParameter('start_date', $startDate)
+            ->setParameter('end_date', $endDate)
+            ->setParameter('paiement', $paiement)
+            ->setParameter('statut', $statut)
+            ->setParameter('application_id', $this->application->getId())
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countProductsSoldThisWeekByDay($dayOfWeek, $paiement = null, $statut = null)
+    {
+        $currentDate = new \DateTime();
+        $startOfWeek = new \DateTime();
+        $startOfWeek->setISODate((int)$currentDate->format('o'), (int)$currentDate->format('W'));
+        $startOfWeek->setTime(0, 0, 0);
+    
+        // Calcule le jour spécifique de cette semaine
+        $specificDayOfWeek = clone $startOfWeek;
+        $specificDayOfWeek->modify('+' . ($dayOfWeek - 1) . ' days');
+    
+        $startOfDay = clone $specificDayOfWeek;
+        $startOfDay->setTime(0, 0, 0);
+    
+        $endOfDay = clone $startOfDay;
+        $endOfDay->modify('+1 day');
+    
+        return $this->createQueryBuilder('a')
+                    ->select('SUM(p.qtt) as totalOrderedProducts')
+                    ->join('a.products', 'p')
+                    ->where('a.dateCreation >= :start_of_day')
+                    ->andWhere('a.dateCreation < :end_of_day')
+                    ->andWhere('a.paiement = :paiement')
+                    ->andWhere('a.statut = :statut')
+                    ->andWhere('a.application = :application_id')
+                    ->setParameter('start_of_day', $startOfDay)
+                    ->setParameter('end_of_day', $endOfDay)
+                    ->setParameter('paiement', $paiement)
+                    ->setParameter('statut', $statut)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+    }
+
+    
+    public function countProductsSoldLastWeekByDay($dayOfWeek, $paiement = null, $statut = null)
+    {
+        $currentDate = new \DateTime();
+        $startOfLastWeek = new \DateTime();
+        $startOfLastWeek->setISODate((int)$currentDate->format('o'), (int)$currentDate->format('W') - 1);
+        $startOfLastWeek->setTime(0, 0, 0);
+
+        // Calcule le jour spécifique de la semaine dernière
+        $specificDayOfLastWeek = clone $startOfLastWeek;
+        $specificDayOfLastWeek->modify('+' . ($dayOfWeek - 1) . ' days');
+
+        $startOfDay = clone $specificDayOfLastWeek;
+        $startOfDay->setTime(0, 0, 0);
+
+        $endOfDay = clone $startOfDay;
+        $endOfDay->modify('+1 day');
+
+        return $this->createQueryBuilder('a')
+                    ->select('SUM(p.qtt) as totalOrderedProducts')
+                    ->join('a.products', 'p')
+                    ->where('a.dateCreation >= :start_of_day')
+                    ->andWhere('a.dateCreation < :end_of_day')
+                    ->andWhere('a.paiement = :paiement')
+                    ->andWhere('a.statut = :statut')
+                    ->andWhere('a.application = :application_id')
+                    ->setParameter('start_of_day', $startOfDay)
+                    ->setParameter('end_of_day', $endOfDay)
+                    ->setParameter('paiement', $paiement)
+                    ->setParameter('statut', $statut)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+    }
+
+     // Produits vendus par mois cette année
+     public function countProductsSoldThisYearByMonth($year, $month, $paiement = null, $statut = null)
+     {
+         $startDate = new \DateTime("$year-$month-01 00:00:00");
+         $endDate = clone $startDate;
+         $endDate->modify('last day of this month')->setTime(23, 59, 59);
+ 
+         return $this->createQueryBuilder('a')
+             ->select('SUM(p.qtt) as totalOrderedProducts')
+             ->join('a.products', 'p')
+             ->where('a.dateCreation BETWEEN :start_date AND :end_date')
+             ->andWhere('a.paiement = :paiement')
+            ->andWhere('a.statut = :statut')
+            ->andWhere('a.application = :application_id')
+             ->setParameter('start_date', $startDate)
+             ->setParameter('end_date', $endDate)
+             ->setParameter('paiement', $paiement)
+            ->setParameter('statut', $statut)
+            ->setParameter('application_id', $this->application->getId())
+             ->getQuery()
+             ->getSingleScalarResult();
+     }
+ 
+     // Produits vendus par mois l'année dernière
+     public function countProductsSoldLastYearByMonth($year, $month, $paiement = null, $statut = null)
+     {
+         $startDate = new \DateTime("$year-$month-01 00:00:00");
+         $endDate = clone $startDate;
+         $endDate->modify('last day of this month')->setTime(23, 59, 59);
+ 
+         return $this->createQueryBuilder('a')
+             ->select('SUM(p.qtt) as totalOrderedProducts')
+             ->join('a.products', 'p')
+             ->where('a.dateCreation BETWEEN :start_date AND :end_date')
+             ->andWhere('a.paiement = :paiement')
+            ->andWhere('a.statut = :statut')
+            ->andWhere('a.application = :application_id')
+             ->setParameter('start_date', $startDate)
+             ->setParameter('end_date', $endDate)
+             ->setParameter('paiement', $paiement)
+            ->setParameter('statut', $statut)
+            ->setParameter('application_id', $this->application->getId())
+             ->getQuery()
+             ->getSingleScalarResult();
+     }
 }
