@@ -54,7 +54,7 @@ $(document).ready(function() {
 
   //filter stock restant
   $(document).ready(function() {
-    function updateStocks(period, text) {
+    function updateStocksRestant(period, text) {
         var count = $('#count-stock-restant-' + period).text();
         $('#period-text-stock-restant').text('| ' + text);
         $('#stock-restant-count').text(count);
@@ -63,16 +63,16 @@ $(document).ready(function() {
     $('.stock-restant-filter').on('click', function() {
         var period = $(this).data('period');
         var text = $(this).text();
-        updateStocks(period, text);
+        updateStocksRestant(period, text);
     });
   
     // Initial load for today
-    updateStocks('today', "Aujourd'hui");
+    updateStocksRestant('today', "Aujourd'hui");
   });
 
   //filter stock vendu
   $(document).ready(function() {
-    function updateStocks(period, text) {
+    function updateStocksVendu(period, text) {
         var count = $('#count-stock-vendu-' + period).text();
         $('#period-text-stock-vendu').text('| ' + text);
         $('#stock-vendu-count').text(count);
@@ -81,16 +81,16 @@ $(document).ready(function() {
     $('.stock-vendu-filter').on('click', function() {
         var period = $(this).data('period');
         var text = $(this).text();
-        updateStocks(period, text);
+        updateStocksVendu(period, text);
     });
   
     // Initial load for today
-    updateStocks('today', "Aujourd'hui");
+    updateStocksVendu('today', "Aujourd'hui");
   });
 
   //filter client
   $(document).ready(function() {
-    function updateStocks(period, text) {
+    function updateClients(period, text) {
         var count = $('#count-client-' + period).text();
         $('#period-text-client').text('| ' + text);
         $('#client-count').text(count);
@@ -99,16 +99,16 @@ $(document).ready(function() {
     $('.client-filter').on('click', function() {
         var period = $(this).data('period');
         var text = $(this).text();
-        updateStocks(period, text);
+        updateClients(period, text);
     });
   
     // Initial load for today
-    updateStocks('today', "Aujourd'hui");
+    updateClients('today', "Aujourd'hui");
   });
 
   //filter fournisseur
   $(document).ready(function() {
-    function updateStocks(period, text) {
+    function updateFournisseurs(period, text) {
         var count = $('#count-fournisseur-' + period).text();
         $('#period-text-fournisseur').text('| ' + text);
         $('#fournisseur-count').text(count);
@@ -117,9 +117,27 @@ $(document).ready(function() {
     $('.fournisseur-filter').on('click', function() {
         var period = $(this).data('period');
         var text = $(this).text();
-        updateStocks(period, text);
+        updateFournisseurs(period, text);
     });
   
     // Initial load for today
-    updateStocks('today', "Aujourd'hui");
+    updateFournisseurs('today', "Aujourd'hui");
+  });
+
+  //filter transfert
+  $(document).ready(function() {
+    function updateTransferts(period, text) {
+        var count = $('#count-transfert-' + period).text();
+        $('#period-text-transfert').text('| ' + text);
+        $('#transfert-count').text(count);
+    }
+  
+    $('.transfert-filter').on('click', function() {
+        var period = $(this).data('period');
+        var text = $(this).text();
+        updateTransferts(period, text);
+    });
+  
+    // Initial load for today
+    updateTransferts('today', "Aujourd'hui");
   });

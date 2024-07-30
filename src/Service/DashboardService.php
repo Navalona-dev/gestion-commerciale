@@ -4,6 +4,7 @@ namespace App\Service;
 use App\Entity\Stock;
 use App\Entity\Compte;
 use App\Entity\Affaire;
+use App\Entity\Transfert;
 use App\Entity\ProduitCategorie;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -303,6 +304,54 @@ class DashboardService
     {
         $countCompte = $this->entityManager->getRepository(Compte::class)->countComptesLastYear($genre);
         return $countCompte;
+    }
+
+    public function getCountTransfertToday()
+    {
+        $countTransfert = $this->entityManager->getRepository(Transfert::class)->countTransfertsToday();
+        return $countTransfert;
+    }
+
+    public function getCountTransfertYesterday()
+    {
+        $countTransfert = $this->entityManager->getRepository(Transfert::class)->countTransfertsYesterday();
+        return $countTransfert;
+    }
+
+    public function getCountTransfertThisWeek()
+    {
+        $countTransfert = $this->entityManager->getRepository(Transfert::class)->countProductThisWeek();
+        return $countTransfert;
+    }
+
+    public function getCountTransfertLastWeek()
+    {
+        $countTransfert = $this->entityManager->getRepository(Transfert::class)->countTransfertsLastWeek();
+        return $countTransfert;
+    }
+
+    public function getCountTransfertThisMonth()
+    {
+        $countTransfert = $this->entityManager->getRepository(Transfert::class)->countTransfertsThisMonth();
+        return $countTransfert;
+    }
+
+    public function getCountTransfertLastMonth()
+    {
+        $countTransfert = $this->entityManager->getRepository(Transfert::class)->countTransfertsLastMonth();
+        return $countTransfert;
+    }
+
+    public function getCountTransfertThisYear()
+    {
+        $countTransfert = $this->entityManager->getRepository(Transfert::class)->countTransfertsThisYear();
+        return $countTransfert;
+    }
+
+    public function getCountTransfertLastYear()
+    {
+        $countTransfert = $this->entityManager->getRepository(Transfert::class)->countTransfertsLastYear();
+        return $countTransfert;
     }
 
 }

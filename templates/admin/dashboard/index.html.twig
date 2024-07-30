@@ -123,14 +123,14 @@
                 <h6>Filtrer</h6>
               </li>
 
-              <li><a class="dropdown-item transfert-filter" data-period="today-transfert">Aujourd'hui</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="yesterday-transfert">Hier</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="this-week-transfert">Cette semaine</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="last-week-transfert">Semaine dernière</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="this-month-transfert">Ce mois-ci</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="last-month-transfert">Mois dernier</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="this-year-transfert">Cette année</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="last-year-transfert">Année dernière</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="today">Aujourd'hui</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="yesterday">Hier</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="this-week">Cette semaine</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="last-week">Semaine dernière</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="this-month">Ce mois-ci</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="last-month">Mois dernier</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="this-year">Cette année</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="last-year">Année dernière</a></li>
             </ul>
           </div>
 
@@ -154,14 +154,14 @@
       </div>
 
       <div id="transfert-data" style="display: none;">
-        <span id="count-transfert-today"></span>
-        <span id="count-transfert-yesterday"></span>
-        <span id="count-transfert-this-week"></span>
-        <span id="count-transfert-last-week"></span>
-        <span id="count-transfert-this-month"></span>
-        <span id="count-transfert-last-month"></span>
-        <span id="count-transfert-this-year"></span>
-        <span id="count-transfert-last-year"></span>
+        <span id="count-transfert-today"> {{countTransfertToday | default(0)}} </span>
+        <span id="count-transfert-yesterday"> {{countTransfertYesterday | default(0)}} </span>
+        <span id="count-transfert-this-week"> {{countTransfertThisWeek | default(0)}} </span>
+        <span id="count-transfert-last-week"> {{countTransfertLastWeek | default(0)}} </span>
+        <span id="count-transfert-this-month"> {{countTransfertThisMonth | default(0)}} </span>
+        <span id="count-transfert-last-month"> {{countTransfertLastMonth | default(0)}} </span>
+        <span id="count-transfert-this-year"> {{countTransfertThisYear | default(0)}} </span>
+        <span id="count-transfert-last-year"> {{countTransfertLastYear | default(0)}} </span>
       </div>
 
       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">

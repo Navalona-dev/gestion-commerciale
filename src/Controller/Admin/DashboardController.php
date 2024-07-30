@@ -126,6 +126,16 @@ class DashboardController extends AbstractController
         $countFournisseurThisYear = $this->dashboardService->getCountCompteThisYear(2);
         $countFournisseurLastYear = $this->dashboardService->getCountCompteLastYear(2);
 
+        //count transfert
+        $countTransfertToday = $this->dashboardService->getCountTransfertToday();
+        $countTransfertYesterday = $this->dashboardService->getCountTransfertYesterday();
+        $countTransfertThisWeek = $this->dashboardService->getCountTransfertThisWeek();
+        $countTransfertLastWeek = $this->dashboardService->getCountTransfertLastWeek();
+        $countTransfertThisMonth = $this->dashboardService->getCountTransfertThisMonth();
+        $countTransfertLastMonth = $this->dashboardService->getCountTransfertLastMonth();
+        $countTransfertThisYear = $this->dashboardService->getCountTransfertThisYear();
+        $countTransfertLastYear = $this->dashboardService->getCountTransfertLastYear();
+
 
         //dd($countStockRestantToday, $countStockRestantYesterday, $countStockRestantThisWeek, $countStockRestantLastWeek, $countStockRestantThisMonth, $countStockRestantLastMonth, $countStockRestantThisYear, $countStockRestantLastYear);
 
@@ -209,6 +219,16 @@ class DashboardController extends AbstractController
                     'countFournisseurLastMonth' => $countFournisseurLastMonth,
                     'countFournisseurThisYear' => $countFournisseurThisYear,
                     'countFournisseurLastYear' => $countFournisseurLastYear,
+
+                    //count transfert
+                    'countTransfertToday' => $countTransfertToday,
+                    'countTransfertYesterday' => $countTransfertYesterday,
+                    'countTransfertThisWeek' => $countTransfertThisWeek,
+                    'countTransfertLastWeek' => $countTransfertLastWeek,
+                    'countTransfertThisMonth' => $countTransfertThisMonth,
+                    'countTransfertLastMonth' => $countTransfertLastMonth,
+                    'countTransfertThisYear' => $countTransfertThisYear,
+                    'countTransfertLastYear' => $countTransfertLastYear,
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
@@ -296,6 +316,16 @@ class DashboardController extends AbstractController
              'countFournisseurLastMonth' => $countFournisseurLastMonth,
              'countFournisseurThisYear' => $countFournisseurThisYear,
              'countFournisseurLastYear' => $countFournisseurLastYear,
+
+             //count transfert
+             'countTransfertToday' => $countTransfertToday,
+             'countTransfertYesterday' => $countTransfertYesterday,
+             'countTransfertThisWeek' => $countTransfertThisWeek,
+             'countTransfertLastWeek' => $countTransfertLastWeek,
+             'countTransfertThisMonth' => $countTransfertThisMonth,
+             'countTransfertLastMonth' => $countTransfertLastMonth,
+             'countTransfertThisYear' => $countTransfertThisYear,
+             'countTransfertLastYear' => $countTransfertLastYear,
         ]);
 
         return $this->render('admin/index.html.twig', $_data);
