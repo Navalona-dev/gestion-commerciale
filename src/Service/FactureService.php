@@ -218,6 +218,11 @@ class FactureService
         $this->entityManager->flush();
     }
 
+    public function searchFactureRawSql($genre, $nom, $dateDu, $dateAu, $etat, $start, $limit, $order, $isCount)
+    {
+        return $this->entityManager->getRepository(Facture::class)->searchFactureRawSql($genre, $nom, $dateDu,$dateAu, $etat, $limit, $start, $order, $isCount);
+    }
+
     public function persist($entity)
     {
         $this->entityManager->persist($entity);
@@ -241,11 +246,6 @@ class FactureService
     public function getAllAffaire($compte = null, $start = 1, $limit = 0, $statut = null)
     {
         return $this->entityManager->getRepository(Facture::class)->searchAffaire($compte, null,null, $limit, $start, $statut);
-    }
-
-    public function searchCompteRawSql($genre, $nom, $dateDu, $dateAu, $etat, $start, $limit, $order, $isCount)
-    {
-        return $this->entityManager->getRepository(Facture::class)->searchCompteRawSql($genre, $nom, $dateDu,$dateAu, $etat, $limit, $start, $order, $isCount);
     }
     
     public function getNombreTotalCompte()

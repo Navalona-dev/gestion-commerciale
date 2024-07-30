@@ -25,6 +25,7 @@ class Facture
         'regle' => 'Réglée',
         'presenter' => 'Présenter',
         'reglePartiel' => 'Rglt. partiel',
+        'annule' => 'Annulée',
     ];
 
     const ETAT = [

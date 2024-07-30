@@ -65,13 +65,14 @@
                         <div class="col-md-4 col-12">
                             <div class="input-group mb-3">
                                 <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-people-fill"></i></span>
-                                <select name="filter_compte" id="filter_compte" class="mb-3 form-control form-control-md" style="border-left: none;">
+                                <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" />
+                                {# <select name="filter_compte" id="filter_compte" class="mb-3 form-control form-control-md" style="border-left: none;">
                                     <option value="" disabled selected><span class="mx-3">Tapez le nom du client</span></option>
                                     <option value="Client 1">Client 1</option>
                                     <option value="Client 2">Client 2</option>
                                     <option value="Client 3">Client 3</option>
                                     <option value="Client 4">Client 4</option>
-                                </select>
+                                </select> #}
                               </div>
                             <p class="d-flex justify-content-end mb-4">Date facture</p>
                             <p class="d-flex justify-content-end mb-3">Date de paiement</p>
@@ -88,14 +89,14 @@
                                 </select>
                               </div>
 
-                            <input type="text" name="date_facture" id="date_facture" class="mb-3 form-control form-control-ms date-facture" placeholder="Du dd/mm/yyyy">
+                            <input type="text" name="date_facture_debut" id="date_facture_debut" class="mb-3 form-control form-control-ms date-facture" placeholder="Du dd/mm/yyyy">
                             <input type="text" name="date_paiement" id="date_paiement" class="mb-3 form-control form-control-ms date-facture" placeholder="Du dd/mm/yyyy">
                         </div>
                         <div class="col-md-4 col-12">
                             <div class="input-group mb-3">
                                 <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-check-circle-fill"></i></span>
                                 <select name="filter_satatus" id="filter_satatus" class="mb-3 form-control form-control-md" style="border-left: none;">
-                                    <option value="" disabled selected><span class="mx-3">Status</span></option>
+                                    <option value="" disabled selected><span class="mx-3">Statut</span></option>
                                     <option value="Payé">Payé</option>
                                     <option value="Non payé">Non payé</option>
                                 </select>
@@ -108,13 +109,13 @@
                 </div>
                 <div class="col-md-1 col-12 d-flex align-items-center justify-content-center">
                     <div class="text-center">
-                        <a style="cursor: pointer;" class="icon-check"><i class="bi bi-check"></i></a>
+                        <a style="cursor: pointer;" onclick="return searchFacture()" class="icon-check"><i class="bi bi-check"></i></a>
                     </div>
                 </div>
             </div>
           </div>
 
-          <div class="card">
+          <div class="card" id="factureList">
             <div class="card-body p-5">
                 <div class="form-group d-flex justify-content-end mb-4">
                     <div class="dropdown">
@@ -140,13 +141,13 @@
                             <th>N°</th>
                             <th>Compte</th>
                             <th>Affaire</th>
-                            <th>Prix TTC</th>
+                            {# <th>Prix TTC</th> #}
                             <th>Prix HT</th>
                             <th>Règlement</th>
-                            <th>Status</th>
-                            <th>Solde</th>
+                            <th>Statut</th>
+                            {# <th>Solde</th>
                             <th>État</th>
-                            <th>Rémise</th>
+                            <th>Rémise</th> #}
                         </tr>
                     </thead>
                     <tbody>
@@ -174,20 +175,29 @@
                                     </ul>
                                 </div>
                             </td>
-                            <td><i class="bi bi-file-pdf-fill text-danger fs-4"></i></td>
+                            {% if liste.file is not null and liste.file != "" %}
+                            <td><a target="_blank" href="{{ app.request.schemeAndHttpHost ~ app.request.baseUrl }}/uploads/factures/valide/{{liste.file}}"><i class="bi bi-file-pdf-fill text-danger fs-4"></i></a></td>
+                            {% else %}
+                            <td>Pas de facture générer</td>
+                            {% endif %}
                             <td> {{liste.dateCreation|date('d-m-Y')}} </td>
                             <td> {{liste.type}} </td>
                             <td> {{liste.numero}} </td>
-                            <td> {{liste.compte}} </td>
-                            <td> {{liste.affaire}} </td>
-                            <td> {{liste.prixTtc|number_format(2, ',', ',')}} Ar </td>
+                            <td>  <a href="{{path('affaires_liste_affaire_from_facture', {'compte': liste.compteId})}}" title="Pdf">
+                                            {{liste.compte}}
+                                        </a></td>
+                            <td> <a href="" title="Pdf">
+                                            {{liste.affaire}}
+                                        </a> </td>
+                            {# <td> {{liste.prixTtc|number_format(2, ',', ',')}} Ar </td> #}
                             <td>{{liste.prixHt|number_format(2, ',', ' ')}} Ar</td>
                             <td> {{liste.reglement|number_format(2, ',', ' ')}} Ar </td>
                             {% set statutPaiement = constant('App\\Entity\\Facture::STATUT') %}
                             <td> {{statutPaiement[liste.statut]}} </td>
-                            <td> {{liste.solde}} </td>
-                            <td> {{liste.etat}} </td>
-                            <td> {{liste.remise}} </td>
+                            {# <td> {{liste.solde}} </td>
+                             {% set etat = constant('App\\Entity\\Facture::ETAT') %}
+                            <td> {{etat[liste.etat]}} </td>
+                            <td> {{liste.remise}} </td> #}
                         </tr>
                         {% else %}
                         <tr>
@@ -203,10 +213,10 @@
                             <td></td>
                             <td></td>
                             <td></td>
+                            {# <td></td>
                             <td></td>
                             <td></td>
-                            <td></td>
-                            <td></td>
+                            <td></td> #}
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -220,6 +230,42 @@
     </section>
   
     <script>
+        function searchFacture(genre = 1) {
+      var nomCompte = $("#nom_compte").val();
+      //var genre = $("#genre").val();
+      
+      $.ajax({
+                url: '/admin/facture/search',
+                type: 'post',
+                data: {nomCompte: nomCompte },
+                success: function (response) {
+                  
+                 $("#factureList").empty();
+                 $("#factureList").append(response.html);
+                    /*$('#modalNewClient').modal('hide');
+                    var nextLink = $('#sidebar').find('li#clients').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Enregistrement effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }*/
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout d\'un client.');
+                }
+        });
+    }
       //datatable
       
       $(document).ready(function() {
@@ -259,7 +305,8 @@
         $('#tab-import-produit').css('display', 'none');
         $('#tab-facture').css('display', 'block');
         $('#tab-facture-affaire').css('display', 'none');
-  
+
+
         $('.table-facture-affaire').DataTable({
             responsive: true,
             language: {
@@ -270,6 +317,7 @@
             pageLength: 10,
             scrollCollapse: false,
         });
+
       });
 
       $(document).ready(function() {

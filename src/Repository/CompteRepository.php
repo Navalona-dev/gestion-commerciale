@@ -602,10 +602,10 @@ class CompteRepository extends ServiceEntityRepository
         }
 
         $rawSql = $select . ' ' . $joins . ' WHERE ' . $conditions . ' ' . ($sqlLimit ?? '');
-        //dd($rawSql, $parameters, $parameterType);
+      
         $connection = $this->getEntityManager()->getConnection();
         try {
-
+            dd($connection->fetchOne('SELECT COUNT(*) AS nbCompte FROM (' . $rawSql . ') AS ROWS_LINE ', $parameters, $parameterType), $rawSql, $parameters, $parameterType);
             if ($isCount) {
                 return $connection->fetchOne('SELECT COUNT(*) AS nbCompte FROM (' . $rawSql . ') AS ROWS_LINE ', $parameters, $parameterType);
                 
@@ -617,7 +617,7 @@ class CompteRepository extends ServiceEntityRepository
         if ($isCount) {
             return 0;
         }
-
+        dd("ici");
         return [];
     }
 

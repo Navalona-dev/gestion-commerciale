@@ -1,0 +1,157 @@
+ <div class="card-body">
+          <table class="table table-striped" id="liste-table-facture-ajax" style="width: 100%;">
+            <thead>
+                  {% include 'admin/facture/_table.html.twig' with { 'type': 'thead' } %}
+            </thead>
+            <tbody>
+              {% if listes|length > 0 %}
+
+                {% for liste in listes %}
+                    {% include 'admin/facture/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
+                {% endfor %}
+              
+              {% else %}
+                  <tr>
+                      <td>Aucun enregistrement trouvé</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                  </tr>
+              {% endif %}
+              
+            </tbody>
+          </table>
+
+        </div>
+    <script>
+      //datatable
+      
+      $(document).ready(function() {
+        $('.tab-categorie').removeClass('active');
+        $('#tab-produit-categorie').removeClass('active');
+        $('.tab-produit-categorie').removeClass('active');
+        $('#tab-categorie').removeClass('active');
+        $('.tab-import-produit').removeClass('active');
+        $('#tab-import-produit').removeClass('active');
+  
+  
+        $('.tab-user').removeClass('active');
+        $('#tab-utilisateur').removeClass('active');
+  
+        $('.tab-permission').removeClass('active');
+        $('.tab-privilege').removeClass('active');
+        $('.tab-cat-permission').removeClass('active');
+        $('#tab-categorie-permission').removeClass('active');
+        
+        $('#tab-dashboard').removeClass('active');
+        $('#tab-profile').removeClass('active');
+       
+        $('#tab-permission').removeClass('active');
+        $('#tab-privilege').removeClass('active');
+        $('#tab-transfert-produit').css('display', 'none');
+        $('#affaires_client').removeClass('active').empty();
+         $('#affaires_fournisseur').removeClass('active').empty();
+         $('#tab-info-affaire').removeClass('active').empty();
+         $('#tab-financier-affaire').removeClass('active').empty();
+        $('#tab-fiche-client').removeClass('active').empty();
+        
+        $('#tab-application').removeClass('active');
+        $('#tab-profile').removeClass('active');
+         $('#tab-compte_1').removeClass('active');
+        $('#tab-produit-type').removeClass('active');
+        $('.tab-produit-type').removeClass('active');
+        $('#tab-import-produit').css('display', 'none');
+        $('#tab-facture').css('display', 'block');
+        $('#tab-facture-affaire').css('display', 'none');
+  
+        /*$('.table-facture-affaire').DataTable({
+            responsive: true,
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+            },
+            border: false,
+            scrollX: '100%',
+            pageLength: 10,
+            scrollCollapse: false,
+        });*/
+      });
+
+      $(document).ready(function() {
+        var dateFormat = 'dd/mm/yyyy';
+        var dateNow = new Date();
+        dateNow.setDate(dateNow.getDate() + 1)
+
+        $('.date-facture').datepicker({
+            format: dateFormat,
+            todayHighlight: true,
+            daysOfWeekDisabled: '0',
+            startDate: dateNow,
+            language: 'fr',
+            autoclose: true,
+
+        });
+
+        var nomCompte = $("#nom_compte").val();
+        var dateDu = $("#date_facture_debut").val();
+        var dateAu = $("#date_facture_end").val();
+
+        $('#liste-table-facture-ajax').DataTable({
+            pageLength: 10,
+            responsive: true,
+            processing: true,
+            serverSide: true,
+            bStateSave: false,
+            language: {
+                'url': 'https://cdn.datatables.net/plug-ins/1.10.20/i18n/French.json',
+            },
+            dom: '<"d-flex justify-content-between"f>t<"d-flex justify-content-between"i<"d-flex"lp>>',
+            //order: [[ 0, 'desc']],
+            ordering: true,
+            searching: { "regex": true },
+            columnDefs: [
+                {  // set default column settings
+                    'orderable': false
+
+                }
+            ],
+            lengthMenu: [ [5, 10, 25, 50, 100, 500, 2000], [5, 10, 25, 50, 100, 500, 2000] ],
+            ajax: {
+                type: 'POST',
+                url: "/admin/facture/search-facture-datatable/from-ajax",
+                dataType: "json",
+                data: {nomCompte: nomCompte, limit: 25, dateDu: dateDu, dateAu: dateAu },
+                complete: function (result) {
+                   /* var jsonData = result.responseJSON;
+                    var listeIdCompte = jsonData["idComptes"];
+                    var ids = listeIdCompte.join(",");
+                    $("#linkSendMail").attr("onclick", "iframe_url('/mail/new?action=cc_id_compte&id_comptes="+ids+"&id_affaire=1'); return false;");*/
+                   // $(".loadBody").css('display', 'none');
+
+                  /*  $('.i-checks').iCheck({
+                        checkboxClass: 'icheckbox_square-green',
+                        radioClass: 'iradio_square-green'
+                    });
+
+                    $("input[name='selectTout']").on('ifChanged', function () {
+
+                        var _this = jQuery(this);
+
+                        if (_this.is(':checked')) {
+                            $("input[name^='compteList']").each(function (index) {
+                                $(this).iCheck('check');
+                            });
+                        } else {
+                            $("input[name^='compteList']").each(function (index) {
+                                $(this).iCheck('uncheck');
+                            });
+                        }
+                    });*/
+                    //return false;
+                }
+
+            },
+
+        });
+
+    });
+  
+    </script>

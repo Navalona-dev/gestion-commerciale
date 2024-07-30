@@ -185,7 +185,7 @@
                 type: 'POST',
                 data: {type: affaireType},
                 success: function (response) {
-                     $('#listeAffaire').empty();
+                    $('#listeAffaire').empty();
                     $("#listeAffaire").append(response.html);
                     $('#result-count').text(response.count);
                 },
@@ -231,7 +231,6 @@ $(document).ready(function() {
     $('#tab-import-produit').css('display', 'none');    
     $('#tab-info-affaire').css('display', 'none');
     $('#affaires_client').css('display', 'block');
-
 
     });
    

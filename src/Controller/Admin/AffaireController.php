@@ -135,11 +135,12 @@ class AffaireController extends AbstractController
             if ($affaires == false) {
                 $affaires = [];
             }
-
+            
+            $fromPage = $request->get('fromPage');
             $genre = $compte->getGenre();
 
             $session->set('compte', $compte->getId());
-
+           
             if($genre == 1) {
                 $data["html"] = $this->renderView('admin/affaires/index_client.html.twig', [
                     'listes' => $affaires,
@@ -160,6 +161,36 @@ class AffaireController extends AbstractController
             $data['count'] = count($affaires);
             
             return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/from-facture/{compte}', name: '_liste_affaire_from_facture')]
+    public function listeAffaireFromFacture(Compte $compte, Request $request, SessionInterface $session)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+      
+        $data = [];
+        try {
+
+            $affaires = $this->affaireService->getAllAffaire($compte);
+
+            if ($affaires == false) {
+                $affaires = [];
+            }
+            
+            $fromPage = $request->get('fromPage');
+            $genre = $compte->getGenre();
+
+            $session->set('compte', $compte->getId());
+
+            return $this->redirect("http://www.gestion-commerciale.com/admin#affaires_client");
         } catch (\Exception $Exception) {
             $data["exception"] = $Exception->getMessage();
             $data["html"] = "";
