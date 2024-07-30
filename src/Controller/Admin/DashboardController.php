@@ -106,6 +106,26 @@ class DashboardController extends AbstractController
         $countStockVenduThisYear = $this->dashboardService->getCountStockVenduThisYear('paye', 'commande');
         $countStockVenduLastYear = $this->dashboardService->getCountStockVenduLastYear('paye', 'commande');
 
+        //count client
+        $countClientToday = $this->dashboardService->getCountCompteToday(1);
+        $countClientYesterday = $this->dashboardService->getCountCompteYesterday(1);
+        $countClientThisWeek = $this->dashboardService->getCountCompteThisWeek(1);
+        $countClientLastWeek = $this->dashboardService->getCountCompteLastWeek(1);
+        $countClientThisMonth = $this->dashboardService->getCountCompteThisMonth(1);
+        $countClientLastMonth = $this->dashboardService->getCountCompteLastMonth(1);
+        $countClientThisYear = $this->dashboardService->getCountCompteThisYear(1);
+        $countClientLastYear = $this->dashboardService->getCountCompteLastYear(1);
+
+        //count fournisseur
+        $countFournisseurToday = $this->dashboardService->getCountCompteToday(2);
+        $countFournisseurYesterday = $this->dashboardService->getCountCompteYesterday(2);
+        $countFournisseurThisWeek = $this->dashboardService->getCountCompteThisWeek(2);
+        $countFournisseurLastWeek = $this->dashboardService->getCountCompteLastWeek(2);
+        $countFournisseurThisMonth = $this->dashboardService->getCountCompteThisMonth(2);
+        $countFournisseurLastMonth = $this->dashboardService->getCountCompteLastMonth(2);
+        $countFournisseurThisYear = $this->dashboardService->getCountCompteThisYear(2);
+        $countFournisseurLastYear = $this->dashboardService->getCountCompteLastYear(2);
+
 
         //dd($countStockRestantToday, $countStockRestantYesterday, $countStockRestantThisWeek, $countStockRestantLastWeek, $countStockRestantThisMonth, $countStockRestantLastMonth, $countStockRestantThisYear, $countStockRestantLastYear);
 
@@ -169,6 +189,26 @@ class DashboardController extends AbstractController
                     'countStockVenduLastMonth' => $countStockVenduLastMonth,
                     'countStockVenduThisYear' => $countStockVenduThisYear,
                     'countStockVenduLastYear' => $countStockVenduLastYear,
+
+                    //count client
+                    'countClientToday' => $countClientToday,
+                    'countClientYesterday' => $countClientYesterday,
+                    'countClientThisWeek' => $countClientThisWeek,
+                    'countClientLastWeek' => $countClientLastWeek,
+                    'countClientThisMonth' => $countClientThisMonth,
+                    'countClientLastMonth' => $countClientLastMonth,
+                    'countClientThisYear' => $countClientThisYear,
+                    'countClientLastYear' => $countClientLastYear,
+
+                    //count fournisseur
+                    'countFournisseurToday' => $countFournisseurToday,
+                    'countFournisseurYesterday' => $countFournisseurYesterday,
+                    'countFournisseurThisWeek' => $countFournisseurThisWeek,
+                    'countFournisseurLastWeek' => $countFournisseurLastWeek,
+                    'countFournisseurThisMonth' => $countFournisseurThisMonth,
+                    'countFournisseurLastMonth' => $countFournisseurLastMonth,
+                    'countFournisseurThisYear' => $countFournisseurThisYear,
+                    'countFournisseurLastYear' => $countFournisseurLastYear,
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
@@ -236,6 +276,26 @@ class DashboardController extends AbstractController
              'countStockVenduLastMonth' => $countStockVenduLastMonth,
              'countStockVenduThisYear' => $countStockVenduThisYear,
              'countStockVenduLastYear' => $countStockVenduLastYear,
+
+             //count client
+             'countClientToday' => $countClientToday,
+            'countClientYesterday' => $countClientYesterday,
+            'countClientThisWeek' => $countClientThisWeek,
+            'countClientLastWeek' => $countClientLastWeek,
+            'countClientThisMonth' => $countClientThisMonth,
+            'countClientLastMonth' => $countClientLastMonth,
+            'countClientThisYear' => $countClientThisYear,
+            'countClientLastYear' => $countClientLastYear,
+
+             //count fournisseur
+             'countFournisseurToday' => $countFournisseurToday,
+             'countFournisseurYesterday' => $countFournisseurYesterday,
+             'countFournisseurThisWeek' => $countFournisseurThisWeek,
+             'countFournisseurLastWeek' => $countFournisseurLastWeek,
+             'countFournisseurThisMonth' => $countFournisseurThisMonth,
+             'countFournisseurLastMonth' => $countFournisseurLastMonth,
+             'countFournisseurThisYear' => $countFournisseurThisYear,
+             'countFournisseurLastYear' => $countFournisseurLastYear,
         ]);
 
         return $this->render('admin/index.html.twig', $_data);

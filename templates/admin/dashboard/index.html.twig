@@ -313,14 +313,14 @@
                 <h6>Filtrer</h6>
               </li>
 
-              <li><a class="dropdown-item client-filter" data-period="today-client">Aujourd'hui</a></li>
-              <li><a class="dropdown-item client-filter" data-period="yesterday-client">Hier</a></li>
-              <li><a class="dropdown-item client-filter" data-period="this-week-client">Cette semaine</a></li>
-              <li><a class="dropdown-item client-filter" data-period="last-week-client">Semaine dernière</a></li>
-              <li><a class="dropdown-item client-filter" data-period="this-month-client">Ce mois-ci</a></li>
-              <li><a class="dropdown-item client-filter" data-period="last-month-client">Mois dernier</a></li>
-              <li><a class="dropdown-item client-filter" data-period="this-year-client">Cette année</a></li>
-              <li><a class="dropdown-item client-filter" data-period="last-year-client">Année dernière</a></li>
+              <li><a class="dropdown-item client-filter" data-period="today">Aujourd'hui</a></li>
+              <li><a class="dropdown-item client-filter" data-period="yesterday">Hier</a></li>
+              <li><a class="dropdown-item client-filter" data-period="this-week">Cette semaine</a></li>
+              <li><a class="dropdown-item client-filter" data-period="last-week">Semaine dernière</a></li>
+              <li><a class="dropdown-item client-filter" data-period="this-month">Ce mois-ci</a></li>
+              <li><a class="dropdown-item client-filter" data-period="last-month">Mois dernier</a></li>
+              <li><a class="dropdown-item client-filter" data-period="this-year">Cette année</a></li>
+              <li><a class="dropdown-item client-filter" data-period="last-year">Année dernière</a></li>
             </ul>
           </div>
 
@@ -344,14 +344,14 @@
       </div>
 
       <div id="client-data" style="display: none;">
-        <span id="count-client-today"></span>
-        <span id="count-client-yesterday"></span>
-        <span id="count-client-this-week"></span>
-        <span id="count-client-last-week"></span>
-        <span id="count-client-this-month"></span>
-        <span id="count-client-last-month"></span>
-        <span id="count-client-this-year"></span>
-        <span id="count-client-last-year"></span>
+        <span id="count-client-today"> {{countClientToday | default(0)}} </span>
+        <span id="count-client-yesterday"> {{countClientYesterday | default(0)}} </span>
+        <span id="count-client-this-week"> {{countClientThisWeek | default(0)}} </span>
+        <span id="count-client-last-week"> {{countClientLastWeek | default(0)}} </span>
+        <span id="count-client-this-month"> {{countClientThisMonth | default(0)}} </span>
+        <span id="count-client-last-month"> {{countClientLastMonth | default(0)}} </span>
+        <span id="count-client-this-year"> {{countClientThisYear | default(0)}} </span>
+        <span id="count-client-last-year"> {{countClientLastYear | default(0)}} </span>
       </div>
 
       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
@@ -365,14 +365,14 @@
                 <h6>Filtrer</h6>
               </li>
 
-              <li><a class="dropdown-item fournisseur-filter" data-period="today-fournisseur">Aujourd'hui</a></li>
-              <li><a class="dropdown-item fournisseur-filter" data-period="yesterday-fournisseur">Hier</a></li>
-              <li><a class="dropdown-item fournisseur-filter" data-period="this-week-fournisseur">Cette semaine</a></li>
-              <li><a class="dropdown-item fournisseur-filter" data-period="last-week-fournisseur">Semaine dernière</a></li>
-              <li><a class="dropdown-item fournisseur-filter" data-period="this-month-fournisseur">Ce mois-ci</a></li>
-              <li><a class="dropdown-item fournisseur-filter" data-period="last-month-fournisseur">Mois dernier</a></li>
-              <li><a class="dropdown-item fournisseur-filter" data-period="this-year-fournisseur">Cette année</a></li>
-              <li><a class="dropdown-item fournisseur-filter" data-period="last-year-fournisseur">Année dernière</a></li>
+              <li><a class="dropdown-item fournisseur-filter" data-period="today">Aujourd'hui</a></li>
+              <li><a class="dropdown-item fournisseur-filter" data-period="yesterday">Hier</a></li>
+              <li><a class="dropdown-item fournisseur-filter" data-period="this-week">Cette semaine</a></li>
+              <li><a class="dropdown-item fournisseur-filter" data-period="last-week">Semaine dernière</a></li>
+              <li><a class="dropdown-item fournisseur-filter" data-period="this-month">Ce mois-ci</a></li>
+              <li><a class="dropdown-item fournisseur-filter" data-period="last-month">Mois dernier</a></li>
+              <li><a class="dropdown-item fournisseur-filter" data-period="this-year">Cette année</a></li>
+              <li><a class="dropdown-item fournisseur-filter" data-period="last-year">Année dernière</a></li>
             </ul>
           </div>
 
@@ -396,14 +396,14 @@
       </div>
 
       <div id="fournisseur-data" style="display: none;">
-        <span id="count-fournisseur-today"></span>
-        <span id="count-fournisseur-yesterday"></span>
-        <span id="count-fournisseur-this-week"></span>
-        <span id="count-fournisseur-last-week"></span>
-        <span id="count-fournisseur-this-month"></span>
-        <span id="count-fournisseur-last-month"></span>
-        <span id="count-fournisseur-this-year"></span>
-        <span id="count-fournisseur-last-year"></span>
+        <span id="count-fournisseur-today"> {{countFournisseurToday | default(0)}} </span>
+        <span id="count-fournisseur-yesterday"> {{countFournisseurYesterday | default(0)}} </span>
+        <span id="count-fournisseur-this-week"> {{countFournisseurThisWeek | default(0)}} </span>
+        <span id="count-fournisseur-last-week"> {{countFournisseurLastWeek | default(0)}} </span>
+        <span id="count-fournisseur-this-month"> {{countFournisseurThisMonth | default(0)}} </span>
+        <span id="count-fournisseur-last-month"> {{countFournisseurLastMonth | default(0)}} </span>
+        <span id="count-fournisseur-this-year"> {{countFournisseurThisYear | default(0)}} </span>
+        <span id="count-fournisseur-last-year"> {{countFournisseurLastYear | default(0)}} </span>
       </div>
     </div>
   </section>

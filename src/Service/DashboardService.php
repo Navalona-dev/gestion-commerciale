@@ -2,6 +2,7 @@
 namespace App\Service;
 
 use App\Entity\Stock;
+use App\Entity\Compte;
 use App\Entity\Affaire;
 use App\Entity\ProduitCategorie;
 use Doctrine\ORM\EntityManagerInterface;
@@ -254,6 +255,54 @@ class DashboardService
     {
         $countAffaire = $this->entityManager->getRepository(Affaire::class)->countStocksVenduLastYear($paiement, $statut);
         return $countAffaire;
+    }
+
+    public function getCountCompteToday($genre = null)
+    {
+        $countCompte = $this->entityManager->getRepository(Compte::class)->countComptesToday($genre);
+        return $countCompte;
+    }
+
+    public function getCountCompteYesterday($genre = null)
+    {
+        $countCompte = $this->entityManager->getRepository(Compte::class)->countComptesYesterday($genre);
+        return $countCompte;
+    }
+
+    public function getCountCompteThisWeek($genre = null)
+    {
+        $countCompte = $this->entityManager->getRepository(Compte::class)->countComptesThisWeek($genre);
+        return $countCompte;
+    }
+
+    public function getCountCompteLastWeek($genre = null)
+    {
+        $countCompte = $this->entityManager->getRepository(Compte::class)->countComptesLastWeek($genre);
+        return $countCompte;
+    }
+
+    public function getCountCompteThisMonth($genre = null)
+    {
+        $countCompte = $this->entityManager->getRepository(Compte::class)->countComptesThisMonth($genre);
+        return $countCompte;
+    }
+
+    public function getCountCompteLastMonth($genre = null)
+    {
+        $countCompte = $this->entityManager->getRepository(Compte::class)->countComptesLastMonth($genre);
+        return $countCompte;
+    }
+
+    public function getCountCompteThisYear($genre = null)
+    {
+        $countCompte = $this->entityManager->getRepository(Compte::class)->countComptesThisYear($genre);
+        return $countCompte;
+    }
+
+    public function getCountCompteLastYear($genre = null)
+    {
+        $countCompte = $this->entityManager->getRepository(Compte::class)->countComptesLastYear($genre);
+        return $countCompte;
     }
 
 }

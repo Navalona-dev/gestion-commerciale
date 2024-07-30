@@ -87,3 +87,39 @@ $(document).ready(function() {
     // Initial load for today
     updateStocks('today', "Aujourd'hui");
   });
+
+  //filter client
+  $(document).ready(function() {
+    function updateStocks(period, text) {
+        var count = $('#count-client-' + period).text();
+        $('#period-text-client').text('| ' + text);
+        $('#client-count').text(count);
+    }
+  
+    $('.client-filter').on('click', function() {
+        var period = $(this).data('period');
+        var text = $(this).text();
+        updateStocks(period, text);
+    });
+  
+    // Initial load for today
+    updateStocks('today', "Aujourd'hui");
+  });
+
+  //filter fournisseur
+  $(document).ready(function() {
+    function updateStocks(period, text) {
+        var count = $('#count-fournisseur-' + period).text();
+        $('#period-text-fournisseur').text('| ' + text);
+        $('#fournisseur-count').text(count);
+    }
+  
+    $('.fournisseur-filter').on('click', function() {
+        var period = $(this).data('period');
+        var text = $(this).text();
+        updateStocks(period, text);
+    });
+  
+    // Initial load for today
+    updateStocks('today', "Aujourd'hui");
+  });
