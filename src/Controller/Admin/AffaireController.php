@@ -629,6 +629,25 @@ class AffaireController extends AbstractController
         return new JsonResponse($data);
     }
 
+    #[Route('/financier/from-other-page/{affaire}', name: '_financier_from_other_page')]
+    public function showFinancier(Request $request, Affaire $affaire, SessionInterface $session)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+      
+        $data = [];
+        try {
+            $session->set('idAffaire', $affaire->getId());
+            return $this->redirect("http://www.gestion-commerciale.com/admin#tab-financier-affaire");
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
     #[Route('/produit/liste/{affaire}', name: '_liste_produit')]
     public function listProduits(
         Request $request,
