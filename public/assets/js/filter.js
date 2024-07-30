@@ -51,3 +51,39 @@ $(document).ready(function() {
     // Initial load for today
     updateStocks('today', "Aujourd'hui");
   });
+
+  //filter stock restant
+  $(document).ready(function() {
+    function updateStocks(period, text) {
+        var count = $('#count-stock-restant-' + period).text();
+        $('#period-text-stock-restant').text('| ' + text);
+        $('#stock-restant-count').text(count);
+    }
+  
+    $('.stock-restant-filter').on('click', function() {
+        var period = $(this).data('period');
+        var text = $(this).text();
+        updateStocks(period, text);
+    });
+  
+    // Initial load for today
+    updateStocks('today', "Aujourd'hui");
+  });
+
+  //filter stock vendu
+  $(document).ready(function() {
+    function updateStocks(period, text) {
+        var count = $('#count-stock-vendu-' + period).text();
+        $('#period-text-stock-vendu').text('| ' + text);
+        $('#stock-vendu-count').text(count);
+    }
+  
+    $('.stock-vendu-filter').on('click', function() {
+        var period = $(this).data('period');
+        var text = $(this).text();
+        updateStocks(period, text);
+    });
+  
+    // Initial load for today
+    updateStocks('today', "Aujourd'hui");
+  });

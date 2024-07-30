@@ -160,4 +160,100 @@ class DashboardService
         return $countStock;
     }
 
+    public function getCountStockRestantToday()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStockRestantToday();
+        return $countStock;
+    }
+
+    public function getCountStockRestantYesterday()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStockRestantYesterday();
+        return $countStock;
+    }
+
+    public function getCountStockRestantThisWeek()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStockRestantThisWeek();
+        return $countStock;
+    }
+
+    public function getCountStockRestantLastWeek()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStockRestantLastWeek();
+        return $countStock;
+    }
+
+    public function getCountStockRestantThisMonth()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStockRestantThisMonth();
+        return $countStock;
+    }
+
+    public function getCountStockRestantLastMonth()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStockRestantLastMonth();
+        return $countStock;
+    }
+
+    public function getCountStockRestantThisYear()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStockRestantThisYear();
+        return $countStock;
+    }
+
+    public function getCountStockRestantLastYear()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStockRestantLastYear();
+        return $countStock;
+    }
+
+    public function getCountStockVenduToday($paiement = null, $statut = null)
+    {
+        $countAffaire = $this->entityManager->getRepository(Affaire::class)->countStocksVenduToday($paiement, $statut);
+        return $countAffaire;
+    }
+
+    public function getCountStockVenduYesterday($paiement = null, $statut = null)
+    {
+        $countAffaire = $this->entityManager->getRepository(Affaire::class)->countStocksVenduYesterday($paiement, $statut);
+        return $countAffaire;
+    }
+
+    public function getCountStockVenduThisWeek($paiement = null, $statut = null)
+    {
+        $countAffaire = $this->entityManager->getRepository(Affaire::class)->countStockVenduThisWeek($paiement, $statut);
+        return $countAffaire;
+    }
+
+    public function getCountStockVenduLastWeek($paiement = null, $statut = null)
+    {
+        $countAffaire = $this->entityManager->getRepository(Affaire::class)->countStocksVenduLastWeek($paiement, $statut);
+        return $countAffaire;
+    }
+
+    public function getCountStockVenduThisMonth($paiement = null, $statut = null)
+    {
+        $countAffaire = $this->entityManager->getRepository(Affaire::class)->countStocksVenduThisMonth($paiement, $statut);
+        return $countAffaire;
+    }
+
+    public function getCountStockVenduLastMonth($paiement = null, $statut = null)
+    {
+        $countAffaire = $this->entityManager->getRepository(Affaire::class)->countStocksVenduLastMonth($paiement, $statut);
+        return $countAffaire;
+    }
+
+    public function getCountStockVenduThisYear($paiement = null, $statut = null)
+    {
+        $countAffaire = $this->entityManager->getRepository(Affaire::class)->countStocksVenduThisYear($paiement, $statut);
+        return $countAffaire;
+    }
+
+    public function getCountStockVenduLastYear($paiement = null, $statut = null)
+    {
+        $countAffaire = $this->entityManager->getRepository(Affaire::class)->countStocksVenduLastYear($paiement, $statut);
+        return $countAffaire;
+    }
+
 }

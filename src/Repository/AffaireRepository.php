@@ -370,4 +370,222 @@ class AffaireRepository extends ServiceEntityRepository
                      ->getSingleScalarResult();
         return $qb;
      }
+
+        // Nombre de stock vendu d'aujourd'hui
+      public function countStocksVenduToday($paiement = null, $statut = null)
+      {
+          $today = new \DateTime();
+          $today->setTime(0, 0, 0);
+          $tomorrow = clone $today;
+          $tomorrow->modify('+1 day');
+  
+          $qb = $this->createQueryBuilder('a')
+                      ->select('SUM(p.qtt)')
+                      ->join('a.products', 'p')
+                      ->where('p.dateCreation >= :today')
+                      ->andWhere('p.dateCreation < :tomorrow')
+                      ->andWhere('a.application = :application_id')
+                      ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.statut = :statut')
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                      ->setParameter('today', $today)
+                      ->setParameter('tomorrow', $tomorrow)
+                      ->setParameter('application_id', $this->application->getId())
+                      ->getQuery()
+                      ->getSingleScalarResult();
+  
+                 return $qb;
+      }
+  
+    // Nombre de stock vendu d'hier
+    public function countStocksVenduYesterday($paiement = null, $statut = null)
+    {
+        $yesterday = new \DateTime();
+        $yesterday->setTime(0, 0, 0);
+        $yesterday->modify('-1 day');
+        $today = clone $yesterday;
+        $today->modify('+1 day');
+
+        $qb = $this->createQueryBuilder('a')
+                    ->select('SUM(p.qtt)')
+                    ->join('a.products', 'p')
+                    ->where('p.dateCreation >= :yesterday')
+                    ->andWhere('p.dateCreation < :today')
+                    ->andWhere('a.application = :application_id')
+                    ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.statut = :statut')
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                    ->setParameter('yesterday', $yesterday)
+                    ->setParameter('today', $today)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+        return $qb;
+    }
+
+    // Nombre de stock vendu cette semaine
+    public function countStockVenduThisWeek($paiement = null, $statut = null)
+    {
+        $startOfWeek = new \DateTime();
+        $startOfWeek->setISODate((int)$startOfWeek->format('o'), (int)$startOfWeek->format('W'));
+        $startOfWeek->setTime(0, 0, 0);
+
+        $endOfWeek = clone $startOfWeek;
+        $endOfWeek->modify('+7 days');
+
+        $qb = $this->createQueryBuilder('a')
+                    ->select('SUM(p.qtt)')
+                    ->join('a.products', 'p')
+                    ->where('p.dateCreation >= :start_of_week')
+                    ->andWhere('p.dateCreation < :end_of_week')
+                    ->andWhere('a.application = :application_id')
+                    ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.statut = :statut')
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                    ->setParameter('start_of_week', $startOfWeek)
+                    ->setParameter('end_of_week', $endOfWeek)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+        return $qb;
+    }
+
+    // Nombre de stock vendu semaine dernière
+    public function countStocksVenduLastWeek($paiement = null, $statut = null)
+    {
+        $startOfLastWeek = new \DateTime();
+        $startOfLastWeek->setISODate((int)$startOfLastWeek->format('o'), (int)$startOfLastWeek->format('W') - 1);
+        $startOfLastWeek->setTime(0, 0, 0);
+
+        $endOfLastWeek = clone $startOfLastWeek;
+        $endOfLastWeek->modify('+7 days');
+
+        $qb = $this->createQueryBuilder('a')
+                    ->select('SUM(p.qtt)')
+                    ->join('a.products', 'p')
+                    ->where('p.dateCreation >= :start_of_last_week')
+                    ->andWhere('p.dateCreation < :end_of_last_week')
+                    ->andWhere('a.application = :application_id')
+                    ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.statut = :statut')
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                    ->setParameter('start_of_last_week', $startOfLastWeek)
+                    ->setParameter('end_of_last_week', $endOfLastWeek)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+        return $qb;
+    }
+
+    // Nombre de stock vendu ce mois-ci
+    public function countStocksVenduThisMonth($paiement = null, $statut = null)
+    {
+        $startOfMonth = new \DateTime('first day of this month');
+        $startOfMonth->setTime(0, 0, 0);
+
+        $endOfMonth = new \DateTime('first day of next month');
+        $endOfMonth->setTime(0, 0, 0);
+
+        $qb = $this->createQueryBuilder('a')
+                    ->select('SUM(p.qtt)')
+                    ->join('a.products', 'p')
+                    ->where('p.dateCreation >= :start_of_month')
+                    ->andWhere('p.dateCreation < :end_of_month')
+                    ->andWhere('a.application = :application_id')
+                    ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.statut = :statut')
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                    ->setParameter('start_of_month', $startOfMonth)
+                    ->setParameter('end_of_month', $endOfMonth)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+        return $qb;
+    }
+
+    // Nombre de stock vendu mois dernier
+    public function countStocksVenduLastMonth($paiement = null, $statut = null)
+    {
+        $startOfLastMonth = new \DateTime('first day of last month');
+        $startOfLastMonth->setTime(0, 0, 0);
+
+        $endOfLastMonth = new \DateTime('first day of this month');
+        $endOfLastMonth->setTime(0, 0, 0);
+
+        $qb = $this->createQueryBuilder('a')
+                    ->select('SUM(p.qtt)')
+                    ->join('a.products', 'p')
+                    ->where('p.dateCreation >= :start_of_last_month')
+                    ->andWhere('p.dateCreation < :end_of_last_month')
+                    ->andWhere('a.application = :application_id')
+                    ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.statut = :statut')
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                    ->setParameter('start_of_last_month', $startOfLastMonth)
+                    ->setParameter('end_of_last_month', $endOfLastMonth)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+        return $qb;
+    }
+
+    // Nombre de stock vendu cette année
+    public function countStocksVenduThisYear($paiement = null, $statut = null)
+    {
+        $startOfYear = new \DateTime('first day of January this year');
+        $startOfYear->setTime(0, 0, 0);
+
+        $endOfYear = new \DateTime('first day of January next year');
+        $endOfYear->setTime(0, 0, 0);
+
+        $qb = $this->createQueryBuilder('a')
+                    ->select('SUM(p.qtt)')
+                    ->join('a.products', 'p')
+                    ->where('p.dateCreation >= :start_of_year')
+                    ->andWhere('p.dateCreation < :end_of_year')
+                    ->andWhere('a.application = :application_id')
+                    ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.statut = :statut')
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                    ->setParameter('start_of_year', $startOfYear)
+                    ->setParameter('end_of_year', $endOfYear)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+        return $qb;
+    }
+
+    // Nombre de stock vendu année dernière
+    public function countStocksVenduLastYear($paiement = null, $statut = null)
+    {
+        $startOfLastYear = new \DateTime('first day of January last year');
+        $startOfLastYear->setTime(0, 0, 0);
+
+        $endOfLastYear = new \DateTime('first day of January this year');
+        $endOfLastYear->setTime(0, 0, 0);
+
+        $qb = $this->createQueryBuilder('a')
+                    ->select('SUM(p.qtt)')
+                    ->join('a.products', 'p')
+                    ->where('p.dateCreation >= :start_of_last_year')
+                    ->andWhere('p.dateCreation < :end_of_last_year')
+                    ->andWhere('a.application = :application_id')
+                    ->andWhere('a.paiement = :paiement')
+                     ->andWhere('a.statut = :statut')
+                     ->setParameter('paiement', $paiement)
+                     ->setParameter('statut', $statut)
+                    ->setParameter('start_of_last_year', $startOfLastYear)
+                    ->setParameter('end_of_last_year', $endOfLastYear)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+        return $qb;
+    }
 }

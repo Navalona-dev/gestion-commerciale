@@ -86,6 +86,28 @@ class DashboardController extends AbstractController
         $countStockThisYear = $this->dashboardService->getCountStockThisYear();
         $countStockLastYear = $this->dashboardService->getCountStockLastYear();
 
+        //count stock restant
+        $countStockRestantToday = $this->dashboardService->getCountStockRestantToday();
+        $countStockRestantYesterday = $this->dashboardService->getCountStockRestantYesterday();
+        $countStockRestantThisWeek = $this->dashboardService->getCountStockRestantThisWeek();
+        $countStockRestantLastWeek = $this->dashboardService->getCountStockRestantLastWeek();
+        $countStockRestantThisMonth = $this->dashboardService->getCountStockRestantThisMonth();
+        $countStockRestantLastMonth = $this->dashboardService->getCountStockRestantLastMonth();
+        $countStockRestantThisYear = $this->dashboardService->getCountStockRestantThisYear();
+        $countStockRestantLastYear = $this->dashboardService->getCountStockRestantLastYear();
+
+        //count stock vendu
+        $countStockVenduToday = $this->dashboardService->getCountStockVenduToday('paye', 'commande');
+        $countStockVenduYesterday = $this->dashboardService->getCountStockVenduYesterday('paye', 'commande');
+        $countStockVenduThisWeek = $this->dashboardService->getCountStockVenduThisWeek('paye', 'commande');
+        $countStockVenduLastWeek = $this->dashboardService->getCountStockVenduLastWeek('paye', 'commande');
+        $countStockVenduThisMonth = $this->dashboardService->getCountStockVenduThisMonth('paye', 'commande');
+        $countStockVenduLastMonth = $this->dashboardService->getCountStockVenduLastMonth('paye', 'commande');
+        $countStockVenduThisYear = $this->dashboardService->getCountStockVenduThisYear('paye', 'commande');
+        $countStockVenduLastYear = $this->dashboardService->getCountStockVenduLastYear('paye', 'commande');
+
+
+        //dd($countStockRestantToday, $countStockRestantYesterday, $countStockRestantThisWeek, $countStockRestantLastWeek, $countStockRestantThisMonth, $countStockRestantLastMonth, $countStockRestantThisYear, $countStockRestantLastYear);
 
         $data = [];
 
@@ -126,7 +148,27 @@ class DashboardController extends AbstractController
                     'countStockThisMonth' => $countStockThisMonth,
                     'countStockLastMonth' => $countStockLastMonth,
                     'countStockThisYear' => $countStockThisYear,
-                    'countStockLastYear' => $countStockLastYear
+                    'countStockLastYear' => $countStockLastYear,
+
+                    //count stock restant
+                    'countStockRestantToday' => $countStockRestantToday,
+                    'countStockRestantYesterday' => $countStockRestantYesterday,
+                    'countStockRestantThisWeek' => $countStockRestantThisWeek,
+                    'countStockRestantLastWeek' => $countStockRestantLastWeek,
+                    'countStockRestantThisMonth' => $countStockRestantThisMonth,
+                    'countStockRestantLastMonth' => $countStockRestantLastMonth,
+                    'countStockRestantThisYear' => $countStockRestantThisYear,
+                    'countStockRestantLastYear' => $countStockRestantLastYear,
+
+                    //count stock vendu
+                    'countStockVenduToday' => $countStockVenduToday,
+                    'countStockVenduYesterday' => $countStockVenduYesterday,
+                    'countStockVenduThisWeek' => $countStockVenduThisWeek,
+                    'countStockVenduLastWeek' => $countStockVenduLastWeek,
+                    'countStockVenduThisMonth' => $countStockVenduThisMonth,
+                    'countStockVenduLastMonth' => $countStockVenduLastMonth,
+                    'countStockVenduThisYear' => $countStockVenduThisYear,
+                    'countStockVenduLastYear' => $countStockVenduLastYear,
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
@@ -173,7 +215,27 @@ class DashboardController extends AbstractController
             'countStockThisMonth' => $countStockThisMonth,
             'countStockLastMonth' => $countStockLastMonth,
             'countStockThisYear' => $countStockThisYear,
-            'countStockLastYear' => $countStockLastYear
+            'countStockLastYear' => $countStockLastYear,
+
+            //count stock restant
+            'countStockRestantToday' => $countStockRestantToday,
+            'countStockRestantYesterday' => $countStockRestantYesterday,
+            'countStockRestantThisWeek' => $countStockRestantThisWeek,
+            'countStockRestantLastWeek' => $countStockRestantLastWeek,
+            'countStockRestantThisMonth' => $countStockRestantThisMonth,
+            'countStockRestantLastMonth' => $countStockRestantLastMonth,
+            'countStockRestantThisYear' => $countStockRestantThisYear,
+            'countStockRestantLastYear' => $countStockRestantLastYear,
+
+             //count stock vendu
+             'countStockVenduToday' => $countStockVenduToday,
+             'countStockVenduYesterday' => $countStockVenduYesterday,
+             'countStockVenduThisWeek' => $countStockVenduThisWeek,
+             'countStockVenduLastWeek' => $countStockVenduLastWeek,
+             'countStockVenduThisMonth' => $countStockVenduThisMonth,
+             'countStockVenduLastMonth' => $countStockVenduLastMonth,
+             'countStockVenduThisYear' => $countStockVenduThisYear,
+             'countStockVenduLastYear' => $countStockVenduLastYear,
         ]);
 
         return $this->render('admin/index.html.twig', $_data);

@@ -345,7 +345,7 @@ class ProduitCategorieRepository extends ServiceEntityRepository
         return $qb;
      }
 
-    // Nombre de produit ce mois-ci
+    // Nombre de stock ce mois-ci
     public function countStocksThisMonth()
     {
         $startOfMonth = new \DateTime('first day of this month');
@@ -436,5 +436,184 @@ class ProduitCategorieRepository extends ServiceEntityRepository
                     ->getSingleScalarResult();
        return $qb;
     }
+
+    // Nombre de stock restant d'aujourd'hui
+    public function countStockRestantToday()
+    {
+        $today = new \DateTime();
+        $today->setTime(0, 0, 0);
+        $tomorrow = clone $today;
+        $tomorrow->modify('+1 day');
+
+        $qb = $this->createQueryBuilder('p')
+                    ->select('SUM(p.stockRestant)')
+                    ->where('p.dateCreation >= :today')
+                    ->andWhere('p.dateCreation < :tomorrow')
+                    ->andWhere('p.application = :application_id')
+                    ->setParameter('today', $today)
+                    ->setParameter('tomorrow', $tomorrow)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+
+               return $qb;
+    }
+
+     // Nombre de stock restant d'hier
+     public function countStockRestantYesterday()
+     {
+         $yesterday = new \DateTime();
+         $yesterday->setTime(0, 0, 0);
+         $yesterday->modify('-1 day');
+         $today = clone $yesterday;
+         $today->modify('+1 day');
+ 
+         $qb = $this->createQueryBuilder('p')
+                     ->select('SUM(p.stockRestant)')
+                     ->where('p.dateCreation >= :yesterday')
+                     ->andWhere('p.dateCreation < :today')
+                     ->andWhere('p.application = :application_id')
+                     ->setParameter('yesterday', $yesterday)
+                     ->setParameter('today', $today)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+
+     // Nombre de stock restant cette semaine
+     public function countStockRestantThisWeek()
+     {
+         $startOfWeek = new \DateTime();
+         $startOfWeek->setISODate((int)$startOfWeek->format('o'), (int)$startOfWeek->format('W'));
+         $startOfWeek->setTime(0, 0, 0);
+ 
+         $endOfWeek = clone $startOfWeek;
+         $endOfWeek->modify('+7 days');
+ 
+         $qb = $this->createQueryBuilder('p')
+                     ->select('SUM(p.stockRestant)')
+                     ->where('p.dateCreation >= :start_of_week')
+                     ->andWhere('p.dateCreation < :end_of_week')
+                     ->andWhere('p.application = :application_id')
+                     ->setParameter('start_of_week', $startOfWeek)
+                     ->setParameter('end_of_week', $endOfWeek)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+      // Nombre de stock restant semaine dernière
+      public function countStockRestantLastWeek()
+      {
+          $startOfLastWeek = new \DateTime();
+          $startOfLastWeek->setISODate((int)$startOfLastWeek->format('o'), (int)$startOfLastWeek->format('W') - 1);
+          $startOfLastWeek->setTime(0, 0, 0);
+  
+          $endOfLastWeek = clone $startOfLastWeek;
+          $endOfLastWeek->modify('+7 days');
+  
+          $qb = $this->createQueryBuilder('p')
+                      ->select('SUM(p.stockRestant)')
+                      ->where('p.dateCreation >= :start_of_last_week')
+                      ->andWhere('p.dateCreation < :end_of_last_week')
+                      ->andWhere('p.application = :application_id')
+                      ->setParameter('start_of_last_week', $startOfLastWeek)
+                      ->setParameter('end_of_last_week', $endOfLastWeek)
+                      ->setParameter('application_id', $this->application->getId())
+                      ->getQuery()
+                      ->getSingleScalarResult();
+         return $qb;
+      }
+
+       // Nombre de stock restant ce mois-ci
+     public function countStockRestantThisMonth()
+     {
+         $startOfMonth = new \DateTime('first day of this month');
+         $startOfMonth->setTime(0, 0, 0);
+ 
+         $endOfMonth = new \DateTime('first day of next month');
+         $endOfMonth->setTime(0, 0, 0);
+ 
+         $qb = $this->createQueryBuilder('p')
+                     ->select('SUM(p.stockRestant)')
+                     ->where('p.dateCreation >= :start_of_month')
+                     ->andWhere('p.dateCreation < :end_of_month')
+                     ->andWhere('p.application = :application_id')
+                     ->setParameter('start_of_month', $startOfMonth)
+                     ->setParameter('end_of_month', $endOfMonth)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+      // Nombre de stock restant mois dernier
+      public function countStockRestantLastMonth()
+      {
+          $startOfLastMonth = new \DateTime('first day of last month');
+          $startOfLastMonth->setTime(0, 0, 0);
+  
+          $endOfLastMonth = new \DateTime('first day of this month');
+          $endOfLastMonth->setTime(0, 0, 0);
+  
+          $qb = $this->createQueryBuilder('p')
+                      ->select('SUM(p.stockRestant)')
+                      ->where('p.dateCreation >= :start_of_last_month')
+                      ->andWhere('p.dateCreation < :end_of_last_month')
+                      ->andWhere('p.application = :application_id')
+                      ->setParameter('start_of_last_month', $startOfLastMonth)
+                      ->setParameter('end_of_last_month', $endOfLastMonth)
+                      ->setParameter('application_id', $this->application->getId())
+                      ->getQuery()
+                      ->getSingleScalarResult();
+         return $qb;
+      }
+
+      // Nombre de stock restant cette année
+     public function countStockRestantThisYear()
+     {
+         $startOfYear = new \DateTime('first day of January this year');
+         $startOfYear->setTime(0, 0, 0);
+ 
+         $endOfYear = new \DateTime('first day of January next year');
+         $endOfYear->setTime(0, 0, 0);
+ 
+         $qb = $this->createQueryBuilder('p')
+                     ->select('SUM(p.stockRestant)')
+                     ->where('p.dateCreation >= :start_of_year')
+                     ->andWhere('p.dateCreation < :end_of_year')
+                     ->andWhere('p.application = :application_id')
+                     ->setParameter('start_of_year', $startOfYear)
+                     ->setParameter('end_of_year', $endOfYear)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+      // Nombre de stock restant année dernière
+      public function countStockRestantLastYear()
+      {
+          $startOfLastYear = new \DateTime('first day of January last year');
+          $startOfLastYear->setTime(0, 0, 0);
+  
+          $endOfLastYear = new \DateTime('first day of January this year');
+          $endOfLastYear->setTime(0, 0, 0);
+  
+          $qb = $this->createQueryBuilder('p')
+                      ->select('SUM(p.stockRestant)')
+                      ->where('p.dateCreation >= :start_of_last_year')
+                      ->andWhere('p.dateCreation < :end_of_last_year')
+                      ->andWhere('p.application = :application_id')
+                      ->setParameter('start_of_last_year', $startOfLastYear)
+                      ->setParameter('end_of_last_year', $endOfLastYear)
+                      ->setParameter('application_id', $this->application->getId())
+                      ->getQuery()
+                      ->getSingleScalarResult();
+         return $qb;
+      }
 
 }
