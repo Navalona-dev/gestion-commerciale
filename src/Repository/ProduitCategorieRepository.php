@@ -208,7 +208,7 @@ class ProduitCategorieRepository extends ServiceEntityRepository
       }
 
       // Nombre de produit cette année
-     public function countProductsThisYear($paiement = null, $statut = null)
+     public function countProductsThisYear()
      {
          $startOfYear = new \DateTime('first day of January this year');
          $startOfYear->setTime(0, 0, 0);
@@ -230,7 +230,7 @@ class ProduitCategorieRepository extends ServiceEntityRepository
      }
 
       // Nombre de produit année dernière
-      public function countProductsLastYear($paiement = null, $statut = null)
+      public function countProductsLastYear()
       {
           $startOfLastYear = new \DateTime('first day of January last year');
           $startOfLastYear->setTime(0, 0, 0);
@@ -296,4 +296,145 @@ class ProduitCategorieRepository extends ServiceEntityRepository
                      ->getSingleScalarResult();
         return $qb;
      }
+
+     // Nombre de stock cette semaine
+     public function countStockThisWeek()
+     {
+         $startOfWeek = new \DateTime();
+         $startOfWeek->setISODate((int)$startOfWeek->format('o'), (int)$startOfWeek->format('W'));
+         $startOfWeek->setTime(0, 0, 0);
+ 
+         $endOfWeek = clone $startOfWeek;
+         $endOfWeek->modify('+7 days');
+ 
+         $qb = $this->createQueryBuilder('p')
+                     ->select('SUM(s.qtt)')
+                     ->join('p.stocks', 's')
+                     ->where('s.dateCreation >= :start_of_week')
+                     ->andWhere('s.dateCreation < :end_of_week')
+                     ->andWhere('p.application = :application_id')
+                     ->setParameter('start_of_week', $startOfWeek)
+                     ->setParameter('end_of_week', $endOfWeek)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+     // Nombre de stock semaine dernière
+     public function countStocksLastWeek()
+     {
+         $startOfLastWeek = new \DateTime();
+         $startOfLastWeek->setISODate((int)$startOfLastWeek->format('o'), (int)$startOfLastWeek->format('W') - 1);
+         $startOfLastWeek->setTime(0, 0, 0);
+ 
+         $endOfLastWeek = clone $startOfLastWeek;
+         $endOfLastWeek->modify('+7 days');
+ 
+         $qb = $this->createQueryBuilder('p')
+                     ->select('SUM(s.qtt)')
+                     ->join('p.stocks', 's')
+                     ->where('s.dateCreation >= :start_of_last_week')
+                     ->andWhere('s.dateCreation < :end_of_last_week')
+                     ->andWhere('p.application = :application_id')
+                     ->setParameter('start_of_last_week', $startOfLastWeek)
+                     ->setParameter('end_of_last_week', $endOfLastWeek)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+    // Nombre de produit ce mois-ci
+    public function countStocksThisMonth()
+    {
+        $startOfMonth = new \DateTime('first day of this month');
+        $startOfMonth->setTime(0, 0, 0);
+
+        $endOfMonth = new \DateTime('first day of next month');
+        $endOfMonth->setTime(0, 0, 0);
+
+        $qb = $this->createQueryBuilder('p')
+                    ->select('SUM(s.qtt)')
+                    ->join('p.stocks', 's')
+                    ->where('s.dateCreation >= :start_of_month')
+                    ->andWhere('s.dateCreation < :end_of_month')
+                    ->andWhere('p.application = :application_id')
+                    ->setParameter('start_of_month', $startOfMonth)
+                    ->setParameter('end_of_month', $endOfMonth)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+        return $qb;
+    }
+
+    // Nombre de stock mois dernier
+    public function countStocksLastMonth()
+    {
+        $startOfLastMonth = new \DateTime('first day of last month');
+        $startOfLastMonth->setTime(0, 0, 0);
+
+        $endOfLastMonth = new \DateTime('first day of this month');
+        $endOfLastMonth->setTime(0, 0, 0);
+
+        $qb = $this->createQueryBuilder('p')
+                    ->select('SUM(s.qtt)')
+                    ->join('p.stocks', 's')
+                    ->where('s.dateCreation >= :start_of_last_month')
+                    ->andWhere('s.dateCreation < :end_of_last_month')
+                    ->andWhere('p.application = :application_id')
+                    ->setParameter('start_of_last_month', $startOfLastMonth)
+                    ->setParameter('end_of_last_month', $endOfLastMonth)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+       return $qb;
+    }
+
+    // Nombre de stock cette année
+    public function countStocksThisYear()
+    {
+        $startOfYear = new \DateTime('first day of January this year');
+        $startOfYear->setTime(0, 0, 0);
+
+        $endOfYear = new \DateTime('first day of January next year');
+        $endOfYear->setTime(0, 0, 0);
+
+        $qb = $this->createQueryBuilder('p')
+                    ->select('SUM(s.qtt)')
+                    ->join('p.stocks', 's')
+                    ->where('s.dateCreation >= :start_of_year')
+                    ->andWhere('s.dateCreation < :end_of_year')
+                    ->andWhere('p.application = :application_id')
+                    ->setParameter('start_of_year', $startOfYear)
+                    ->setParameter('end_of_year', $endOfYear)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+       return $qb;
+    }
+
+    // Nombre de stock année dernière
+    public function countStocksLastYear()
+    {
+        $startOfLastYear = new \DateTime('first day of January last year');
+        $startOfLastYear->setTime(0, 0, 0);
+
+        $endOfLastYear = new \DateTime('first day of January this year');
+        $endOfLastYear->setTime(0, 0, 0);
+
+        $qb = $this->createQueryBuilder('p')
+                    ->select('SUM(s.qtt)')
+                    ->join('p.stocks', 's')
+                    ->where('s.dateCreation >= :start_of_last_year')
+                    ->andWhere('s.dateCreation < :end_of_last_year')
+                    ->andWhere('p.application = :application_id')
+                    ->setParameter('start_of_last_year', $startOfLastYear)
+                    ->setParameter('end_of_last_year', $endOfLastYear)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+       return $qb;
+    }
+
 }

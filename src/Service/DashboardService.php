@@ -124,4 +124,40 @@ class DashboardService
         return $countStock;
     }
 
+    public function getCountStockThisWeek()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStockThisWeek();
+        return $countStock;
+    }
+
+    public function getCountStockLastWeek()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStocksLastWeek();
+        return $countStock;
+    }
+
+    public function getCountStockThisMonth()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStocksThisMonth();
+        return $countStock;
+    }
+
+    public function getCountStockLastMonth()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStocksLastMonth();
+        return $countStock;
+    }
+
+    public function getCountStockThisYear()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStocksThisYear();
+        return $countStock;
+    }
+
+    public function getCountStockLastYear()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStocksLastYear();
+        return $countStock;
+    }
+
 }

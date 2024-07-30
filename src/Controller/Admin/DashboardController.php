@@ -79,6 +79,12 @@ class DashboardController extends AbstractController
         //count stock
         $countStockToday = $this->dashboardService->getCountStockToday();
         $countStockYesterday = $this->dashboardService->getCountStockYesterday();
+        $countStockThisWeek = $this->dashboardService->getCountStockThisWeek();
+        $countStockLastWeek = $this->dashboardService->getCountStockLastWeek();
+        $countStockThisMonth = $this->dashboardService->getCountStockThisMonth();
+        $countStockLastMonth = $this->dashboardService->getCountStockLastMonth();
+        $countStockThisYear = $this->dashboardService->getCountStockThisYear();
+        $countStockLastYear = $this->dashboardService->getCountStockLastYear();
 
 
         $data = [];
@@ -111,10 +117,16 @@ class DashboardController extends AbstractController
                     'countProduitLastMonth' => $countProduitLastMonth,
                     'countProduitThisYear' => $countProduitThisYear,
                     'countProduitLastYear' => $countProduitLastYear,
-                    'countStockToday' => $countStockToday,
 
                     //count stock
-                    'countStockYesterday' => $countStockYesterday
+                    'countStockToday' => $countStockToday,
+                    'countStockYesterday' => $countStockYesterday,
+                    'countStockThisWeek' => $countStockThisWeek,
+                    'countStockLastWeek' => $countStockLastWeek,
+                    'countStockThisMonth' => $countStockThisMonth,
+                    'countStockLastMonth' => $countStockLastMonth,
+                    'countStockThisYear' => $countStockThisYear,
+                    'countStockLastYear' => $countStockLastYear
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
@@ -155,7 +167,13 @@ class DashboardController extends AbstractController
 
             //count stock
             'countStockToday' => $countStockToday,
-            'countStockYesterday' => $countStockYesterday
+            'countStockYesterday' => $countStockYesterday,
+            'countStockThisWeek' => $countStockThisWeek,
+            'countStockLastWeek' => $countStockLastWeek,
+            'countStockThisMonth' => $countStockThisMonth,
+            'countStockLastMonth' => $countStockLastMonth,
+            'countStockThisYear' => $countStockThisYear,
+            'countStockLastYear' => $countStockLastYear
         ]);
 
         return $this->render('admin/index.html.twig', $_data);

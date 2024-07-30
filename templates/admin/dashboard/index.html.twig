@@ -202,12 +202,12 @@
       <div id="stock-data" style="display: none;">
         <span id="count-stock-today"> {{countStockToday | default(0)}} </span>
         <span id="count-stock-yesterday"> {{countStockYesterday | default(0)}} </span>
-        <span id="count-stock-this-week"></span>
-        <span id="count-stock-last-week"></span>
-        <span id="count-stock-this-month"></span>
-        <span id="count-stock-last-month"></span>
-        <span id="count-stock-this-year"></span>
-        <span id="count-stock-last-year"></span>
+        <span id="count-stock-this-week"> {{countStockThisWeek | default(0)}} </span>
+        <span id="count-stock-last-week"> {{countStockLastWeek |default(0)}} </span>
+        <span id="count-stock-this-month"> {{countStockThisMonth |default(0)}} </span>
+        <span id="count-stock-last-month"> {{countStockLastMonth | default(0)}} </span>
+        <span id="count-stock-this-year"> {{countStockThisYear | default(0)}} </span>
+        <span id="count-stock-last-year"> {{countStockLastYear | default(0)}} </span>
       </div>
 
       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
