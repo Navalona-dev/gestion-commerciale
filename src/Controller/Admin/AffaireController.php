@@ -617,10 +617,29 @@ class AffaireController extends AbstractController
             $data["html"] = $this->renderView('admin/affaires/financier.html.twig', [
                 'affaire' => $affaire,
                 'produits' => $produits,
-                'factureFile' => (count($facturesValide) > 0 ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
+                'factureFile' => ((count($facturesValide) > 0 && $facturesValide[count($facturesValide) - 1] != null) ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
             ]);
           
             return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/financier/from-other-page/{affaire}', name: '_financier_from_other_page')]
+    public function showFinancier(Request $request, Affaire $affaire, SessionInterface $session)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+      
+        $data = [];
+        try {
+            $session->set('idAffaire', $affaire->getId());
+            return $this->redirect("http://www.gestion-commerciale.com/admin#tab-financier-affaire");
         } catch (\Exception $Exception) {
             $data["exception"] = $Exception->getMessage();
             $data["html"] = "";
@@ -749,6 +768,7 @@ class AffaireController extends AbstractController
     {
         if (count($affaire->getProducts()) > 0) {
             $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
+           
             $pdf = $this->factureService->add($affaire, $documentFolder);
            
             return new Response($pdf->Output('test.pdf', 'I'), 200, [

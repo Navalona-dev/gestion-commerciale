@@ -46,8 +46,12 @@
                             <td> {{liste.dateCreation|date('d-m-Y')}} </td>
                             <td> {{liste.type}} </td>
                             <td> {{liste.numero}} </td>
-                            <td> {{liste.compte}} </td>
-                            <td> {{liste.affaire}} </td>
+                            <td> <a href="{{path('affaires_liste_affaire_from_facture', {'compte': liste.compteId})}}" title="Pdf">
+                                            {{liste.compte}}
+                                        </a> </td>
+                            <td>  <a href="{{path('affaires_financier_from_other_page', {'affaire': liste.affaireId})}}" title="Pdf">
+                                            {{liste.affaire}}
+                                        </a></td>
                             {# <td> {{liste.prixTtc|number_format(2, ',', ',')}} Ar </td> #}
                             <td>{{liste.prixHt|number_format(2, ',', ' ')}} Ar</td>
                             <td> {{liste.reglement|number_format(2, ',', ' ')}} Ar </td>

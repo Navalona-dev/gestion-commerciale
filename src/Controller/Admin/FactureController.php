@@ -102,14 +102,14 @@ class FactureController extends AbstractController
 
             if ($start == 0) {
                
-                $nbFacture = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, true);
+                $nbFacture = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, true, $search);
               
                 $session->set('nbFacture_'.$genre, $nbFacture);
             } else {
                 $nbFacture = $session->get('nbFacture_'.$genre);
             }
          
-           $facturesAssoc = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, false);
+           $facturesAssoc = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, false, $search);
            //dd($facturesAssoc);
            $data = [];
 
@@ -154,7 +154,7 @@ class FactureController extends AbstractController
                 $idCompte = $compteArray['compteId'];
                 $data[$k][] = "<a href=\"" . $this->generateUrl('affaires_liste_affaire_from_facture', ['compte' => $compteArray['compteId']]) . "\">" . $compteArray['compte'] . "</a>";
                 //$data[$k][] = "<a href=\"#\" onclick=\"return listAffaireByCompte($idCompte, 1, 'facture')\">" . $compteArray['compte'] . "</a>";
-                $data[$k][] = "<a href=\"" . $this->generateUrl('affaires_financier', ['affaire' => $compteArray['affaireId']]) . "\">" . $compteArray['nomAffaire'] . "</a>";
+                $data[$k][] = "<a href=\"" . $this->generateUrl('affaires_financier_from_other_page', ['affaire' => $compteArray['affaireId']]) . "\">" . $compteArray['nomAffaire'] . "</a>";
                // $data[$k][] = $compteArray['prixTtc'];
                 $data[$k][] = $compteArray['prixHt'];
                 $data[$k][] = $compteArray['reglement'];

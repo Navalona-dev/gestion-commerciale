@@ -105,6 +105,7 @@ class FactureRepository extends ServiceEntityRepository
         $pg = 1,
         $order = null,
         $isCount = false,
+        $search = null
     ) {
         ini_set('memory_limit', '-1');
         ini_set('max_execution_time', '-1');
@@ -131,6 +132,13 @@ class FactureRepository extends ServiceEntityRepository
                            compte.telephone like :nom or compte.email like :nom)');
             $parameters['nom'] = '%' . trim($nom) . '%';
             $parameterType['nom'] = ParameterType::STRING;
+        }
+
+        if (null != $search && $search != "") {
+            $conditions = self::conditionConcatener($conditions, '(compte.nom like :search or compte.adresse like :search or
+                           compte.telephone like :search or compte.email like :search)');
+            $parameters['search'] = '%' . trim($search) . '%';
+            $parameterType['search'] = ParameterType::STRING;
         }
 
         if (null != $dateDu && null != $dateAu) {
