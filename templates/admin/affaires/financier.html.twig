@@ -194,7 +194,7 @@
                                     </a>
                                 {% else %}
                                     <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
-                                    <a style="cursor: pointer;" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
+                                    <a target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
                                 {% endif %}
                                     {#<a href="#" class="text-danger financier-icon"><i class="bi bi-database-fill-check"></i></a>
                                     <a href="#" class="text-info icon-t">t</a>
@@ -224,10 +224,10 @@
                             <div class="col-md-6 col-12">
                                 <div class="box" style="border: 1px solid #5a5858; margin-left: 15px;">
                                     <div class="row box-content px-3">
-                                        <div class="col-md-8 col-12 align-middle">
+                                        <div class="col-md-6 col-12 align-middle">
                                             <p class="mt-4">Montant : </p>
                                         </div>
-                                        <div class="col-md-4 col-12 align-middle">
+                                        <div class="col-md-6 col-12 align-middle d-flex justify-content-end">
                                             <p class="mt-4">{{ montantHt|number_format(2, ',', ' ') }} Ar</p>
                                         </div>
                                     </div>

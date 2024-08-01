@@ -17,7 +17,7 @@ $(document).ready(function() {
         showTabPermission();
     }
     if (anchorName === "tab-dashboard") {
-        showTabDasboard();
+        showTabDashboard();
     }
     if (anchorName === "tab-privilege") {
         showTabPrivilege();
@@ -64,7 +64,8 @@ $(document).ready(function() {
     }
 
     if (anchorName === "tab-transfert-produit") {
-        listTransfertByProduitSession();
+        //listTransfertByProduitSession();
+        listTransfert(idProduit);
     }
 
     if (anchorName === "tab-financier-affaire") {
@@ -132,6 +133,7 @@ function newCompte(isNew = false, genre = 1) {
 }
 
 function information(id = null) {
+    showSpinner();
     $.ajax({
             type: 'get',
             url: '/admin/affaires/information/'+id,
@@ -153,18 +155,24 @@ function information(id = null) {
                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                 $(".loadBody").css('display', 'none');
+
+                // Réinitialiser le DataTable avec un léger retard
+            setTimeout(function() {
+                hideSpinner();
+            }, 2000);
             },
             error: function () {
                 // $(".loadBody").css('display', 'none');
                 $(".chargementError").css('display', 'block');
+                hideSpinner();
             }
 
         });
 }
 
 function listProduitByCompte(id = null) {
-    //var anchorName = document.location.hash.substring(1);
-
+    showSpinner();
+    
     $.ajax({
             type: 'post',
             url: '/admin/affaires/produit/'+id,
@@ -191,11 +199,26 @@ function listProduitByCompte(id = null) {
                 $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
                 
                 $(".loadBody").css('display', 'none');
+                // Réinitialiser le DataTable avec un léger retard
+                setTimeout(function() {
+                    $('#table-produit-fournisseur').DataTable({
+                        responsive: true,
+                        language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                    },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                    });
+                    hideSpinner();
+                }, 2000);
 
             },
             error: function () {
                 // $(".loadBody").css('display', 'none');
                 $(".chargementError").css('display', 'block');
+                hideSpinner();
             }
 
         });
@@ -203,7 +226,6 @@ function listProduitByCompte(id = null) {
     
 function newAffaire(idCompte = null, statut = "devis") {
     var anchorName = document.location.hash.substring(1);
-
         $.ajax({
             url: '/admin/affaires/new/'+idCompte,
             type: 'POST',
@@ -225,7 +247,6 @@ function newAffaire(idCompte = null, statut = "devis") {
 
 function updateAffaire(id = null) {
     var anchorName = document.location.hash.substring(1);
-
     $.ajax({
         url: '/admin/affaires/edit/'+id,
         type: 'POST',
@@ -279,35 +300,32 @@ function deleteAffaire(id = null) {
     }
 }
 
-
-
 function openModalUpdatePriceProduit(id = null) {
     var anchorName = document.location.hash.substring(1);
+    $.ajax({
+            url: '/admin/produit/categorie/edit/prix/'+id,
+            type: 'POST',
+            data: {id: id},
+            success: function (response) {
+                if (response.html != "") {
+                    $("#blocModalPriceProduitEmpty").empty();
+                    $("#blocModalPriceProduitEmpty").append(response.html);
 
-        $.ajax({
-                url: '/admin/produit/categorie/edit/prix/'+id,
-                type: 'POST',
-                data: {id: id},
-                success: function (response) {
-                    if (response.html != "") {
-                        $("#blocModalPriceProduitEmpty").empty();
-                        $("#blocModalPriceProduitEmpty").append(response.html);
+                    $('#modalUpdatePriceProduct').modal('show');
 
-                        $('#modalUpdatePriceProduct').modal('show');
-
-                        if (anchorName) {
-                                window.location.hash = anchorName;
-                        }
-
+                    if (anchorName) {
+                            window.location.hash = anchorName;
                     }
-                    
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de la mise à jour de prix.');
+
                 }
-            });
-    }
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                alert('Erreur lors de la mise à jour de prix.');
+            }
+        });
+}
 
 
 function listImageByProduitSession() {
@@ -334,6 +352,7 @@ function listImageByProduitSession() {
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
+
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
@@ -377,6 +396,7 @@ function listStockByProduitSession() {
  }
 
  function listTransfertByProduitSession() {
+    showSpinner();
     $.ajax({
              type: 'post',
              url: '/admin/transfert/refresh/produit',
@@ -400,17 +420,33 @@ function listStockByProduitSession() {
                  $('.sidebar-nav a[href="#tab-stock"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    $('#liste-table-transfert').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
                  $(".chargementError").css('display', 'block');
+                 hideSpinner();
              }
 
          });
  }
 
 function showTabCompte(genre = 1) {
-        
+    showSpinner();
+    
     $.ajax({
         type: 'post',
         url: '/admin/comptes/',
@@ -449,6 +485,20 @@ function showTabCompte(genre = 1) {
             $('.sidebar-nav a[href="#tab-compte_' + genre + '"]').removeClass('collapsed').tab('show');
 
             $(".loadBody").css('display', 'none');
+
+            setTimeout(function() {
+                $('#liste-table-compte').DataTable({
+                    responsive: true,
+                    language: {
+                      url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                  },
+                    border: false,
+                    scrollX: '100%',
+                    pageLength: 10,
+                    scrollCollapse: false,
+                  });
+                hideSpinner();
+            }, 2000);
         },
         error: function() {
             $(".chargementError").css('display', 'block');
@@ -457,6 +507,8 @@ function showTabCompte(genre = 1) {
 }
 
 function showTabProfile() {
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin/utilisateurs/profile/user',
@@ -480,6 +532,9 @@ function showTabProfile() {
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
+                 setTimeout(function() {
+                    hideSpinner();
+                }, 2000);
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
@@ -489,9 +544,9 @@ function showTabProfile() {
          });
  }
 
-
-
 function showTabApplication() {
+    showSpinner();
+
     $.ajax({
              type: 'post',
              url: '/admin/applications/',
@@ -516,16 +571,34 @@ function showTabApplication() {
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                 
                  $(".loadBody").css('display', 'none');
+
+                  // Réinitialiser le DataTable avec un léger retard
+                setTimeout(function() {
+                    $('#liste-table-application').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
                  $(".chargementError").css('display', 'block');
+                 hideSpinner();
              }
 
          });
  }
 
 function showTabUtilisateur() {
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin/utilisateurs/',
@@ -550,6 +623,20 @@ function showTabUtilisateur() {
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    $('#liste-table-utilisateur').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
@@ -560,6 +647,8 @@ function showTabUtilisateur() {
  }
 
 function showTabPrivilege() {
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin/privileges/',
@@ -584,6 +673,20 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    $('#liste-table-privilege').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
@@ -593,41 +696,57 @@ function showTabPrivilege() {
          });
  }
 
-function showTabPermission() {
+ function showTabPermission() {
+    showSpinner();
     $.ajax({
-             type: 'post',
-             url: '/admin/permissions/',
-             //data: {},
-             success: function (response) {
-                 $("#tab-permission").empty();
-                 $("#tab-permission").append(response.html);
-                 $('.sidebar-nav a[href="#tab-permission"]').tab('show');
-                 $("#tab-permission").addClass('active');
-                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-permission"]').removeClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
-                 $(".loadBody").css('display', 'none');
-             },
-             error: function () {
-                // $(".loadBody").css('display', 'none');
-                 $(".chargementError").css('display', 'block');
-             }
+        type: 'post',
+        url: '/admin/permissions/',
+        success: function (response) {
+            $("#tab-permission").empty();
+            $("#tab-permission").append(response.html);
+            $('.sidebar-nav a[href="#tab-permission"]').tab('show');
+            $("#tab-permission").addClass('active');
+            $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-permission"]').removeClass('collapsed');
+            $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
 
-         });
- }
+            // Réinitialiser le DataTable avec un léger retard
+            setTimeout(function() {
+                $('#liste-table-permission').DataTable({
+                    responsive: true,
+                    language: {
+                      url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                  },
+                    border: false,
+                    scrollX: '100%',
+                    pageLength: 10,
+                    scrollCollapse: false,
+                  });
+                hideSpinner();
+            }, 2000);
+        },
+        error: function () {
+            $(".chargementError").css('display', 'block');
+            hideSpinner();
+        }
+    });
+}
+
 
  function showTabCategoriePermission() {
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin/categorypermission/',
@@ -652,6 +771,20 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    $('#liste-table-category-permission').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
@@ -663,6 +796,8 @@ function showTabPermission() {
  
 
  function showTabAffaireClient() {
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin/affaires/refresh',
@@ -693,17 +828,23 @@ function showTabPermission() {
                 $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
                 
                 $(".loadBody").css('display', 'none');
+                setTimeout(function() {
+                    hideSpinner();
+                }, 2000);
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
                  $(".chargementError").css('display', 'block');
+                 hideSpinner();
              }
 
          });
  }
 
- function showTabDasboard() {
+ function showTabDashboard() {
     var anchorName = document.location.hash.substring(1);
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin',
@@ -711,7 +852,6 @@ function showTabPermission() {
              success: function (response) {
                  $("#tab-dashboard").empty();
                  $("#tab-dashboard").append(response.html);
-                 $('.sidebar-nav a[href="#tab-dashboard"]').tab('show');
                  $("#tab-dashboard").addClass('active');
                  $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-dashboard"]').removeClass('collapsed');
@@ -728,16 +868,24 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
+                 setTimeout(function() {
+                    hideSpinner();
+                }, 2000);
+
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
                  $(".chargementError").css('display', 'block');
+                hideSpinner();
              }
 
          });
  }
 
+
  function showTabCategorie() {
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin/categorie/',
@@ -762,10 +910,25 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    $('#liste-table-categorie').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
                  $(".chargementError").css('display', 'block');
+                 hideSpinner();
              }
 
          });
@@ -773,6 +936,8 @@ function showTabPermission() {
 
 
  function showTabProduitCategorie() {
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin/produit/categorie/',
@@ -798,6 +963,20 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    $('#liste-table-produi-categorie').DataTable({
+                        responsive: true,
+                        language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                    },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                    });
+                    hideSpinner();
+                }, 2000);
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
@@ -808,6 +987,8 @@ function showTabPermission() {
  }
 
  function showTabProduitType() {
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin/produit/type/',
@@ -835,6 +1016,20 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
+                 setTimeout(function() {
+                    $('#liste-table-type').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
+
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
@@ -845,6 +1040,8 @@ function showTabPermission() {
  }
 
  function showTabImportProduit() {
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin/import/produit/',
@@ -870,6 +1067,11 @@ function showTabPermission() {
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                
                  $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    hideSpinner();
+                }, 2000);
+
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
@@ -881,6 +1083,7 @@ function showTabPermission() {
 
 
 function financier(id = null) {
+    showSpinner();
     
     $.ajax({
             type: 'get',
@@ -904,16 +1107,22 @@ function financier(id = null) {
                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                 $(".loadBody").css('display', 'none');
+                setTimeout(function() {
+                    hideSpinner();
+                }, 2000);
             },
             error: function () {
                 // $(".loadBody").css('display', 'none');
                 $(".chargementError").css('display', 'block');
+                hideSpinner();
             }
 
         });
 }
 
 function ficheClient(id = null) {
+    showSpinner();
+    
     $.ajax({
             type: 'get',
             url: '/admin/affaires/fiche/'+id,
@@ -940,10 +1149,15 @@ function ficheClient(id = null) {
                 $("#entete-affaire").addClass('d-none');
                
                 $(".loadBody").css('display', 'none');
+                $(".loadBody").css('display', 'none');
+                setTimeout(function() {
+                    hideSpinner();
+                }, 2000);
             },
             error: function () {
                 // $(".loadBody").css('display', 'none');
                 $(".chargementError").css('display', 'block');
+                hideSpinner();
             }
 
         });
@@ -951,6 +1165,8 @@ function ficheClient(id = null) {
 
 function listAffaireByCompte(id = null, genre = 1) {
     //var anchorName = document.location.hash.substring(1);
+    showSpinner();
+    
     $.ajax({
             type: 'post',
             url: '/admin/affaires/'+id,
@@ -986,16 +1202,24 @@ function listAffaireByCompte(id = null, genre = 1) {
                 
                 $(".loadBody").css('display', 'none');
 
+                $(".loadBody").css('display', 'none');
+                setTimeout(function() {
+                    hideSpinner();
+                }, 2000);
+
             },
             error: function () {
                 // $(".loadBody").css('display', 'none');
                 $(".chargementError").css('display', 'block');
+                hideSpinner();
             }
 
         });
 }
 
 function showTabFacture() {
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin/facture/',
@@ -1020,6 +1244,19 @@ function showTabFacture() {
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
+                 setTimeout(function() {
+                    $('.table-facture').DataTable({
+                        responsive: true,
+                        language: {
+                            url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                        },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                    });
+                    hideSpinner();
+                }, 2000);
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
@@ -1030,6 +1267,8 @@ function showTabFacture() {
  }
 
  function showTabFactureAffaire(id = null) {
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin/affaires/facture/'+id,
@@ -1055,10 +1294,24 @@ function showTabFacture() {
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
+                 setTimeout(function() {
+                    $('.table-facture-affaire').DataTable({
+                        responsive: true,
+                        language: {
+                            url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                        },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                    });
+                    hideSpinner();
+                }, 2000);
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
                  $(".chargementError").css('display', 'block');
+                 hideSpinner();
              }
 
          });
@@ -1066,6 +1319,8 @@ function showTabFacture() {
  
 
  function listStock(id = null) {
+    showSpinner();
+    
     $.ajax({
              type: 'post',
              url: '/admin/stock/'+id,
@@ -1086,6 +1341,20 @@ function showTabFacture() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    $('#liste-table-stock').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
@@ -1095,35 +1364,109 @@ function showTabFacture() {
          });
  }
 
+function listImage(id = null) {
+    showSpinner();
+    
+    $.ajax({
+            type: 'post',
+            url: '/admin/produit/image/'+id,
+            //data: {},
+            success: function (response) {
+                $("#tab-produit-image").empty();
+                $("#tab-produit-image").append(response.html);
+                $("#tab-produit-image").addClass('active');
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $(".loadBody").css('display', 'none');
 
-    function listImage(id = null) {
-        $.ajax({
-                type: 'post',
-                url: '/admin/produit/image/'+id,
-                //data: {},
-                success: function (response) {
-                    $("#tab-produit-image").empty();
-                    $("#tab-produit-image").append(response.html);
-                    $("#tab-produit-image").addClass('active');
-                    $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
-                    $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
-                    $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
-                    $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
-                    $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
-                    $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
-                    $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
-                    $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
-                    $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
-                    $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
-                    $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
-                    $(".loadBody").css('display', 'none');
-                },
-                error: function () {
-                    // $(".loadBody").css('display', 'none');
-                    $(".chargementError").css('display', 'block');
-                }
+                setTimeout(function() {
+                    $('#liste-table-produit-image').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
+                
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+            }
 
-            });
-    }
+        });
+}
 
+function listTransfert(id = null) {
+    showSpinner();
+    $.ajax({
+             type: 'post',
+             url: '/admin/transfert/'+id,
+             //data: {},
+             success: function (response) {
+                 $("#tab-transfert-produit").empty();
+                 $("#tab-transfert-produit").append(response.html);
+                 $("#tab-transfert-produit").addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-stock"]').addClass('collapsed');
+                 $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    $('#liste-table-transfert').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+                 hideSpinner();
+             }
+
+         });
+ }
+
+    // Fonction pour afficher le spinner et cacher le contenu
+function showSpinner() {
+    $("#spinner").css('display', 'block');
+    $(".tab-content").addClass('hide-content');
+}
+
+// Fonction pour masquer le spinner et afficher le contenu
+function hideSpinner() {
+    $("#spinner").css('display', 'none');
+    $(".tab-content").removeClass('hide-content');
+}
 

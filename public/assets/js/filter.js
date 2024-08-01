@@ -141,3 +141,105 @@ $(document).ready(function() {
     // Initial load for today
     updateTransferts('today', "Aujourd'hui");
   });
+
+  //best order filter
+
+$(document).ready(function() {
+    $('#best-order-table-yesterday').hide();
+    $('#best-order-table-this-week').hide();
+    $('#best-order-table-last-week').hide();
+    $('#best-order-table-this-month').hide();
+    $('#best-order-table-last-month').hide();
+    $('#best-order-table-this-year').hide();
+    $('#best-order-table-last-year').hide();
+  
+    $('#best-order-filter-today').click(function() {
+      $('#best-order-table-today').show();
+      $('#best-order-table-yesterday').hide();
+      $('#best-order-table-this-week').hide();
+      $('#best-order-table-last-week').hide();
+      $('#best-order-table-this-month').hide();
+      $('#best-order-table-last-month').hide();
+      $('#best-order-table-this-year').hide();
+      $('#best-order-table-last-year').hide();
+    });
+  
+    $('#best-order-filter-yesterday').click(function() {
+      $('#best-order-table-yesterday').show();
+      $('#best-order-table-today').hide();
+      $('#best-order-table-this-week').hide();
+      $('#best-order-table-last-week').hide();
+      $('#best-order-table-this-month').hide();
+      $('#best-order-table-last-month').hide();
+      $('#best-order-table-this-year').hide();
+      $('#best-order-table-last-year').hide();
+    });
+  
+    $('#best-order-filter-this-week').click(function() {
+      $('#best-order-table-yesterday').hide();
+      $('#best-order-table-today').hide();
+      $('#best-order-table-this-week').show();
+      $('#best-order-table-last-week').hide();
+      $('#best-order-table-this-month').hide();
+      $('#best-order-table-last-month').hide();
+      $('#best-order-table-this-year').hide();
+      $('#best-order-table-last-year').hide();
+    });
+  
+    $('#best-order-filter-last-week').click(function() {
+      $('#best-order-table-yesterday').hide();
+      $('#best-order-table-today').hide();
+      $('#best-order-table-this-week').hide();
+      $('#best-order-table-last-week').show();
+      $('#best-order-table-this-month').hide();
+      $('#best-order-table-last-month').hide();
+      $('#best-order-table-this-year').hide();
+      $('#best-order-table-last-year').hide();
+    });
+  
+    $('#best-order-filter-this-month').click(function() {
+      $('#best-order-table-yesterday').hide();
+      $('#best-order-table-today').hide();
+      $('#best-order-table-this-week').hide();
+      $('#best-order-table-last-week').hide();
+      $('#best-order-table-this-month').show();
+      $('#best-order-table-last-month').hide();
+      $('#best-order-table-this-year').hide();
+      $('#best-order-table-last-year').hide();
+    });
+  
+    $('#best-order-filter-last-month').click(function() {
+      $('#best-order-table-yesterday').hide();
+      $('#best-order-table-today').hide();
+      $('#best-order-table-this-week').hide();
+      $('#best-order-table-last-week').hide();
+      $('#best-order-table-this-month').hide();
+      $('#best-order-table-last-month').show();
+      $('#best-order-table-this-year').hide();
+      $('#best-order-table-last-year').hide();
+    });
+  
+    $('#best-order-filter-this-year').click(function() {
+      $('#best-order-table-yesterday').hide();
+      $('#best-order-table-today').hide();
+      $('#best-order-table-this-week').hide();
+      $('#best-order-table-last-week').hide();
+      $('#best-order-table-this-month').hide();
+      $('#best-order-table-last-month').hide();
+      $('#best-order-table-this-year').show();
+      $('#best-order-table-last-year').hide();
+    });
+  
+    $('#best-order-filter-yesterday').click(function() {
+      $('#best-order-table-yesterday').hide();
+      $('#best-order-table-today').hide();
+      $('#best-order-table-this-week').hide();
+      $('#best-order-table-last-week').hide();
+      $('#best-order-table-this-month').hide();
+      $('#best-order-table-last-month').hide();
+      $('#best-order-table-this-year').hide();
+      $('#best-order-table-last-year').show();
+    });
+  
+  
+  })

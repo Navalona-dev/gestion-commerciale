@@ -805,4 +805,85 @@ class AffaireRepository extends ServiceEntityRepository
              ->getQuery()
              ->getSingleScalarResult();
      }
+
+     //best order
+
+     public function getTopOrdersByTotal($startDate = null, $endDate = null, $paiement = null, $statut = null)
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('a as order, SUM(p.puHt) as total')
+            ->join('a.products', 'p')
+            ->where('a.dateCreation >= :startDate')
+            ->andWhere('a.dateCreation < :endDate')
+            ->andWhere('a.paiement = :paiement')
+            ->andWhere('a.statut = :statut')
+            ->andWhere('a.application = :application_id')
+            ->setParameter('startDate', $startDate->format('Y-m-d 00:00:00'))
+            ->setParameter('endDate', $endDate->format('Y-m-d 23:59:59')) // Utiliser 23:59:59 pour inclure toute la journée
+            ->setParameter('paiement', $paiement)
+            ->setParameter('statut', $statut)
+            ->setParameter('application_id', $this->application->getId())
+            ->groupBy('a')
+            ->orderBy('total', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery();
+
+        return $qb->getResult();
+    }
+
+
+    public function getTopOrdersByTotalToday($paiement = null, $statut = null)
+    {
+        $today = new \DateTime('today');
+        $endOfToday = (clone $today)->modify('+1 day')->setTime(0, 0, 0);
+        return $this->getTopOrdersByTotal($today, $endOfToday, $paiement, $statut);
+    }
+    
+    public function getTopOrdersByTotalYesterday($paiement = null, $statut = null)
+    {
+        $yesterday = new \DateTime('yesterday');
+        return $this->getTopOrdersByTotal($yesterday, $yesterday->modify('+1 day'), $paiement, $statut);
+    }
+
+    public function getTopOrdersByTotalThisWeek($paiement = null, $statut = null) 
+    {
+        $startOfWeek = new \DateTime('monday this week');
+        $endOfWeek = new \DateTime('sunday this week');
+        return $this->getTopOrdersByTotal($startOfWeek, $endOfWeek->modify('+1 day'), $paiement, $statut);
+    }
+
+    public function getTopOrdersByTotalLastWeek($paiement = null, $statut = null) 
+    {
+        $startOfLastWeek = new \DateTime('monday last week');
+        $endOfLastWeek = new \DateTime('sunday last week');
+        return $this->getTopOrdersByTotal($startOfLastWeek, $endOfLastWeek->modify('+1 day'), $paiement, $statut);
+    }
+
+    public function getTopOrdersByTotalThisMonth($paiement = null, $statut = null)
+    {
+        $startOfMonth = new \DateTime('first day of this month');
+        $endOfMonth = new \DateTime('last day of this month');
+        return $this->getTopOrdersByTotal($startOfMonth, $endOfMonth->modify('+1 day'), $paiement, $statut);
+    }
+
+    public function getTopOrdersByTotalLastMonth($paiement = null, $statut = null)
+    {
+        $startOfLastMonth = new \DateTime('first day of last month');
+        $endOfLastMonth = new \DateTime('last day of last month');
+        return $this->getTopOrdersByTotal($startOfLastMonth, $endOfLastMonth->modify('+1 day'), $paiement, $statut);
+    }
+
+    public function getTopOrdersByTotalThisYear($paiement = null, $statut = null)
+    {
+        $startOfYear = new \DateTime('first day of January this year');
+        $endOfYear = new \DateTime('last day of December this year');
+        return $this->getTopOrdersByTotal($startOfYear, $endOfYear->modify('+1 day'), $paiement, $statut);
+    }
+
+    public function getTopOrdersByTotalLastYear($paiement = null, $statut = null)
+    {
+        $startOfLastYear = new \DateTime('first day of January last year');
+        $endOfLastYear = new \DateTime('last day of December last year');
+        return $this->getTopOrdersByTotal($startOfLastYear, $endOfLastYear->modify('+1 day'), $paiement, $statut);
+    }
 }

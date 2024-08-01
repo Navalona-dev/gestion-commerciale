@@ -345,4 +345,27 @@ $(document).ready(function() {
   });
 });
 
+function showSpinner() {
+  document.getElementById('spinner').style.display = 'block';
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hide-content'));
+}
+
+function hideSpinner() {
+  document.getElementById('spinner').style.display = 'none';
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('hide-content'));
+}
+
+// Exemple d'utilisation
+document.addEventListener('DOMContentLoaded', function() {
+  // Afficher le spinner et cacher le contenu
+  showSpinner();
+  
+  // Simuler une opération asynchrone
+  setTimeout(function() {
+    // Masquer le spinner et afficher le contenu
+    hideSpinner();
+  }, 3000);
+});
+
+
 

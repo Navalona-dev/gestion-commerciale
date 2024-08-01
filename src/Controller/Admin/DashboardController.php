@@ -152,6 +152,15 @@ class DashboardController extends AbstractController
         $countProductsSoldThisYearByDay = $this->dashboardService->getProductsSoldThisYearByMonth('paye', 'commande');
         $countProductsSoldLastYearByDay = $this->dashboardService->getProductsSoldLastYearByMonth('paye', 'commande');
 
+        //best order
+        $bestOrderToday = $this->dashboardService->getTopOrdersByTotalToday('paye', 'commande');
+        $bestOrderYesterday = $this->dashboardService->getTopOrdersByTotalYesterday('paye', 'commande');
+        $bestOrderThisWeek = $this->dashboardService->getTopOrdersByTotalThisWeek('paye', 'commande');
+        $bestOrderLastWeek = $this->dashboardService->getTopOrdersByTotalLastWeek('paye', 'commande');
+        $bestOrderThisMonth = $this->dashboardService->getTopOrdersByTotalThisMonth('paye', 'commande');
+        $bestOrderLastMonth = $this->dashboardService->getTopOrdersByTotalLastMonth('paye', 'commande');
+        $bestOrderThisYear = $this->dashboardService->getTopOrdersByTotalThisYear('paye', 'commande');
+        $bestOrderLastYear = $this->dashboardService->getTopOrdersByTotalLastYear('paye', 'commande');
 
         //dd($countStockRestantToday, $countStockRestantYesterday, $countStockRestantThisWeek, $countStockRestantLastWeek, $countStockRestantThisMonth, $countStockRestantLastMonth, $countStockRestantThisYear, $countStockRestantLastYear);
 
@@ -261,6 +270,16 @@ class DashboardController extends AbstractController
                     'countProductsSoldLastWeekByDay' => array_values($countProductsSoldLastWeekByDay),
                     'countProductsSoldThisYearByDay' => array_values($countProductsSoldThisYearByDay),
                     'countProductsSoldLastYearByDay' => array_values($countProductsSoldLastYearByDay),
+
+                    //best order
+                    'bestOrderToday' => $bestOrderToday,
+                    'bestOrderYesterday' => $bestOrderYesterday,
+                    'bestOrderThisWeek' => $bestOrderThisWeek,
+                    'bestOrderLastWeek' => $bestOrderLastWeek,
+                    'bestOrderThisMonth' => $bestOrderThisMonth,
+                    'bestOrderLastMonth' => $bestOrderLastMonth,
+                    'bestOrderThisYear' => $bestOrderThisYear,
+                    'bestOrderLastYear' => $bestOrderLastYear,
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
@@ -374,6 +393,16 @@ class DashboardController extends AbstractController
             'countProductsSoldLastWeekByDay' => array_values($countProductsSoldLastWeekByDay),
             'countProductsSoldThisYearByDay' => array_values($countProductsSoldThisYearByDay),
             'countProductsSoldLastYearByDay' => array_values($countProductsSoldLastYearByDay),
+
+            //best order
+            'bestOrderToday' => $bestOrderToday,
+            'bestOrderYesterday' => $bestOrderYesterday,
+            'bestOrderThisWeek' => $bestOrderThisWeek,
+            'bestOrderLastWeek' => $bestOrderLastWeek,
+            'bestOrderThisMonth' => $bestOrderThisMonth,
+            'bestOrderLastMonth' => $bestOrderLastMonth,
+            'bestOrderThisYear' => $bestOrderThisYear,
+            'bestOrderLastYear' => $bestOrderLastYear,
         ]);
 
         return $this->render('admin/index.html.twig', $_data);

@@ -406,6 +406,7 @@
         <span id="count-fournisseur-last-year"> {{countFournisseurLastYear | default(0)}} </span>
       </div>
 
+      {#chart graphique#}
       <div class="col-12">
         <div class="card">
             <div class="filter">
@@ -551,7 +552,377 @@
                 </script>
             </div>
         </div>
-    </div>
+      </div>
+
+      {# meilleure commande #}
+
+      <div class="col-12">
+        <div class="card top-selling overflow-auto">
+
+          <div class="filter">
+            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+              <li class="dropdown-header text-start">
+                <h6>Filtrer</h6>
+              </li>
+              <li><a class="dropdown-item best-order-filter" id="best-order-filter-today">Ajourd'hui</a></li>
+              <li><a class="dropdown-item best-order-filter" id="best-order-filter-yesterday">Hier</a></li>
+              <li><a class="dropdown-item best-order-filter" id="best-order-filter-this-week">Cette semaine</a></li>
+              <li><a class="dropdown-item best-order-filter" id="best-order-filter-last-week">Semaine dernière</a></li>
+              <li><a class="dropdown-item best-order-filter" id="best-order-filter-this-month">Ce mois-ci</a></li>
+              <li><a class="dropdown-item best-order-filter" id="best-order-filter-last-month">Mois dernier</a></li>
+              <li><a class="dropdown-item best-order-filter" id="best-order-filter-this-year">Cette année</a></li>
+              <li><a class="dropdown-item best-order-filter" id="best-order-filter-last-year">Année dernière</a></li>
+            </ul>
+          </div>
+
+          <div class="card-body pb-0">
+            <h5 class="card-title">Meilleures ventes <span>| Ajourd'hui</span></h5>
+
+            <table class="table table-borderless">
+              <thead>
+                <tr>
+                  <th scope="col">Client</th>
+                  <th scope="col">Référence</th>
+                  <th scope="col">Produit</th>
+                  <th scope="col">Prix</th>
+                  <th scope="col">Quantité</th>
+                  <th scope="col">Total</th>
+                </tr>
+              </thead>
+              <tbody id="best-order-table-today">
+                {% for item in bestOrderToday %}
+                <tr>
+                  <td> {{item.order.compte.nom}} </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.reference}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.nom}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.qtt}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% set grandTotal = 0 %}
+                    {% set total = 0 %}
+                    {% for product in item.order.products %}
+                    {% set total = total + product.puHt %}  
+                    {% set grandTotal = grandTotal + total %}
+                    {% endfor %}
+                    {{grandTotal|number_format(2, ',', '.')}} €
+                  </td>
+                </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+              <tbody id="best-order-table-yesterday">
+                {% for item in bestOrderYesterday %}
+                <tr>
+                  <td> {{item.order.compte.nom}} </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.reference}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.nom}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.qtt}} <br/>
+                    {% endfor %}
+                  </td>
+                 
+                  <td>
+                    {% set grandTotal = 0 %}
+                    {% set total = 0 %}
+                    {% for product in item.order.products %}
+                    {% set total = total + product.puHt %}  
+                    {% set grandTotal = grandTotal + total %}
+                    {% endfor %}
+                    {{grandTotal|number_format(2, ',', '.')}} €
+                  </td>
+                </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+              <tbody id="best-order-table-this-week">
+                {% for item in bestOrderThisWeek %}
+                <tr>
+                  <td> {{item.order.compte.nom}} </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.reference}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.nom}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.qtt}} <br/>
+                    {% endfor %}
+                  </td>
+                 
+                  <td>
+                    {% set grandTotal = 0 %}
+                    {% set total = 0 %}
+                    {% for product in item.order.products %}
+                    {% set total = total + product.puHt %}  
+                    {% set grandTotal = grandTotal + total %}
+                    {% endfor %}
+                    {{grandTotal|number_format(2, ',', '.')}} €
+                  </td>
+                </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+              <tbody id="best-order-table-last-week">
+                {% for item in bestOrderLastWeek %}
+                <tr>
+                  <td> {{item.order.compte.nom}} </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.reference}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.nom}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.qtt}} <br/>
+                    {% endfor %}
+                  </td>
+                 
+                  <td>
+                    {% set grandTotal = 0 %}
+                    {% set total = 0 %}
+                    {% for product in item.order.products %}
+                    {% set total = total + product.puHt %}  
+                    {% set grandTotal = grandTotal + total %}
+                    {% endfor %}
+                    {{grandTotal|number_format(2, ',', '.')}} €
+                  </td>
+                </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+              <tbody id="best-order-table-this-month">
+                {% for item in bestOrderThisMonth %}
+                <tr>
+                  <td> {{item.order.compte.nom}} </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.reference}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.nom}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.qtt}} <br/>
+                    {% endfor %}
+                  </td>
+                 
+                  <td>
+                    {% set grandTotal = 0 %}
+                    {% set total = 0 %}
+                    {% for product in item.order.products %}
+                    {% set total = total + product.puHt %}  
+                    {% set grandTotal = grandTotal + total %}
+                    {% endfor %}
+                    {{grandTotal|number_format(2, ',', '.')}} €
+                  </td>
+                </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+              <tbody id="best-order-table-last-month">
+                {% for item in bestOrderLastMonth %}
+                <tr>
+                  <td> {{item.order.compte.nom}} </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.reference}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.nom}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.qtt}} <br/>
+                    {% endfor %}
+                  </td>
+                 
+                  <td>
+                    {% set grandTotal = 0 %}
+                    {% set total = 0 %}
+                    {% for product in item.order.products %}
+                    {% set total = total + product.puHt %}  
+                    {% set grandTotal = grandTotal + total %}
+                    {% endfor %}
+                    {{grandTotal|number_format(2, ',', '.')}} €
+                  </td>
+                </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+              <tbody id="best-order-table-this-year">
+                {% for item in bestOrderThisYear %}
+                <tr>
+                  <td> {{item.order.compte.nom}} </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.reference}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.nom}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.qtt}} <br/>
+                    {% endfor %}
+                  </td>
+                 
+                  <td>
+                    {% set grandTotal = 0 %}
+                    {% set total = 0 %}
+                    {% for product in item.order.products %}
+                    {% set total = total + product.puHt %}  
+                    {% set grandTotal = grandTotal + total %}
+                    {% endfor %}
+                    {{grandTotal|number_format(2, ',', '.')}} €
+                  </td>
+                </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+              <tbody id="best-order-table-last-year">
+                {% for item in bestOrderLastYear %}
+                <tr>
+                  <td> {{item.order.compte.nom}} </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.reference}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.nom}} <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for product in item.order.products %}
+                      {{product.qtt}} <br/>
+                    {% endfor %}
+                  </td>
+                 
+                  <td>
+                    {% set grandTotal = 0 %}
+                    {% set total = 0 %}
+                    {% for product in item.order.products %}
+                    {% set total = total + product.puHt %}  
+                    {% set grandTotal = grandTotal + total %}
+                    {% endfor %}
+                    {{grandTotal|number_format(2, ',', '.')}} €
+                  </td>
+                </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+          </div>
+
+        </div>
+      </div>
 
     </div>
   </section>

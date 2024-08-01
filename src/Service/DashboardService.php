@@ -491,4 +491,76 @@ class DashboardService
         return $counts;
     }
 
+    public function getTopOrdersByTotalToday($paiement = null, $statut = null)
+    {
+        $affaires = $this->entityManager->getRepository(Affaire::class)->getTopOrdersByTotalToday($paiement, $statut);
+        if ($affaires != false && count($affaires) > 0) {
+            return $affaires;
+        }
+        return false;
+    }
+
+    public function getTopOrdersByTotalYesterday($paiement = null, $statut = null)
+    {
+        $affaires = $this->entityManager->getRepository(Affaire::class)->getTopOrdersByTotalYesterday($paiement, $statut);
+        if ($affaires != false && count($affaires) > 0) {
+            return $affaires;
+        }
+        return false;
+    }
+
+    public function getTopOrdersByTotalThisWeek($paiement = null, $statut = null)
+    {
+        $affaires = $this->entityManager->getRepository(Affaire::class)->getTopOrdersByTotalThisWeek($paiement, $statut);
+        if ($affaires != false && count($affaires) > 0) {
+            return $affaires;
+        }
+        return false;
+    }
+
+    public function getTopOrdersByTotalLastWeek($paiement = null, $statut = null)
+    {
+        $affaires = $this->entityManager->getRepository(Affaire::class)->getTopOrdersByTotalLastWeek($paiement, $statut);
+        if ($affaires != false && count($affaires) > 0) {
+            return $affaires;
+        }
+        return false;
+    }
+
+    public function getTopOrdersByTotalThisMonth($paiement = null, $statut = null)
+    {
+        $affaires = $this->entityManager->getRepository(Affaire::class)->getTopOrdersByTotalThisMonth($paiement, $statut);
+        if ($affaires != false && count($affaires) > 0) {
+            return $affaires;
+        }
+        return false;
+    }
+
+    public function getTopOrdersByTotalLastMonth($paiement = null, $statut = null)
+    {
+        $affaires = $this->entityManager->getRepository(Affaire::class)->getTopOrdersByTotalLastMonth($paiement, $statut);
+        if ($affaires != false && count($affaires) > 0) {
+            return $affaires;
+        }
+        return false;
+    }
+
+    public function getTopOrdersByTotalThisYear($paiement = null, $statut = null)
+    {
+        $affaires = $this->entityManager->getRepository(Affaire::class)->getTopOrdersByTotalThisYear($paiement, $statut );
+        if ($affaires != false && count($affaires) > 0) {
+            return $affaires;
+        }
+        return false;
+    }
+
+    public function getTopOrdersByTotalLastYear($paiement = null, $statut = null)
+    {
+        $affaires = $this->entityManager->getRepository(Affaire::class)->getTopOrdersByTotalLastYear($paiement , $statut );
+        if ($affaires != false && count($affaires) > 0) {
+            return $affaires;
+        }
+        return false;
+    }
+
 }
