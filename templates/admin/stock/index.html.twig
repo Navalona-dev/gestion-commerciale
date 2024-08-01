@@ -30,19 +30,19 @@
 
           <div class="row mb-5">
             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-              <div class="card p-3 card-quantity shadow">
+              <div class="card p-3 card-quantity shadow text-black-50">
                 <h4 class="fw-bold quantity-title">Quantités</h4>
                 <p class="d-flex justify-content-center mt-3 quantity-count"> <span class="py-1 px-3">{{totalStock}}</span>  </p>
               </div>
             </div>
             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-              <div class="card p-3 card-quantity shadow">
+              <div class="card p-3 card-quantity shadow text-black-50">
                 <h4 class="fw-bold quantity-title">Quantités restant</h4>
                 <p class="d-flex justify-content-center mt-3 quantity-count"> <span class="py-1 px-3">{{produitCategory.stockRestant}}</span> </p>
               </div>
             </div>
             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-              <a href="#tab-transfert-produit" class="text-black" onclick="return listTransfert({{produitCategory.id}})">
+              <a href="#tab-transfert-produit" class="text-black-50" onclick="return listTransfert({{produitCategory.id}})">
                 <div class="card p-3 card-quantity shadow">
                   <h4 class="fw-bold quantity-title">Quantités transferés</h4>
                   {% set quantity = 0 %}
@@ -54,6 +54,7 @@
               </a>
             </div>
             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+             <a href="#tab-quantite-vendu" class="text-black-50" onclick="return showTabQttVendu({{produitCategory.id}})">
               <div class="card p-3 card-quantity shadow">
                 <h4 class="fw-bold quantity-title">Quantités vendu</h4>
                 <p class="d-flex justify-content-center mt-3 quantity-count"> 
@@ -66,6 +67,7 @@
                   </span>
                 </p>
               </div>
+             </a>
             </div>
           </div>
 
@@ -113,6 +115,7 @@
     
     $(document).ready(function() {
     $('#tab-fiche-fournisseur').removeClass('active').empty();
+    $('#tab-quantite-vendu').removeClass('active').empty();
 
       $('.tab-categorie').removeClass('active');
       $('#tab-produit-categorie').removeClass('active');

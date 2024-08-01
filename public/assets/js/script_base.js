@@ -104,6 +104,10 @@ $(document).ready(function() {
         listImage(idProduit);
     }
 
+    if (anchorName === "tab-quantite-vendu") {
+        showTabQttVendu(idProduit);
+    }
+
 });
 
 
@@ -1447,6 +1451,54 @@ function listTransfert(id = null) {
 
                  setTimeout(function() {
                     $('#liste-table-transfert').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+                 hideSpinner();
+             }
+
+         });
+ }
+
+ function showTabQttVendu(id = null) {
+    showSpinner();
+    $.ajax({
+             type: 'post',
+             url: '/admin/produit/categorie/quantite/vendu/'+id,
+             //data: {},
+             success: function (response) {
+                 $("#tab-quantite-vendu").empty();
+                 $("#tab-quantite-vendu").append(response.html);
+                 $("#tab-quantite-vendu").addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-stock"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+                 $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    $('#liste-table-qtt-vendu').DataTable({
                         responsive: true,
                         language: {
                           url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',

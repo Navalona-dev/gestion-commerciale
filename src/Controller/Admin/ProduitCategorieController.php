@@ -9,6 +9,7 @@ use App\Entity\ProduitCategorie;
 use App\Form\ProduitCategorieType;
 use App\Service\ApplicationManager;
 use App\Form\UpdatePriceProductType;
+use App\Repository\ProductRepository;
 use App\Exception\PropertyVideException;
 use App\Form\UpdateProduitCategorieType;
 use App\Service\ProduitCategorieService;
@@ -439,6 +440,40 @@ class ProduitCategorieController extends AbstractController
             $this->createNotFoundException('Exception' . $Exception->getMessage());
         }
         return new JsonResponse($data);
+    }
+
+    #[Route('/quantite/vendu/{produitCategorie}', name: '_qtt_vendu')]
+    public function qttVendu(
+        Request $request, 
+        ProductRepository $productRepo,
+        ProduitCategorie $produitCategorie): Response
+    {
+        $request->getSession()->set('produitCategorieId', $produitCategorie->getId());
+
+        $data = [];
+        try {
+            
+            $referenceProduitCategorie = $produitCategorie->getReference();
+
+            $products = $productRepo->findByAffairePaye('paye', 'commande', $referenceProduitCategorie);
+            $countQtt = $productRepo->countByAffairePaye('paye', 'commande', $referenceProduitCategorie);
+            
+            if ($products == false) {
+                $products = [];
+            }
+          
+            $data["html"] = $this->renderView('admin/produit_categorie/qtt_vendu.html.twig', [
+                'listes' => $products,
+                'countQtt' => $countQtt
+            ]);
+           
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+        
     }
 
 }
