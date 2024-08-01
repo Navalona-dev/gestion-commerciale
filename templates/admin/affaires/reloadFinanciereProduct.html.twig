@@ -132,7 +132,7 @@
                                     {# <td class="align-middle text-center">{{product.id}}</td> #}
                                     <td class="align-middle text-center">{{product.reference}}</td>
                                     <td class="align-middle" style="width: 200px;">{{product.nom}}</td>
-                                    <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.qtt}}&nbsp;{{product.uniteVenteGros}}{% else %}{{product.uniteVenteDetail}}{% endif %} / {{product.produitCategorie.stockRestant}}</td>
+                                    <td class="align-middle text-center">{{product.qtt}}&nbsp;{% if product.typeVente == "gros" %}{{product.uniteVenteGros}}{% else %}{{product.uniteVenteDetail}}{% endif %} / {{product.produitCategorie.stockRestant}}</td>
                                     <td class="align-middle text-center"> {% if product.typeVente == "gros" %}{{product.prixVenteGros}}{% else %}{{product.prixVenteDetail}}{% endif %}</td>
                                     {# <td class="align-middle text-danger text-center">--</td>
                                     <td class="align-middle text-center">0,00€</td>

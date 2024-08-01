@@ -106,9 +106,9 @@ class Facture
 
     public static function newFacture($affaire = null)
     {
-        if (is_null($affaire->getNom()) or empty($affaire->getNom())  or is_null($affaire->getCompte()->getNom()) or empty($affaire->getCompte()->getNom())) {
+        /*if (is_null($affaire->getNom()) or empty($affaire->getNom())  or is_null($affaire->getCompte()->getNom()) or empty($affaire->getCompte()->getNom())) {
             throw new PropertyVideException("Your name doesn't empty");
-        }
+        }*/
         $facture = new self();
         $facture->setAffaire($affaire);
         $facture->setCompte($affaire->getCompte());

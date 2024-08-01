@@ -617,7 +617,7 @@ class AffaireController extends AbstractController
             $data["html"] = $this->renderView('admin/affaires/financier.html.twig', [
                 'affaire' => $affaire,
                 'produits' => $produits,
-                'factureFile' => (count($facturesValide) > 0 ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
+                'factureFile' => ((count($facturesValide) > 0 && $facturesValide[count($facturesValide) - 1] != null) ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
             ]);
           
             return new JsonResponse($data);
@@ -768,6 +768,7 @@ class AffaireController extends AbstractController
     {
         if (count($affaire->getProducts()) > 0) {
             $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
+           
             $pdf = $this->factureService->add($affaire, $documentFolder);
            
             return new Response($pdf->Output('test.pdf', 'I'), 200, [
