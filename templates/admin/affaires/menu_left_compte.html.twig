@@ -31,50 +31,29 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav flex-column me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link liste-projet text-black" href="#affaires_client" id="liste-projet" onclick="return listAffaireByCompte({{compte.id}})">
-                            <i class="bi bi-info-circle-fill"></i>
-                            <span class="mx-2">Liste projets</span>
-                        </a>
+                        {% if compte.genre == 1 %}
+                            <a class="nav-link liste-projet text-black" href="#affaires_client" id="liste-projet" onclick="return listAffaireByCompte({{compte.id}}, {{compte.genre}})">
+                                <i class="bi bi-info-circle-fill"></i>
+                                <span class="mx-2">Liste projets</span>
+                            </a>
+                        {% elseif compte.genre == 2 %}
+                            <a class="nav-link liste-projet text-black" href="#affaires_fournisseur" id="liste-projet" onclick="return listProduitByCompte({{compte.id}})">
+                                <i class="bi bi-info-circle-fill"></i>
+                                <span class="mx-2">Liste projets</span>
+                            </a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-    
-
-    {#<h6 class="info fw-bold mb-3 "><a class="menu-left-item" href="#tab-info-affaire" onclick="return information({{affaire.id}})"><i class="bi bi-info-circle-fill"></i><span class="mx-2">Information</span></a></h6>
-
-     <div class="card-list p-3">
-        <a href="#" class="text-black menu-left-item d-block mb-3">Tag</a>
-        <a href="#" class="text-black menu-left-item d-block mb-3">Contact</a>
-        <a href="#" class="text-black menu-left-item d-block mb-3">Pipeline</a>
-    </div> 
-    <h6 class="my-4 info"><a href="#tab-financier-affaire" onclick="return financier({{affaire.id}})"><i class="bi bi-cash-coin"></i><span class="mx-2">Financier</span></a></h6>
-    <div class="card-list p-3">
-         <a href="#" class="text-black menu-left-item d-block mb-3">Rentabilité</a>
-        <a href="#tab-facture-affaire" onclick="return showTabFactureAffaire({{affaire.id}})" class="text-black menu-left-item d-block mb-3 info">Factures</a>
-         <a href="#" class="text-black menu-left-item d-block mb-3 info">Bon de livraison</a> 
-    </div>
-     <h6 class="my-4"><a href="#" class="text-black menu-left-item"><i class="bi bi-bell-fill"></i><span class="mx-2">Rappel</span></a></h6>
-    <h6 class="my-4"><a href="#" class="text-black menu-left-item"><i class="bi bi-calendar4"></i><span class="mx-2">Tâches</span></a></h6>
-    <h6 class="my-4"><a href="#" class="text-black menu-left-item"><i class="bi bi-list"></i><span class="mx-2">Gantt</span></a></h6>
-    <h6 class="my-4"><a href="#" class="text-black menu-left-item"><i class="bi bi-stickies-fill"></i><span class="mx-2">Notes</span></a></h6>
-    <h6 class="my-4"><a href="#" class="text-black menu-left-item"><i class="bi bi-file-text-fill"></i><span class="mx-2">Document</span><span class="number_doc text-white">1</span></a></h6>
-    <h6 class="my-4"><a href="#" class="text-black menu-left-item"><i class="bi bi-send-fill"></i><span class="mx-2">Mail</span></a></h6>
-    <h6 class="my-4"><a href="#" class="text-black menu-left-item"><i class="bi bi-file-earmark-bar-graph-fill"></i><span class="mx-2">Reporting</span></a></h6>
-    <h6 class="my-4"><a href="#" class="text-black menu-left-item"><i class="bi bi-globe2"></i><span class="mx-2">Universign</span></a></h6>
-    <h6 class="my-4"><a href="#" class="text-black menu-left-item"><i class="bi bi-star-fill"></i><span class="mx-2">Evaluation</span></a></h6>
-    <div class="card-list p-3">
-        <a href="#" class="text-black menu-left-item d-block mb-3">Question de satisfaction</a>
-        <a href="#" class="text-black menu-left-item d-block mb-3">Questionnaire 2</a>
-        <a href="#" class="text-black menu-left-item d-block mb-3">Pièces du candidat</a>
-    </div> #}
+   
 </div>
 
 <script>
     $(document).ready(function() {
         var anchorName = document.location.hash.substring(1);
-        if(anchorName == "tab-fiche-client") {
+        if(anchorName == "tab-fiche-client" || anchorName == "tab-fiche-fournisseur") {
             $('.nav-link').removeClass('active');
             $('.nav-link.liste-projet').addClass('active');
         }

@@ -81,7 +81,11 @@ $(document).ready(function() {
     }
 
     if (anchorName === "tab-fiche-client") {
-        ficheClient(idCompte);
+        ficheClient(idCompte, 1);
+    }
+
+    if (anchorName === "tab-fiche-fournisseur") {
+        ficheClient(idCompte, 2);
     }
 
     if (anchorName === "tab-facture") {
@@ -843,7 +847,7 @@ function showTabPrivilege() {
 
  function showTabDashboard() {
     var anchorName = document.location.hash.substring(1);
-    showSpinner();
+    //showSpinner();
     
     $.ajax({
              type: 'post',
@@ -871,7 +875,6 @@ function showTabPrivilege() {
                  setTimeout(function() {
                     hideSpinner();
                 }, 2000);
-
              },
              error: function () {
                 // $(".loadBody").css('display', 'none');
@@ -1120,7 +1123,7 @@ function financier(id = null) {
         });
 }
 
-function ficheClient(id = null) {
+function ficheClient(id = null, genre = 1) {
     showSpinner();
     
     $.ajax({
@@ -1128,9 +1131,16 @@ function ficheClient(id = null) {
             url: '/admin/affaires/fiche/'+id,
             //data: {},
             success: function (response) {
-                $("#tab-fiche-client").empty();
-                $("#tab-fiche-client").append(response.html);
-                $("#tab-fiche-client").addClass('active');
+                if(genre == 1) {
+                    $("#tab-fiche-client").empty();
+                    $("#tab-fiche-client").append(response.html);
+                    $("#tab-fiche-client").addClass('active');
+                } else if(genre == 2) {
+                    $("#tab-fiche-fournisseur").empty();
+                    $("#tab-fiche-fournisseur").append(response.html);
+                    $("#tab-fiche-fournisseur").addClass('active');
+                }
+               
                 $("#tab-info-affaire").css('display', 'none');
              
                 
@@ -1458,15 +1468,13 @@ function listTransfert(id = null) {
          });
  }
 
-    // Fonction pour afficher le spinner et cacher le contenu
-function showSpinner() {
-    $("#spinner").css('display', 'block');
-    $(".tab-content").addClass('hide-content');
-}
-
-// Fonction pour masquer le spinner et afficher le contenu
-function hideSpinner() {
-    $("#spinner").css('display', 'none');
-    $(".tab-content").removeClass('hide-content');
-}
+ function showSpinner() {
+    document.getElementById('spinner').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+  }
+  
+  function hideSpinner() {
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+  }
 

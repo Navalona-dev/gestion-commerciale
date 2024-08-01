@@ -2,49 +2,7 @@
 <section class="section">
     <div class="row">
       <div class="col-lg-12">
-        <div class="card p-5 affaire-header">
-            <div class="row">
-                <div class="col-md-4 col-12 mb-3">
-                    <div class="form-group">
-                        <h4 class="affaire-title"><i class="bi bi-folder"></i> <span class="mx-1 fw-bold">Lorem(Lorem)</span></h4>
-                    </div>
-                </div>
-                <div class="col-md-5 col-12 mb-4">
-                    <div class="form-group">
-                        <div class="d-flex flex-column flex-md-row align-items-center justify-content-center">
-                            <a href="#" class="mb-0 me-md-2 fiche-text text-affaire">
-                                <i class="bi bi-person-vcard-fill"></i>
-                                <span>Fiche fournisseur</span>
-                            </a>
-                            <a href="#" class="mb-0 text-danger mx-3 text-affaire">
-                                <i class="bi bi-list"></i> 
-                                <span>Liste des projets</span>
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="col-md-3 col-12 mb-4">
-                    <div class="d-flex justify-content-center">
-                        {#<button class="btn btn-primary btn-sm px-3 affaire-btn">
-                            <i class="bi bi-plus-circle-dotted"></i>
-                            Ajouter une affaire
-                        </button>#}
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle btn-sm px-4 affaire-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                              <i class="bi bi-plus-circle"></i>
-                              <span class="mx-2">Ajouter</span>
-                      
-                            </button>
-                            <ul class="dropdown-menu">
-                              <li><a class="dropdown-item" href="#" onclick="return newAffaire({{compte.id}})">Un devis</a></li>
-                              <li><a class="dropdown-item" href="#" >Une commande</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include 'admin/affaires/entete_compte.html.twig' with {'compte': compte} %}
        <div class="card p-5">
         <table class="table table-striped" id="table-produit-fournisseur" style="width: 100%;">
             <thead>
@@ -85,6 +43,7 @@
 $(document).ready(function() {
     $('#tab-compte_1').removeClass('active').empty();
     $('#tab-compte_2').removeClass('active').empty();
+    $('#tab-fiche-fournisseur').removeClass('active').empty();
     $('#affaires_fournisseur').append(response.html).addClass('active');
     $('#affaires_client').removeClass('active').empty();
       $('.tab-categorie').removeClass('active');
@@ -115,6 +74,9 @@ $(document).ready(function() {
       $('#tab-produit-type').removeClass('active');
       $('.tab-produit-type').removeClass('active');
     $('#tab-import-produit').css('display', 'none');
+    $('#tab-fiche-client').removeClass('active').empty();
+
+
     /*$('#table-produit-fournisseur').DataTable({
             responsive: true,
             language: {

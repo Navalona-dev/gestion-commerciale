@@ -31,9 +31,9 @@ class AffaireService
         $this->application = $applicationManager->getApplicationActive();
     }
 
-    public function add($statut, $compte = null)
+    public function add($instance, $statut, $compte = null)
     {
-        $affaire = Affaire::newAffaire($statut, $compte);
+        $affaire = Affaire::newAffaire($instance, $statut, $compte);
 
         //$affaire->setEtat($instance->getEtat());
         $affaire->setApplication($this->application);

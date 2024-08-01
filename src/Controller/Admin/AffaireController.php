@@ -328,7 +328,7 @@ class AffaireController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
                     // encode the plain password
-                    $this->affaireService->add($statut, $compte);
+                    $this->affaireService->add($affaire, $statut, $compte);
                     $this->affaireService->update();
                    
                     $affaires = $this->affaireService->getAllAffaire($compte);
@@ -694,7 +694,7 @@ class AffaireController extends AbstractController
     #[Route('/fiche/{compte}', name: '_fiche')]
     public function ficheClient(
         Request $request, 
-        Affaire $affaire,
+        Compte $compte,
         SessionInterface $session,
         EntityManagerInterface $em)
     {
@@ -702,7 +702,7 @@ class AffaireController extends AbstractController
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
         }*/
 
-        $compte = $affaire->getCompte();
+        $affaires = $compte->getAffaires();
 
         $session->set('idCompte', $compte->getId());
       
@@ -724,11 +724,22 @@ class AffaireController extends AbstractController
                 //return $this->redirectToRoute('privilege_liste');
             }
 
-            $data["html"] = $this->renderView('admin/comptes/fiche_client.html.twig', [
-                'compte' => $compte,
-                'affaire' => $affaire,
-                'form' => $form->createView()
-            ]);
+            if($compte->getGenre() == 1)
+            {
+                $data["html"] = $this->renderView('admin/comptes/fiche_client.html.twig', [
+                    'compte' => $compte,
+                    //'affaire' => $affaire,
+                    'form' => $form->createView()
+                ]);
+            } elseif($compte->getGenre() == 2) {
+                $data["html"] = $this->renderView('admin/comptes/fiche_fournisseur.html.twig', [
+                    'compte' => $compte,
+                    //'affaire' => $affaire,
+                    'form' => $form->createView()
+                ]);
+            }
+
+            
             
             return new JsonResponse($data);
         } catch (\Exception $Exception) {

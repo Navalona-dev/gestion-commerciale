@@ -86,13 +86,13 @@
                                 </div>
                                 {% else %}
                                 <div class="col-md-2 col-12">
-
-                                   
+                                    {% if affaire.products|length > 0 %}
                                     <div class="d-flex justify-content-end">
                                         <a title="Payé" target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="icon-paye d-flex align-items-center justify-content-center border border-secondary">
                                             <i class="bi bi-credit-card-2-front-fill"></i>
                                         </a>
                                     </div>
+                                    {% endif %}
                                 </div>
                                 {% endif %}
                         </div>
@@ -194,7 +194,9 @@
                                     </a>
                                 {% else %}
                                     <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
-                                    <a target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
+                                    {% if affaire.products|length > 0 %}
+                                        <a target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
+                                    {% endif %}
                                 {% endif %}
                                     {#<a href="#" class="text-danger financier-icon"><i class="bi bi-database-fill-check"></i></a>
                                     <a href="#" class="text-info icon-t">t</a>

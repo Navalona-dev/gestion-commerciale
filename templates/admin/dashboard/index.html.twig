@@ -427,129 +427,7 @@
     
                 <div id="reportsChart"></div>
     
-                <script>
-                    // Variable globale pour le graphique
-                    var chart;
-    
-                    // Initialiser le graphique ApexCharts
-                    document.addEventListener("DOMContentLoaded", () => {
-                        chart = new ApexCharts(document.querySelector("#reportsChart"), {
-                            series: [{
-                                name: 'Produit vendu',
-                                data: {{ countProductsSoldThisWeekByDay|json_encode|raw }},
-                            }, {
-                                name: 'Commande',
-                                data: {{ countOrderByDayThisWeek|json_encode|raw }},
-                            }, {
-                                name: 'Clients',
-                                data: {{ countClientByDayThisWeek|json_encode|raw }},
-                            }],
-                            chart: {
-                                height: 350,
-                                type: 'area',
-                                toolbar: {
-                                    show: false
-                                },
-                            },
-                            markers: {
-                                size: 4
-                            },
-                            colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                            fill: {
-                                type: "gradient",
-                                gradient: {
-                                    shadeIntensity: 1,
-                                    opacityFrom: 0.3,
-                                    opacityTo: 0.4,
-                                    stops: [0, 90, 100]
-                                }
-                            },
-                            dataLabels: {
-                                enabled: false
-                            },
-                            stroke: {
-                                curve: 'smooth',
-                                width: 2
-                            },
-                            xaxis: {
-                                categories: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"]
-                            },
-                            yaxis: {
-                              title: {
-                                  text: 'Quantité'
-                              },
-                              min: 0,
-                              labels: {
-                                formatter: function (val) {
-                                    if (val !== null) {
-                                        return val.toFixed(0);
-                                    } else {
-                                        return 0; 
-                                    }
-                                }
-                              }
-                          },
-                        });
-                        chart.render();
-                    });
-    
-                    // Définir la fonction pour mettre à jour les données du graphique
-                    function updateChartData(selectedOption) {
-                        if (!chart) {
-                            console.error("Chart is not initialized");
-                            return;
-                        }
-    
-                        if (selectedOption === 'thisWeek') {
-                          chart.updateOptions({
-                              xaxis: {
-                                  categories: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
-                              }
-                          });
-                            chart.updateSeries([
-                                { name: 'Produit vendu', data: {{ countProductsSoldThisWeekByDay|json_encode|raw }} },
-                                { name: 'Commande', data: {{ countOrderByDayThisWeek|json_encode|raw }} },
-                                { name: 'Clients', data: {{ countClientByDayThisWeek|json_encode|raw }} }
-                            ]);
-                        } else if (selectedOption === 'lastWeek') {
-                          chart.updateOptions({
-                              xaxis: {
-                                  categories: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
-                              }
-                          });
-                            chart.updateSeries([
-                                { name: 'Produit vendu', data: {{ countProductsSoldLastWeekByDay|json_encode|raw }} },
-                                { name: 'Commande', data: {{ countOrderByDayLastWeek|json_encode|raw }} },
-                                { name: 'Clients', data: {{ countClientByDayLastWeek|json_encode|raw }} }
-                            ]);
-                        } else if (selectedOption === 'thisYear') {
-                          chart.updateOptions({
-                              xaxis: {
-                                  categories: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Decembre']
-                              }
-                          });
-                            chart.updateSeries([
-                                { name: 'Produit vendu', data: {{countProductsSoldThisYearByDay|json_encode|raw}} },
-                                { name: 'Commande', data: {{ countOrderByMonthThisYear|json_encode|raw }} },
-                                { name: 'Client', data: {{countClientByDayThisYear|json_encode|raw}} },
-    
-                            ]);
-                        } else if (selectedOption === 'lastYear') {
-                          chart.updateOptions({
-                              xaxis: {
-                                  categories: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Decembre']
-                              }
-                          });
-                            chart.updateSeries([
-                                { name: 'Produit vendu', data: {{countProductsSoldLastYearByDay|json_encode|raw}} },
-                                { name: 'Commande', data: {{ countOrderByMonthLastYear|json_encode|raw }} },
-                                { name: 'Produit vendu', data: {{countClientByDayLastYear|json_encode|raw}} },
-    
-                            ]);
-                        }
-    
-                    }
-                </script>
+                
             </div>
         </div>
       </div>
@@ -606,7 +484,11 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                      {% if product.typeVente == "gros" %}
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {% else %}
+                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                      {% endif %}
                     {% endfor %}
                   </td>
                   <td>
@@ -614,14 +496,18 @@
                       {{product.qtt}} <br/>
                     {% endfor %}
                   </td>
+                 
                   <td>
-                    {% set grandTotal = 0 %}
-                    {% set total = 0 %}
+                    
+                    {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                    {% set total = total + product.puHt %}  
-                    {% set grandTotal = grandTotal + total %}
+                      {% if product.typeVente == "gros" %}
+                      {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                      {% else %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                      {% endif %}
                     {% endfor %}
-                    {{grandTotal|number_format(2, ',', '.')}} €
+                    {{montantHt|number_format(2, ',', '.')}} €
                   </td>
                 </tr>
                 {% else %}
@@ -646,7 +532,11 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                      {% if product.typeVente == "gros" %}
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {% else %}
+                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                      {% endif %}
                     {% endfor %}
                   </td>
                   <td>
@@ -656,13 +546,16 @@
                   </td>
                  
                   <td>
-                    {% set grandTotal = 0 %}
-                    {% set total = 0 %}
+                    
+                    {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                    {% set total = total + product.puHt %}  
-                    {% set grandTotal = grandTotal + total %}
+                      {% if product.typeVente == "gros" %}
+                      {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                      {% else %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                      {% endif %}
                     {% endfor %}
-                    {{grandTotal|number_format(2, ',', '.')}} €
+                    {{montantHt|number_format(2, ',', '.')}} €
                   </td>
                 </tr>
                 {% else %}
@@ -687,7 +580,11 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                      {% if product.typeVente == "gros" %}
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {% else %}
+                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                      {% endif %}
                     {% endfor %}
                   </td>
                   <td>
@@ -697,13 +594,16 @@
                   </td>
                  
                   <td>
-                    {% set grandTotal = 0 %}
-                    {% set total = 0 %}
+                    
+                    {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                    {% set total = total + product.puHt %}  
-                    {% set grandTotal = grandTotal + total %}
+                      {% if product.typeVente == "gros" %}
+                      {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                      {% else %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                      {% endif %}
                     {% endfor %}
-                    {{grandTotal|number_format(2, ',', '.')}} €
+                    {{montantHt|number_format(2, ',', '.')}} €
                   </td>
                 </tr>
                 {% else %}
@@ -728,7 +628,11 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                      {% if product.typeVente == "gros" %}
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {% else %}
+                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                      {% endif %}
                     {% endfor %}
                   </td>
                   <td>
@@ -738,13 +642,16 @@
                   </td>
                  
                   <td>
-                    {% set grandTotal = 0 %}
-                    {% set total = 0 %}
+                    
+                    {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                    {% set total = total + product.puHt %}  
-                    {% set grandTotal = grandTotal + total %}
+                      {% if product.typeVente == "gros" %}
+                      {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                      {% else %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                      {% endif %}
                     {% endfor %}
-                    {{grandTotal|number_format(2, ',', '.')}} €
+                    {{montantHt|number_format(2, ',', '.')}} €
                   </td>
                 </tr>
                 {% else %}
@@ -769,7 +676,11 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                      {% if product.typeVente == "gros" %}
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {% else %}
+                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                      {% endif %}
                     {% endfor %}
                   </td>
                   <td>
@@ -779,13 +690,16 @@
                   </td>
                  
                   <td>
-                    {% set grandTotal = 0 %}
-                    {% set total = 0 %}
+                    
+                    {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                    {% set total = total + product.puHt %}  
-                    {% set grandTotal = grandTotal + total %}
+                      {% if product.typeVente == "gros" %}
+                      {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                      {% else %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                      {% endif %}
                     {% endfor %}
-                    {{grandTotal|number_format(2, ',', '.')}} €
+                    {{montantHt|number_format(2, ',', '.')}} €
                   </td>
                 </tr>
                 {% else %}
@@ -810,7 +724,11 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                      {% if product.typeVente == "gros" %}
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {% else %}
+                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                      {% endif %}
                     {% endfor %}
                   </td>
                   <td>
@@ -820,13 +738,16 @@
                   </td>
                  
                   <td>
-                    {% set grandTotal = 0 %}
-                    {% set total = 0 %}
+                    
+                    {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                    {% set total = total + product.puHt %}  
-                    {% set grandTotal = grandTotal + total %}
+                      {% if product.typeVente == "gros" %}
+                      {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                      {% else %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                      {% endif %}
                     {% endfor %}
-                    {{grandTotal|number_format(2, ',', '.')}} €
+                    {{montantHt|number_format(2, ',', '.')}} €
                   </td>
                 </tr>
                 {% else %}
@@ -851,7 +772,11 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                      {% if product.typeVente == "gros" %}
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {% else %}
+                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                      {% endif %}
                     {% endfor %}
                   </td>
                   <td>
@@ -861,13 +786,16 @@
                   </td>
                  
                   <td>
-                    {% set grandTotal = 0 %}
-                    {% set total = 0 %}
+                    
+                    {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                    {% set total = total + product.puHt %}  
-                    {% set grandTotal = grandTotal + total %}
+                      {% if product.typeVente == "gros" %}
+                      {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                      {% else %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                      {% endif %}
                     {% endfor %}
-                    {{grandTotal|number_format(2, ',', '.')}} €
+                    {{montantHt|number_format(2, ',', '.')}} €
                   </td>
                 </tr>
                 {% else %}
@@ -892,7 +820,11 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {{product.puHt|number_format(2, ',', '.')}} € <br/>
+                      {% if product.typeVente == "gros" %}
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {% else %}
+                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                      {% endif %}
                     {% endfor %}
                   </td>
                   <td>
@@ -902,13 +834,16 @@
                   </td>
                  
                   <td>
-                    {% set grandTotal = 0 %}
-                    {% set total = 0 %}
+                    
+                    {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                    {% set total = total + product.puHt %}  
-                    {% set grandTotal = grandTotal + total %}
+                      {% if product.typeVente == "gros" %}
+                      {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                      {% else %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                      {% endif %}
                     {% endfor %}
-                    {{grandTotal|number_format(2, ',', '.')}} €
+                    {{montantHt|number_format(2, ',', '.')}} €
                   </td>
                 </tr>
                 {% else %}
@@ -933,6 +868,8 @@
 
   <script>
     $(document).ready(function() {
+    $('#tab-fiche-fournisseur').removeClass('active').empty();
+
     $('#tab-compte_1').removeClass('active');
     $('#tab-compte_2').removeClass('active');
     
@@ -972,8 +909,130 @@
       $('#tab-dashboard').addClass('active');
 
     });
-
-    
    
   </script>
+
+<script>
+  // Variable globale pour le graphique
+  var chart;
+
+  // Initialiser le graphique ApexCharts
+  document.addEventListener("DOMContentLoaded", () => {
+      chart = new ApexCharts(document.querySelector("#reportsChart"), {
+          series: [{
+              name: 'Produit vendu',
+              data: {{ countProductsSoldThisWeekByDay|json_encode|raw }},
+          }, {
+              name: 'Commande',
+              data: {{ countOrderByDayThisWeek|json_encode|raw }},
+          }, {
+              name: 'Clients',
+              data: {{ countClientByDayThisWeek|json_encode|raw }},
+          }],
+          chart: {
+              height: 350,
+              type: 'area',
+              toolbar: {
+                  show: false
+              },
+          },
+          markers: {
+              size: 4
+          },
+          colors: ['#4154f1', '#2eca6a', '#ff771d'],
+          fill: {
+              type: "gradient",
+              gradient: {
+                  shadeIntensity: 1,
+                  opacityFrom: 0.3,
+                  opacityTo: 0.4,
+                  stops: [0, 90, 100]
+              }
+          },
+          dataLabels: {
+              enabled: false
+          },
+          stroke: {
+              curve: 'smooth',
+              width: 2
+          },
+          xaxis: {
+              categories: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"]
+          },
+          yaxis: {
+            title: {
+                text: 'Quantité'
+            },
+            min: 0,
+            labels: {
+              formatter: function (val) {
+                  if (val !== null) {
+                      return val.toFixed(0);
+                  } else {
+                      return 0; 
+                  }
+              }
+            }
+        },
+      });
+      chart.render();
+  });
+
+  // Définir la fonction pour mettre à jour les données du graphique
+  function updateChartData(selectedOption) {
+      if (!chart) {
+          console.error("Chart is not initialized");
+          return;
+      }
+
+      if (selectedOption === 'thisWeek') {
+        chart.updateOptions({
+            xaxis: {
+                categories: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
+            }
+        });
+          chart.updateSeries([
+              { name: 'Produit vendu', data: {{ countProductsSoldThisWeekByDay|json_encode|raw }} },
+              { name: 'Commande', data: {{ countOrderByDayThisWeek|json_encode|raw }} },
+              { name: 'Clients', data: {{ countClientByDayThisWeek|json_encode|raw }} }
+          ]);
+      } else if (selectedOption === 'lastWeek') {
+        chart.updateOptions({
+            xaxis: {
+                categories: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
+            }
+        });
+          chart.updateSeries([
+              { name: 'Produit vendu', data: {{ countProductsSoldLastWeekByDay|json_encode|raw }} },
+              { name: 'Commande', data: {{ countOrderByDayLastWeek|json_encode|raw }} },
+              { name: 'Clients', data: {{ countClientByDayLastWeek|json_encode|raw }} }
+          ]);
+      } else if (selectedOption === 'thisYear') {
+        chart.updateOptions({
+            xaxis: {
+                categories: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Decembre']
+            }
+        });
+          chart.updateSeries([
+              { name: 'Produit vendu', data: {{countProductsSoldThisYearByDay|json_encode|raw}} },
+              { name: 'Commande', data: {{ countOrderByMonthThisYear|json_encode|raw }} },
+              { name: 'Client', data: {{countClientByDayThisYear|json_encode|raw}} },
+
+          ]);
+      } else if (selectedOption === 'lastYear') {
+        chart.updateOptions({
+            xaxis: {
+                categories: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Decembre']
+            }
+        });
+          chart.updateSeries([
+              { name: 'Produit vendu', data: {{countProductsSoldLastYearByDay|json_encode|raw}} },
+              { name: 'Commande', data: {{ countOrderByMonthLastYear|json_encode|raw }} },
+              { name: 'Produit vendu', data: {{countClientByDayLastYear|json_encode|raw}} },
+
+          ]);
+      }
+
+  }
+</script>
 
