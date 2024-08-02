@@ -2,12 +2,12 @@
 
     <div class="d-flex align-items-center justify-content-between">
       {% if app.user.appActive %}
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="{{path('app_admin')}}" class="logo d-flex align-items-center">
         <img src="{{asset('assets/img/logo.png')}}" alt="">
         <span class="d-none d-lg-block">{{ app.user.appActive.entreprise }}</span>
       </a>
       {% else %}
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="{{path('app_admin')}}" class="logo d-flex align-items-center">
         <img src="{{asset('assets/img/logo.png')}}" alt="">
         <span class="d-none d-lg-block">Point de vente</span>
       </a>
