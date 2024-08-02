@@ -112,6 +112,10 @@ $(document).ready(function() {
         showTabNotification();
     }
 
+    if (anchorName === "tab-historique-produit") {
+        showTabHistoriqueProduit();
+    }
+
 });
 
 
@@ -1596,6 +1600,56 @@ function showTabNotification() {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    hideSpinner();
+                }, 2000);
+
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
+
+         });
+ }
+
+ function showTabHistoriqueProduit() {
+    showSpinner();
+    
+    $.ajax({
+             type: 'post',
+             url: '/admin/historique/produit',
+             //data: {},
+             success: function (response) {
+                 $("#tab-historique-produit").empty();
+                 $("#tab-historique-produit").append(response.html);
+                 $("#tab-historique-produit").css('display', 'block');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                
+                 $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    $('#table-historique-produit').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
                     hideSpinner();
                 }, 2000);
 
