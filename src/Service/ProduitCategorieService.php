@@ -7,6 +7,7 @@ use App\Entity\Categorie;
 use App\Entity\Transfert;
 use App\Entity\ProduitType;
 use App\Entity\Notification;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManager;
 use App\Entity\ProduitCategorie;
 use App\Repository\CompteRepository;
@@ -17,6 +18,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ProduitTypeRepository;
 use App\Exception\ActionInvalideException;
 use App\Repository\ProductImageRepository;
+use Symfony\Component\Security\Core\Security;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -33,6 +35,8 @@ class ProduitCategorieService
     private $typeRepo;
     private $imageRepo;
     private $compteRepo;
+    private $logger;
+    private $security;
 
     public function __construct(
         AuthorizationManager $authorization, 
@@ -41,7 +45,9 @@ class ProduitCategorieService
         CategorieRepository $categorieRepo,
         ProduitTypeRepository $typeRepo,
         ProductImageRepository $imageRepo,
-        CompteRepository $compteRepo)
+        CompteRepository $compteRepo,
+        LoggerInterface $productLogger, 
+        Security $security)
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
@@ -50,6 +56,8 @@ class ProduitCategorieService
         $this->typeRepo = $typeRepo;
         $this->imageRepo = $imageRepo;
         $this->compteRepo = $compteRepo;
+        $this->logger = $productLogger;
+        $this->security = $security;
     }
 
     public function add($instance)
@@ -97,6 +105,17 @@ class ProduitCategorieService
         $this->entityManager->persist($stock);
 
         $this->entityManager->persist($produitCategorie);
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Produit catégorie ajouté', [
+            'Produit' => $produitCategorie->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+        ]);
+
         $this->update();
         unset($instance);
         return $produitCategorie;

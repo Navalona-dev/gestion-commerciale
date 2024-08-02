@@ -7,6 +7,13 @@ parameters:
     AVATAR_BASEPATH: '/uploads/avatar'
     app.path.product_image: /uploads/product
 services:
+    App\Service\ProduitCategorieService:
+        arguments:
+            $productLogger: '@logger.product'
+            $security: '@security.helper'
+    logger.product:
+        class: Psr\Log\LoggerInterface
+        factory: ['@monolog.logger', 'product']
     App\Service\TCPDFService:
         public: true
         alias: TCPDF

@@ -1,0 +1,101 @@
+<style>
+  
+</style>
+
+<div class="pagetitle">
+    <h1>Liste historique produit </h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
+        <li class="breadcrumb-item active">Liste</li>
+      </ol>
+    </nav>
+  </div>
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+          <div class="card p-5">
+            <div class="card-body">
+              {% if logLines is not empty %}
+              <table class="table table-striped" id="table-historique-produit">
+                  <thead>
+                      <tr>
+                          <th>Date</th>
+                          <th>Message</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for line in logLines %}
+                          {% if line is not empty %}
+                              <tr>
+                                  <td>{{ line|split(' ')[0] }}</td>
+                                  <td>{{ line|slice(20) }}</td>
+                              </tr>
+                          {% endif %}
+                      {% endfor %}
+                  </tbody>
+              </table>
+          {% else %}
+              <p>Aucun log trouvé.</p>
+          {% endif %}
+            </div>
+          </div>
+  
+        </div>
+      </div>
+</section>
+
+  <script>
+
+    $(document).ready(function() {
+    $('#tab-fiche-fournisseur').removeClass('active').empty();
+    $('#tab-quantite-vendu').removeClass('active').empty();
+    $('#tab-notification').removeClass('active').empty();
+
+      $('.tab-import-produit').addClass('active');
+      $('#tab-import-produit').addClass('active');
+      $('#tab-produit-type').removeClass('active');
+      $('.tab-produit-type').removeClass('active');
+      $('.tab-categorie').removeClass('active');
+      $('#tab-produit-categorie').removeClass('active');
+      $('.tab-produit-categorie').removeClass('active');
+      $('#tab-categorie').removeClass('active');
+
+      $('.tab-user').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
+      
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+     
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+      
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+       $('#tab-compte_1').removeClass('active');
+      $('#tab-transfert-produit').css('display', 'none');
+     $('#affaires_client').removeClass('active').empty();
+       $('#affaires_fournisseur').removeClass('active').empty();
+       $('#tab-info-affaire').removeClass('active').empty();
+       $('#tab-financier-affaire').removeClass('active').empty();
+      $('#tab-fiche-client').removeClass('active').empty();
+        $('#tab-facture').css('display', 'none');
+        $('#tab-facture-affaire').css('display', 'none');
+
+
+    })
+    
+    $(document).ready(function () {
+    $('#customFile').on('change', function () {
+        var fileName = $(this).val().split('\\').pop();
+        $('#fileLabelText').text(fileName);
+    });
+});
+
+
+  </script>
