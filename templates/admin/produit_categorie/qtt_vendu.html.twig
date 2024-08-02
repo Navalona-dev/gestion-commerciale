@@ -40,7 +40,13 @@
                 <div class="col-md-4 d-flex justify-content-end">
                     <div class="qtt-vendu mb-5 d-flex justify-content-center">
                         <a class="btn btn-primary mx-3" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()"><i class="bi bi-list"></i> </a>
-                        <span>{{countQtt}}</span>
+                        <span>
+                          {% if countQtt > 0 %}
+                            {{countQtt}}
+                          {% else %}
+                            0
+                          {% endif %}
+                        </span>
                     </div>
                 </div>
                
@@ -89,7 +95,8 @@
                 </tr>
                 {% else %}
                     <tr>
-                        <td colspan=6">Aucun stock vendu pour le moment</td>
+                        <td colspan="7">Aucun stock vendu pour le moment</td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>

@@ -105,14 +105,10 @@ class ImportProduitController extends AbstractController
                     }
                     //$this->em->flush();
                     //dd($existingCategorie, $categorie);
-                   
-                       
-
 
                     //traiter le type
                     $dataType = isset($dataProduct[2]) ? trim($dataProduct[2]) : null;
                     
-
                     $existingType = $this->typeRepository->findOneBy(['nom' => $dataType, 'application' => $this->application]);
                     
                     if($dataType !== null) {
@@ -180,6 +176,8 @@ class ImportProduitController extends AbstractController
                             $produitCategorie->setApplication($this->application);
             
                             $produitCategorie->setDateCreation($date);
+                            $produitCategorie->setStockMin(10);
+                            $produitCategorie->setStockMax(50);
                             
                             $stock = new Stock();
                             $stockRestant = isset($dataProduct[14]) ? trim($dataProduct[14]) : null;

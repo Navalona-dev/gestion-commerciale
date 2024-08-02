@@ -108,6 +108,10 @@ $(document).ready(function() {
         showTabQttVendu(idProduit);
     }
 
+    if (anchorName === "tab-notification") {
+        showTabNotification();
+    }
+
 });
 
 
@@ -322,7 +326,7 @@ function openModalUpdatePriceProduit(id = null) {
                     $('#modalUpdatePriceProduct').modal('show');
 
                     if (anchorName) {
-                            window.location.hash = anchorName;
+                        window.location.hash = anchorName;
                     }
 
                 }
@@ -1357,7 +1361,7 @@ function showTabFacture() {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
-                    $('#liste-table-stock').DataTable({
+                    var table = $('#liste-table-stock').DataTable({
                         responsive: true,
                         language: {
                           url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
@@ -1377,6 +1381,28 @@ function showTabFacture() {
 
          });
  }
+
+ function updateIsView(id = null) {
+    $.ajax({
+             type: 'post',
+             url: '/admin/notification/update-is-view/'+id,
+             //data: {},
+             success: function (response) {
+               
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
+
+         });
+ }
+
+ function handleNotificationClick(idProduit = null, idNotification = null) {
+    updateIsView(idNotification);
+    listStock(idProduit).reload();
+}
+
 
 function listImage(id = null) {
     showSpinner();
@@ -1519,6 +1545,69 @@ function listTransfert(id = null) {
 
          });
  }
+
+ function openModalNewStockByNotification(id = null) {
+    var anchorName = document.location.hash.substring(1);
+    
+    $.ajax({
+        url: '/admin/notification/new/stock/'+id,
+        type: 'POST',
+        //data: {isNew: isNew},
+        success: function (response) {
+            $("#blocModalNotificationStockEmpty").empty();
+            $("#blocModalNotificationStockEmpty").append(response.html);
+            $('#modalNotificationNewStock').modal('show');
+            if (anchorName) {
+                window.location.hash = anchorName;
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Gérer l'erreur (par exemple, afficher un message d'erreur)
+            alert('Erreur lors de l\'ajout de stock.');
+        }
+    });
+}
+
+function showTabNotification() {
+    showSpinner();
+    
+    $.ajax({
+             type: 'post',
+             url: '/admin/notification/',
+             //data: {},
+             success: function (response) {
+                 $("#tab-notification").empty();
+                 $("#tab-notification").append(response.html);
+                 $("#tab-notification").css('display', 'block');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-notification"]').removeClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                
+                 $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    hideSpinner();
+                }, 2000);
+
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
+
+         });
+ }
+
 
  function showSpinner() {
     document.getElementById('spinner').style.display = 'block';

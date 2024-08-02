@@ -62,15 +62,16 @@ class StockController extends AbstractController
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 } 
         
-                $this->addFlash('success', 'Création de stock "' . $stock->getNom() . '" avec succès.');
+                $this->addFlash('success', 'Création de stock avec succès.');
                 return $this->redirectToRoute('stocks_liste');
             }
 
             $data['exception'] = "";
             $data["html"] = $this->renderView('admin/stock/new.html.twig', [
                 'form' => $form->createView(),
+                'idProduit' => $produitCategorieId
             ]);
-           
+            
             return new JsonResponse($data);
         } catch (PropertyVideException $PropertyVideException) {
             throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());

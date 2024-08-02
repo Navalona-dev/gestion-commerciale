@@ -1,0 +1,126 @@
+<style>
+ .liste {
+    border: 1px solid #5e5d5d;
+    padding: 20px;
+    border-radius: 15px;
+ }
+</style>
+
+<div class="pagetitle">
+    <h1>Liste notification </h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
+        <li class="breadcrumb-item active">Liste</li>
+      </ol>
+    </nav>
+  </div>
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+          <div class="card ">
+            <div class="card-body p-5">
+                <div class="row">
+                    {% for notification in listes %}
+                    <div class="col-md-4 col-12 mb-4">
+                        {% if notification.isStockMin == 1 %}
+                        <div class="liste">
+                            <a style="cursor: pointer;" onclick="return openModalNewStockByNotification({{notification.id}})">
+                                <div>
+                                    <h4 class="text-black text-center fw-bold">Stock presque épuisé</h4>
+                                    <p class="text-center">{{ notification.message|raw }}</p>
+                                    <p class="text-center">{{ notification.dateCreation|format_date }}</p>
+                                </div>
+                               
+                            </a>
+                        </div>
+                            
+                        {% elseif notification.isStockMax == 1 %}
+                        <div class="liste">
+                            <a href="#tab-stock" class="text-black" onclick="return handleNotificationClick({{notification.produitCategorie.id}}, {{notification.id}})">
+                                <div>
+                                    <h4 class="text-black text-center fw-bold">Stock surchargé</h4>
+                                    <p class="text-center">{{ notification.message|raw }}</p>
+                                    <p class="text-center">{{ notification.dateCreation|format_date }}</p>
+                                </div>
+                                
+                            </a>
+                        </div>
+                           
+                        {% else %}
+                        <div class="liste">
+                            <a style="cursor: pointer;" class="text-black" onclick="return openModalUpdatePriceProduit({{notification.produitCategorie.id}})">
+                                <div>
+                                    <h4 class="text-black text-center fw-bold">Prix à changer</h4>
+                                    <p class="text-center">{{ notification.message|raw }}</p>
+                                    <p class="text-center">{{ notification.dateCreation|format_date }}</p>
+                                </div>
+                            </a>
+                        </div>
+                            
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+</section>
+
+  <script>
+
+    $(document).ready(function() {
+    $('#tab-fiche-fournisseur').removeClass('active');
+    $('#tab-fiche-fournisseur').removeClass('active').empty();
+    $('#tab-quantite-vendu').removeClass('active').empty();
+      $('.tab-import-produit').removeClass('active').empty();
+      $('#tab-stock').removeClass('active').empty();
+      $('#tab-import-produit').removeClass('active').empty();
+      $('#tab-produit-type').removeClass('active');
+      $('.tab-produit-type').removeClass('active');
+      $('.tab-categorie').removeClass('active');
+      $('#tab-produit-categorie').removeClass('active');
+      $('.tab-produit-categorie').removeClass('active');
+      $('#tab-categorie').removeClass('active');
+
+      $('.tab-user').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
+      
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+     
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+      
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+       $('#tab-compte_1').removeClass('active');
+      $('#tab-transfert-produit').css('display', 'none');
+     $('#affaires_client').removeClass('active').empty();
+       $('#affaires_fournisseur').removeClass('active').empty();
+       $('#tab-info-affaire').removeClass('active').empty();
+       $('#tab-financier-affaire').removeClass('active').empty();
+      $('#tab-fiche-client').removeClass('active').empty();
+        $('#tab-facture').css('display', 'none');
+        $('#tab-facture-affaire').css('display', 'none');
+        $('#tab-notification').addClass('active').append(html);
+
+
+    })
+    
+    $(document).ready(function () {
+    $('#customFile').on('change', function () {
+        var fileName = $(this).val().split('\\').pop();
+        $('#fileLabelText').text(fileName);
+    });
+});
+
+
+  </script>

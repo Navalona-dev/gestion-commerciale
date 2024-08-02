@@ -3,8 +3,10 @@ namespace App\Service;
 
 use App\Entity\Stock;
 use App\Entity\Categorie;
+use App\Entity\Notification;
 use App\Entity\FactureDetail;
 use Doctrine\ORM\EntityManager;
+use App\Service\ApplicationManager;
 use App\Service\AuthorizationManager;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,11 +24,13 @@ class StockService
     private $session;
     public  $isCurrentDossier = false;
 
-    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager)
+    public function __construct(ApplicationManager  $applicationManager, AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager)
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
         $this->entityManager = $entityManager;
+        $this->application = $applicationManager->getApplicationActive();
+
     }
 
     public function add($instance, $produitCategorie)
@@ -43,10 +47,22 @@ class StockService
         $stockProduit = ($produitCategorie->getStockRestant() === null) ? 0 : $produitCategorie->getStockRestant();
 
         $stockRestant = $stockProduit + $stock->getQtt();
+        $stockMax = $produitCategorie->getStockMax();
 
         $produitCategorie->setStockRestant($stockRestant);
 
         $this->entityManager->persist($produitCategorie);
+
+        if($stockRestant >= $stockMax) {
+            $notification = new Notification();
+                $message = 'Le stock du produit ' . '<strong>' . $produitCategorie->getNom() . '</strong>' . ' est surchargé, vous ne devez plus ajouter jusqu\'à nouvelle ordre';
+                $notification->setMessage($message)
+                             ->setDateCreation(new \DateTime())
+                             ->setApplication($this->application)
+                             ->setProduitCategorie($produitCategorie)
+                             ->setStockMax(true);
+                $this->entityManager->persist($notification);
+        }
 
         $this->update();
         unset($instance);
@@ -73,20 +89,7 @@ class StockService
             // Persist l'état actuel de stock
             $this->entityManager->persist($stock);
             $this->update();
-            // Obtenez la nouvelle quantité
-           // $newQtt = $stock->getQtt();
-        
-            // Calculez le nouveau stock restant après ajout de la nouvelle quantité
-            //$newStockRestant = $produitCategorie->getStockRestant();
             
-            
-            //$produitCategorie->setStockRestant($stockRestant);
-        
-            //$this->entityManager->persist($produitCategorie);
-        
-            // Enregistrez toutes les modifications en base de données
-           // $this->update();
-            //d($produitCategorie, $oldStockRestant, $oldQtt, $stockRestant, $newStockRestant, $newQtt);
             return $stock;
         } else {
             $stocktoAdd = $oldQtt - $oldStockRestant;

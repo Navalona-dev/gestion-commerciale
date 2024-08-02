@@ -1,5 +1,5 @@
 
-<div class="modal fade" id="modalNewStock" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="modalNotificationNewStock" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content p-4 modal-stock">
             <div class="modal-header modal-header-center">
@@ -8,7 +8,7 @@
             </div>
             <div class="modal-body">
                 
-                {{ form_start(form, {'attr': {'id': 'newStock', 'action': path('stocks_create') }}) }}
+                {{ form_start(form, {'attr': {'id': 'notificationNewStock', 'action': path('notifications_create', {'id' : notification.id}) }}) }}
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Quantité</label>
                         {{ form_widget(form.qtt) }}
@@ -21,7 +21,6 @@
             </div>
         </div>
     </div>
-    <div id="id-produit" data-produit-id="{{idProduit}}"></div>
 </div>
 
 {% block javascripts %}
@@ -30,11 +29,9 @@
   
     $(document).ready(function () {
     
-       $('#newStock').on('submit', function (e) {
+       $('#notificationNewStock').on('submit', function (e) {
             e.preventDefault();
             let form = $(this);
-            var idProduit = $('#id-produit').data('produit-id');
-            console.log('id', idProduit);
           
             // Create an FormData object
             let formData = new FormData(form[0]);
@@ -46,7 +43,7 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    $('#modalNewStock').modal('hide');
+                    $('#modalNotificationNewStock').modal('hide');
                     var nextLink = $('#sidebar').find('li#stock').find('a');
                     setTimeout(function () {
                         toastr.options = {
@@ -56,12 +53,6 @@
                             timeOut: 1000
                         };
                         toastr.success('Avec succèss', 'Enregistrement effectuée');
-
-                        // Call listStock function
-                        listStock(idProduit);
-                        
-                        // Refresh the page
-                        //table.ajax.reload();
 
                         //$(".loadBody").css('display', 'none');
 

@@ -1,23 +1,24 @@
 <?php
 namespace App\Service;
 
-use App\Entity\Affaire;
-use App\Entity\Compte;
-use App\Entity\Facture;
-use App\Entity\FactureDetail;
-use App\Service\AuthorizationManager;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
-use App\Exception\PropertyVideException;
-use App\Exception\ActionInvalideException;
 use App\Entity\User;
-use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\ORM\EntityManager;
-//use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use App\Service\TCPDFService;
 use Twig\Environment;
+use App\Entity\Compte;
+use App\Entity\Affaire;
+use App\Entity\Facture;
+use App\Entity\Notification;
+use App\Entity\FactureDetail;
+use App\Service\TCPDFService;
+use Doctrine\ORM\EntityManager;
+use App\Service\AuthorizationManager;
+use App\Exception\PropertyVideException;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Exception\ActionInvalideException;
+use Doctrine\Common\Persistence\ManagerRegistry;
+//use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class FactureService
 {
@@ -83,6 +84,22 @@ class FactureService
             $produitCategorie->setStockRestant($stock);
           
             $this->persist($produitCategorie);
+
+            //gestion de notification
+            $stockMin = $produitCategorie->getStockMin();
+            $stockRestant = $produitCategorie->getStockRestant();
+
+            if($stockRestant <= $stockMin) {
+                $notification = new Notification();
+                $message = 'Le stock du produit ' . '<strong>' . $produitCategorie->getNom() . '</strong>' . ' est presque épuisé, vueillez ajouter un ou plusieurs!!';
+                $notification->setMessage($message)
+                             ->setDateCreation(new \DateTime())
+                             ->setApplication($this->application)
+                             ->setProduitCategorie($produitCategorie)
+                             ->setStockMin(true);
+                $this->persist($notification);
+            }
+
             if ($product->getTypeVente() == "gros") {
                 $montantHt  = $montantHt + ($qtt * $product->getPrixVenteGros());
                 $prix = $product->getPrixVenteGros();
