@@ -74,8 +74,8 @@ class ProduitCategorieService
         $produitCategorie->setTva($instance->getTva());
         $produitCategorie->setQtt($instance->getQtt());
         $produitCategorie->setStockRestant($instance->getStockRestant());
-        $produitCategorie->setStockMin($instance->getStockMin());
-        $produitCategorie->setStockMax($instance->getStockMax());
+        $produitCategorie->setStockMin(10);
+        $produitCategorie->setStockMax(50);
         $produitCategorie->setUniteVenteGros($instance->getUniteVenteGros());
         $produitCategorie->setUniteVenteDetail($instance->getUniteVenteDetail());
         $produitCategorie->setPrixVenteGros($instance->getPrixVenteGros());

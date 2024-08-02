@@ -66,10 +66,16 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-4 col-12">
+                        {#<div class="col-md-4 col-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Quantité</label>
                                 {{form_widget(form.qtt)}}
+                            </div>
+                        </div>#}
+                        <div class="col-md-4 col-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Stock Restant</label>
+                                {{form_widget(form.stockRestant)}}
                             </div>
                         </div>
                         <div class="col-md-4 col-12">
@@ -86,7 +92,7 @@
                         </div>
                      </div>
                  
-                    <div class="row">
+                    {#<div class="row">
                         
                         <div class="col-md-4 col-12">
                             <div class="form-group mb-3">
@@ -106,7 +112,7 @@
                                 {{form_widget(form.stockMax)}}
                             </div>
                         </div>
-                    </div>
+                    </div>#}
                     <div class="row">
                         <div class="col-md-4 col-12">
                             <div class="form-group mb-3">

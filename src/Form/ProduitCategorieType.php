@@ -66,13 +66,7 @@ class ProduitCategorieType extends AbstractType
                 ],
                 'required' => false
             ])
-            ->add('qtt', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control form-control-md mb-3',
-                    'autocomplete' => 'off'
-                ],
-                'required' => false
-            ])
+            
             ->add('stockRestant', TextType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3',
@@ -80,20 +74,7 @@ class ProduitCategorieType extends AbstractType
                 ],
                 'required' => false
             ])
-            ->add('stockMin', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control form-control-md mb-3',
-                    'autocomplete' => 'off'
-                ],
-                'required' => false
-            ])
-            ->add('stockMax', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control form-control-md mb-3',
-                    'autocomplete' => 'off'
-                ],
-                'required' => false
-            ])
+            
             ->add('uniteVenteGros', ChoiceType::class, [
                 'choices' => array_flip(ProduitCategorie::uniteVenteGros),
                 'label' => 'Statut',
@@ -234,6 +215,27 @@ class ProduitCategorieType extends AbstractType
                 ],
                 'required' => false
             ])
+            /*->add('stockMin', TextType::class, [
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
+                ],
+                'required' => false
+            ])
+            ->add('stockMax', TextType::class, [
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
+                ],
+                'required' => false
+            ])
+            ->add('qtt', TextType::class, [
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
+                ],
+                'required' => false
+            ])*/
         ;
     }
 
