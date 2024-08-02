@@ -4,6 +4,7 @@ namespace App\Service;
 use App\Entity\Stock;
 use App\Entity\Categorie;
 use App\Entity\Notification;
+use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
 use Doctrine\ORM\EntityManager;
 use App\Service\ApplicationManager;
@@ -11,6 +12,7 @@ use App\Service\AuthorizationManager;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\ActionInvalideException;
+use Symfony\Component\Security\Core\Security;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -23,13 +25,23 @@ class StockService
     private $entityManager;
     private $session;
     public  $isCurrentDossier = false;
+    private $logger;
+    private $security;
 
-    public function __construct(ApplicationManager  $applicationManager, AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager)
+    public function __construct(
+        ApplicationManager  $applicationManager, 
+        AuthorizationManager $authorization, 
+        TokenStorageInterface  $TokenStorageInterface, 
+        EntityManagerInterface $entityManager,
+        LoggerInterface $productLogger, 
+        Security $security)
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
         $this->entityManager = $entityManager;
         $this->application = $applicationManager->getApplicationActive();
+        $this->logger = $productLogger;
+        $this->security = $security;
 
     }
 
@@ -64,6 +76,16 @@ class StockService
                 $this->entityManager->persist($notification);
         }
 
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Stock de produit catégorie ajouté', [
+            'Produit' => $produitCategorie->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+        ]);
+
         $this->update();
         unset($instance);
         return $stock;
@@ -88,6 +110,17 @@ class StockService
             
             // Persist l'état actuel de stock
             $this->entityManager->persist($stock);
+
+            // Obtenir l'utilisateur connecté
+            $user = $this->security->getUser();
+
+            // Créer log
+            $this->logger->info('Stock de produit catégorie modifié', [
+                'Produit' => $produitCategorie->getNom(),
+                'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+            ]);
+
             $this->update();
             
             return $stock;
@@ -101,6 +134,17 @@ class StockService
             // Persist l'état actuel de stock
             $this->entityManager->persist($stock);
             //dd($stockRestant, $stocktoAdd, $oldStockRestant, $produitCategorie->getStockRestant(), $stock);
+            
+            // Obtenir l'utilisateur connecté
+            $user = $this->security->getUser();
+
+            // Créer log
+            $this->logger->info('Stock de produit catégorie modifié', [
+                'Produit' => $produitCategorie->getNom(),
+                'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+            ]);
+            
             $this->update();
         }
         return $stock;
@@ -124,6 +168,16 @@ class StockService
         $produitCategorie->setStockRestant($stockProduit);
 
         $this->entityManager->persist($produitCategorie);
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Stock de produit catégorie supprimé', [
+            'Produit' => $produitCategorie->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+        ]);
 
         $this->update();
     }

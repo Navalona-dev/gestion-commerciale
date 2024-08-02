@@ -312,6 +312,16 @@ class ProduitCategorieService
 
         $this->entityManager->persist($newProduitCategorie);
 
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Produit catégorie transferé', [
+            'Produit' => $oldProduitCategorie->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+        ]);
+
         $this->update();
 
     }

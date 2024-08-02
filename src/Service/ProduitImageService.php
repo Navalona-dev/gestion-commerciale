@@ -2,11 +2,13 @@
 namespace App\Service;
 
 use App\Entity\ProductImage;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManager;
 use App\Service\AuthorizationManager;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\ActionInvalideException;
+use Symfony\Component\Security\Core\Security;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -19,15 +21,24 @@ class ProduitImageService
     private $entityManager;
     private $session;
     public  $isCurrentDossier = false;
+    private $logger;
+    private $security;
 
-    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager)
+    public function __construct(
+        AuthorizationManager $authorization, 
+        TokenStorageInterface  $TokenStorageInterface, 
+        EntityManagerInterface $entityManager,
+        LoggerInterface $productLogger, 
+        Security $security)
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
         $this->entityManager = $entityManager;
+        $this->logger = $productLogger;
+        $this->security = $security;
     }
 
-    public function add($instance, $produitCategorie)
+    public function add($instance, $produitCategorie, $isUpdate = false)
     {
         $produitImage = ProductImage::newProduitImage($instance);
 
@@ -37,6 +48,19 @@ class ProduitImageService
         $produitImage->setProduitCategorie($produitCategorie);
 
         $this->entityManager->persist($produitImage);
+
+          // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer le message de log en fonction de l'action
+        $logMessage = $isUpdate ? 'Image de produit catégorie modifiée' : 'Image de produit catégorie ajoutée';
+
+        // Créer le log
+        $this->logger->info($logMessage, [
+            'Produit' => $produitCategorie->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+        ]);
 
         $this->update();
         unset($instance);
@@ -52,6 +76,16 @@ class ProduitImageService
     public function remove($produitImage)
     {
         $this->entityManager->remove($produitImage);
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Image de produit catégorie supprimée', [
+            'Produit' => $produitImage->getProduitCategorie()->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+        ]);
 
         $this->update();
     }

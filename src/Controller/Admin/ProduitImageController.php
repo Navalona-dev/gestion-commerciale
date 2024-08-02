@@ -98,7 +98,7 @@ class ProduitImageController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
-                    $this->produitImageService->add($productImage, $productImage->getProduitCategorie());
+                    $this->produitImageService->add($productImage, $productImage->getProduitCategorie(), true);
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 } 
         

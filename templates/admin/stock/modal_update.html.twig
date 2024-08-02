@@ -20,6 +20,7 @@
             </div>
         </div>
     </div>
+    <div id="id-produit-update" data-produit="{{idProduit}}"></div>
 </div>
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 
@@ -28,6 +29,7 @@
     $(document).ready(function () {
        $('#updateStock').on('submit', function (e) {
             e.preventDefault();
+            var idProduit = $('#id-produit-update').data('produit');
             let form = $(this);
             var totalStock = {{totalStock}};
             var quantityTransferer = {{quantity}};
@@ -64,7 +66,7 @@
                         //$(".loadBody").css('display', 'none');
 
                     }, 800);
-                    listStock(response.idProduit);
+                    listStock(idProduit);
                 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {

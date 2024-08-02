@@ -124,7 +124,7 @@ class StockController extends AbstractController
             }
 
             $data['exception'] = "";
-            $data['idProduit']= $idProduit;
+            //$data['idProduit']= $idProduit;
 
             $data["html"] = $this->renderView('admin/stock/modal_update.html.twig', [
                 'form' => $form->createView(),
@@ -133,6 +133,7 @@ class StockController extends AbstractController
                 'totalStock' => $totalStock,
                 'qttVendu' => $qttVendu,
                 'quantity' => $quantity,
+                'idProduit' => $idProduit,
                 'qttRestant' => ($produitCategorie->getStockRestant() != null ? $produitCategorie->getStockRestant() : 0)
             ]);
 
