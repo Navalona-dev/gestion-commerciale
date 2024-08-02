@@ -146,6 +146,15 @@ class ProduitCategorieService
         }
 
         $this->entityManager->remove($produitCategorie);
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Produit catégorie supprimé', [
+            'Produit' => $produitCategorie->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+        ]);
         $this->update();
     }
 

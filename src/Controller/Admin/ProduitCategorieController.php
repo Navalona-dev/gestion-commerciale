@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Stock;
 use App\Form\TransfertType;
+use Psr\Log\LoggerInterface;
 use App\Service\AccesService;
 use App\Entity\ProduitCategorie;
 use App\Form\ProduitCategorieType;
@@ -33,11 +34,20 @@ class ProduitCategorieController extends AbstractController
     private $accesService;
     private $produitCategorieService;
     private $application;
-    public function __construct(AccesService $AccesService, ApplicationManager $applicationManager, ProduitCategorieService $produitCategorieService)
+    private $logger;
+
+    public function __construct(
+        AccesService $AccesService, 
+        ApplicationManager $applicationManager, 
+        ProduitCategorieService $produitCategorieService,
+        LoggerInterface $productLogger, 
+        )
     {
         $this->accesService = $AccesService;
         $this->produitCategorieService = $produitCategorieService;
         $this->application = $applicationManager->getApplicationActive();
+        $this->logger = $productLogger;
+
     }
     
     #[Route('/', name: '_liste')]
@@ -181,6 +191,16 @@ class ProduitCategorieController extends AbstractController
                         }
                         
                     }
+                    // Obtenir l'utilisateur connecté
+                    $user = $this->getUser();
+
+                    // Créer log
+                    $this->logger->info('Produit catégorie modifié', [
+                        'Produit' => $produitCategorie->getNom(),
+                        'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                        'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+                    ]);
+
                     $this->produitCategorieService->update();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }

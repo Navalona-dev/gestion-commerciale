@@ -1649,6 +1649,7 @@ function showTabNotification() {
                         scrollX: '100%',
                         pageLength: 10,
                         scrollCollapse: false,
+                        order: [[0, 'desc']],
                       });
                     hideSpinner();
                 }, 2000);

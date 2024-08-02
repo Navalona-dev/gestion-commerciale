@@ -55,7 +55,7 @@ class HistoriqueController extends AbstractController
 
     private function parseLogDate(string $logLine): \DateTime
     {
-        // Extraire la date du log (supposons que la date est au début de la ligne, format [YYYY-MM-DD HH:MM:SS])
+        // Extraire la date du log (supposons que la date est au début de la ligne, format [YYYY-MM-DDTHH:MM:SS])
         preg_match('/^\[([^\]]+)\]/', $logLine, $matches);
         return new \DateTime($matches[1] ?? 'now');
     }
