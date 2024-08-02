@@ -429,6 +429,16 @@ class ProduitCategorieController extends AbstractController
                     }
                     $produitCategorie->setIsChangePrix(false);
 
+                    // Obtenir l'utilisateur connecté
+                    $user = $this->getUser();
+
+                    // Créer log
+                    $this->logger->info('Prix de produit catégorie modifié', [
+                        'Produit' => $produitCategorie->getNom(),
+                        'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                        'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+                    ]);
+
                     $this->produitCategorieService->update();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
