@@ -72,11 +72,24 @@
           <span>Application</span>
         </a>
       </li>
-      <li class="nav-item" id="application" title="Application">
-        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-historique-produit" onClick="return showTabHistoriqueProduit()">
-          <i class="bi bi-clock"></i>
-          <span>Historique produit</span>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-clock"></i><span>Historique</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
+        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="#tab-historique-produit" onClick="return showTabHistoriqueProduit()">
+              <i class="bi bi-box fs-6"></i><span>Produit</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="bi bi-cart fs-6"></i><span>Affaire</span>
+            </a>
+          </li>
+        
+        </ul>
       </li>
       {# <li class="nav-item" id="profile">
         <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-profile" onClick="return showTabProfile()">
