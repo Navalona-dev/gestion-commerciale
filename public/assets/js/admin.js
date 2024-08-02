@@ -327,8 +327,9 @@ $(document).ready(function() {
       var searchValue = $(this).val().toLowerCase();
       var hasResults = false;
 
-      $('#app-list .col-xl-4').each(function() {
+      $('#app-list .col-4').each(function() {
           var appName = $(this).find('.app-name').text().toLowerCase();
+
           if (appName.includes(searchValue)) {
               $(this).show();
               hasResults = true;
@@ -344,6 +345,7 @@ $(document).ready(function() {
       }
   });
 });
+
 
 function showSpinner() {
   document.getElementById('spinner').style.display = 'block';
@@ -369,4 +371,67 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+(function() {
+  "use strict";
+
+  /**
+   * Easy selector helper function
+   */
+  const select = (el, all = false) => {
+    el = el.trim();
+    if (all) {
+      return [...document.querySelectorAll(el)];
+    } else {
+      return document.querySelector(el);
+    }
+  };
+
+  /**
+   * Easy event listener function
+   */
+  const on = (type, el, listener, all = false) => {
+    if (all) {
+      select(el, all).forEach(e => e.addEventListener(type, listener));
+    } else {
+      select(el, all).addEventListener(type, listener);
+    }
+  };
+
+  /**
+   * Close sidebar function
+   */
+  const closeSidebar = () => {
+    select('body').classList.remove('toggle-sidebar');
+  };
+
+  /**
+   * Add event listener to close sidebar on menu item click in responsive mode
+   */
+  const menuItems = select('#sidebar-nav .nav-link', true);
+  const isSmallScreen = window.matchMedia('(max-width: 1023.5px)').matches;
+
+  if (isSmallScreen) {
+    on('click', '#sidebar-nav .nav-link', function() {
+      closeSidebar();
+    }, true);
+  }
+
+  /**
+   * Add or remove event listener on window resize
+   */
+  window.addEventListener('resize', function() {
+    const isSmallScreen = window.matchMedia('(max-width: 1023.5px)').matches;
+    if (isSmallScreen) {
+      on('click', '#sidebar-nav .nav-link', function() {
+        closeSidebar();
+      }, true);
+    } else {
+      // Remove event listeners if not in responsive mode
+      select('#sidebar-nav .nav-link', true).forEach(el => {
+        el.removeEventListener('click', closeSidebar);
+      });
+    }
+  });
+
+})();
 

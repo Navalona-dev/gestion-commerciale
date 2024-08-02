@@ -1,3 +1,12 @@
+<style>
+  #forms-nav li a {
+    color: #242323 !important;
+  }
+
+  #forms-nav li a.active {
+    color: #4154f1 !important;
+  }
+</style>
 <aside id="sidebar" class="sidebar">
 
     <ul class="nav sidebar-nav flex-column" id="sidebar-nav">
@@ -16,13 +25,12 @@
         </a>
       </li>
 
-      <li class="nav-item" id="contact" title="Contact">
+      <li class="nav-item" id="produit-type" title="Produit type">
         <a class="nav-link collapsed" href="#tab-produit-type" onClick="return showTabProduitType()">
           <i class="bi bi-tag"></i>
           <span>Produit type</span>
         </a>
       </li>
-
     
       <li class="nav-item" id="clients" title="Clients">
         <a class="nav-link collapsed" href="#tab-compte_1" onClick="return showTabCompte(1)">
@@ -73,7 +81,7 @@
         </a>
       </li>
 
-      <li class="nav-item">
+      <li class="nav-item" id="historique" title="Historique">
         <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-clock"></i><span>Historique</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>

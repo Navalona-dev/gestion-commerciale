@@ -480,6 +480,7 @@ function showTabCompte(genre = 1) {
             $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
 
             // Hide all compte tabs
             $('[id^="tab-compte_"]').removeClass('active').empty();
@@ -1251,8 +1252,9 @@ function showTabFacture() {
                  $("#tab-facture").append(response.html);
                  $('.sidebar-nav a[href="#tab-facture"]').tab('show');
                  $("#tab-facture").addClass('active');
+                 $('.sidebar-nav a[href="#tab-facture"]').removeClass('collapsed');
                  $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-categorie"]').removeClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
@@ -1624,7 +1626,7 @@ function showTabNotification() {
                  $("#tab-historique-produit").append(response.html);
                  $("#tab-historique-produit").css('display', 'block');
                  $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').addClass('active');
                  $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
