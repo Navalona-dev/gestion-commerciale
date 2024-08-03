@@ -11,38 +11,59 @@
       </ol>
     </nav>
   </div>
-<section class="section">
+  <section class="section">
     <div class="row">
         <div class="col-lg-12">
-          <div class="card p-5">
-            <div class="card-body">
-              {% if logLines is not empty %}
-              <table class="table table-striped" id="table-historique-affaire" style="width: 100%;">
-                  <thead>
-                      <tr>
-                          <th>Date</th>
-                          <th>Message</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      {% for line in logLines %}
-                          {% if line is not empty %}
-                              <tr>
-                                  <td>{{ line|split(' ')[0] }}</td>
-                                  <td>{{ line|slice(20) }}</td>
-                              </tr>
-                          {% endif %}
-                      {% endfor %}
-                  </tbody>
-              </table>
-          {% else %}
-              <p>Aucun log trouvé.</p>
-          {% endif %}
+            <div class="card p-5">
+                <div class="card-body">
+                    {% if logEmpty %}
+                        <div class="alert alert-warning p-3">
+                            Aucun historique pour le moment
+                        </div>
+                    {% else %}
+                        {% if logLines is not empty %}
+                            <table class="table table-striped" id="table-historique-affaire" style="width: 100%;">
+                              <thead>
+                                <tr class="text-nowrap">
+                                    <th>Date</th>
+                                    <th>Message</th>
+                                    <th>Produit</th>
+                                    <th>Nom du responsable</th>
+                                    <th>Adresse e-mail</th>
+                                    {#<th>ID Application</th>#}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                  {% for line in logLines %}
+                                      <tr class="text-nowrap">
+                                          <td>{{ line['Date'] }}</td>
+                                          <td>{{ line['Message'] }}</td>
+                                          <td>{{ line['Produit'] }}</td>
+                                          <td>{{ line['Nom du responsable'] }}</td>
+                                          <td>{{ line['Adresse e-mail'] }}</td>
+                                          {#<td>{{ line['ID Application'] }}</td>#}
+                                      </tr>
+                                  {% else %}
+                                      <tr>
+                                          <td colspan="5">Aucun historique pour le moment</td>
+                                          <td></td>
+                                          <td></td>
+                                          <td></td>
+                                          <td></td>
+                                      </tr>
+                                  {% endfor %}
+                              </tbody>
+                            </table>
+                        {% else %}
+                        <div class="alert alert-warning p-3">
+                          Aucun historique pour le moment
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
             </div>
-          </div>
-  
         </div>
-      </div>
+    </div>
 </section>
 
   <script>

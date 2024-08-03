@@ -190,9 +190,10 @@ class FactureService
 
         // Créer le log
         $this->logger->info('Commande payée', [
-            'Affaire' => $affaire->getNom(),
+            'Produit' => $affaire->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
         ]);
 
         return $pdf;
@@ -260,9 +261,10 @@ class FactureService
 
         // Créer le log
         $this->logger->info('Commande annulée', [
-            'Affaire' => $affaire->getNom(),
+            'Produit' => $affaire->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
         ]);
         return $pdf;
     }

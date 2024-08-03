@@ -198,7 +198,8 @@ class ProduitCategorieController extends AbstractController
                     $this->logger->info('Produit catégorie modifié', [
                         'Produit' => $produitCategorie->getNom(),
                         'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-                        'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+                        'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                        'ID Application' => $this->application->getId()
                     ]);
 
                     $this->produitCategorieService->update();

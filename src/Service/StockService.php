@@ -79,12 +79,13 @@ class StockService
         // Obtenir l'utilisateur connecté
         $user = $this->security->getUser();
 
-        // Créer log
-        $this->logger->info('Stock de produit catégorie ajouté', [
-            'Produit' => $produitCategorie->getNom(),
-            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
-        ]);
+         // Créer log
+         $this->logger->info('Stock de produit catégorie ajouté', [
+             'Produit' => $produitCategorie->getNom(),
+             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+             'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+             'ID Application' => $produitCategorie->getApplication()->getId()
+         ]);
 
         $this->update();
         unset($instance);
@@ -118,7 +119,8 @@ class StockService
             $this->logger->info('Stock de produit catégorie modifié', [
                 'Produit' => $produitCategorie->getNom(),
                 'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-                'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+                'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                'ID Application' => $produitCategorie->getApplication()->getId()
             ]);
 
             $this->update();
@@ -142,7 +144,8 @@ class StockService
             $this->logger->info('Stock de produit catégorie modifié', [
                 'Produit' => $produitCategorie->getNom(),
                 'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-                'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+                'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                'ID Application' => $produitCategorie->getApplication()->getId()
             ]);
             
             $this->update();
@@ -176,7 +179,8 @@ class StockService
         $this->logger->info('Stock de produit catégorie supprimé', [
             'Produit' => $produitCategorie->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $produitCategorie->getApplication()->getId()
         ]);
 
         $this->update();

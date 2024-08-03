@@ -73,10 +73,11 @@ class AffaireService
   
           // Créer le log
           $this->logger->info($logMessage, [
-              'Affaire' => $affaire->getNom(),
-              'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-              'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
-          ]);
+            'Produit' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
 
         $this->update();
         unset($instance);
@@ -95,6 +96,14 @@ class AffaireService
 
     public function remove($affaire)
     {
+        $factures = $affaire->getFactures();
+        foreach($factures as $facture) {
+            $factureDetails = $facture->getFactureDetails();
+            foreach($factureDetails as $factureDetail) {
+                $this->entityManager->remove($factureDetail);
+            }
+            $this->entityManager->remove($facture);
+        }
         $this->entityManager->remove($affaire);
     }
 

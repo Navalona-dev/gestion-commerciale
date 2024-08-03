@@ -2,14 +2,20 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Product;
 use App\Entity\Stock;
+use App\Entity\Product;
+use App\Helpers\Helpers;
 use App\Form\TransfertType;
+use Psr\Log\LoggerInterface;
 use App\Service\AccesService;
+use App\Service\AffaireService;
+use App\Service\ProductService;
 use App\Entity\ProduitCategorie;
 use App\Form\ProduitCategorieType;
 use App\Service\ApplicationManager;
 use App\Form\UpdatePriceProductType;
+use App\Repository\AffaireRepository;
+use App\Repository\ProductRepository;
 use App\Exception\PropertyVideException;
 use App\Form\UpdateProduitCategorieType;
 use App\Service\ProduitCategorieService;
@@ -21,11 +27,6 @@ use App\Repository\ProduitCategorieRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Exception\UnsufficientPrivilegeException;
-use App\Helpers\Helpers;
-use App\Repository\AffaireRepository;
-use App\Repository\ProductRepository;
-use App\Service\AffaireService;
-use App\Service\ProductService;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -41,8 +42,17 @@ class ProductController extends AbstractController
     private $helpers;
     private $productService;
     private $affaireService;
+    private $logger;
 
-    public function __construct(AccesService $AccesService, ApplicationManager $applicationManager, ProduitCategorieService $produitCategorieService, ProductService $productService, Helpers $helpers, AffaireService $affaireService)
+    public function __construct(
+        AccesService $AccesService, 
+        ApplicationManager $applicationManager, 
+        ProduitCategorieService $produitCategorieService, 
+        ProductService $productService, 
+        Helpers $helpers, 
+        AffaireService $affaireService,
+        LoggerInterface $affaireLogger
+        )
     {
         $this->accesService = $AccesService;
         $this->produitCategorieService = $produitCategorieService;
@@ -50,6 +60,8 @@ class ProductController extends AbstractController
         $this->application = $applicationManager->getApplicationActive();
         $this->helpers = $helpers;
         $this->affaireService = $affaireService;
+        $this->logger = $affaireLogger;
+
     }
     
     #[Route('/add-to-affaire', name: '_add_to_affaire')]
@@ -106,6 +118,20 @@ class ProductController extends AbstractController
                 
             });
         }
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->getUser();
+
+        // Créer le message de log en fonction de l'action
+        $logMessage = ($affaire->getStatut() == 'devis') ? 'Produit ajouté au devis' : 'Produit ajouté à la commande';
+
+        // Créer le log
+        $this->logger->info($logMessage, [
+          'Produit' => $affaire->getNom(),
+          'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+          'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+          'ID Application' => $this->application->getId()
+      ]);
        
         $template = "reloadFinanciereProduct.html.twig";
        

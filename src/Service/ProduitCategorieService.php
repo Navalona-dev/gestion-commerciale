@@ -113,7 +113,8 @@ class ProduitCategorieService
         $this->logger->info('Produit catégorie ajouté', [
             'Produit' => $produitCategorie->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $produitCategorie->getApplication()->getId()
         ]);
 
         $this->update();
@@ -146,15 +147,18 @@ class ProduitCategorieService
         }
 
         $this->entityManager->remove($produitCategorie);
-        // Obtenir l'utilisateur connecté
-        $user = $this->security->getUser();
+        
+         // Obtenir l'utilisateur connecté
+         $user = $this->security->getUser();
 
-        // Créer log
-        $this->logger->info('Produit catégorie supprimé', [
-            'Produit' => $produitCategorie->getNom(),
-            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
-        ]);
+         // Créer log
+         $this->logger->info('Produit catégorie supprimé', [
+             'Produit' => $produitCategorie->getNom(),
+             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+             'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+             'ID Application' => $produitCategorie->getApplication()->getId()
+         ]);
+
         $this->update();
     }
 
@@ -312,15 +316,16 @@ class ProduitCategorieService
 
         $this->entityManager->persist($newProduitCategorie);
 
-        // Obtenir l'utilisateur connecté
-        $user = $this->security->getUser();
+         // Obtenir l'utilisateur connecté
+         $user = $this->security->getUser();
 
-        // Créer log
-        $this->logger->info('Produit catégorie transferé', [
-            'Produit' => $oldProduitCategorie->getNom(),
-            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
-        ]);
+         // Créer log
+         $this->logger->info('Produit catégorie transféré', [
+             'Produit' => $oldProduitCategorie->getNom(),
+             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+             'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+             'ID Application' => $oldProduitCategorie->getApplication()->getId()
+         ]);
 
         $this->update();
 

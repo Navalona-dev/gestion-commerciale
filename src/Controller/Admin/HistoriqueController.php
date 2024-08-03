@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Service\ApplicationManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -10,85 +11,166 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[Route('/admin/historique', name: 'logs')]
 class HistoriqueController extends AbstractController
 {
+    private $application;
+
+
+    public function __construct(
+        ApplicationManager $applicationManager
+        )
+    {
+        $this->application = $applicationManager->getApplicationActive();
+    }
+
     #[Route('/produit', name: '_produit')]
     public function produit(): Response
     {
         $data = [];
         try {
-            // Chemin vers le fichier de log
             $logFilePath = $this->getParameter('kernel.project_dir') . '/public/historique/product.txt';
-
-            // Lire le contenu du fichier
+    
+            if (!file_exists($logFilePath)) {
+                $htmlContent = $this->renderView('admin/historique/produit.html.twig', [
+                    'logEmpty' => true
+                ]);
+    
+                $data["html"] = $htmlContent;
+                return new JsonResponse($data);
+            }
+    
             $logContent = file_get_contents($logFilePath);
-
-            // Vérifier si la lecture du fichier a réussi
+    
             if ($logContent === false) {
                 throw new \Exception('Impossible de lire le fichier de log.');
             }
-
-            // Diviser le contenu en lignes
+    
             $logLines = explode("\n", $logContent);
-
-            // Filtrer les lignes vides
             $logLines = array_filter($logLines);
-
-            // Trier les lignes par date (du plus récent au plus ancien)
-            usort($logLines, function ($a, $b) {
-                $dateA = $this->parseLogDate($a);
-                $dateB = $this->parseLogDate($b);
-                return $dateB <=> $dateA;
+    
+            // Extraire les informations de chaque ligne
+            $parsedLines = array_map(function ($line) {
+                // Extraire la date et le message JSON de la ligne
+                if (preg_match('/^\[([^\]]+)\] [^\:]+: (.+?) ({.*})/', $line, $matches)) {
+                    $date = $matches[1];
+                    $message = $matches[2];
+                    $jsonString = $matches[3];
+    
+                    // Décoder le JSON
+                    $decoded = json_decode($jsonString, true);
+    
+                    // Ajouter la date et le message aux données décodées
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $decoded['Date'] = $date;
+                        $decoded['Message'] = $message;
+                        return $decoded;
+                    } else {
+                        dump(json_last_error_msg()); // Pour débogage
+                    }
+                }
+    
+                return null;
+            }, $logLines);
+    
+            // Filtrer les lignes qui ont échoué à être décodées
+            $parsedLines = array_filter($parsedLines);
+    
+            $idApplication = $this->application->getId();
+            $filteredLines = array_filter($parsedLines, function ($line) use ($idApplication) {
+                return isset($line['ID Application']) && $line['ID Application'] == $idApplication;
             });
 
-            // Passer les lignes de log au template Twig
+            //dd($filteredLines);
+    
+            usort($filteredLines, function ($a, $b) {
+                $dateA = $this->parseLogDate($a['Date']);
+                $dateB = $this->parseLogDate($b['Date']);
+                return $dateB <=> $dateA;
+            });
+    
             $htmlContent = $this->renderView('admin/historique/produit.html.twig', [
-                'logLines' => $logLines,
+                'logLines' => $filteredLines,
+                'logEmpty' => false
             ]);
-
+    
             $data["html"] = $htmlContent;
-
             return new JsonResponse($data);
         } catch (\Exception $exception) {
             $data["exception"] = $exception->getMessage();
             return new JsonResponse($data, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    
 
     #[Route('/affaire', name: '_affaire')]
     public function affaire(): Response
     {
         $data = [];
         try {
-            // Chemin vers le fichier de log
             $logFilePath = $this->getParameter('kernel.project_dir') . '/public/historique/affaire.txt';
-
-            // Lire le contenu du fichier
+    
+            if (!file_exists($logFilePath)) {
+                $htmlContent = $this->renderView('admin/historique/affaire.html.twig', [
+                    'logEmpty' => true
+                ]);
+    
+                $data["html"] = $htmlContent;
+                return new JsonResponse($data);
+            }
+    
             $logContent = file_get_contents($logFilePath);
-
-            // Vérifier si la lecture du fichier a réussi
+    
             if ($logContent === false) {
                 throw new \Exception('Impossible de lire le fichier de log.');
             }
-
-            // Diviser le contenu en lignes
+    
             $logLines = explode("\n", $logContent);
-
-            // Filtrer les lignes vides
             $logLines = array_filter($logLines);
-
-            // Trier les lignes par date (du plus récent au plus ancien)
-            usort($logLines, function ($a, $b) {
-                $dateA = $this->parseLogDate($a);
-                $dateB = $this->parseLogDate($b);
-                return $dateB <=> $dateA;
+    
+            // Extraire les informations de chaque ligne
+            $parsedLines = array_map(function ($line) {
+                // Extraire la date et le message JSON de la ligne
+                if (preg_match('/^\[([^\]]+)\] [^\:]+: (.+?) ({.*})/', $line, $matches)) {
+                    $date = $matches[1];
+                    $message = $matches[2];
+                    $jsonString = $matches[3];
+    
+                    // Décoder le JSON
+                    $decoded = json_decode($jsonString, true);
+    
+                    // Ajouter la date et le message aux données décodées
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $decoded['Date'] = $date;
+                        $decoded['Message'] = $message;
+                        return $decoded;
+                    } else {
+                        dump(json_last_error_msg()); // Pour débogage
+                    }
+                }
+    
+                return null;
+            }, $logLines);
+    
+            // Filtrer les lignes qui ont échoué à être décodées
+            $parsedLines = array_filter($parsedLines);
+    
+            $idApplication = $this->application->getId();
+            $filteredLines = array_filter($parsedLines, function ($line) use ($idApplication) {
+                return isset($line['ID Application']) && $line['ID Application'] == $idApplication;
             });
 
-            // Passer les lignes de log au template Twig
+            //dd($filteredLines);
+    
+            usort($filteredLines, function ($a, $b) {
+                $dateA = $this->parseLogDate($a['Date']);
+                $dateB = $this->parseLogDate($b['Date']);
+                return $dateB <=> $dateA;
+            });
+    
             $htmlContent = $this->renderView('admin/historique/affaire.html.twig', [
-                'logLines' => $logLines,
+                'logLines' => $filteredLines,
+                'logEmpty' => false
             ]);
-
+    
             $data["html"] = $htmlContent;
-
             return new JsonResponse($data);
         } catch (\Exception $exception) {
             $data["exception"] = $exception->getMessage();

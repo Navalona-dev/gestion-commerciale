@@ -438,9 +438,10 @@ class AffaireController extends AbstractController
             
                     // Créer le log
                     $this->logger->info($logMessage, [
-                        'Affaire' => $affaire->getNom(),
+                        'Produit' => $affaire->getNom(),
                         'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-                        'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+                        'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                        'ID Application' => $affaire->getApplication()->getId()
                     ]);
                     $this->affaireService->update();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
@@ -514,9 +515,10 @@ class AffaireController extends AbstractController
         
                 // Créer le log
                 $this->logger->info($logMessage, [
-                    'Affaire' => $affaire->getNom(),
+                    'Produit' => $affaire->getNom(),
                     'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-                    'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+                    'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                    'ID Application' => $affaire->getApplication()->getId()
                 ]);
                 $this->affaireService->update();
                 return new JsonResponse(['status' => 'success'], Response::HTTP_OK);

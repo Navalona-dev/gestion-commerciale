@@ -59,7 +59,8 @@ class ProduitImageService
         $this->logger->info($logMessage, [
             'Produit' => $produitCategorie->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $produitCategorie->getApplication()->getId()
         ]);
 
         $this->update();
@@ -84,7 +85,8 @@ class ProduitImageService
         $this->logger->info('Image de produit catégorie supprimée', [
             'Produit' => $produitImage->getProduitCategorie()->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $produitImage->getProduitCategorie()->getApplication()->getId()
         ]);
 
         $this->update();
