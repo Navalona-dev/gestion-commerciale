@@ -1417,7 +1417,7 @@ function showTabFacture() {
 
                  $(".loadBody").css('display', 'none');
                  setTimeout(function() {
-                    $('.table-facture-affaire').DataTable({
+                    $('#table-facture-affaire').DataTable({
                         responsive: true,
                         language: {
                             url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',

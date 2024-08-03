@@ -775,9 +775,9 @@
     color: #4154f1;
   }
   
-  .sidebar-nav .nav-content a.active i {
+  /*.sidebar-nav .nav-content a.active i {
     background-color: #4154f1;
-  }
+  }*/
   
   /*--------------------------------------------------------------
   # Dashboard
@@ -1514,10 +1514,36 @@
   font-size: 10px;
 }
 
-.menu-icon a i {
+/*.menu-icon a i {
   color: #212f3d;
   padding: 4px 8px;
   border: 1px solid #212f3d;
+}*/
+
+.menu-icon a i.edit {
+  color: #2a4ce8;
+  padding: 4px 8px;
+  border: 1px solid #2a4ce8;
+}
+
+.menu-icon a:hover i.edit {
+  color: #fff;
+  background-color: #2a4ce8;
+  padding: 4px 8px;
+  border: 1px solid #2a4ce8;
+}
+
+.menu-icon a i.delete {
+  color:  #9a090c ;
+  padding: 4px 8px;
+  border: 1px solid  #9a090c ;
+}
+
+.menu-icon a:hover i.delete {
+  color:  #fff ;
+  background-color: #9a090c;
+  padding: 4px 8px;
+  border: 1px solid  #9a090c ;
 }
 
 .status option, .status select {

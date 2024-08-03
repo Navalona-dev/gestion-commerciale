@@ -44,6 +44,8 @@
   <section class="section">
       <div class="row">
         <div class="col-lg-12">
+             {% include 'admin/affaires/entete_compte.html.twig' with { 'compte': affaire.compte } %}
+
             {% include 'admin/affaires/entete_affaire.html.twig' with { 'affaire' : affaire} %}
             <div class="row">
                 <div class="col-md-2 col-12">
@@ -69,7 +71,7 @@
                                                 </ul>
                                             </div>
 
-                                            <div class="dropdown ms-2 d-inline-block">
+                                            {#<div class="dropdown ms-2 d-inline-block">
                                                 <a class="btn btn-warning btn-sm px-3 dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <i class="bi bi-plus"></i> <span class="mx-2">Ajouter un avoir</span>
                                                 </a>
@@ -79,7 +81,7 @@
                                                     <li><a style="cursor: pointer;" class="dropdown-item">Créer une facture d'acompte</a></li>
                                                     <li><a style="cursor: pointer;" class="dropdown-item">Créer la facture de solde</a></li>
                                                 </ul>
-                                            </div>
+                                            </div>#}
                                         </div>
                                     </div>
                                     <div class="col-md-2 col-12">
@@ -91,7 +93,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <table class="table table-striped" id="table-facture" style="width: 100%;">
+                            <table class="table table-striped" id="table-facture-affaire" style="width: 100%;">
                                 <thead>
                                     <tr class="text-nowrap">
                                         <tr class="text-nowrap">
@@ -228,16 +230,6 @@
         $('#tab-facture').css('display', 'none');
         $('#tab-facture-affaire').css('display', 'block');
   
-        $('#table-facture').DataTable({
-            responsive: true,
-            language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
-            },
-            border: false,
-            scrollX: '100%',
-            pageLength: 10,
-            scrollCollapse: false,
-        });
       });
 
     </script>

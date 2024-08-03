@@ -23,17 +23,27 @@
                             </div>
                             <div class="col-md-8 col-12">
                                 <p class="data-info py-2">
-                                    <span>{{affaire.nom}}</span> <a href="#" class="text-black"><i class="bi bi-pencil-fill mx-2"></i></a>
+                                    <span>{{affaire.nom}}</span>
                                 </p>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-4 col-12">
-                                <i class="bi bi-list-task"></i><span class="mx-2">Numéro commande client</span>
+                                <i class="bi bi-list-task"></i><span class="mx-2">Numéro commande</span>
                             </div>
                             <div class="col-md-8 col-12">
                                 <p class="data-info py-2">
-                                    <span>{{affaire.statut}} n°{{affaire.id}}</span><a href="#" class="text-black"><i class="bi bi-pencil-fill mx-2"></i></a>
+                                    <span>{{affaire.statut}} n°{{affaire.id}}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <i class="bi bi-person"></i><span class="mx-2">Client</span>
+                            </div>
+                            <div class="col-md-8 col-12">
+                                <p class="data-info py-2">
+                                    <span>{{affaire.compte.nom}}</span>
                                 </p>
                             </div>
                         </div>
@@ -43,27 +53,39 @@
                             </div>
                             <div class="col-md-8 col-12">
                                 <p class="data-info py-2">
-                                    <span> {{affaire.dateCreation|date('d/m/Y')}} </span><a href="#" class="text-black"><i class="bi bi-pencil-fill mx-2"></i></a>
+                                    <span> {{affaire.dateCreation|date('d/m/Y')}} </span>
                                 </p>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-4 col-12">
-                                <i class="bi bi-calendar2-check-fill"></i><span class="mx-2">Date fin</span>
+                                <i class="bi bi-calendar2-check-fill"></i><span class="mx-2">Date de Devis</span>
                             </div>
                             <div class="col-md-8 col-12">
                                 <p class="data-info py-2">
-                                    <span>2024/07/15</span><a href="#" class="text-black"><i class="bi bi-pencil-fill mx-2"></i></a>
+                                    <span> 
+                                        {% if affaire.dateDevis is not null %}
+                                            {{affaire.dateDevis|date('d/m/Y')}} 
+                                        {% else %}
+                                            {{affaire.dateCreation|date('d/m/Y')}}
+                                        {% endif %}
+                                    </span>
                                 </p>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-4 col-12">
-                                <i class="bi bi-laptop"></i><span class="mx-2">Nombre de jour</span>
+                                <i class="bi bi-calendar2-check-fill"></i><span class="mx-2">Date de commande</span>
                             </div>
                             <div class="col-md-8 col-12">
                                 <p class="data-info py-2">
-                                    <span>4</span> <a href="#" class="text-black"><i class="bi bi-pencil-fill mx-2"></i></a>
+                                    <span>
+                                        {% if affaire.dateCommande is not null %}
+                                            {{affaire.dateCommande|date('d/m/Y')}}
+                                        {% else %}
+                                            Pas encore commande
+                                        {% endif %}
+                                    </span>
                                 </p>
                             </div>
                         </div>
@@ -112,11 +134,12 @@ $(document).ready(function() {
       $('#tab-produit-type').removeClass('active');
       $('.tab-produit-type').removeClass('active');
 $('#tab-import-produit').css('display', 'none');
-        $('#tab-facture').css('display', 'none');
-        $('#tab-facture-affaire').css('display', 'none');$('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');       $('#tab-financier-affaire').removeClass('active').empty();
+        $('#tab-facture').css('display', 'none');      
+        $('#tab-financier-affaire').removeClass('active').empty();
       $('#tab-fiche-client').removeClass('active').empty();
       $('#tab-info-affaire').addClass('active');
+      $('#tab-facture-affaire').removeClass('active').empty();
+
       
     });
    

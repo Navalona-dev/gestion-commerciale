@@ -127,8 +127,10 @@
                                     <div class="menu-icon mb-3">
                                         <div class="form-group">
                                             {# <a href="#"><i class="bi bi-skip-end-fill"></i></a>#}
-                                            <a href="#" onclick="return updateAffaire({{affaire.id}})"><i class="bi bi-pencil-square"></i></a>
-                                             {# <a href="#"><i class="bi bi-bell-fill"></i></a>
+                                            <a href="#" onclick="return updateAffaire({{affaire.id}})"><i class="bi bi-pencil-square edit"></i></a>
+                                            <a href="#" onclick="return deleteAffaire({{affaire.id}})"><i class="bi bi-trash delete"></i></a>
+                                             
+                                            {# <a href="#"><i class="bi bi-bell-fill"></i></a>
                                             <a href="#"><i class="bi bi-calendar-fill"></i></a> #}
                                             {# <a href="#"><i class="bi bi-hourglass-split"></i></a> #}
                                             {# <a href="#"><i class="bi bi-send"></i></a>
@@ -232,6 +234,7 @@ $(document).ready(function() {
     $('#tab-info-affaire').css('display', 'none');
     $('#affaires_client').css('display', 'block');
     $('#tab-fiche-fournisseur').removeClass('active').empty();
+    $('#tab-facture-affaire').css('display', 'none');
 
     });
    
