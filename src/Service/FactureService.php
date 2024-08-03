@@ -7,6 +7,7 @@ use App\Entity\Compte;
 use App\Entity\Affaire;
 use App\Entity\Facture;
 use App\Entity\Notification;
+use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
 use App\Service\TCPDFService;
 use Doctrine\ORM\EntityManager;
@@ -14,8 +15,9 @@ use App\Service\AuthorizationManager;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\ActionInvalideException;
-use Doctrine\Common\Persistence\ManagerRegistry;
 //use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Security\Core\Security;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -30,8 +32,19 @@ class FactureService
     private $application;
     private $tcpdf;
     private $twig;
+    private $logger;
+    private $security;
 
-    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager, ApplicationManager  $applicationManager, TCPDFService $tcpdf, Environment $twig)
+    public function __construct(
+        AuthorizationManager $authorization, 
+        TokenStorageInterface  $TokenStorageInterface, 
+        EntityManagerInterface $entityManager, 
+        ApplicationManager  $applicationManager, 
+        TCPDFService $tcpdf, 
+        Environment $twig,
+        LoggerInterface $affaireLogger, 
+        Security $security
+        )
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
@@ -39,6 +52,8 @@ class FactureService
         $this->application = $applicationManager->getApplicationActive();
         $this->tcpdf = $tcpdf;
         $this->twig = $twig;
+        $this->logger = $affaireLogger;
+        $this->security = $security;
     }
 
     public function add($affaire = null, $folder = null)
@@ -169,6 +184,17 @@ class FactureService
         $pdf->writeHTML($html, true, false, true, false, '');
         $pdf->Output($fileName, 'F');
         unset($facture);
+        
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer le log
+        $this->logger->info('Commande payée', [
+            'Affaire' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+        ]);
+
         return $pdf;
     }
 
@@ -184,7 +210,7 @@ class FactureService
         $facture->setValid(true);
         $facture->setStatut('annule');
         $products = $affaire->getProducts();
-        $filename = "Facture(FA-Annuler" . $facture->getNumero() . ").pdf";
+        $filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
 
         // Sortie du PDF sous forme de réponse HTTP
         foreach ($products as $key => $product) { 
@@ -228,6 +254,16 @@ class FactureService
         $pdf->writeHTML($html, true, false, true, false, '');
         $pdf->Output($fileName, 'F');
         unset($facture);
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer le log
+        $this->logger->info('Commande annulée', [
+            'Affaire' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+        ]);
         return $pdf;
     }
     public function update()

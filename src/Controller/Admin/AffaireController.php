@@ -7,16 +7,18 @@ use App\Entity\Compte;
 use App\Form\UserType;
 use App\Entity\Affaire;
 use App\Entity\Facture;
-use App\Entity\FactureDetail;
 use App\Form\CompteType;
 use App\Form\ProfilType;
 use App\Form\AffaireType;
+use Psr\Log\LoggerInterface;
+use App\Entity\FactureDetail;
 use App\Form\FicheCompteType;
 use App\Service\AccesService;
-use App\Service\CompteService;
 
+use App\Service\CompteService;
 use App\Form\AccesExtranetType;
 use App\Service\AffaireService;
+use App\Service\FactureService;
 use App\Service\ProductService;
 use App\Service\CategorieService;
 use App\Service\ApplicationManager;
@@ -29,7 +31,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Exception\UnsufficientPrivilegeException;
-use App\Service\FactureService;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpClient\Exception\ServerException;
@@ -50,14 +51,26 @@ class AffaireController extends AbstractController
     private $application;
     private $productService;
     private $factureService;
+    private $logger;
 
-    public function __construct(AffaireService $affaireService, ApplicationManager $applicationManager, AccesService $accesService, ProductService $productService, FactureService $factureService)
+
+    public function __construct(
+        AffaireService $affaireService, 
+        ApplicationManager $applicationManager, 
+        AccesService $accesService, 
+        ProductService $productService, 
+        FactureService $factureService,
+        LoggerInterface $affaireLogger, 
+        
+        )
     {
         $this->affaireService = $affaireService;
         $this->accesService = $accesService;
         $this->productService = $productService;
         $this->application = $applicationManager->getApplicationActive();
         $this->factureService = $factureService;
+        $this->logger = $affaireLogger;
+
     }
 
     #[Route('/refresh', name: '_liste_refresh')]
@@ -417,6 +430,18 @@ class AffaireController extends AbstractController
                 if ($request->isXmlHttpRequest()) {
                  
                    $this->affaireService->persist($affaire);
+                    // Obtenir l'utilisateur connecté
+                    $user = $this->getUser();
+
+                    // Créer le message de log en fonction de l'action
+                    $logMessage = ($affaire->getStatut() == 'devis') ? 'Devis modifié' : 'Commande modifiée';
+            
+                    // Créer le log
+                    $this->logger->info($logMessage, [
+                        'Affaire' => $affaire->getNom(),
+                        'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                        'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+                    ]);
                     $this->affaireService->update();
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
@@ -481,6 +506,18 @@ class AffaireController extends AbstractController
            
             if ($request->isXmlHttpRequest()) {
                 $this->affaireService->remove($affaire);
+                // Obtenir l'utilisateur connecté
+                $user = $this->getUser();
+
+                // Créer le message de log en fonction de l'action
+                $logMessage = ($affaire->getStatut() == 'devis') ? 'Devis supprimé' : 'Commande supprimée';
+        
+                // Créer le log
+                $this->logger->info($logMessage, [
+                    'Affaire' => $affaire->getNom(),
+                    'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                    'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail'
+                ]);
                 $this->affaireService->update();
                 return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
             }

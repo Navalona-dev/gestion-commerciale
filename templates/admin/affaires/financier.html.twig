@@ -63,15 +63,57 @@
                 <div class="card p-5">
                     <div class="date">
                         <div class="row">
-                            <div class="col-md-5 col-12">
-                                <p class="fw-bold fs-5"><i class="bi bi-archive-fill text-primary"></i><span class="mx-2 text-primary">Date devis:</span><span class="text-warning">{{affaire.dateDevis|date("d/m/Y")}}</span></p>
-                            </div>
-                            <div class="col-md-5 col-12">
-                                <p class="fw-bold fs-5"><i class="bi bi-archive-fill text-primary"></i><span class="mx-2 text-primary">Date commande:</span><span class="text-warning">{{affaire.dateCommande|date("d/m/Y")}}</span></p>
+                            <div class="col-md-10 col-12">
+                                <div class="row">
+                                    <div class="col-md-4 col-12">
+                                        <p class="fw-bold fs-5 text-center"><i class="bi bi-archive-fill text-primary"></i>
+                                            <span class="mx-2 text-primary">Date devis:</span>
+                                            
+                                        </p>
+                                        <p class="fw-bold fs-6 text-center" style="margin-top: -10px;">
+                                            <span class="text-warning">
+                                                {% if affaire.dateDevis is not null %}
+                                                    {{affaire.dateDevis|date("d/m/Y")}}
+                                                {% else %}
+                                                    {{affaire.dateCreation|date("d/m/Y")}}
+                                                {% endif %}
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 col-12">
+                                        <p class="fw-bold fs-5 text-center"><i class="bi bi-archive-fill text-primary"></i>
+                                            <span class="mx-2 text-primary">Date commande:</span>
+                                            
+                                        </p>
+                                        <p class="fw-bold fs-6 text-center" style="margin-top: -10px;">
+                                            <span class="text-warning">
+                                                {% if affaire.dateCommande is not null %}
+                                                    {{affaire.dateCommande|date("d/m/Y")}}
+                                                {% else %}
+                                                    Pas encore commandé
+                                                {% endif %}
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 col-12">
+                                        <p class="fw-bold fs-5 text-center"><i class="bi bi-archive-fill text-primary"></i>
+                                            <span class="mx-2 text-primary">Date facture:</span>
+                                            
+                                        </p>
+                                        <p class="fw-bold fs-6 text-center" style="margin-top: -10px;">
+                                            <span class="text-warning">
+                                                {% if affaire.dateFacture is not null %}
+                                                    {{affaire.dateFacture|date("d/m/Y")}}
+                                                {% else %}
+                                                    Pas encore facturé
+                                                {% endif %}
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                                 
-                                {% if affaire.paiement is not null and affaire.paiement == "paye" and factureFile is not null %}
-                        
+                            {% if affaire.paiement is not null and affaire.paiement == "paye" and factureFile is not null %}
                              
                                 <div class="col-md-2 col-12">
                                      <div class="d-flex justify-content-center">
@@ -84,7 +126,7 @@
 
                                     </div>
                                 </div>
-                                {% else %}
+                            {% else %}
                                 <div class="col-md-2 col-12">
                                     {% if affaire.products|length > 0 %}
                                     <div class="d-flex justify-content-end">
@@ -94,7 +136,7 @@
                                     </div>
                                     {% endif %}
                                 </div>
-                                {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                     <hr>
