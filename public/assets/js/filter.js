@@ -35,7 +35,7 @@ $(document).ready(function() {
   });
 
   //filter stock
-  $(document).ready(function() {
+  /*$(document).ready(function() {
     function updateStocks(period, text) {
         var count = $('#count-stock-' + period).text();
         $('#period-text-stock').text('| ' + text);
@@ -50,10 +50,10 @@ $(document).ready(function() {
   
     // Initial load for today
     updateStocks('today', "Aujourd'hui");
-  });
+  });*/
 
   //filter stock restant
-  $(document).ready(function() {
+  /*$(document).ready(function() {
     function updateStocksRestant(period, text) {
         var count = $('#count-stock-restant-' + period).text();
         $('#period-text-stock-restant').text('| ' + text);
@@ -68,7 +68,7 @@ $(document).ready(function() {
   
     // Initial load for today
     updateStocksRestant('today', "Aujourd'hui");
-  });
+  });*/
 
   //filter stock vendu
   $(document).ready(function() {
@@ -154,6 +154,8 @@ $(document).ready(function() {
     $('#best-order-table-last-year').hide();
   
     $('#best-order-filter-today').click(function() {
+      var text = $(this).text();
+      $('.best-order-filter-text').text(text);
       $('#best-order-table-today').show();
       $('#best-order-table-yesterday').hide();
       $('#best-order-table-this-week').hide();
@@ -165,6 +167,8 @@ $(document).ready(function() {
     });
   
     $('#best-order-filter-yesterday').click(function() {
+      var text = $(this).text();
+      $('.best-order-filter-text').text(text);
       $('#best-order-table-yesterday').show();
       $('#best-order-table-today').hide();
       $('#best-order-table-this-week').hide();
@@ -176,6 +180,8 @@ $(document).ready(function() {
     });
   
     $('#best-order-filter-this-week').click(function() {
+      var text = $(this).text();
+      $('.best-order-filter-text').text(text);
       $('#best-order-table-yesterday').hide();
       $('#best-order-table-today').hide();
       $('#best-order-table-this-week').show();
@@ -187,6 +193,8 @@ $(document).ready(function() {
     });
   
     $('#best-order-filter-last-week').click(function() {
+      var text = $(this).text();
+      $('.best-order-filter-text').text(text);
       $('#best-order-table-yesterday').hide();
       $('#best-order-table-today').hide();
       $('#best-order-table-this-week').hide();
@@ -198,6 +206,8 @@ $(document).ready(function() {
     });
   
     $('#best-order-filter-this-month').click(function() {
+      var text = $(this).text();
+      $('.best-order-filter-text').text(text);
       $('#best-order-table-yesterday').hide();
       $('#best-order-table-today').hide();
       $('#best-order-table-this-week').hide();
@@ -209,6 +219,8 @@ $(document).ready(function() {
     });
   
     $('#best-order-filter-last-month').click(function() {
+      var text = $(this).text();
+      $('.best-order-filter-text').text(text);
       $('#best-order-table-yesterday').hide();
       $('#best-order-table-today').hide();
       $('#best-order-table-this-week').hide();
@@ -220,6 +232,8 @@ $(document).ready(function() {
     });
   
     $('#best-order-filter-this-year').click(function() {
+      var text = $(this).text();
+      $('.best-order-filter-text').text(text);
       $('#best-order-table-yesterday').hide();
       $('#best-order-table-today').hide();
       $('#best-order-table-this-week').hide();
@@ -230,7 +244,9 @@ $(document).ready(function() {
       $('#best-order-table-last-year').hide();
     });
   
-    $('#best-order-filter-yesterday').click(function() {
+    $('#best-order-filter-last-year').click(function() {
+      var text = $(this).text();
+      $('.best-order-filter-text').text(text);
       $('#best-order-table-yesterday').hide();
       $('#best-order-table-today').hide();
       $('#best-order-table-this-week').hide();

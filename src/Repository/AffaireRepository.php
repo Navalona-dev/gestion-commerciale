@@ -163,9 +163,8 @@ class AffaireRepository extends ServiceEntityRepository
 
          $qb = $this->createQueryBuilder('a')
                      ->select('COUNT(a.id)')
-                     ->join('a.factures', 'f')
-                     ->where('f.date >= :today')
-                     ->andWhere('f.date < :tomorrow')
+                     ->where('a.dateFacture >= :today')
+                     ->andWhere('a.dateFacture < :tomorrow')
                      ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
                      ->andWhere('a.application = :application_id')
@@ -191,9 +190,8 @@ class AffaireRepository extends ServiceEntityRepository
  
          $qb = $this->createQueryBuilder('a')
                      ->select('COUNT(a.id)')
-                     ->join('a.factures', 'f')
-                     ->where('f.date >= :yesterday')
-                     ->andWhere('f.date < :today')
+                     ->where('a.dateFacture >= :yesterday')
+                     ->andWhere('a.dateFacture < :today')
                      ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
                      ->andWhere('a.application = :application_id')
@@ -219,9 +217,8 @@ class AffaireRepository extends ServiceEntityRepository
  
          $qb = $this->createQueryBuilder('a')
                      ->select('COUNT(a.id)')
-                     ->join('a.factures', 'f')
-                     ->where('f.date >= :start_of_week')
-                     ->andWhere('f.date < :end_of_week')
+                     ->where('a.dateFacture >= :start_of_week')
+                     ->andWhere('a.dateFacture < :end_of_week')
                      ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.application = :application_id')
                      ->andWhere('a.statut = :statut')
@@ -247,9 +244,8 @@ class AffaireRepository extends ServiceEntityRepository
  
          $qb = $this->createQueryBuilder('a')
                      ->select('COUNT(a.id)')
-                     ->join('a.factures', 'f')
-                     ->where('f.date >= :start_of_last_week')
-                     ->andWhere('f.date < :end_of_last_week')
+                     ->where('a.dateFacture >= :start_of_last_week')
+                     ->andWhere('a.dateFacture < :end_of_last_week')
                      ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.application = :application_id')
                      ->andWhere('a.statut = :statut')
@@ -274,9 +270,8 @@ class AffaireRepository extends ServiceEntityRepository
  
          $qb = $this->createQueryBuilder('a')
                      ->select('COUNT(a.id)')
-                     ->join('a.factures', 'f')
-                     ->where('f.date >= :start_of_month')
-                     ->andWhere('f.date < :end_of_month')
+                     ->where('a.dateFacture >= :start_of_month')
+                     ->andWhere('a.dateFacture < :end_of_month')
                      ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
                      ->andWhere('a.application = :application_id')
@@ -301,9 +296,8 @@ class AffaireRepository extends ServiceEntityRepository
  
          $qb = $this->createQueryBuilder('a')
                      ->select('COUNT(a.id)')
-                     ->join('a.factures', 'f')
-                     ->where('f.date >= :start_of_last_month')
-                     ->andWhere('f.date < :end_of_last_month')
+                     ->where('a.dateFacture >= :start_of_last_month')
+                     ->andWhere('a.dateFacture < :end_of_last_month')
                      ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
                      ->andWhere('a.application = :application_id')
@@ -328,9 +322,8 @@ class AffaireRepository extends ServiceEntityRepository
  
          $qb = $this->createQueryBuilder('a')
                      ->select('COUNT(a.id)')
-                     ->join('a.factures', 'f')
-                     ->where('f.date >= :start_of_year')
-                     ->andWhere('f.date < :end_of_year')
+                     ->where('a.dateFacture >= :start_of_year')
+                     ->andWhere('a.dateFacture < :end_of_year')
                      ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
                      ->andWhere('a.application = :application_id')
@@ -355,9 +348,8 @@ class AffaireRepository extends ServiceEntityRepository
  
          $qb = $this->createQueryBuilder('a')
                      ->select('COUNT(a.id)')
-                     ->join('a.factures', 'f')
-                     ->where('f.date >= :start_of_last_year')
-                     ->andWhere('f.date < :end_of_last_year')
+                     ->where('a.dateFacture >= :start_of_last_year')
+                     ->andWhere('a.dateFacture < :end_of_last_year')
                      ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
                      ->andWhere('a.application = :application_id')
@@ -382,8 +374,8 @@ class AffaireRepository extends ServiceEntityRepository
           $qb = $this->createQueryBuilder('a')
                       ->select('SUM(p.qtt)')
                       ->join('a.products', 'p')
-                      ->where('p.dateCreation >= :today')
-                      ->andWhere('p.dateCreation < :tomorrow')
+                      ->where('a.dateFacture >= :today')
+                      ->andWhere('a.dateFacture < :tomorrow')
                       ->andWhere('a.application = :application_id')
                       ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
@@ -410,8 +402,8 @@ class AffaireRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a')
                     ->select('SUM(p.qtt)')
                     ->join('a.products', 'p')
-                    ->where('p.dateCreation >= :yesterday')
-                    ->andWhere('p.dateCreation < :today')
+                    ->where('a.dateFacture >= :yesterday')
+                    ->andWhere('a.dateFacture < :today')
                     ->andWhere('a.application = :application_id')
                     ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
@@ -438,8 +430,8 @@ class AffaireRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a')
                     ->select('SUM(p.qtt)')
                     ->join('a.products', 'p')
-                    ->where('p.dateCreation >= :start_of_week')
-                    ->andWhere('p.dateCreation < :end_of_week')
+                    ->where('a.dateFacture >= :start_of_week')
+                    ->andWhere('a.dateFacture < :end_of_week')
                     ->andWhere('a.application = :application_id')
                     ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
@@ -466,8 +458,8 @@ class AffaireRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a')
                     ->select('SUM(p.qtt)')
                     ->join('a.products', 'p')
-                    ->where('p.dateCreation >= :start_of_last_week')
-                    ->andWhere('p.dateCreation < :end_of_last_week')
+                    ->where('a.dateFacture >= :start_of_last_week')
+                    ->andWhere('a.dateFacture < :end_of_last_week')
                     ->andWhere('a.application = :application_id')
                     ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
@@ -493,8 +485,8 @@ class AffaireRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a')
                     ->select('SUM(p.qtt)')
                     ->join('a.products', 'p')
-                    ->where('p.dateCreation >= :start_of_month')
-                    ->andWhere('p.dateCreation < :end_of_month')
+                    ->where('a.dateFacture >= :start_of_month')
+                    ->andWhere('a.dateFacture < :end_of_month')
                     ->andWhere('a.application = :application_id')
                     ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
@@ -520,8 +512,8 @@ class AffaireRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a')
                     ->select('SUM(p.qtt)')
                     ->join('a.products', 'p')
-                    ->where('p.dateCreation >= :start_of_last_month')
-                    ->andWhere('p.dateCreation < :end_of_last_month')
+                    ->where('a.dateFacture >= :start_of_last_month')
+                    ->andWhere('a.dateFacture < :end_of_last_month')
                     ->andWhere('a.application = :application_id')
                     ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
@@ -547,8 +539,8 @@ class AffaireRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a')
                     ->select('SUM(p.qtt)')
                     ->join('a.products', 'p')
-                    ->where('p.dateCreation >= :start_of_year')
-                    ->andWhere('p.dateCreation < :end_of_year')
+                    ->where('a.dateFacture >= :start_of_year')
+                    ->andWhere('a.dateFacture < :end_of_year')
                     ->andWhere('a.application = :application_id')
                     ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
@@ -574,8 +566,8 @@ class AffaireRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a')
                     ->select('SUM(p.qtt)')
                     ->join('a.products', 'p')
-                    ->where('p.dateCreation >= :start_of_last_year')
-                    ->andWhere('p.dateCreation < :end_of_last_year')
+                    ->where('a.dateFacture >= :start_of_last_year')
+                    ->andWhere('a.dateFacture < :end_of_last_year')
                     ->andWhere('a.application = :application_id')
                     ->andWhere('a.paiement = :paiement')
                      ->andWhere('a.statut = :statut')
@@ -809,27 +801,28 @@ class AffaireRepository extends ServiceEntityRepository
      //best order
 
      public function getTopOrdersByTotal($startDate = null, $endDate = null, $paiement = null, $statut = null)
-    {
-        $qb = $this->createQueryBuilder('a')
-            ->select('a as order, SUM(p.puHt) as total')
-            ->join('a.products', 'p')
-            ->where('a.dateCreation >= :startDate')
-            ->andWhere('a.dateCreation < :endDate')
-            ->andWhere('a.paiement = :paiement')
-            ->andWhere('a.statut = :statut')
-            ->andWhere('a.application = :application_id')
-            ->setParameter('startDate', $startDate->format('Y-m-d 00:00:00'))
-            ->setParameter('endDate', $endDate->format('Y-m-d 23:59:59')) // Utiliser 23:59:59 pour inclure toute la journée
-            ->setParameter('paiement', $paiement)
-            ->setParameter('statut', $statut)
-            ->setParameter('application_id', $this->application->getId())
-            ->groupBy('a')
-            ->orderBy('total', 'DESC')
-            ->setMaxResults(5)
-            ->getQuery();
-
-        return $qb->getResult();
-    }
+     {
+         $qb = $this->createQueryBuilder('a')
+             ->select('a as order, SUM(p.puHt) as total')
+             ->join('a.products', 'p')
+             ->where('a.dateFacture >= :startDate')
+             ->andWhere('a.dateFacture < :endDate')
+             ->andWhere('a.paiement = :paiement')
+             ->andWhere('a.statut = :statut')
+             ->andWhere('a.application = :application_id')
+             ->setParameter('startDate', $startDate->format('Y-m-d H:i:s'))
+             ->setParameter('endDate', $endDate->format('Y-m-d H:i:s')) // Utiliser 23:59:59 pour inclure toute la journée
+             ->setParameter('paiement', $paiement)
+             ->setParameter('statut', $statut)
+             ->setParameter('application_id', $this->application->getId())
+             ->groupBy('a.id') // Grouper par ID d'affaire, ce qui est plus sûr
+             ->orderBy('total', 'DESC')
+             ->setMaxResults(5)
+             ->getQuery();
+     
+         return $qb->getResult();
+     }
+     
 
 
     public function getTopOrdersByTotalToday($paiement = null, $statut = null)
@@ -842,8 +835,13 @@ class AffaireRepository extends ServiceEntityRepository
     public function getTopOrdersByTotalYesterday($paiement = null, $statut = null)
     {
         $yesterday = new \DateTime('yesterday');
-        return $this->getTopOrdersByTotal($yesterday, $yesterday->modify('+1 day'), $paiement, $statut);
+        $startOfYesterday = $yesterday->setTime(0, 0, 0);
+        $endOfYesterday = (clone $yesterday)->modify('+1 day')->setTime(0, 0, 0); 
+
+        return $this->getTopOrdersByTotal($startOfYesterday, $endOfYesterday, $paiement, $statut);
     }
+
+    
 
     public function getTopOrdersByTotalThisWeek($paiement = null, $statut = null) 
     {

@@ -251,6 +251,32 @@ class ProduitCategorieRepository extends ServiceEntityRepository
          return $qb;
       }
 
+      public function countStocks()
+    {
+        $qb = $this->createQueryBuilder('p')
+                    ->select('SUM(s.qtt)')
+                    ->join('p.stocks', 's')
+                    ->andWhere('p.application = :application_id')
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+
+               return $qb;
+    }
+
+    //nombre stock restant
+    public function countStockRestant()
+    {
+        $qb = $this->createQueryBuilder('p')
+                    ->select('SUM(p.stockRestant)')
+                    ->andWhere('p.application = :application_id')
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+
+               return $qb;
+    }
+
       // Nombre de stock d'aujourd'hui
     public function countStocksToday()
     {
@@ -436,6 +462,7 @@ class ProduitCategorieRepository extends ServiceEntityRepository
                     ->getSingleScalarResult();
        return $qb;
     }
+    
 
     // Nombre de stock restant d'aujourd'hui
     public function countStockRestantToday()

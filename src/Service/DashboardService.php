@@ -114,6 +114,12 @@ class DashboardService
         return $countProduit;
     }
 
+    public function getCountStocks()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStocks();
+        return $countStock;
+    }
+
     public function getCountStockToday()
     {
         $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStocksToday();
@@ -159,6 +165,12 @@ class DashboardService
     public function getCountStockLastYear()
     {
         $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStocksLastYear();
+        return $countStock;
+    }
+
+    public function getCountStockRestant()
+    {
+        $countStock = $this->entityManager->getRepository(ProduitCategorie::class)->countStockRestant();
         return $countStock;
     }
 
@@ -363,7 +375,7 @@ class DashboardService
         $startOfWeek->setTime(0, 0, 0);
 
         $counts = [];
-        for ($i = 1; $i <= 5; $i++) { // Lundi à Vendredi (1 = Lundi, 2 = Mardi, ..., 5 = Vendredi)
+        for ($i = 1; $i <= 7; $i++) { // Lundi à Dimanche (1 = Lundi, 2 = Mardi, ..., 7 = Dimanche)
             $dayOfWeek = (clone $startOfWeek)->modify("+$i days -1 day");
             $counts[] = $this->entityManager->getRepository(Affaire::class)->countOrdersThisWeekByDay($dayOfWeek, $paiement, $statut );
         }
@@ -374,7 +386,7 @@ class DashboardService
     public function getOrdersCountByDayLastWeek($paiement = null, $statut = null): array
     {
         $counts = [];
-        for ($i = 1; $i <= 5; $i++) { // Lundi à Vendredi (1 = Lundi, 2 = Mardi, ..., 5 = Vendredi)
+        for ($i = 1; $i <= 7; $i++) { // Lundi à Dimanche (1 = Lundi, 2 = Mardi, ..., 7 = Dimanche)
             $counts[] = $this->entityManager->getRepository(Affaire::class)->countOrdersLastWeekByDay($i, $paiement, $statut );
             
         }
@@ -408,7 +420,7 @@ class DashboardService
     {
         $counts = [];
         $currentDate = new \DateTime();
-        for ($i = 1; $i <= 5; $i++) { // Lundi à Vendredi (1 = Lundi, 2 = Mardi, ..., 5 = Vendredi)
+        for ($i = 1; $i <= 7; $i++) { // Lundi à Dimanche (1 = Lundi, 2 = Mardi, ..., 7 = Dimanche)
             $specificDay = clone $currentDate;
             $specificDay->setISODate((int)$currentDate->format('o'), (int)$currentDate->format('W'));
             $specificDay->modify('+' . ($i - 1) . ' days');
@@ -420,7 +432,7 @@ class DashboardService
     public function getClientsCountByDayLastWeek($genre): array
     {
         $counts = [];
-        for ($i = 1; $i <= 5; $i++) { // Lundi à Vendredi (1 = Lundi, 2 = Mardi, ..., 5 = Vendredi)
+        for ($i = 1; $i <= 7; $i++) { // Lundi à Dimanche (1 = Lundi, 2 = Mardi, ..., 7 = Dimanche)
             $counts[] = $this->entityManager->getRepository(Compte::class)->countClientsLastWeekByDay($i, $genre);
         }
         return $counts;
@@ -451,7 +463,7 @@ class DashboardService
     public function getProductsSoldThisWeekByDay($paiement = null, $statut = null): array
     {
         $counts = [];
-        for ($i = 1; $i <= 5; $i++) { // Lundi à Vendredi (1 = Lundi, 2 = Mardi, ..., 5 = Vendredi)
+        for ($i = 1; $i <= 7; $i++) { // Lundi à Dimanche (1 = Lundi, 2 = Mardi, ..., 7 = Dimanche)
             $counts[] = $this->entityManager->getRepository(Affaire::class)->countProductsSoldThisWeekByDay($i, $paiement, $statut);
         }
 
@@ -462,7 +474,7 @@ class DashboardService
     public function getProductsSoldLastWeekByDay($paiement = null, $statut = null): array
     {
         $counts = [];
-        for ($i = 1; $i <= 5; $i++) { // Lundi à Vendredi (1 = Lundi, 2 = Mardi, ..., 5 = Vendredi)
+        for ($i = 1; $i <= 7; $i++) { // Lundi à Dimanche (1 = Lundi, 2 = Mardi, ..., 7 = Dimanche)
             $counts[] = $this->entityManager->getRepository(Affaire::class)->countProductsSoldLastWeekByDay($i, $paiement, $statut);
         }
 

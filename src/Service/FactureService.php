@@ -231,6 +231,7 @@ class FactureService
         $this->persist($facture);
         $affaire->setDateAnnule($date);
         $affaire->setDevisEvol('perdu');
+        $affaire->setPaiement('annule');
         $this->persist($affaire);
         $this->update();
         $pdf->SetCreator(PDF_CREATOR);

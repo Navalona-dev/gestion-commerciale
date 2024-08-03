@@ -166,7 +166,7 @@
 
       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
         <div class="card info-card stocks-card">
-            <div class="filter">
+            {#<div class="filter">
                 <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                     <li class="dropdown-header text-start">
@@ -181,16 +181,16 @@
                     <li><a class="dropdown-item stock-filter" data-period="this-year">Cette année</a></li>
                     <li><a class="dropdown-item stock-filter" data-period="last-year">Année dernière</a></li>
                 </ul>
-            </div>
+            </div>#}
     
             <div class="card-body">
-                <h5 class="card-title">Stocks<span id="period-text-stock">| Aujourd'hui</span></h5>
+                <h5 class="card-title">Stocks {#<span id="period-text-stock">| Aujourd'hui</span>#}</h5>
                 <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                         <i class="bi bi-box"></i>
                     </div>
                     <div class="ps-3">
-                        <h6 id="stock-count">0</h6>
+                        <h6 id="stock-count"> {{countStock | default(0)}} </h6>
                         {#<span class="text-success small pt-1 fw-bold" id="percentage-change">0%</span>
                         <span class="text-muted small pt-2 ps-1">variation</span>#}
                     </div>
@@ -199,7 +199,7 @@
         </div>
       </div>
     
-      <div id="stock-data" style="display: none;">
+      {#<div id="stock-data" style="display: none;">
         <span id="count-stock-today"> {{countStockToday | default(0)}} </span>
         <span id="count-stock-yesterday"> {{countStockYesterday | default(0)}} </span>
         <span id="count-stock-this-week"> {{countStockThisWeek | default(0)}} </span>
@@ -208,11 +208,11 @@
         <span id="count-stock-last-month"> {{countStockLastMonth | default(0)}} </span>
         <span id="count-stock-this-year"> {{countStockThisYear | default(0)}} </span>
         <span id="count-stock-last-year"> {{countStockLastYear | default(0)}} </span>
-      </div>
+      </div>#}
 
       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
         <div class="card info-card stock-restant-card">
-            <div class="filter">
+            {#<div class="filter">
                 <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                     <li class="dropdown-header text-start">
@@ -227,16 +227,16 @@
                     <li><a class="dropdown-item stock-restant-filter" data-period="this-year">Cette année</a></li>
                     <li><a class="dropdown-item stock-restant-filter" data-period="last-year">Année dernière</a></li>
                 </ul>
-            </div>
+            </div>#}
     
             <div class="card-body">
-                <h5 class="card-title">Stocks restants <span id="period-text-stock-restant">| Aujourd'hui</span></h5>
+                <h5 class="card-title">Stocks restants {#<span id="period-text-stock-restant">| Aujourd'hui</span>#}</h5>
                 <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                         <i class="bi bi-box"></i>
                     </div>
                     <div class="ps-3">
-                        <h6 id="stock-restant-count">0</h6>
+                        <h6 id="stock-restant-count"> {{countStockRestant | default(0)}} </h6>
                         {#<span class="text-success small pt-1 fw-bold" id="percentage-change">0%</span>
                         <span class="text-muted small pt-2 ps-1">variation</span>#}
                     </div>
@@ -245,7 +245,7 @@
         </div>
       </div>
     
-      <div id="stock-restant-data" style="display: none;">
+      {#<div id="stock-restant-data" style="display: none;">
         <span id="count-stock-restant-today"> {{countStockRestantToday | default(0)}} </span>
         <span id="count-stock-restant-yesterday"> {{countStockRestantYesterday | default(0)}} </span>
         <span id="count-stock-restant-this-week"> {{countStockRestantThisWeek | default(0)}} </span>
@@ -254,7 +254,7 @@
         <span id="count-stock-restant-last-month"> {{countStockRestantLastMonth | default(0)}} </span>
         <span id="count-stock-restant-this-year"> {{countStockRestantThisYear | default(0)}} </span>
         <span id="count-stock-restant-last-year"> {{countStockRestantLastYear | default(0)}} </span>
-      </div>
+      </div>#}
 
       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
         <div class="card info-card produit-vendu-card">
@@ -455,7 +455,7 @@
           </div>
 
           <div class="card-body pb-0">
-            <h5 class="card-title">Meilleures ventes <span>| Ajourd'hui</span></h5>
+            <h5 class="card-title">Meilleures ventes <span class="best-order-filter-text">| Ajourd'hui</span></h5>
 
             <table class="table table-borderless">
               <thead>
@@ -512,7 +512,7 @@
                 </tr>
                 {% else %}
                   <tr>
-                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                    <td colspan="6">Aucune meilleure commande pour aujourd'hui</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -560,7 +560,7 @@
                 </tr>
                 {% else %}
                   <tr>
-                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                    <td colspan="6">Aucune meilleure commande pour hier</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -608,7 +608,7 @@
                 </tr>
                 {% else %}
                   <tr>
-                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                    <td colspan="6">Aucune meilleure commande pour cette semaine</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -656,7 +656,7 @@
                 </tr>
                 {% else %}
                   <tr>
-                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                    <td colspan="6">Aucune meilleure commande pour la semaine dernière</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -704,7 +704,7 @@
                 </tr>
                 {% else %}
                   <tr>
-                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                    <td colspan="6">Aucune meilleure commande pour ce mois</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -752,7 +752,7 @@
                 </tr>
                 {% else %}
                   <tr>
-                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                    <td colspan="6">Aucune meilleure commande pour le mois dernier</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -800,7 +800,7 @@
                 </tr>
                 {% else %}
                   <tr>
-                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                    <td colspan="6">Aucune meilleure commande pour cette année</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -848,7 +848,7 @@
                 </tr>
                 {% else %}
                   <tr>
-                    <td colspan="6">Aucune meilleure commande pour le moment</td>
+                    <td colspan="6">Aucune meilleure commande pour l'année dernière</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -961,20 +961,18 @@
               width: 2
           },
           xaxis: {
-              categories: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"]
+              categories: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
           },
           yaxis: {
             title: {
                 text: 'Quantité'
             },
             min: 0,
+            max: 100,
+            tickAmount: 10,
             labels: {
               formatter: function (val) {
-                  if (val !== null) {
-                      return val.toFixed(0);
-                  } else {
-                      return 0; 
-                  }
+                  return Math.round(val); 
               }
             }
         },
@@ -992,7 +990,7 @@
       if (selectedOption === 'thisWeek') {
         chart.updateOptions({
             xaxis: {
-                categories: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
+                categories: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
             }
         });
           chart.updateSeries([
@@ -1003,7 +1001,7 @@
       } else if (selectedOption === 'lastWeek') {
         chart.updateOptions({
             xaxis: {
-                categories: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
+                categories: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
             }
         });
           chart.updateSeries([

@@ -77,6 +77,7 @@ class DashboardController extends AbstractController
         $countProduitLastYear = $this->dashboardService->getCountProductsLastYear();
 
         //count stock
+        $countStock = $this->dashboardService->getCountStocks();
         $countStockToday = $this->dashboardService->getCountStockToday();
         $countStockYesterday = $this->dashboardService->getCountStockYesterday();
         $countStockThisWeek = $this->dashboardService->getCountStockThisWeek();
@@ -87,6 +88,7 @@ class DashboardController extends AbstractController
         $countStockLastYear = $this->dashboardService->getCountStockLastYear();
 
         //count stock restant
+        $countStockRestant = $this->dashboardService->getCountStockRestant();
         $countStockRestantToday = $this->dashboardService->getCountStockRestantToday();
         $countStockRestantYesterday = $this->dashboardService->getCountStockRestantYesterday();
         $countStockRestantThisWeek = $this->dashboardService->getCountStockRestantThisWeek();
@@ -151,7 +153,6 @@ class DashboardController extends AbstractController
         $countProductsSoldLastWeekByDay = $this->dashboardService->getProductsSoldLastWeekByDay('paye', 'commande');
         $countProductsSoldThisYearByDay = $this->dashboardService->getProductsSoldThisYearByMonth('paye', 'commande');
         $countProductsSoldLastYearByDay = $this->dashboardService->getProductsSoldLastYearByMonth('paye', 'commande');
-
         //best order
         $bestOrderToday = $this->dashboardService->getTopOrdersByTotalToday('paye', 'commande');
         $bestOrderYesterday = $this->dashboardService->getTopOrdersByTotalYesterday('paye', 'commande');
@@ -161,7 +162,7 @@ class DashboardController extends AbstractController
         $bestOrderLastMonth = $this->dashboardService->getTopOrdersByTotalLastMonth('paye', 'commande');
         $bestOrderThisYear = $this->dashboardService->getTopOrdersByTotalThisYear('paye', 'commande');
         $bestOrderLastYear = $this->dashboardService->getTopOrdersByTotalLastYear('paye', 'commande');
-
+        //dd($bestOrderYesterday);
         //dd($countStockRestantToday, $countStockRestantYesterday, $countStockRestantThisWeek, $countStockRestantLastWeek, $countStockRestantThisMonth, $countStockRestantLastMonth, $countStockRestantThisYear, $countStockRestantLastYear);
 
         $data = [];
@@ -196,6 +197,7 @@ class DashboardController extends AbstractController
                     'countProduitLastYear' => $countProduitLastYear,
 
                     //count stock
+                    'countStock' => $countStock,
                     'countStockToday' => $countStockToday,
                     'countStockYesterday' => $countStockYesterday,
                     'countStockThisWeek' => $countStockThisWeek,
@@ -206,6 +208,7 @@ class DashboardController extends AbstractController
                     'countStockLastYear' => $countStockLastYear,
 
                     //count stock restant
+                    'countStockRestant' => $countStockRestant,
                     'countStockRestantToday' => $countStockRestantToday,
                     'countStockRestantYesterday' => $countStockRestantYesterday,
                     'countStockRestantThisWeek' => $countStockRestantThisWeek,
@@ -319,6 +322,7 @@ class DashboardController extends AbstractController
             'countProduitLastYear' => $countProduitLastYear,
 
             //count stock
+            'countStock' => $countStock,
             'countStockToday' => $countStockToday,
             'countStockYesterday' => $countStockYesterday,
             'countStockThisWeek' => $countStockThisWeek,
@@ -329,6 +333,7 @@ class DashboardController extends AbstractController
             'countStockLastYear' => $countStockLastYear,
 
             //count stock restant
+            'countStockRestant' => $countStockRestant,
             'countStockRestantToday' => $countStockRestantToday,
             'countStockRestantYesterday' => $countStockRestantYesterday,
             'countStockRestantThisWeek' => $countStockRestantThisWeek,
