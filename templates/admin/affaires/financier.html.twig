@@ -126,6 +126,15 @@
 
                                     </div>
                                 </div>
+                            {% elseif affaire.paiement is not null and affaire.paiement == "annule" %}
+                            <div class="col-md-2 col-12">
+                                <div class="d-flex justify-content-center">
+                                   <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank" title="Voir dernière facture" class="bg-danger icon-detail text-white">
+                                       <i class="bi bi-file-earmark-check-fill"></i>
+                                   </a>
+
+                               </div>
+                           </div>
                             {% else %}
                                 <div class="col-md-2 col-12">
                                     {% if affaire.products|length > 0 %}
@@ -195,11 +204,11 @@
                                     <td class="align-middle text-center">0,00€</td>
                                     <td class="align-middle text-center">20%</td> #}
                                     <td>
-                                        {% if affaire.paiement is not null and affaire.paiement != "paye" or affaire.paiement is null %}
-                                        <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
-                                        {# <a href="#" class="action-plus d-block text-center mb-2"><i class="bi bi-plus"></i></a>
-                                        <a href="#" class="action-list d-block text-center mb-2"><i class="bi bi-list-ul"></i></a> #}
-                                        <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
+                                        {% if affaire.paiement is null or (affaire.paiement != "paye" and affaire.paiement != "annule") %}
+                                            <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
+                                            {# <a href="#" class="action-plus d-block text-center mb-2"><i class="bi bi-plus"></i></a>
+                                            <a href="#" class="action-list d-block text-center mb-2"><i class="bi bi-list-ul"></i></a> #}
+                                            <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
                                         {% endif %}
                                     </td>
                                     {# {% set montantHt = montantHt + (product.qtt * product.puht) - product.remise %} #}
@@ -231,6 +240,10 @@
                                     <a title="Annuler" target="_blank" href="{{path('affaires_annuler', {'affaire': affaire.id})}}" title="Annuler" class="text-danger financier-icon">
                                         <i class="bi bi-x-square-fill"></i>
                                     </a>
+                                    <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank" title="Voir dernière facture" class="text-primary financier-icon">
+                                        <i class="bi bi-file-earmark-check-fill"></i>
+                                    </a>
+                                {% elseif affaire.paiement is not null and affaire.paiement == "annule" %}
                                     <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank" title="Voir dernière facture" class="text-primary financier-icon">
                                         <i class="bi bi-file-earmark-check-fill"></i>
                                     </a>

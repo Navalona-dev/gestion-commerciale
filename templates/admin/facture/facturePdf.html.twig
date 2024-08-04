@@ -93,7 +93,13 @@
             <table style="width: 100%; margin-top: 30px;">
                 <tr style="color: #fff;">
                     <td style="padding-left: 50px;">
-                        <p><span class="header-data">Facture N° : </span> {{facture.numero}} </p>
+                        <p><span class="header-data">N° : </span> 
+                            {% if facture.statut == "annule" %}
+                            FA-annulé-{{facture.numero}}
+                            {% elseif facture.statut == "regle" %}
+                            FA-validé-{{facture.numero}}
+                            {%  endif%}
+                         </p>
                     </td>
                     <td>
                         <p><span class="header-data">Client N° : </span> {{compte.id}} </p>
@@ -200,7 +206,13 @@
             </p>
         </div>
         <div class="data-total">
-            <p class="total" style="{% if facture.statut == 'regle' %} background-color: #4154f1; {% else %} background-color: #b02d30; {% endif %}">Total à payer : {{subTotal|number_format(2, ',', ' ')}} Ar </p>
+            <p class="total" style="{% if facture.statut == 'regle' %} background-color: #4154f1; {% else %} background-color: #b02d30; {% endif %}">
+            {% if facture.statut == "regle" %}
+            Total à payer : {{subTotal|number_format(2, ',', ' ')}} Ar 
+            {% elseif facture.statut == "annule" %}
+            Total à rembourser : {{subTotal|number_format(2, ',', ' ')}} Ar 
+            {% endif %}
+            </p>
         </div>
     </section>
     <section class="terme" style="margin-top: 70px;">
