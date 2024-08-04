@@ -99,9 +99,16 @@ class Facture
     #[ORM\OneToMany(targetEntity: FactureDetail::class, mappedBy: 'facture')]
     private Collection $factureDetails;
 
+    /**
+     * @var Collection<int, ReglementFacture>
+     */
+    #[ORM\OneToMany(targetEntity: ReglementFacture::class, mappedBy: 'facture')]
+    private Collection $reglementFactures;
+
     public function __construct()
     {
         $this->factureDetails = new ArrayCollection();
+        $this->reglementFactures = new ArrayCollection();
     }
 
     public static function newFacture($affaire = null)
@@ -360,6 +367,36 @@ class Facture
             // set the owning side to null (unless already changed)
             if ($factureDetail->getFacture() === $this) {
                 $factureDetail->setFacture(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ReglementFacture>
+     */
+    public function getReglementFactures(): Collection
+    {
+        return $this->reglementFactures;
+    }
+
+    public function addReglementFacture(ReglementFacture $reglementFacture): static
+    {
+        if (!$this->reglementFactures->contains($reglementFacture)) {
+            $this->reglementFactures->add($reglementFacture);
+            $reglementFacture->setFacture($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReglementFacture(ReglementFacture $reglementFacture): static
+    {
+        if ($this->reglementFactures->removeElement($reglementFacture)) {
+            // set the owning side to null (unless already changed)
+            if ($reglementFacture->getFacture() === $this) {
+                $reglementFacture->setFacture(null);
             }
         }
 

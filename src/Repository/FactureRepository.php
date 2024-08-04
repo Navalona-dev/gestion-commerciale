@@ -105,7 +105,10 @@ class FactureRepository extends ServiceEntityRepository
         $pg = 1,
         $order = null,
         $isCount = false,
-        $search = null
+        $search = null,
+        $statutPaiement = null,
+        $datePaieDu = null,
+        $datePaieAu = null
     ) {
         ini_set('memory_limit', '-1');
         ini_set('max_execution_time', '-1');
@@ -113,13 +116,13 @@ class FactureRepository extends ServiceEntityRepository
         $joins = $conditions = $sqlLimit = "";
         $parameters = [];
         $parameterType = [];
-       
+       //dd($nom, $search,$statutPaiement, $dateDu, $dateAu, $datePaieDu, $datePaieAu );
         if (!$isCount) {
             $select = "SELECT f.id, f.type, f.numero, f.prixHt, f.prixTtc, f.solde, f.statut, f.reglement, f.numeroCommande, f.etat,
-                f.file, f.dateCreation, f.isValid, f.file as fichier, f.remise, compte.id as compteId, compte.nom as compte, a.nom as nomAffaire, a.id as affaireId FROM Facture f  LEFT JOIN `compte` compte ON f.compte_id = compte.id LEFT JOIN `affaire` a ON f.affaire_id = a.id";
+                f.file, f.dateCreation, f.isValid, f.file as fichier, f.remise, compte.id as compteId, compte.nom as compte, a.nom as nomAffaire,a.paiement as statutPaiement, a.id as affaireId FROM Facture f  LEFT JOIN `compte` compte ON f.compte_id = compte.id LEFT JOIN `affaire` a ON f.affaire_id = a.id";
         } else {
             $select = "SELECT COUNT(f.id) as nbFacture, f.id, f.type, f.numero, f.prixHt, f.prixTtc, f.solde, f.statut, f.reglement, f.numeroCommande, f.etat,
-                f.file, f.dateCreation, f.isValid, f.file as fichier, f.remise,compte.id as compteId,  compte.nom as compte, a.nom as nomAffaire, a.id as affaireId FROM Facture f  LEFT JOIN `compte` compte ON f.compte_id = compte.id LEFT JOIN `affaire` a ON f.affaire_id = a.id";
+                f.file, f.dateCreation, f.isValid, f.file as fichier, f.remise,compte.id as compteId,  compte.nom as compte, a.nom as nomAffaire,a.paiement as statutPaiement,  a.id as affaireId FROM Facture f  LEFT JOIN `compte` compte ON f.compte_id = compte.id LEFT JOIN `affaire` a ON f.affaire_id = a.id";
         }
         $conditions = self::conditionConcatener($conditions, "f.application_id = :applicationId");
 
@@ -133,8 +136,15 @@ class FactureRepository extends ServiceEntityRepository
             $parameters['nom'] = '%' . trim($nom) . '%';
             $parameterType['nom'] = ParameterType::STRING;
         }
+        
+        if (null != $statutPaiement && $statutPaiement != "") {
+            $conditions = self::conditionConcatener($conditions, "a.paiement = :statutPaiement");
+            $parameters['statutPaiement'] = $statutPaiement;
+            $parameterType['statutPaiement'] = ParameterType::STRING;
+        }
 
         if (null != $search && $search != "") {
+            $search = $search['value'];
             $conditions = self::conditionConcatener($conditions, '(compte.nom like :search or compte.adresse like :search or
                            compte.telephone like :search or compte.email like :search)');
             $parameters['search'] = '%' . trim($search) . '%';
@@ -154,11 +164,33 @@ class FactureRepository extends ServiceEntityRepository
             $parameters['dateDu'] = $dateDu->format("Y-m-d");
             $parameterType['dateDu'] = ParameterType::STRING;
         } elseif (null == $dateDu && null != $dateAu) {
+          
             $conditions = self::conditionConcatener($conditions, "f.dateCreation <= :dateAu");
             $parameters['dateAu'] = $dateAu->format("Y-m-d");
             $parameterType['dateAu'] = ParameterType::STRING;
         }
+        
+        if (null != $datePaieDu && null != $datePaieAu) {
+            $joins .= " LEFT JOIN ReglementFacture rf ON rf.facture_id = f.id ";
+            $conditions = self::conditionConcatener($conditions, "rf.dateReglement >= :datePaieDu");
+            $conditions = self::conditionConcatener($conditions, "rf.dateReglement <= :datePaieAu");
 
+            $parameters['datePaieDu'] = $datePaieDu->format("Y-m-d");
+            $parameterType['datePaieDu'] = ParameterType::STRING;
+            $parameters['datePaieAu'] = $datePaieAu->format("Y-m-d");
+            $parameterType['datePaieAu'] = ParameterType::STRING;
+        } elseif (null != $datePaieDu && null == $datePaieAu) {
+            $joins .= " LEFT JOIN ReglementFacture rf ON rf.facture_id = f.id ";
+            $conditions = self::conditionConcatener($conditions, "rf.dateReglement >= :datePaieDu");
+            $parameters['datePaieDu'] = $datePaieDu->format("Y-m-d");
+            $parameterType['datePaieDu'] = ParameterType::STRING;
+        } elseif (null == $datePaieDu && null != $datePaieAu) {
+            $joins .= " LEFT JOIN ReglementFacture rf ON rf.facture_id = f.id ";
+            $conditions = self::conditionConcatener($conditions, "rf.dateReglement <= :datePaieAu");
+            $parameters['datePaieAu'] = $datePaieAu->format("Y-m-d");
+            $parameterType['datePaieAu'] = ParameterType::STRING;
+        }
+        
         //if ($genre != "") {
             $conditions = self::conditionConcatener($conditions, "compte.genre = :typeClient");
             $parameters['typeClient'] = $genre;

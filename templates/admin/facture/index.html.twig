@@ -64,8 +64,9 @@
                     <div class="row">
                         <div class="col-md-4 col-12">
                             <div class="input-group mb-3">
-                                <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-people-fill"></i></span>
-                                <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" />
+                                    <div>&nbsp;</div>
+                                {# <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-people-fill"></i></span>
+                                <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" /> #}
                                 {# <select name="filter_compte" id="filter_compte" class="mb-3 form-control form-control-md" style="border-left: none;">
                                     <option value="" disabled selected><span class="mx-3">Tapez le nom du client</span></option>
                                     <option value="Client 1">Client 1</option>
@@ -79,26 +80,30 @@
                         </div>
                         <div class="col-md-4 col-12">
                             <div class="input-group mb-3">
-                                <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-file-earmark-text-fill"></i></span>
+                                <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-people-fill"></i></span>
+                                <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" />
+                                {# <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-file-earmark-text-fill"></i></span>
                                 <select name="filter_facture" id="filter_facture" class="mb-3 form-control form-control-md" style="border-left: none;">
                                     <option value="" disabled selected><span class="mx-3">Toutes les factures</span></option>
                                     <option value="Facture 1">Facture 1</option>
                                     <option value="Facture 2">Facture 2</option>
                                     <option value="Facture 3">Facture 3</option>
                                     <option value="Facture 4">Facture 4</option>
-                                </select>
+                                </select> #}
                               </div>
 
                             <input type="text" name="date_facture_debut" id="date_facture_debut" class="mb-3 form-control form-control-ms date-facture" placeholder="Du dd/mm/yyyy">
-                            <input type="text" name="date_paiement" id="date_paiement" class="mb-3 form-control form-control-ms date-facture" placeholder="Du dd/mm/yyyy">
+                            <input type="text" name="date_paiement_debut" id="date_paiement_debut" class="mb-3 form-control form-control-ms date-facture" placeholder="Du dd/mm/yyyy">
                         </div>
                         <div class="col-md-4 col-12">
-                            <div class="input-group mb-3">
+                            <div class="input-group">
+                                {% set statutPaiement = constant('App\\Entity\\Affaire::PAIEMENT') %}
                                 <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-check-circle-fill"></i></span>
                                 <select name="filter_satatus" id="filter_satatus" class="mb-3 form-control form-control-md" style="border-left: none;">
                                     <option value="" disabled selected><span class="mx-3">Statut</span></option>
-                                    <option value="Payé">Payé</option>
-                                    <option value="Non payé">Non payé</option>
+                                    {% for key,statutPaie in statutPaiement %}
+                                    <option value="{{key}}">{{statutPaie}}</option>
+                                    {% endfor %}
                                 </select>
                               </div>
                             <input type="text" name="date_facture_end" id="date_facture_end" class="mb-3 form-control form-control-ms date-facture" placeholder="Au dd/mm/yyyy">
@@ -233,12 +238,13 @@
     <script>
         function searchFacture(genre = 1) {
       var nomCompte = $("#nom_compte").val();
+      var statutPaiement = $("#filter_satatus").val();
       //var genre = $("#genre").val();
       
       $.ajax({
                 url: '/admin/facture/search',
                 type: 'post',
-                data: {nomCompte: nomCompte },
+                data: {nomCompte: nomCompte, statutPaiement: statutPaiement },
                 success: function (response) {
                   
                  $("#factureList").empty();
@@ -336,9 +342,11 @@
             format: dateFormat,
             todayHighlight: true,
             daysOfWeekDisabled: '0',
-            startDate: dateNow,
+            //startDate: dateNow,
             language: 'fr',
             autoclose: true,
+            minDate: null,
+            maxDate: null,
 
         });
 

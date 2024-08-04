@@ -9,12 +9,14 @@ use App\Entity\Facture;
 use App\Entity\Notification;
 use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
+use App\Entity\ReglementFacture;
 use App\Service\TCPDFService;
 use Doctrine\ORM\EntityManager;
 use App\Service\AuthorizationManager;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\ActionInvalideException;
+use App\Repository\ReglementFactureRepository;
 //use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Security;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -34,6 +36,7 @@ class FactureService
     private $twig;
     private $logger;
     private $security;
+    private $reglementFactureRepository;
 
     public function __construct(
         AuthorizationManager $authorization, 
@@ -43,7 +46,8 @@ class FactureService
         TCPDFService $tcpdf, 
         Environment $twig,
         LoggerInterface $affaireLogger, 
-        Security $security
+        Security $security,
+        ReglementFactureRepository  $reglementFactureRepository
         )
     {
         $this->tokenStorage = $TokenStorageInterface;
@@ -54,6 +58,7 @@ class FactureService
         $this->twig = $twig;
         $this->logger = $affaireLogger;
         $this->security = $security;
+        $this->reglementFactureRepository = $reglementFactureRepository;
     }
 
     public function add($affaire = null, $folder = null)
@@ -154,7 +159,17 @@ class FactureService
         $facture->setPrixHt($montantHt);	
         $facture->setReglement($montantHt);
         
+        $reglementFacture = new ReglementFacture();
+        $reglementFacture->setFacture($facture);
+        $reglementFacture->setMontant($montantHt);
+        $reglementFacture->setDateReglement($date);
+        $reglementFacture->setNumero(1);
+        $reglementFacture->setNumeroFacture($numeroFacture);
+        $reglementFacture->setToutPaye(true);
+        $facture->addReglementFacture($reglementFacture);
+        $this->persist($reglementFacture);
         $this->persist($facture);
+
         $affaire->setPaiement('paye');
         $affaire->setDatePaiement($date);
         $affaire->setDevisEvol('gagne');
@@ -274,9 +289,9 @@ class FactureService
         $this->entityManager->flush();
     }
 
-    public function searchFactureRawSql($genre, $nom, $dateDu, $dateAu, $etat, $start, $limit, $order, $isCount)
+    public function searchFactureRawSql($genre, $nom, $dateDu, $dateAu, $etat, $start, $limit, $order, $isCount, $search, $statutPaiement, $datePaieDu, $datePaieAu)
     {
-        return $this->entityManager->getRepository(Facture::class)->searchFactureRawSql($genre, $nom, $dateDu,$dateAu, $etat, $limit, $start, $order, $isCount);
+        return $this->entityManager->getRepository(Facture::class)->searchFactureRawSql($genre, $nom, $dateDu,$dateAu, $etat, $limit, $start, $order, $isCount, $search, $statutPaiement, $datePaieDu, $datePaieAu);
     }
 
     public function persist($entity)

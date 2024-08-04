@@ -91,8 +91,11 @@
         });
 
         var nomCompte = $("#nom_compte").val();
+        var statutPaiement = $("#filter_satatus").val();
         var dateDu = $("#date_facture_debut").val();
         var dateAu = $("#date_facture_end").val();
+        var datePaieDu = $("#date_paiement_debut").val();
+        var datePaieAu = $("#date_paiement_end").val();
 
         $('#liste-table-facture-ajax').DataTable({
             pageLength: 10,
@@ -118,7 +121,7 @@
                 type: 'POST',
                 url: "/admin/facture/search-facture-datatable/from-ajax",
                 dataType: "json",
-                data: {nomCompte: nomCompte, limit: 25, dateDu: dateDu, dateAu: dateAu },
+                data: {nomCompte: nomCompte, statutPaiement: statutPaiement, limit: 25, dateDu: dateDu, dateAu: dateAu, datePaieDu: datePaieDu, datePaieAu: datePaieAu },
                 complete: function (result) {
                    /* var jsonData = result.responseJSON;
                     var listeIdCompte = jsonData["idComptes"];

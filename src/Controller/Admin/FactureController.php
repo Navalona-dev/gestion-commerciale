@@ -79,7 +79,11 @@ class FactureController extends AbstractController
         $data = [];
         $genre = $request->request->get('genre');
         $genre = 1;
-        $nomCompte = $request->request->get('nomCompte');
+        $nomCompte = $request->get('nomCompte');
+        $statutPaiement = $request->get('statutPaiement');
+        $datePaieDu = $request->get('datePaieDu');
+        $datePaieAu = $request->get('datePaieAu');
+        
         $dateDu = $request->get('dateDu');
         $dateAu = $request->get('dateAu');
         $start = $request->get('start');
@@ -88,28 +92,38 @@ class FactureController extends AbstractController
         $order = $request->get('order');
         $length = $request->get('length');
         try {
-            if (null != $dateDu) {
+            if (null != $datePaieDu && "" != $datePaieDu) {
+                $datePaieDuExplode = explode("/", $datePaieDu);
+                $datePaieDu = new \DateTime($datePaieDuExplode[2] . "-" . $datePaieDuExplode[1] . "-" . $datePaieDuExplode[0]);
+            }
+           
+            if (null != $datePaieAu && "" != $datePaieAu) {
+                $datePaieAuExplode = explode("/", $datePaieAu);
+                $datePaieAu = new \DateTime($datePaieAuExplode[2] . "-" . $datePaieAuExplode[1] . "-" . $datePaieAuExplode[0]);
+            }
+
+            if (null != $dateDu && "" != $dateDu) {
                 $dateDuExplode = explode("/", $dateDu);
                 $dateDu = new \DateTime($dateDuExplode[2] . "-" . $dateDuExplode[1] . "-" . $dateDuExplode[0]);
             }
     
             $dateAu = $request->get('dateAu');
-    
-            if (null != $dateAu) {
+           
+            if (null != $dateAu && "" != $dateAu) {
                 $dateAuExplode = explode("/", $dateAu);
                 $dateAu = new \DateTime($dateAuExplode[2] . "-" . $dateAuExplode[1] . "-" . $dateAuExplode[0]);
             }
-
+            
             if ($start == 0) {
                
-                $nbFacture = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, true, $search);
+                $nbFacture = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, true, $search, $statutPaiement, $datePaieDu, $datePaieAu);
               
                 $session->set('nbFacture_'.$genre, $nbFacture);
             } else {
                 $nbFacture = $session->get('nbFacture_'.$genre);
             }
          
-           $facturesAssoc = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, false, $search);
+           $facturesAssoc = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, $start, $length, null, false, $search, $statutPaiement, $datePaieDu, $datePaieAu);
            //dd($facturesAssoc);
            $data = [];
 
