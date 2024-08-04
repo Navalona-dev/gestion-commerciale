@@ -4,6 +4,7 @@
             <th>Action</th>
             <th>Quantité</th>
             <th>Date de création</th>
+            <th>Date de peremption</th>
         </tr>
         {% elseif type == "tbody" %}
         <tr id="tbody_stock" class="text-nowrap">
@@ -13,6 +14,9 @@
             </td>
             <td> {{liste.qtt}} </td>
             <td> {{liste.dateCreation|date('d-m-Y')}} </td>
+            <td>
+                {{ liste.datePeremption is not null ? liste.datePeremption.date|date('d-m-Y') : '' }}
+            </td>
             
         </tr>
          {% endif %}

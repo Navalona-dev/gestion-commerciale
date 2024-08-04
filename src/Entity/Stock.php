@@ -24,6 +24,9 @@ class Stock
     #[ORM\ManyToOne(inversedBy: 'stocks')]
     private ?ProduitCategorie $produitCategorie = null;
 
+    #[ORM\ManyToOne(inversedBy: 'stocks')]
+    private ?DatePeremption $datePeremption = null;
+
     public static function newStock($instance = null)
     {
         if (is_null($instance->getQtt()) or empty($instance->getQtt())) {
@@ -70,6 +73,18 @@ class Stock
     public function setProduitCategorie(?ProduitCategorie $produitCategorie): static
     {
         $this->produitCategorie = $produitCategorie;
+
+        return $this;
+    }
+
+    public function getDatePeremption(): ?DatePeremption
+    {
+        return $this->datePeremption;
+    }
+
+    public function setDatePeremption(?DatePeremption $datePeremption): static
+    {
+        $this->datePeremption = $datePeremption;
 
         return $this;
     }

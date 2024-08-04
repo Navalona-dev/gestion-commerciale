@@ -12,6 +12,11 @@
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Quantité</label>
                         {{ form_widget(form.qtt) }}
+                    </div> 
+                    
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Date de peremption</label>
+                        {{ form_widget(form.datePeremption) }}
                     </div>  
                      
                     <div class="form-group">
@@ -27,6 +32,23 @@
 {% block javascripts %}
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 <script>
+
+$(document).ready(function() {
+  var dateFormat = 'dd/mm/yyyy';
+  var dateNow = new Date();
+  dateNow.setDate(dateNow.getDate() + 1)
+
+  $('#stock_datePeremption_date').datepicker({
+      format: dateFormat,
+      todayHighlight: true,
+      //daysOfWeekDisabled: '0',
+      startDate: dateNow,
+      language: 'fr',
+      autoclose: true,
+
+  });
+
+});
   
     $(document).ready(function () {
     

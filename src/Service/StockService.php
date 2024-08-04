@@ -6,6 +6,7 @@ use App\Entity\Categorie;
 use App\Entity\Notification;
 use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
+use App\Entity\DatePeremption;
 use Doctrine\ORM\EntityManager;
 use App\Service\ApplicationManager;
 use App\Service\AuthorizationManager;
@@ -45,11 +46,23 @@ class StockService
 
     }
 
-    public function add($instance, $produitCategorie)
+    public function add($instance, $produitCategorie, $datePeremption)
     {
         $stock = Stock::newStock($instance);
 
         $date = new \DateTime();
+
+         // Initialisation de la date de péremption
+        if ($datePeremption === null || $datePeremption === '') {
+            $stock->setDatePeremption(null);
+        } else {
+            $newDatePeremption = new DatePeremption();
+            $newDatePeremption->setDate($datePeremption); // Utilisez directement $datePeremption, car c'est déjà une DateTime
+            $newDatePeremption->setDateCreation($date);
+
+            $this->entityManager->persist($newDatePeremption);
+            $stock->setDatePeremption($newDatePeremption);
+        }
 
         $stock->setDateCreation($date);
         $stock->setProduitCategorie($produitCategorie);
@@ -92,13 +105,22 @@ class StockService
         return $stock;
     }
 
-    public function edit($stock, $produitCategorie, $oldQtt)
+    public function edit($stock, $produitCategorie, $oldQtt, $date)
     {
     
         // Obtenez la quantité et le stock restant actuels
         //$oldQtt = $stock->getQtt();
         $oldStockRestant = $produitCategorie->getStockRestant();
-    
+
+        $datePeremptionId = $stock->getDatePeremption()->getId();
+
+        if($datePeremptionId == null) {
+            $datePeremption = new DatePeremption();
+            $datePeremption->setDate($date);
+            $datePeremption->setDateCreation(new \DateTime());
+            $this->entityManager->persist($datePeremption);
+        }
+
         // Calculez le nouveau stock restant après soustraction de l'ancienne quantité
         //d($oldStockRestant, $oldQtt);
         if ($oldQtt <= $oldStockRestant) {
@@ -108,6 +130,8 @@ class StockService
            
             $produitCategorie->setStockRestant($stockRestant);
             $this->entityManager->persist($produitCategorie);
+
+            $stock->setDatePeremption($datePeremption);
             
             // Persist l'état actuel de stock
             $this->entityManager->persist($stock);
@@ -133,6 +157,7 @@ class StockService
             $produitCategorie->setStockRestant($stockRestant);
             $this->entityManager->persist($produitCategorie);
             
+            $stock->setDatePeremption($datePeremption);
             // Persist l'état actuel de stock
             $this->entityManager->persist($stock);
             //dd($stockRestant, $stocktoAdd, $oldStockRestant, $produitCategorie->getStockRestant(), $stock);

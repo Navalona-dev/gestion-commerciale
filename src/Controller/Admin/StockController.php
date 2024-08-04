@@ -58,7 +58,9 @@ class StockController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
-                    $stockService->add($stock, $produitCategorie);
+                   $formData = $form->getData();
+                   $datePeremption = $formData->getDatePeremption()->getDate();
+                    $stockService->add($stock, $produitCategorie, $datePeremption);
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 } 
         
@@ -116,7 +118,11 @@ class StockController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
-                    $stockService->edit($stock, $produitCategorie, $oldQtt);
+                    $formData = $form->getData();
+                    
+                    $datePeremption = $formData->getDatePeremption()->getDate();
+
+                    $stockService->edit($stock, $produitCategorie, $oldQtt, $datePeremption);
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
                 //$this->addFlash('success', 'Modification application "' . $stock->getTitle() . '" avec succès.');
