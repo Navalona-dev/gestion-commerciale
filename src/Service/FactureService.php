@@ -1,6 +1,8 @@
 <?php
 namespace App\Service;
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use App\Entity\User;
 use Twig\Environment;
 use App\Entity\Compte;
@@ -9,16 +11,16 @@ use App\Entity\Facture;
 use App\Entity\Notification;
 use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
-use App\Entity\ReglementFacture;
 use App\Service\TCPDFService;
 use Doctrine\ORM\EntityManager;
+use App\Entity\ReglementFacture;
 use App\Service\AuthorizationManager;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Exception\ActionInvalideException;
-use App\Repository\ReglementFactureRepository;
 //use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use App\Exception\ActionInvalideException;
 use Symfony\Component\Security\Core\Security;
+use App\Repository\ReglementFactureRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -61,7 +63,7 @@ class FactureService
         $this->reglementFactureRepository = $reglementFactureRepository;
     }
 
-    public function add($affaire = null, $folder = null)
+    /*public function add($affaire = null, $folder = null)
     {
         $facture = Facture::newFacture($affaire);
         $pdf = $this->tcpdf;
@@ -212,9 +214,220 @@ class FactureService
         ]);
 
         return $pdf;
-    }
+    }*/
 
+    public function add($affaire = null, $folder = null)
+    {
+        $facture = Facture::newFacture($affaire);
+        $date = new \DateTime();
+
+        $numeroFacture = 1;
+        $tabNumeroFacture = $this->getLastValideFacture();
+        if (count($tabNumeroFacture) > 0) {
+            $numeroFacture = $tabNumeroFacture[0] + 1;
+        }
+        $facture->setNumero($numeroFacture);    
+        $facture->setApplication($this->application);
+
+        $facture->setEtat('regle');
+        $facture->setValid(true);
+        $facture->setStatut('regle');
+        $facture->setDateCreation($date);
+        $facture->setDate($date);
+        $facture->setType("Facture");
+        $products = $affaire->getProducts();
+        $filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
+        $montantHt = 0;
+
+        // Sortie du PDF sous forme de réponse HTTP
+        foreach ($products as $key => $product) { 
+            // Gestion stock
+            $produitCategorie = $product->getProduitCategorie();
+            $stock = $produitCategorie->getStockRestant();
+            
+            $qtt = $product->getQtt();
+            $stock = $stock - $qtt;
+            $produitCategorie->setStockRestant($stock);
+        
+            $this->persist($produitCategorie);
+
+            // Gestion de notification
+            $stockMin = $produitCategorie->getStockMin();
+            $stockRestant = $produitCategorie->getStockRestant();
+
+            if ($stockRestant <= $stockMin) {
+                $notification = new Notification();
+                $message = 'Le stock du produit ' . '<strong>' . $produitCategorie->getNom() . '</strong>' . ' est presque épuisé, veuillez ajouter un ou plusieurs!!';
+                $notification->setMessage($message)
+                            ->setDateCreation(new \DateTime())
+                            ->setApplication($this->application)
+                            ->setProduitCategorie($produitCategorie)
+                            ->setStockMin(true);
+                $this->persist($notification);
+            }
+
+            $factureDetail = new FactureDetail();
+            $prix = 0;
+            $prixVenteGros = null;
+            $prixVenteDetail = null;
+            $uniteVenteDetail = null;
+            $uniteVenteGros = null;
+
+            if ($product->getTypeVente() == "gros") {
+                $montantHt  = $montantHt + ($qtt * $product->getPrixVenteGros());
+                $prix = $product->getPrixVenteGros();
+                $uniteVenteGros = $product->getUniteVenteGros();
+                $prixVenteGros = $prix; 
+            } else {
+                $montantHt  = $montantHt + ($qtt * $product->getPrixVenteDetail());
+                $prix = $product->getPrixVenteDetail();
+                $uniteVenteDetail = $product->getUniteVenteDetail();
+                $prixVenteDetail = $prix;
+            }
+
+            $factureDetail->setFacture($facture);
+            $factureDetail->setReference($product->getReference());
+            $factureDetail->setDetail($product->getProduitCategorie()->getNom());
+            $factureDetail->setQtt($qtt);
+            $factureDetail->setProduct($product);
+            $factureDetail->setPrixUnitaire($prix);
+            $factureDetail->setPrixTotal($montantHt);
+        
+            $factureDetail->setDescription($product->getDescription());
+            $factureDetail->setUniteVenteDetail($uniteVenteDetail);
+            $factureDetail->setUniteVenteGros($uniteVenteGros);
+            $factureDetail->setPrixVenteDetail($prixVenteDetail);
+            $factureDetail->setPrixVenteGros($prixVenteGros);
+
+            $facture->addFactureDetail($factureDetail);
+
+            $this->persist($factureDetail);
+        }
+        
+        $facture->setFile($filename);
+        $facture->setSolde($montantHt);
+        $facture->setPrixHt($montantHt);    
+        $facture->setReglement($montantHt);
+        
+        $this->persist($facture);
+        $affaire->setPaiement('paye');
+        $affaire->setDatePaiement($date);
+        $affaire->setDevisEvol('gagne');
+        $affaire->setDateFacture($date);
+        $affaire->setStatut("commande");
+        $this->persist($affaire);
+        $this->update();
+        
+        // Initialize Dompdf
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $pdf = new Dompdf($options);
+
+        // Load HTML content
+        $data = [];
+        $data['produits'] = $products;
+        $data['facture'] = $facture;
+        $data['compte'] = $facture->getCompte();
+        
+        $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
+
+        // Load HTML to Dompdf
+        $pdf->loadHtml($html);
+
+        // (Optional) Set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
+
+        // Render PDF
+        $pdf->render();
+
+        // Get PDF content
+        $pdfContent = $pdf->output();
+
+        // Save PDF to file
+        $fileName = $folder . $filename;
+        file_put_contents($fileName, $pdfContent);
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer le log
+        $this->logger->info('Commande payée', [
+            'Produit' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
+
+        return [$pdfContent, $facture]; // Retourner le contenu PDF et l'objet facture
+    }
+   
     public function annuler($affaire = null, $folder = null)
+    {
+        $factures = $this->findByAffaire($affaire);
+        $facture = $factures[0];
+        $date = new \DateTime();
+        
+        $facture->setEtat('annule');
+        $facture->setValid(true);
+        $facture->setStatut('annule');
+        $products = $affaire->getProducts();
+        $filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
+    
+        // Sortie du PDF sous forme de réponse HTTP
+        foreach ($products as $key => $product) { 
+            // Gestion stock
+            $produitCategorie = $product->getProduitCategorie();
+            $stock = $produitCategorie->getStockRestant();
+            
+            $qtt = $product->getQtt();
+            $stock = $stock + $qtt;
+            $produitCategorie->setStockRestant($stock);
+        
+            $this->persist($produitCategorie);
+        }
+        
+        $this->persist($facture);
+        $affaire->setDateAnnule($date);
+        $affaire->setDevisEvol('perdu');
+        $affaire->setPaiement('annule');
+        $this->persist($affaire);
+        $this->update();
+        
+        // Créer une instance de Dompdf
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $pdf = new Dompdf($options);
+    
+        // Définir le contenu du PDF
+        $data = [];
+        $data['produits'] = $products;
+        $data['facture'] = $facture;
+        $data['compte'] = $facture->getCompte();
+        
+        $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
+        
+        // Charger le contenu HTML dans dompdf
+        $pdf->loadHtml($html);
+        
+        // (Optionnel) Configurer la taille du papier et l'orientation
+        $pdf->setPaper('A4', 'portrait');
+        
+        // Rendre le PDF
+        $pdf->render();
+        
+        // Obtenir le contenu PDF
+        $output = $pdf->output();
+        
+        // Vous pouvez choisir de sauvegarder le fichier sur le serveur si nécessaire
+        // file_put_contents($folder . $filename, $output);
+        
+        return [$output, $facture]; // Retourner le contenu PDF et l'objet facture
+    }
+    
+
+    /*public function annuler($affaire = null, $folder = null)
     {
         $factures = $this->findByAffaire($affaire);
         $facture = $factures[0]; 
@@ -283,7 +496,8 @@ class FactureService
             'ID Application' => $affaire->getApplication()->getId()
         ]);
         return $pdf;
-    }
+    }*/
+
     public function update()
     {
         $this->entityManager->flush();

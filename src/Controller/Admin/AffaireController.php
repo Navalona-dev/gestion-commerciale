@@ -816,7 +816,7 @@ class AffaireController extends AbstractController
     #[Route('/paiement/{affaire}', name: '_paiement')]
     public function payer(Affaire $affaire, Request $request): Response
     {
-        if (count($affaire->getProducts()) > 0) {
+        /*if (count($affaire->getProducts()) > 0) {
             $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
            
             $pdf = $this->factureService->add($affaire, $documentFolder);
@@ -826,13 +826,29 @@ class AffaireController extends AbstractController
             ]);
     
         }
+        return new JsonResponse([]);*/
+
+        if (count($affaire->getProducts()) > 0) {
+            $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
+            list($pdfContent, $facture) = $this->factureService->add($affaire, $documentFolder);
+            
+            // Utiliser le numéro de la facture pour le nom du fichier
+            $filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
+    
+            // Retourner le PDF en réponse
+            return new Response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]);
+        }
+        
         return new JsonResponse([]);
     }
 
     #[Route('/paiement/annule/{affaire}', name: '_annuler')]
     public function annulerPaiement(Affaire $affaire, Request $request): Response
     {
-        if (count($affaire->getProducts()) > 0) {
+        /*if (count($affaire->getProducts()) > 0) {
             $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/annule/';
             $pdf = $this->factureService->annuler($affaire, $documentFolder);
            
@@ -841,6 +857,22 @@ class AffaireController extends AbstractController
             ]);
     
         }
+        return new JsonResponse([]);*/
+       
+        if (count($affaire->getProducts()) > 0) {
+            $documentFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/factures/annule/';
+            list($pdfContent, $facture) = $this->factureService->annuler($affaire, $documentFolder);
+            
+            // Utiliser le numéro de la facture pour le nom du fichier
+            $filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
+        
+            // Retourner le PDF en réponse
+            return new Response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]);
+        }
+        
         return new JsonResponse([]);
     }
 }

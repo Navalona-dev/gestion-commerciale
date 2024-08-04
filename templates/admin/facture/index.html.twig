@@ -37,6 +37,10 @@
     .export-btn:hover {
         background-color: #ffc107 !important;
     }
+
+    .bg-danger {
+        background-color:  #f88789 !important;
+    }
    
   </style>
   
@@ -157,7 +161,7 @@
                     </thead>
                     <tbody>
                         {% for liste in listes %}
-                        <tr class="text-nowrap">
+                        <tr class="text-nowrap {% if liste.statut == 'annule' %} bg-danger {% endif %}">
                             <td>
                                 <input type="checkbox" class="custom-checkbox" name="" id="">
                             </td>
