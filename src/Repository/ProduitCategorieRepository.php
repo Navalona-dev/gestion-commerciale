@@ -643,4 +643,37 @@ class ProduitCategorieRepository extends ServiceEntityRepository
          return $qb;
       }
 
+      public function countProduitDatePeremptionProche()
+      {
+          $qb = $this->createQueryBuilder('p')
+                      ->select('COUNT(p.id)')
+                      ->join('p.stocks', 's')
+                      ->join('s.datePeremption', 'd')
+                      ->where('d.date IS NOT NULL')
+                      ->andWhere('s.qtt > 0')
+                      ->andWhere('d.date BETWEEN CURRENT_DATE() AND :endDate')
+                      ->andWhere('p.application = :application_id')
+                      ->setParameter('endDate', new \DateTime('+1 month'))
+                      ->setParameter('application_id', $this->application->getId());
+      
+          return $qb->getQuery()->getSingleScalarResult();
+      }
+
+      public function produitDatePeremptionProche()
+      {
+          $qb = $this->createQueryBuilder('p')
+                      ->select('p.stockRestant, p.nom, s.qtt, d.date')
+                      ->join('p.stocks', 's')
+                      ->join('s.datePeremption', 'd')
+                      ->where('d.date IS NOT NULL')
+                      ->andWhere('s.qtt > 0')
+                      ->andWhere('d.date BETWEEN CURRENT_DATE() AND :endDate')
+                      ->andWhere('p.application = :application_id')
+                      ->setParameter('endDate', new \DateTime('+1 month'))
+                      ->setParameter('application_id', $this->application->getId())
+                      ->orderBy('d.date', 'ASC');
+      
+          return $qb->getQuery()->getResult();
+      }
+      
 }

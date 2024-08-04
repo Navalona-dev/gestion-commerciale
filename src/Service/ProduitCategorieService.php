@@ -389,5 +389,10 @@ class ProduitCategorieService
         return $this->entityManager->getRepository(ProduitCategorie::class)->findProductsByCompteAndApplication($compte, $application);
     }
 
+    public function getAllProduitDatePeremption()
+    {
+        return $this->entityManager->getRepository(ProduitCategorie::class)->produitDatePeremptionProche();
+    }
+
     
 }

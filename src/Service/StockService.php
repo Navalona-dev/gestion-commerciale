@@ -105,40 +105,51 @@ class StockService
         return $stock;
     }
 
-    public function edit($stock, $produitCategorie, $oldQtt, $date)
+    public function edit($stock, $produitCategorie, $oldQtt, $datePeremption)
     {
-    
         // Obtenez la quantité et le stock restant actuels
-        //$oldQtt = $stock->getQtt();
         $oldStockRestant = $produitCategorie->getStockRestant();
-
-        $datePeremptionId = $stock->getDatePeremption()->getId();
-
-        if($datePeremptionId == null) {
-            $datePeremption = new DatePeremption();
-            $datePeremption->setDate($date);
-            $datePeremption->setDateCreation(new \DateTime());
-            $this->entityManager->persist($datePeremption);
+    
+        // Initialisation de $newDatePeremption
+        $newDatePeremption = null;
+    
+        // Obtenez l'ID de la date de péremption actuelle du stock
+        $datePeremptionId = $stock->getDatePeremption() ? $stock->getDatePeremption()->getId() : null;
+    
+        // Vérifiez si une nouvelle date de péremption est fournie
+        if ($datePeremption != null) {
+            if ($datePeremptionId == null) {
+                // Créez une nouvelle DatePeremption si elle n'existe pas déjà
+                $newDatePeremption = new DatePeremption();
+                $newDatePeremption->setDate($datePeremption);
+                $newDatePeremption->setDateCreation(new \DateTime());
+                $this->entityManager->persist($newDatePeremption);
+            } else {
+                // Si la date de péremption existe déjà, récupérez-la
+                $newDatePeremption = $this->entityManager->getRepository(DatePeremption::class)->find($datePeremptionId);
+                $newDatePeremption->setDate($datePeremption);
+            }
         }
-
+    
         // Calculez le nouveau stock restant après soustraction de l'ancienne quantité
-        //d($oldStockRestant, $oldQtt);
         if ($oldQtt <= $oldStockRestant) {
             $stockRestant = $oldStockRestant - $oldQtt;
             $newQtt = $stock->getQtt();
             $stockRestant = $stockRestant + $newQtt;
-           
+    
             $produitCategorie->setStockRestant($stockRestant);
             $this->entityManager->persist($produitCategorie);
-
-            $stock->setDatePeremption($datePeremption);
+    
+            if ($newDatePeremption) {
+                $stock->setDatePeremption($newDatePeremption);
+            }
             
             // Persist l'état actuel de stock
             $this->entityManager->persist($stock);
-
+    
             // Obtenir l'utilisateur connecté
             $user = $this->security->getUser();
-
+    
             // Créer log
             $this->logger->info('Stock de produit catégorie modifié', [
                 'Produit' => $produitCategorie->getNom(),
@@ -146,25 +157,26 @@ class StockService
                 'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
                 'ID Application' => $produitCategorie->getApplication()->getId()
             ]);
-
+    
             $this->update();
             
             return $stock;
         } else {
             $stocktoAdd = $oldQtt - $oldStockRestant;
             $stockRestant = $oldStockRestant + $stocktoAdd;
-           
+    
             $produitCategorie->setStockRestant($stockRestant);
             $this->entityManager->persist($produitCategorie);
-            
-            $stock->setDatePeremption($datePeremption);
+    
+            if ($newDatePeremption) {
+                $stock->setDatePeremption($newDatePeremption);
+            }
             // Persist l'état actuel de stock
             $this->entityManager->persist($stock);
-            //dd($stockRestant, $stocktoAdd, $oldStockRestant, $produitCategorie->getStockRestant(), $stock);
-            
+    
             // Obtenir l'utilisateur connecté
             $user = $this->security->getUser();
-
+    
             // Créer log
             $this->logger->info('Stock de produit catégorie modifié', [
                 'Produit' => $produitCategorie->getNom(),
@@ -177,6 +189,7 @@ class StockService
         }
         return $stock;
     }
+    
 
     public function update()
     {

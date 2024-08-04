@@ -164,7 +164,9 @@ class DashboardController extends AbstractController
         $bestOrderLastYear = $this->dashboardService->getTopOrdersByTotalLastYear('paye', 'commande');
         //dd($bestOrderYesterday);
         //dd($countStockRestantToday, $countStockRestantYesterday, $countStockRestantThisWeek, $countStockRestantLastWeek, $countStockRestantThisMonth, $countStockRestantLastMonth, $countStockRestantThisYear, $countStockRestantLastYear);
-
+        
+        $countProduitDatePeremption = $this->dashboardService->getCountProduitDatePeremptionProche();
+        //dd($countProduitDatePeremption);
         $data = [];
 
         if ($request->isXmlHttpRequest()) {
@@ -283,6 +285,9 @@ class DashboardController extends AbstractController
                     'bestOrderLastMonth' => $bestOrderLastMonth,
                     'bestOrderThisYear' => $bestOrderThisYear,
                     'bestOrderLastYear' => $bestOrderLastYear,
+
+                    //date peremption
+                    'countProduitDatePeremption' => $countProduitDatePeremption,
                 ]);
                 
                 $data["html"] = $this->renderView('admin/dashboard/index.html.twig', $_data);
@@ -408,6 +413,9 @@ class DashboardController extends AbstractController
             'bestOrderLastMonth' => $bestOrderLastMonth,
             'bestOrderThisYear' => $bestOrderThisYear,
             'bestOrderLastYear' => $bestOrderLastYear,
+
+            //date peremption
+            'countProduitDatePeremption' => $countProduitDatePeremption,
         ]);
 
         return $this->render('admin/index.html.twig', $_data);

@@ -76,6 +76,32 @@ class ProduitCategorieController extends AbstractController
         
     }
 
+    #[Route('/date/peremption/proche', name: '_liste_peremption')]
+    public function datePeremption(Request $request): Response
+    {
+        $request->getSession()->remove('produitCategorieId');
+
+        $data = [];
+        try {
+            
+            $produitCategories = $this->produitCategorieService->getAllProduitDatePeremption();
+            if ($produitCategories == false) {
+                $produitCategories = [];
+            }
+          
+            $data["html"] = $this->renderView('admin/produit_categorie/date_peremption.html.twig', [
+                'listes' => $produitCategories,
+            ]);
+           
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+        
+    }
+
     #[Route('/new', name: '_create')]
     public function create(
     Request $request)

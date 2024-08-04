@@ -120,6 +120,10 @@ $(document).ready(function() {
         showTabHistoriqueAffaire();
     }
 
+    if (anchorName === "tab-produit-date-peremption") {
+        showTabProduitDatePeremption();
+    }
+
 });
 
 
@@ -1821,6 +1825,57 @@ function showTabNotification() {
                         pageLength: 10,
                         scrollCollapse: false,
                         order: [[0, 'desc']],
+                      });
+                    hideSpinner();
+                }, 2000);
+
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+             }
+
+         });
+ }
+
+ function showTabProduitDatePeremption() {
+    showSpinner();
+    
+    $.ajax({
+             type: 'post',
+             url: '/admin/produit/categorie/date/peremption/proche',
+             //data: {},
+             success: function (response) {
+                 $("#tab-produit-date-peremption").empty();
+                 $("#tab-produit-date-peremption").append(response.html);
+                 $("#tab-produit-date-peremption").css('display', 'block');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-date-peremption"]').addClass('active');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                
+                 $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    $('#liste-table-produit-categorie-date-peremption').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
                       });
                     hideSpinner();
                 }, 2000);

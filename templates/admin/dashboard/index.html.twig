@@ -60,6 +60,29 @@
           <span id="count-last-year"> {{countAffaireLastYear | default(0)}} </span>
         </div>
 
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+          <a href="#tab-produit-date-peremption" onclick="return showTabProduitDatePeremption()">
+            <div class="card info-card dates-card">
+  
+              <div class="card-body">
+                <h5 class="card-title">Peremption proche</h5>
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-calendar-x text-danger"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6 id="date-peremption-count"> {{countProduitDatePeremption | default(0)}} </h6>
+                    {#<span class="text-danger small pt-1 fw-bold">12%</span> 
+                    <span class="text-muted small pt-2 ps-1">decrease</span>#}
+    
+                  </div>
+                </div>
+    
+              </div>
+            </div>
+          </a>
+        </div>
+
       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
 
         <div class="card info-card produit-card">
@@ -110,58 +133,6 @@
         <span id="count-produit-last-month"> {{countProduitLastMonth | default(0)}} </span>
         <span id="count-produit-this-year"> {{countProduitThisYear | default(0)}} </span>
         <span id="count-produit-last-year"> {{countProduitLastYear | default(0)}} </span>
-      </div>
-
-      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
-
-        <div class="card info-card stocks-card">
-
-          <div class="filter">
-            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-              <li class="dropdown-header text-start">
-                <h6>Filtrer</h6>
-              </li>
-
-              <li><a class="dropdown-item transfert-filter" data-period="today">Aujourd'hui</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="yesterday">Hier</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="this-week">Cette semaine</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="last-week">Semaine dernière</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="this-month">Ce mois-ci</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="last-month">Mois dernier</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="this-year">Cette année</a></li>
-              <li><a class="dropdown-item transfert-filter" data-period="last-year">Année dernière</a></li>
-            </ul>
-          </div>
-
-          <div class="card-body">
-            <h5 class="card-title">Stocks transferés <span id="period-text-transfert">| Aujourd'hui</span></h5>
-            <div class="d-flex align-items-center">
-              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                <i class="bi bi-box"></i>
-              </div>
-              <div class="ps-3">
-                <h6 id="transfert-count">0</h6>
-                {#<span class="text-danger small pt-1 fw-bold">12%</span> 
-                <span class="text-muted small pt-2 ps-1">decrease</span>#}
-
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-
-      <div id="transfert-data" style="display: none;">
-        <span id="count-transfert-today"> {{countTransfertToday | default(0)}} </span>
-        <span id="count-transfert-yesterday"> {{countTransfertYesterday | default(0)}} </span>
-        <span id="count-transfert-this-week"> {{countTransfertThisWeek | default(0)}} </span>
-        <span id="count-transfert-last-week"> {{countTransfertLastWeek | default(0)}} </span>
-        <span id="count-transfert-this-month"> {{countTransfertThisMonth | default(0)}} </span>
-        <span id="count-transfert-last-month"> {{countTransfertLastMonth | default(0)}} </span>
-        <span id="count-transfert-this-year"> {{countTransfertThisYear | default(0)}} </span>
-        <span id="count-transfert-last-year"> {{countTransfertLastYear | default(0)}} </span>
       </div>
 
       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
@@ -304,6 +275,58 @@
 
       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
 
+        <div class="card info-card stocks-card">
+
+          <div class="filter">
+            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+              <li class="dropdown-header text-start">
+                <h6>Filtrer</h6>
+              </li>
+
+              <li><a class="dropdown-item transfert-filter" data-period="today">Aujourd'hui</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="yesterday">Hier</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="this-week">Cette semaine</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="last-week">Semaine dernière</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="this-month">Ce mois-ci</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="last-month">Mois dernier</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="this-year">Cette année</a></li>
+              <li><a class="dropdown-item transfert-filter" data-period="last-year">Année dernière</a></li>
+            </ul>
+          </div>
+
+          <div class="card-body">
+            <h5 class="card-title">Stocks transferés <span id="period-text-transfert">| Aujourd'hui</span></h5>
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                <i class="bi bi-box"></i>
+              </div>
+              <div class="ps-3">
+                <h6 id="transfert-count">0</h6>
+                {#<span class="text-danger small pt-1 fw-bold">12%</span> 
+                <span class="text-muted small pt-2 ps-1">decrease</span>#}
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div id="transfert-data" style="display: none;">
+        <span id="count-transfert-today"> {{countTransfertToday | default(0)}} </span>
+        <span id="count-transfert-yesterday"> {{countTransfertYesterday | default(0)}} </span>
+        <span id="count-transfert-this-week"> {{countTransfertThisWeek | default(0)}} </span>
+        <span id="count-transfert-last-week"> {{countTransfertLastWeek | default(0)}} </span>
+        <span id="count-transfert-this-month"> {{countTransfertThisMonth | default(0)}} </span>
+        <span id="count-transfert-last-month"> {{countTransfertLastMonth | default(0)}} </span>
+        <span id="count-transfert-this-year"> {{countTransfertThisYear | default(0)}} </span>
+        <span id="count-transfert-last-year"> {{countTransfertLastYear | default(0)}} </span>
+      </div>
+
+      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+
         <div class="card info-card customers-card">
 
           <div class="filter">
@@ -405,6 +428,7 @@
         <span id="count-fournisseur-this-year"> {{countFournisseurThisYear | default(0)}} </span>
         <span id="count-fournisseur-last-year"> {{countFournisseurLastYear | default(0)}} </span>
       </div>
+
 
       {#chart graphique#}
       <div class="col-12">

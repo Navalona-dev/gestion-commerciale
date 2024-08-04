@@ -1,0 +1,139 @@
+<style>
+  .dataTables_scroll {
+    margin-top: 50px !important;
+    margin-bottom: 30px !important;
+  }
+  td, tr {
+    border-bottom: none !important;
+  }
+ 
+</style>
+
+<div class="pagetitle">
+    <h1>Liste produit </h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
+        <li class="breadcrumb-item active">Liste</li>
+      </ol>
+    </nav>
+  </div>
+<section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card p-5">
+          
+          <div class="card-body">
+            
+            <table class="table table-striped" id="liste-table-produit-categorie-date-peremption" style="width: 100%;">
+              <thead>
+                <th>Produit</th>
+                <th>Stock restant</th>
+                <th>Quantité</th>
+                <th>Date peremption</th>
+              </thead>
+              <tbody>
+                {% if listes|length > 0 %}
+
+                  {% for liste in listes %}
+                    <tr>
+                        <td> {{liste.nom}} </td>
+                        <td> {{liste.stockRestant}} </td>
+                        <td> {{liste.qtt}} </td>
+                        <td> {{liste.date|date('d-m-Y')}} </td>
+                    </tr>
+                  {% endfor %}
+                
+                {% else %}
+                    <tr class="text-nowrap">
+                        <td colspan="3">Aucun enregistrement trouvé</td>
+                       <td></td>
+                       <td></td>
+                         
+                    </tr>
+                {% endif %}
+                
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div id="blocModalProduitCategorieEmpty">
+    </div>
+  </section>
+
+  <script>
+    //datatable
+    
+    $(document).ready(function() {
+      $('#tab-fiche-fournisseur').removeClass('active').empty();
+      $('#tab-quantite-vendu').removeClass('active').empty();
+      $('#tab-notification').removeClass('active').empty();
+      $('#tab-historique-produit').removeClass('active').empty();
+      $('#tab-historique-affaire').removeClass('active').empty();
+
+      $('.tab-categorie').removeClass('active');
+      $('.tab-produit-categorie').addClass('active');
+      $('.tab-user').removeClass('active');
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
+      $('#tab-categorie').removeClass('active');
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-produit-categorie').addClass('active');
+      $('#tab-compte_1').removeClass('active');
+      $('#tab-produit-type').removeClass('active');
+      $('.tab-produit-type').removeClass('active');
+      $('#tab-stock').removeClass('active');
+      $('.tab-import-produit').removeClass('active');
+$('#tab-import-produit').css('display', 'none');
+        $('#tab-facture').css('display', 'none');
+        $('#tab-facture-affaire').css('display', 'none');
+              $('#tab-transfert-produit').css('display', 'none');
+      $('#affaires_client').removeClass('active').empty();
+       $('#affaires_fournisseur').removeClass('active').empty();
+       $('#tab-info-affaire').removeClass('active').empty();
+       $('#tab-financier-affaire').removeClass('active').empty();
+      $('#tab-fiche-client').removeClass('active').empty();
+
+     // $('#liste-table-produi-categorie').DataTable().ajax.reload();
+
+        /*$('#liste-table-produi-categorie').DataTable({
+            responsive: true,
+            language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+        },
+            border: false,
+            scrollX: '100%',
+            pageLength: 10,
+            scrollCollapse: false,
+        });*/
+    });
+
+    function newProduitCategorie(isNew = false) {
+            $.ajax({
+                url: '/admin/produit/categorie/new',
+                type: 'POST',
+                data: {isNew: isNew},
+                success: function (response) {
+                    $("#blocModalProduitCategorieEmpty").empty();
+                    $("#blocModalProduitCategorieEmpty").append(response.html);
+                    $('#modalNewProduitCategorie').modal('show');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de la produit catégorie.');
+                }
+            });
+    }
+  </script>

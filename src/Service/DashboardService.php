@@ -18,6 +18,13 @@ class DashboardService
     {
         $this->entityManager = $entityManager;
     }
+
+    public function getCountProduitDatePeremptionProche()
+    {
+        $countProduit = $this->entityManager->getRepository(ProduitCategorie::class)->countProduitDatePeremptionProche();
+        return $countProduit;
+    }
+
     public function getCountAffairesToday($paiement = null, $statut = null)
     {
         $countAffaire = $this->entityManager->getRepository(Affaire::class)->countAffairesToday($paiement, $statut);
@@ -574,5 +581,6 @@ class DashboardService
         }
         return false;
     }
+
 
 }
