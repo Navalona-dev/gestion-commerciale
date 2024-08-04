@@ -440,7 +440,7 @@ class FactureService
         $facture->setStatut('annule');
         $products = $affaire->getProducts();
         $filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
-
+        $facture->setFile($filename);
         // Sortie du PDF sous forme de réponse HTTP
         foreach ($products as $key => $product) { 
             // Gestion stock
