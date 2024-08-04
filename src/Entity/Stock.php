@@ -27,6 +27,9 @@ class Stock
     #[ORM\ManyToOne(inversedBy: 'stocks')]
     private ?DatePeremption $datePeremption = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $qttRestant = null;
+
     public static function newStock($instance = null)
     {
         if (is_null($instance->getQtt()) or empty($instance->getQtt())) {
@@ -85,6 +88,18 @@ class Stock
     public function setDatePeremption(?DatePeremption $datePeremption): static
     {
         $this->datePeremption = $datePeremption;
+
+        return $this;
+    }
+
+    public function getQttRestant(): ?string
+    {
+        return $this->qttRestant;
+    }
+
+    public function setQttRestant(?string $qttRestant): static
+    {
+        $this->qttRestant = $qttRestant;
 
         return $this;
     }

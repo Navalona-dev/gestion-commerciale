@@ -10,7 +10,7 @@
 </style>
 
 <div class="pagetitle">
-    <h1>Liste produit </h1>
+    <h1>Liste produit par date la plus proche</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
@@ -27,9 +27,11 @@
             
             <table class="table table-striped" id="liste-table-produit-categorie-date-peremption" style="width: 100%;">
               <thead>
+                <th>Référence</th>
                 <th>Produit</th>
                 <th>Stock restant</th>
                 <th>Quantité</th>
+                <th>Quantité restant</th>
                 <th>Date peremption</th>
               </thead>
               <tbody>
@@ -37,9 +39,11 @@
 
                   {% for liste in listes %}
                     <tr>
+                        <td> {{liste.reference}} </td>
                         <td> {{liste.nom}} </td>
                         <td> {{liste.stockRestant}} </td>
                         <td> {{liste.qtt}} </td>
+                        <td> {{liste.qttRestant}} </td>
                         <td> {{liste.date|date('d-m-Y')}} </td>
                     </tr>
                   {% endfor %}
@@ -105,6 +109,8 @@ $('#tab-import-produit').css('display', 'none');
        $('#tab-info-affaire').removeClass('active').empty();
        $('#tab-financier-affaire').removeClass('active').empty();
       $('#tab-fiche-client').removeClass('active').empty();
+      $('#tab-produit-date-peremption').addClass('active');
+      
 
      // $('#liste-table-produi-categorie').DataTable().ajax.reload();
 

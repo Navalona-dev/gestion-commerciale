@@ -65,6 +65,7 @@ class StockService
         }
 
         $stock->setDateCreation($date);
+        $stock->setQttRestant($instance->getQtt());
         $stock->setProduitCategorie($produitCategorie);
 
         $this->entityManager->persist($stock);
@@ -106,6 +107,111 @@ class StockService
     }
 
     public function edit($stock, $produitCategorie, $oldQtt, $datePeremption)
+    {
+        // Obtenez la quantité et le stock restant actuels
+        $oldStockRestant = $produitCategorie->getStockRestant();
+        // Initialisation de $newDatePeremption
+        $newDatePeremption = null;
+    
+        // Obtenez l'ID de la date de péremption actuelle du stock
+        $datePeremptionId = $stock->getDatePeremption() ? $stock->getDatePeremption()->getId() : null;
+    
+        // Vérifiez si une nouvelle date de péremption est fournie
+        if ($datePeremption != null) {
+            if ($datePeremptionId == null) {
+                // Créez une nouvelle DatePeremption si elle n'existe pas déjà
+                $newDatePeremption = new DatePeremption();
+                $newDatePeremption->setDate($datePeremption);
+                $newDatePeremption->setDateCreation(new \DateTime());
+                $this->entityManager->persist($newDatePeremption);
+            } else {
+                // Si la date de péremption existe déjà, récupérez-la
+                $newDatePeremption = $this->entityManager->getRepository(DatePeremption::class)->find($datePeremptionId);
+                $newDatePeremption->setDate($datePeremption);
+            }
+        }
+
+        $oldQttRestant = $stock->getQttRestant();
+
+        //si oldQtt est egale à oldQttRestant
+        if ($oldQtt == $oldQttRestant) {
+            // Cas où la quantité ancienne est égale à la quantité restante
+            $newQtt = $stock->getQtt();
+            $stock->setQttRestant($newQtt);
+        } elseif ($oldQtt > $oldQttRestant) {
+            $newQtt = $stock->getQtt();
+
+            if($newQtt > $oldQtt) {
+                $newQttRestant = $oldQttRestant + ($newQtt - $oldQtt);
+            } elseif($newQtt < $oldQtt) {
+                $newQttRestant = $oldQttRestant - ($oldQtt - $newQtt);
+            }
+            $stock->setQttRestant($newQttRestant);
+
+
+        }
+        
+    
+        // Calculez le nouveau stock restant après soustraction de l'ancienne quantité
+        if ($oldQtt <= $oldStockRestant) {
+            $stockRestant = $oldStockRestant - $oldQtt;
+            $newQtt = $stock->getQtt();
+            $stockRestant = $stockRestant + $newQtt;
+    
+            $produitCategorie->setStockRestant($stockRestant);
+            $this->entityManager->persist($produitCategorie);
+    
+            if ($newDatePeremption) {
+                $stock->setDatePeremption($newDatePeremption);
+            }
+            
+            // Persist l'état actuel de stock
+            $this->entityManager->persist($stock);
+    
+            // Obtenir l'utilisateur connecté
+            $user = $this->security->getUser();
+    
+            // Créer log
+            $this->logger->info('Stock de produit catégorie modifié', [
+                'Produit' => $produitCategorie->getNom(),
+                'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                'ID Application' => $produitCategorie->getApplication()->getId()
+            ]);
+    
+            $this->update();
+            
+            return $stock;
+        } else {
+            $stocktoAdd = $oldQtt - $oldStockRestant;
+            $stockRestant = $oldStockRestant + $stocktoAdd;
+    
+            $produitCategorie->setStockRestant($stockRestant);
+            $this->entityManager->persist($produitCategorie);
+    
+            if ($newDatePeremption) {
+                $stock->setDatePeremption($newDatePeremption);
+            }
+            // Persist l'état actuel de stock
+            $this->entityManager->persist($stock);
+    
+            // Obtenir l'utilisateur connecté
+            $user = $this->security->getUser();
+    
+            // Créer log
+            $this->logger->info('Stock de produit catégorie modifié', [
+                'Produit' => $produitCategorie->getNom(),
+                'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                'ID Application' => $produitCategorie->getApplication()->getId()
+            ]);
+            
+            $this->update();
+        }
+        return $stock;
+    }
+
+    /*public function edit($stock, $produitCategorie, $oldQtt, $datePeremption)
     {
         // Obtenez la quantité et le stock restant actuels
         $oldStockRestant = $produitCategorie->getStockRestant();
@@ -188,7 +294,7 @@ class StockService
             $this->update();
         }
         return $stock;
-    }
+    }*/
     
 
     public function update()

@@ -4,9 +4,15 @@ namespace App\Controller\Admin;
 
 use App\Entity\Stock;
 use App\Form\StockType;
+use App\Helpers\Helpers;
+use App\Service\AccesService;
 use App\Service\StockService;
+use App\Service\ProductService;
 use App\Entity\ProduitCategorie;
+use App\Service\ApplicationManager;
+use App\Repository\ProductRepository;
 use App\Exception\PropertyVideException;
+use App\Service\ProduitCategorieService;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,16 +20,11 @@ use App\Repository\ProduitCategorieRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Exception\UnsufficientPrivilegeException;
-use App\Helpers\Helpers;
-use App\Service\AccesService;
-use App\Service\ApplicationManager;
-use App\Service\ProductService;
-use App\Service\ProduitCategorieService;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 #[Route('/admin/stock', name: 'stocks')]
 class StockController extends AbstractController
@@ -171,7 +172,8 @@ class StockController extends AbstractController
         Request $request, 
         StockService $stockService, 
         ProduitCategorie $produitCategorie,
-        SessionInterface $session): Response
+        SessionInterface $session,
+        ProductRepository $productRepo): Response
     {   
         $session->set('produitCategorieId', $produitCategorie->getId());
 
@@ -185,13 +187,15 @@ class StockController extends AbstractController
             if ($stocks == false) {
                 $stocks = [];
             }
-            $allQtt = $stockService->getQuantiteVenduByReferenceProduit($produitCategorie->getReference());
-           
+            $qttVendu = $productRepo->countByAffairePaye('paye', 'commande', $produitCategorie->getReference());
+
+            //$allQtt = $stockService->getQuantiteVenduByReferenceProduit($produitCategorie->getReference());
             $data["html"] = $this->renderView('admin/stock/index.html.twig', [
                 'listes' => $stocks,
                 'id' => $produitCategorie->getId(),
                 'produitCategory' => $produitCategorie,
-                'qttVendu' => ($allQtt != false ? $allQtt['qttVendu'] : 0)
+                //'qttVendu' => ($allQtt != false ? $allQtt['qttVendu'] : 0)
+                'qttVendu' => $qttVendu
             ]);
 
             $data['idProduit'];

@@ -184,8 +184,10 @@ class ImportProduitController extends AbstractController
                             $stock->setDateCreation($date);
                             if (null != $stockRestant) {
                                 $stock->setQtt(floatval($stockRestant));
+                                $stock->setQttRestant(floatval($stockRestant));
                             } else {
                                 $stock->setQtt(0);
+                                $stock->setQttRestant(0);
                             }
                             $produitCategorie->setStockRestant(floatval($stockRestant));
                             $produitCategorie->addStock($stock);

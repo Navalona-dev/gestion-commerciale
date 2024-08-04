@@ -74,4 +74,5 @@ class ProductRepository extends ServiceEntityRepository
             ->getSingleScalarResult()
         ;
     }
+
 }
