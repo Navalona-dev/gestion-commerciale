@@ -136,6 +136,7 @@
                                </div>
                            </div>
                             {% else %}
+                                {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
                                 <div class="col-md-2 col-12">
                                     {% if affaire.products|length > 0 %}
                                     <div class="d-flex justify-content-end">
@@ -145,6 +146,18 @@
                                     </div>
                                     {% endif %}
                                 </div>
+                                {% else %}
+                                    {% if affaire.paiement is not null and affaire.paiement == "annule" %}
+                                <div class="col-md-2 col-12">
+                                     <div class="d-flex justify-content-center">
+                                        <a title="Annuler" target="_blank" href="{{ asset('uploads/factures/annule/' ~ factureFile) }}" title="Annuler" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
+                                            <i class="bi bi-x"></i>
+                                        </a>
+
+                                    </div>
+                                </div>
+                                    {% endif %}
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>
@@ -196,9 +209,12 @@
                                 <tr id="tr_produit_{{ product.id }}" data-id="{{ product.id }}"
                                             data-id-affaire="{{ affaire.id }}">
                                     {# <td class="align-middle text-center">{{product.id}}</td> #}
-                                    <td class="align-middle text-center">{{product.reference}}</td>
+                                    <td class="align-middle text-center">{{product.reference}} ({{product.typeVente}})</td>
                                     <td class="align-middle" style="width: 200px;">{{product.nom}}</td>
-                                    <td class="align-middle text-center">{{product.qtt}}&nbsp;{% if product.typeVente == "gros" %}{{product.uniteVenteGros}}{% else %}{{product.uniteVenteDetail}}{% endif %} / {{product.produitCategorie.stockRestant}}</td>
+                                    {# <td class="align-middle text-center">{{product.qtt}}&nbsp;{% if product.typeVente == "gros" %}{{product.uniteVenteGros}}{% else %}{{product.uniteVenteDetail}}{% endif %} / {{product.produitCategorie.stockRestant}}</td> #}
+                                    <td class="align-middle text-center">{% if product.typeVente == "detail" %}{{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteDetail}} ({% if ((product.qtt / product.produitCategorie.volumeGros) |round(0)) != 0 %} {{ (product.qtt / product.produitCategorie.volumeGros) |round(0)}} {{product.produitCategorie.presentationGros}}  et {% endif %}{{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})   {% else %}
+                                    {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} ({% if product.qtt >= product.produitCategorie.volumeGros %} {{(product.qtt / product.produitCategorie.volumeGros) |round(0)}}  {{product.produitCategorie.presentationGros}} {% if product.qtt - product.produitCategorie.volumeGros != 0 %} et {% endif %} {% endif %} {% if product.qtt >= product.produitCategorie.volumeGros %} {% if product.qtt - product.produitCategorie.volumeGros != 0 %} {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} {% endif %} {% else %} {{product.qtt}} {{product.produitCategorie.presentationDetail}}{% endif %} )
+                                    {% endif %}</td>
                                     <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(0, '.', ' ')}}{% else %}{{product.prixVenteDetail|number_format(0, '.', ' ')}}{% endif %} Ar</td>
                                     {# <td class="align-middle text-danger text-center">--</td>
                                     <td class="align-middle text-center">0,00€</td>
@@ -248,9 +264,11 @@
                                         <i class="bi bi-file-earmark-check-fill"></i>
                                     </a>
                                 {% else %}
+                                    {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
                                     <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
                                     {% if affaire.products|length > 0 %}
                                         <a target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
+                                    {% endif %}
                                     {% endif %}
                                 {% endif %}
                                     {#<a href="#" class="text-danger financier-icon"><i class="bi bi-database-fill-check"></i></a>

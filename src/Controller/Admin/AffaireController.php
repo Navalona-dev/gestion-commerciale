@@ -644,13 +644,21 @@ class AffaireController extends AbstractController
             if ($produits == false) {
                 $produits = [];
             }
+           // dd($produits[0]->getTypeVente(), $produits[0]->getQtt(), $produits[0]->getProduitCategorie()->getVolumeGros(), $produits[0]->getProduitCategorie()->getUniteVenteGros(), $produits[0]->getProduitCategorie()->getVolumeDetail(), $produits[0]->getProduitCategorie()->getUniteVenteDetail());
             $facturesValide = [];
             if ($affaire->getPaiement() != null && count($affaire->getFactures()) > 0) {
                 $factures = $affaire->getFactures();
-                $facturesValide = $factures->filter(function ($item) use ($affaire) {
-                    return ($item->isValid() && 'regle' === $item->getStatut());
-                    
-                });
+                if ($affaire->getPaiement() != "annule") {
+                    $facturesValide = $factures->filter(function ($item) use ($affaire) {
+                        return ($item->isValid() && 'regle' === $item->getStatut());
+                        
+                    });
+                } else {
+                    $facturesValide = $factures->filter(function ($item) use ($affaire) {
+                        return ($item->isValid() && 'annule' === $item->getStatut());
+                    });
+                }
+               
             }
            
             $data["html"] = $this->renderView('admin/affaires/financier.html.twig', [
