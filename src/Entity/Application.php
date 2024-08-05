@@ -105,6 +105,11 @@ class Application
         $this->factures = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return $this->entreprise;
+    }
+    
     public static function newApplicationFromInstance($instance = null)
     {
         if (is_null($instance->getEntreprise()) or empty($instance->getEntreprise())) {

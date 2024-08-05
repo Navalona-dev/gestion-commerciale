@@ -53,6 +53,8 @@
         </ol>
       </nav>
     </div>
+    <form name="allFacture" id="allFacture" target="_blank"
+                                  action="#" method="post">
   <section class="section">
       <div class="row">
         <div class="col-lg-12">
@@ -121,6 +123,7 @@
                         <a style="cursor: pointer;" onclick="return searchFacture()" class="icon-check"><i class="bi bi-check"></i></a>
                     </div>
                 </div>
+                
             </div>
           </div>
 
@@ -133,7 +136,7 @@
                         </a>
                       
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li><a href="#" class="dropdown-item"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Exporter</span></a></li>
+                            <li><a href="#" onclick="exporterFacture('client');" class="dropdown-item"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Exporter</span></a></li>
                         </ul>
                       </div>
                    
@@ -141,7 +144,7 @@
                 <table class="table table-striped table-facture" id="table-facture" style="width: 100%;">
                     <thead>
                         <tr class="text-nowrap">
-                            <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
+                            {# <th><input type="checkbox" class="custom-checkbox" name="" id=""></th> #}
                             <th>Validation</th>
                             <th>Actions</th>
                             <th>PDF</th>
@@ -162,9 +165,9 @@
                     <tbody>
                         {% for liste in listes %}
                         <tr class="text-nowrap {% if liste.statut == 'annule' %} bg-danger {% endif %}">
-                            <td>
-                                <input type="checkbox" class="custom-checkbox" name="" id="">
-                            </td>
+                            {# <td>
+                                <input type="checkbox" class="custom-checkbox" name="factureList[]" value="{{ liste.id }}">
+                            </td> #}
                             <td>
                                 {% if liste.isValid == 0 %}
                                 <a style="cursor: pointer;"><i class="bi bi-x text-danger fs-4"></i></a>
@@ -238,8 +241,35 @@
         </div>
       </div>
     </section>
-  
+  </form>
     <script>
+
+        function exporterFacture(type) {
+
+            var inc = 0;
+            /*$("input[type=checkbox]").each(function (index) {
+                if ($(this).is(":checked")) {
+                    inc++;
+                }
+            });*/
+
+            //if (inc != 0) { 
+                if (type == "client") {
+                    var form = $('#allFacture');
+                }else {
+                    var form = $('#exportZip');
+                }
+
+                form.attr('action', '/admin/facture/tout-exporter');
+                form.submit();
+            /*} else {
+                alert('Pas de facture séléctionner !!!')
+            }*/
+
+
+            return false;
+
+        }
         function searchFacture(genre = 1) {
       var nomCompte = $("#nom_compte").val();
       var statutPaiement = $("#filter_satatus").val();
