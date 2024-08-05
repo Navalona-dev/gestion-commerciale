@@ -22,10 +22,12 @@ use App\Repository\ProduitCategorieRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Exception\UnsufficientPrivilegeException;
+use App\Service\LogService;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/admin/produit/categorie', name: 'produit_categories')]
@@ -35,18 +37,21 @@ class ProduitCategorieController extends AbstractController
     private $produitCategorieService;
     private $application;
     private $logger;
+    private $logService;
 
     public function __construct(
         AccesService $AccesService, 
         ApplicationManager $applicationManager, 
         ProduitCategorieService $produitCategorieService,
-        LoggerInterface $productLogger, 
+        LoggerInterface $productLogger,
+        LogService $logService
         )
     {
         $this->accesService = $AccesService;
         $this->produitCategorieService = $produitCategorieService;
         $this->application = $applicationManager->getApplicationActive();
         $this->logger = $productLogger;
+        $this->logService = $logService;
 
     }
     
@@ -118,6 +123,7 @@ class ProduitCategorieController extends AbstractController
                 if ($request->isXmlHttpRequest()) {
                     
                     $idFournisseur = $request->get("produit_categorie_compte");
+                    $fournisseur = null;
                     if(isset($idFournisseur) && !empty($idFournisseur)) {
                         $fournisseur = $this->produitCategorieService->getFournisseurById($idFournisseur);
                         if ($fournisseur) {
@@ -126,8 +132,36 @@ class ProduitCategorieController extends AbstractController
                             $this->produitCategorieService->persist($fournisseur);
                         }
                     }
+                    $reference = null;
+                    if ($fournisseur != false && $fournisseur != null) {
+                        $reference = $fournisseur->getCode();
+                        $produitCategorie->setReference($reference.$produitCategorie->getReference());
+                    }
+                    
+                    $produitCategorie->setQtt($produitCategorie->getStockRestant());
                     $produitCategorie->setApplication($this->application);
                     $this->produitCategorieService->add($produitCategorie);
+
+                    $user = $this->getUser();
+                    $data["produit"] = $produitCategorie->getNom();
+                    $data["dateReception"] = (new \DateTime())->format("d-m-y h:i:s");
+                    $data["dateTransfert"] = null;
+                    $data["dateSortie"] = null;
+                    $data["userDoAction"] = $user->getUserIdentifier();
+                    $data["source"] = $this->application->getEntreprise();
+                    $data["destination"] = $this->application->getEntreprise();
+                    $data["action"] = "Ajout";
+                    $data["type"] = "Ajout";
+                    $data["qtt"] = $produitCategorie->getQtt();
+                    $data["stockRestant"] = $produitCategorie->getStockRestant();
+                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
+                    $data["typeSource"] = "Point de vente";
+                    $data["typeDestination"] = "Point de vente";;
+                    $data["commande"] = null;
+                    $data["commandeId"] = null;
+                    $data["sourceId"] =  $this->application->getId();
+                    $data["destinationId"] = $this->application->getId();
+                    $this->logService->addLog($request, "transfert", $this->application->getId(), $produitCategorie->getReference(), $data);
 
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
@@ -143,6 +177,61 @@ class ProduitCategorieController extends AbstractController
             ]);
            
             return new JsonResponse($data);
+        } catch (PropertyVideException $PropertyVideException) {
+            $data['exception'] = $PropertyVideException->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
+            throw $this->createNotFoundException('Exception' . $UniqueConstraintViolationException->getMessage());
+        } catch (MappingException $MappingException) {
+            $data['exception'] = $MappingException->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+            $this->createNotFoundException('Exception' . $MappingException->getMessage());
+        } catch (ORMInvalidArgumentException $ORMInvalidArgumentException) {
+            $data['exception'] = $ORMInvalidArgumentException->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+            $this->createNotFoundException('Exception' . $ORMInvalidArgumentException->getMessage());
+        } catch (UnsufficientPrivilegeException $UnsufficientPrivilegeException) {
+            $data['exception'] = $UnsufficientPrivilegeException->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+            $this->createNotFoundException('Exception' . $UnsufficientPrivilegeException->getMessage());
+        }catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
+            $data['exception'] = $NotNullConstraintViolationException->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+            $this->createNotFoundException('Exception' . $NotNullConstraintViolationException->getMessage());
+        } catch (\Exception $Exception) {
+            $data['exception'] = $Exception->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/inventaire/{produitCategorie}', name: '_inventaire')]
+    public function inventaire(Request $request, ProduitCategorie $produitCategorie)
+    {
+        $data = [];
+        try {
+            $logFilePath = $this->getParameter('kernel.project_dir') . '/public/uploads/historique/';
+            $prefix = 'log_'.$this->application->getId().'_'.$produitCategorie->getReference();
+           
+            $parsedLines = $this->logService->getContentLog($logFilePath, $prefix);
+              //dd($parsedLines, $prefix, $produitCategorie);
+            $htmlContent = $this->renderView('admin/produit_categorie/inventaire.html.twig', [
+                'logLines' => $parsedLines,
+                'logEmpty' => false
+            ]);
+    
+            $data["html"] = $htmlContent;
+            return new JsonResponse($data);
+    
+
         } catch (PropertyVideException $PropertyVideException) {
             $data['exception'] = $PropertyVideException->getMessage();
             $data["html"] = "";
@@ -388,6 +477,27 @@ class ProduitCategorieController extends AbstractController
 
                     $produitCategorieService->addNewProductForNewApplication($productReferenceExists, $oldProduitCategorie, $quantity, $newApplication, $isChangePrice);
 
+                    $user = $this->getUser();
+                    $data["produit"] = $oldProduitCategorie->getNom();
+                    $data["dateReception"] = null;
+                    $data["dateTransfert"] = (new \DateTime())->format("d-m-y h:i:s");
+                    $data["dateSortie"] = (new \DateTime())->format("d-m-y h:i:s");
+                    $data["userDoAction"] = $user->getUserIdentifier();
+                    $data["source"] = $this->application->getEntreprise();
+                    $data["destination"] = $newApplication->getEntreprise();
+                    $data["action"] = "transfert";
+                    $data["type"] = "transfert";
+                    $data["qtt"] = $quantity;
+                    $data["stockRestant"] = $oldProduitCategorie->getStockRestant();
+                    $data["fournisseur"] = $oldProduitCategorie->getReference();
+                    $data["typeSource"] = "Point de vente";
+                    $data["typeDestination"] = "Point de vente";;
+                    $data["commande"] = null;
+                    $data["commandeId"] = null;
+                    $data["sourceId"] =  $this->application->getId();
+                    $data["destinationId"] = $newApplication->getId();;
+                    $this->logService->addLog($request, "transfert", $this->application->getId(), $oldProduitCategorie->getReference(), $data);
+            
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
             }

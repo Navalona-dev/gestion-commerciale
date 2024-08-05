@@ -79,7 +79,7 @@ class HistoriqueController extends AbstractController
             });
 
             //dd($filteredLines);
-    
+           
             usort($filteredLines, function ($a, $b) {
                 $dateA = $this->parseLogDate($a['Date']);
                 $dateB = $this->parseLogDate($b['Date']);

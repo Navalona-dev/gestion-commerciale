@@ -543,7 +543,7 @@
               <tbody id="best-order-table-yesterday">
                 {% for item in bestOrderYesterday %}
                 <tr>
-                  <td> {{item.order.compte.nom}} </td>
+                  <td> {{item.nomCompte}} </td>
                   <td>
                     {% for product in item.order.products %}
                       {{product.reference}} <br/>
@@ -639,7 +639,7 @@
               <tbody id="best-order-table-last-week">
                 {% for item in bestOrderLastWeek %}
                 <tr>
-                  <td> {{item.order.compte.nom}} </td>
+                  <td> {{item.nomCompte}} </td>
                   <td>
                     {% for product in item.order.products %}
                       {{product.reference}} <br/>
@@ -687,7 +687,7 @@
               <tbody id="best-order-table-this-month">
                 {% for item in bestOrderThisMonth %}
                 <tr>
-                  <td> {{item.order.compte.nom}} </td>
+                  <td> {{item.nomCompte}} </td>
                   <td>
                     {% for product in item.order.products %}
                       {{product.reference}} <br/>
@@ -783,7 +783,7 @@
               <tbody id="best-order-table-this-year">
                 {% for item in bestOrderThisYear %}
                 <tr>
-                  <td> {{item.order.compte.nom}} </td>
+                  <td> {{item.nomCompte}} </td>
                   <td>
                     {% for product in item.order.products %}
                       {{product.reference}} <br/>

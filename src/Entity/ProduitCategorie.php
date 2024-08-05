@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ProduitCategorieRepository::class)]
 class ProduitCategorie
 {
-    const uniteVenteGros = [
+    const presentationVente = [
         'sac' => 'Sac',
         'flacon' => 'Flacon',
         'granule' => 'Granule',
@@ -20,7 +20,17 @@ class ProduitCategorie
         'pippette' => 'Pippette',
         'spray' => 'Spray',
         'bloc' => 'Bloc',
-        'boite' => 'Boîte'
+        'boite' => 'Boîte',
+        'sachet' => 'Sachet'
+    ];
+
+    const uniteVenteGros = [
+        'unite' => 'Unité',
+        'l' => 'L',
+        'ml' => 'ML',
+        'cc' => 'CC',
+        'Kg' => 'Kg',
+        'G' => 'G'
     ];
 
     const uniteVenteDetails = [
@@ -30,7 +40,6 @@ class ProduitCategorie
         'cc' => 'CC',
         'Kg' => 'Kg',
         'G' => 'G',
-        'sachet' => 'Sachet',
         'cp' => 'Comprimé'
     ];
 

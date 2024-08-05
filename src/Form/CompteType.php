@@ -27,8 +27,18 @@ class CompteType extends AbstractType
                     'class' => 'form-control form-control-md mb-3',
                     'autocomplete' => 'off'
                 ]
-            ])
-            ->remove('etat', TextType::class, [
+                ]);
+            if ($options['genre'] == 2) {
+                $builder->add('code', TextType::class, [
+                    'attr' => [
+                        'class' => 'form-control form-control-md',
+                        'autocomplete' => 'off',
+                    ],
+                    'required' => false
+                ]);
+            }
+            
+            $builder->remove('etat', TextType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3',
                     'autocomplete' => 'off'
@@ -129,6 +139,7 @@ class CompteType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Compte::class,
+            'genre' => 1
         ]);
     }
 }
