@@ -58,7 +58,24 @@ class ProductService
     public function add($instance, $affaire, $data = [])
     {
         $stock = $this->entityManager->getRepository(Stock::class)->findOneByProduitCategorie($instance);
-        $datePeremption = $stock->getDatePeremption()->getDate();
+        
+        $datePeremption = null;
+        
+        if ($stock !== null) {
+            // Si le stock existe, vérifier si la date de péremption est définie
+            $datePeremption = $stock->getDatePeremption();
+        
+            if ($datePeremption !== null) {
+                // Récupérer la date de péremption si elle existe
+                $datePeremption = $datePeremption->getDate();
+            } else {
+                // Gérer le cas où la date de péremption est nulle
+                $datePeremption = null; // ou définir une valeur par défaut, selon vos besoins
+            }
+        } else {
+            // Gérer le cas où aucun stock n'est trouvé
+            $datePeremption = null; // ou définir une valeur par défaut, selon vos besoins
+        }
 
         $product = new Product();
 
