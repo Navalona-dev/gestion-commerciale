@@ -1,4 +1,16 @@
  <div class="card-body">
+          <div class="form-group d-flex justify-content-end mb-4">
+                    <div class="dropdown">
+                        <a class=" export-btn bg-warning p-2 dropdown-toggle text-black btn-list" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                          <i class="bi bi-list"></i>
+                        </a>
+                      
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a href="#" onclick="exporterFacture('client');" class="dropdown-item"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Exporter</span></a></li>
+                        </ul>
+                      </div>
+                   
+                </div>
           <table class="table table-striped" id="liste-table-facture-ajax" style="width: 100%;">
             <thead>
                   {% include 'admin/facture/_table.html.twig' with { 'type': 'thead' } %}
@@ -24,7 +36,32 @@
         </div>
     <script>
       //datatable
-      
+      function exporterFacture(type) {
+
+            var inc = 0;
+            /*$("input[type=checkbox]").each(function (index) {
+                if ($(this).is(":checked")) {
+                    inc++;
+                }
+            });*/
+
+            //if (inc != 0) { 
+                if (type == "client") {
+                    var form = $('#allFacture');
+                }else {
+                    var form = $('#exportZip');
+                }
+
+                form.attr('action', '/admin/facture/tout-exporter');
+                form.submit();
+            /*} else {
+                alert('Pas de facture séléctionner !!!')
+            }*/
+
+
+            return false;
+
+        }
       $(document).ready(function() {
         $('.tab-categorie').removeClass('active');
         $('#tab-produit-categorie').removeClass('active');
