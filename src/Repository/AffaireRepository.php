@@ -803,8 +803,9 @@ class AffaireRepository extends ServiceEntityRepository
      public function getTopOrdersByTotal($startDate = null, $endDate = null, $paiement = null, $statut = null)
      {
          $qb = $this->createQueryBuilder('a')
-             ->select('a as order, SUM(p.puHt) as total')
+             ->select('a as order, SUM(p.puHt) as total, c.nom as nomCompte')
              ->join('a.products', 'p')
+             ->join('a.compte', 'c')
              ->where('a.dateFacture >= :startDate')
              ->andWhere('a.dateFacture < :endDate')
              ->andWhere('a.paiement = :paiement')

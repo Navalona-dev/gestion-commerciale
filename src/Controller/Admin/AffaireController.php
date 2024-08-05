@@ -838,11 +838,11 @@ class AffaireController extends AbstractController
 
         if (count($affaire->getProducts()) > 0) {
             $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
-            list($pdfContent, $facture) = $this->factureService->add($affaire, $documentFolder);
+            list($pdfContent, $facture) = $this->factureService->add($affaire, $documentFolder, $request);
             
             // Utiliser le numéro de la facture pour le nom du fichier
             $filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
-    
+            
             // Retourner le PDF en réponse
             return new Response($pdfContent, 200, [
                 'Content-Type' => 'application/pdf',

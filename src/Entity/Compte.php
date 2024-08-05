@@ -127,6 +127,9 @@ class Compte
     #[ORM\OneToMany(targetEntity: Facture::class, mappedBy: 'compte')]
     private Collection $factures;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $code = null;
+
 
     public function __construct()
     {
@@ -522,6 +525,18 @@ class Compte
                 $facture->setCompte(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(?string $code): static
+    {
+        $this->code = $code;
 
         return $this;
     }

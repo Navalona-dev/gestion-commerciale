@@ -141,6 +141,7 @@ class ImportProduitController extends AbstractController
                             $compte->setApplication($this->application);
                             $compte->setDateCreation($date);
                             $compte->setGenre(2);
+                            $compte->setCode($dataProduct[4]);
                             $this->em->persist($compte);
                         } else {
                             $compte = $existingCompte;
@@ -198,6 +199,28 @@ class ImportProduitController extends AbstractController
                             $produitCategorie = $existingProduitCategorie;
                             //$produitCategorie->getStock()
                         }
+
+                        $user = $this->getUser();
+                        $data["produit"] = $produitCategorie->getNom();
+                        $data["dateReception"] = (new \DateTime())->format("d-m-y h:i:s");
+                        $data["dateTransfert"] = null;
+                        $data["dateSortie"] = null;
+                        $data["userDoAction"] = $user->getUserIdentifier();
+                        $data["source"] = "Import";
+                        $data["destination"] = $this->application->getEntreprise();
+                        $data["action"] = "Ajout";
+                        $data["type"] = "Ajout";
+                        $data["qtt"] = $produitCategorie->getQtt();
+                        $data["stockRestant"] = $produitCategorie->getStockRestant();
+                        $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
+                        $data["typeSource"] = "Fichier";
+                        $data["typeDestination"] = "Point de vente";;
+                        $data["commande"] = null;
+                        $data["commandeId"] = null;
+                        $data["sourceId"] =  null;
+                        $data["destinationId"] = $this->application->getId();
+                        $this->logService->addLog($request, "Import", $this->application->getId(), $produitCategorie->getReference(), $data);
+
                     }
                     $this->em->flush();
                 }

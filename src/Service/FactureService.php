@@ -39,6 +39,7 @@ class FactureService
     private $logger;
     private $security;
     private $reglementFactureRepository;
+    private $logService;
 
     public function __construct(
         AuthorizationManager $authorization, 
@@ -49,7 +50,8 @@ class FactureService
         Environment $twig,
         LoggerInterface $affaireLogger, 
         Security $security,
-        ReglementFactureRepository  $reglementFactureRepository
+        ReglementFactureRepository  $reglementFactureRepository,
+        LogService $logService
         )
     {
         $this->tokenStorage = $TokenStorageInterface;
@@ -61,6 +63,7 @@ class FactureService
         $this->logger = $affaireLogger;
         $this->security = $security;
         $this->reglementFactureRepository = $reglementFactureRepository;
+        $this->logService = $logService;
     }
 
     /*public function add($affaire = null, $folder = null)
@@ -216,11 +219,13 @@ class FactureService
         return $pdf;
     }*/
 
-
-    public function add($affaire = null, $folder = null)
+    public function add($affaire = null, $folder = null, $request = null)
     {
         $facture = Facture::newFacture($affaire);
         $date = new \DateTime();
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
 
         $numeroFacture = 1;
         $tabNumeroFacture = $this->getLastValideFacture();
@@ -344,6 +349,27 @@ class FactureService
 
             $facture->addFactureDetail($factureDetail);
 
+            //Log product
+            $data["produit"] = $produitCategorie->getNom();
+            $data["dateReception"] = null;
+            $data["dateTransfert"] = null;
+            $data["dateSortie"] = (new \DateTime())->format("d-m-y h:i:s");
+            $data["userDoAction"] = $user->getUserIdentifier();
+            $data["source"] = $this->application->getEntreprise();
+            $data["destination"] = $affaire->getCompte()->getNom();
+            $data["action"] = "Commande";
+            $data["type"] = "Commande";
+            $data["qtt"] = $qtt;
+            $data["stockRestant"] = $produitCategorie->getStockRestant();
+            $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
+            $data["typeSource"] = "Point de vente";
+            $data["typeDestination"] = "Client";
+            $data["commande"] = $affaire->getNom();
+            $data["commandeId"] = $affaire->getId().'-paye';
+            $data["sourceId"] =  $this->application->getId();
+            $data["destinationId"] = $affaire->getCompte()->getId();
+            $this->logService->addLog($request, "commande", $this->application->getId(), $produitCategorie->getReference(), $data);
+
             $this->persist($factureDetail);
         }
         
@@ -391,14 +417,12 @@ class FactureService
         $fileName = $folder . $filename;
         file_put_contents($fileName, $pdfContent);
 
-        // Obtenir l'utilisateur connecté
-        $user = $this->security->getUser();
 
         // Créer le log
         $this->logger->info('Commande payée', [
             'Produit' => $affaire->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'Adresse e-mail' => $user ? $user->getUserIdentifier() : 'Pas d\'adresse e-mail',
             'ID Application' => $affaire->getApplication()->getId()
         ]);
 
