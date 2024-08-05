@@ -57,9 +57,13 @@ class ProductService
 
     public function add($instance, $affaire, $data = [])
     {
+        $stock = $this->entityManager->getRepository(Stock::class)->findOneByProduitCategorie($instance);
+        $datePeremption = $stock->getDatePeremption()->getDate();
+
         $product = new Product();
 
         $date = new \DateTime();
+        $product->setDatePeremption($datePeremption);
         $product->setNom($instance->getNom());
         $product->setProduitCategorie($instance);
         $product->setApplication($instance->getApplication());

@@ -57,10 +57,12 @@ class StockService
 
         // Trouver un stock existant avec la même date de péremption
         foreach ($stocks as $stock) {
-            $formattedDatePeremptionStock = $stock->getDatePeremption()->getDate()->format('d-m-Y');
-            if ($stock->getDatePeremption() && $formattedDatePeremptionStock === $formattedDatePeremption) {
-                $existingStock = $stock;
-                break; 
+            if($stock->getDatePeremption()) {
+                $formattedDatePeremptionStock = $stock->getDatePeremption()->getDate()->format('d-m-Y');
+                if ($formattedDatePeremptionStock === $formattedDatePeremption) {
+                    $existingStock = $stock;
+                    break; 
+                }
             }
         }
 

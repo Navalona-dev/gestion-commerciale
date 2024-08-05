@@ -113,6 +113,9 @@ class Product
     #[ORM\OneToMany(targetEntity: FactureDetail::class, mappedBy: 'product')]
     private Collection $factureDetails;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $datePeremption = null;
+
     public function __construct()
     {
         $this->affaires = new ArrayCollection();
@@ -423,6 +426,18 @@ class Product
                 $factureDetail->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDatePeremption(): ?\DateTimeInterface
+    {
+        return $this->datePeremption;
+    }
+
+    public function setDatePeremption(?\DateTimeInterface $datePeremption): static
+    {
+        $this->datePeremption = $datePeremption;
 
         return $this;
     }

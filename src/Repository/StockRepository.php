@@ -31,4 +31,45 @@ class StockRepository extends ServiceEntityRepository
         ;
     }
 
+    public function findOneByProduitCategorie($produitCategorie)
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.produitCategorie', 'pc') // Joindre la table produitCategorie
+            ->join('s.datePeremption', 'd')
+            ->where('pc.id = :produit_categorie_id') // Filtrer par produitCategorie
+            ->andWhere('s.qttRestant > 0') // Filtrer par quantité restante
+            ->orderBy('d.date', 'ASC') // Trier par date de péremption la plus proche
+            ->setParameter('produit_categorie_id', $produitCategorie->getId()) // Assigner le paramètre
+            ->setMaxResults(1) // Limiter le résultat à un seul enregistrement
+            ->getQuery() // Obtenir la requête
+            ->getOneOrNullResult(); // Exécuter la requête et obtenir un résultat ou null
+    }
+    
+    public function findByProduitCategorieDatePerremptionIsNotNull($produitCategorie)
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.produitCategorie', 'pc') 
+            ->join('s.datePeremption', 'd')
+            ->where('pc.id = :produit_categorie_id') 
+            ->andWhere('s.qttRestant > 0') 
+            ->andWhere('d.date IS NOT NULL')
+            ->orderBy('d.date', 'ASC') 
+            ->setParameter('produit_categorie_id', $produitCategorie->getId()) 
+            ->getQuery() 
+            ->getResult(); 
+    }
+
+    public function findByProduitCategorieDatePerremption($produitCategorie)
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.produitCategorie', 'pc') 
+            ->join('s.datePeremption', 'd')
+            ->where('pc.id = :produit_categorie_id') 
+            ->andWhere('d.date IS NOT NULL')
+            ->orderBy('d.date', 'ASC') 
+            ->setParameter('produit_categorie_id', $produitCategorie->getId()) 
+            ->getQuery() 
+            ->getResult(); 
+    }
+
 }

@@ -4,6 +4,7 @@ namespace App\Service;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use App\Entity\User;
+use App\Entity\Stock;
 use Twig\Environment;
 use App\Entity\Compte;
 use App\Entity\Affaire;
@@ -16,8 +17,8 @@ use Doctrine\ORM\EntityManager;
 use App\Entity\ReglementFacture;
 use App\Service\AuthorizationManager;
 use App\Exception\PropertyVideException;
-use Doctrine\ORM\EntityManagerInterface;
 //use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Exception\ActionInvalideException;
 use Symfony\Component\Security\Core\Security;
 use App\Repository\ReglementFactureRepository;
@@ -244,13 +245,13 @@ class FactureService
         foreach ($products as $key => $product) { 
             // Gestion stock
             $produitCategorie = $product->getProduitCategorie();
-            $stock = $produitCategorie->getStockRestant();
+            $stockRestant = $produitCategorie->getStockRestant();
             
             $qtt = $product->getQtt();
-            $stock = $stock - $qtt;
-            $produitCategorie->setStockRestant($stock);
+            $stockRestant = $stockRestant - $qtt;
+            $produitCategorie->setStockRestant($stockRestant);
         
-            $this->persist($produitCategorie);
+            $this->entityManager->persist($produitCategorie);
 
             // Gestion de notification
             $stockMin = $produitCategorie->getStockMin();
@@ -268,20 +269,12 @@ class FactureService
             }
 
            // Récupération des stocks et tri par date de péremption (de la plus proche à la plus éloignée)
-            $stocks = $produitCategorie->getStocks()->toArray();
+            $stocks = $this->entityManager->getRepository(Stock::class)->findByProduitCategorieDatePerremptionIsNotNull($produitCategorie);
 
             // Tri des stocks par date de péremption (de la plus proche à la plus éloignée)
             usort($stocks, function($a, $b) {
                 $dateA = $a->getDatePeremption()->getDate();
                 $dateB = $b->getDatePeremption()->getDate();
-                
-                if ($dateA === null) {
-                    return 1; // Placer les stocks sans date de péremption après ceux avec date
-                }
-                
-                if ($dateB === null) {
-                    return -1; // Placer les stocks avec date de péremption avant ceux sans date
-                }
                 
                 // Comparer les dates
                 return $dateA <=> $dateB;
@@ -417,17 +410,76 @@ class FactureService
         $products = $affaire->getProducts();
         $filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
     
-        // Sortie du PDF sous forme de réponse HTTP
+
         foreach ($products as $key => $product) { 
-            // Gestion stock
+            // Gestion du stock
             $produitCategorie = $product->getProduitCategorie();
-            $stock = $produitCategorie->getStockRestant();
-            
+            $stockRestant = $produitCategorie->getStockRestant();
             $qtt = $product->getQtt();
-            $stock = $stock + $qtt;
-            $produitCategorie->setStockRestant($stock);
+            $stockRestant += $qtt;
+            $produitCategorie->setStockRestant($stockRestant);
         
-            $this->persist($produitCategorie);
+            $this->entityManager->persist($produitCategorie);
+        
+            $datePeremptionProduct = $product->getDatePeremption()->format('d-m-Y');
+        
+            $stocks = $this->entityManager->getRepository(Stock::class)->findByProduitCategorieDatePerremption($produitCategorie);
+        
+            // Trier les stocks par date de péremption (de la plus proche à la plus éloignée)
+            usort($stocks, function($a, $b) {
+                $dateA = $a->getDatePeremption()->getDate();
+                $dateB = $b->getDatePeremption()->getDate();
+                return $dateA <=> $dateB;
+            });
+        
+            $remainingQtt = $product->getQtt(); 
+        
+            $firstStockProcessed = false;
+        
+            foreach ($stocks as $stock) {
+                $datePeremptionStock = $stock->getDatePeremption()->getDate()->format('d-m-Y');
+                $qttStock = $stock->getQtt(); 
+                $qttRestant = $stock->getQttRestant(); 
+        
+                if (!$firstStockProcessed && $datePeremptionProduct == $datePeremptionStock) {
+                    // Pour le premier stock qui correspond à la date de péremption
+                    if ($remainingQtt + $qttRestant > $qttStock) {
+                        $qttRestant = $qttStock; // Utiliser la quantité totale du stock
+                        $remainingQtt -= $qttStock; // Réduire la quantité restante
+                    } else {
+                        $qttRestant += $remainingQtt; // Ajouter le reste de la quantité
+                        $remainingQtt = 0; // Toute la quantité a été réduite
+                    }
+                    $stock->setQttRestant($qttRestant);
+                    $this->entityManager->persist($stock);
+        
+                    $firstStockProcessed = true;
+        
+                    // Si toute la quantité est traitée, sortir de la boucle
+                    if ($remainingQtt <= 0) {
+                        break;
+                    }
+                } elseif ($remainingQtt > 0) {
+                    // Pour les stocks suivants ou si la date de péremption ne correspond pas
+                    $qttRestant += $remainingQtt; // Ajouter le reste de la quantité au stock suivant
+        
+                    if ($qttRestant > $qttStock) {
+                        $qttRestant = $qttStock; // Ne pas dépasser la capacité du stock
+                        $remainingQtt -= $qttStock; // Réduire la quantité restante
+                    } else {
+                        $remainingQtt = 0; // Toute la quantité a été réduite
+                    }
+                    $stock->setQttRestant($qttRestant);
+                    $this->entityManager->persist($stock);
+                }
+            }
+        
+            // Si après la boucle, il reste encore des quantités à traiter,
+            // il peut être nécessaire de gérer cela en fonction de vos besoins
+            if ($remainingQtt > 0) {
+                // Gérer les quantités restantes qui n'ont pas pu être stockées
+                // Par exemple, enregistrer un message d'erreur ou ajuster les stocks supplémentaires
+            }
         }
         
         $this->persist($facture);
