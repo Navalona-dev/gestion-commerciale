@@ -1,5 +1,0 @@
-[2024-08-04T16:19:18.762596+00:00] affaire.INFO: Devis modifié {"Produit":"devis2-log","Nom du responsable":"RANDRIAMANOHISOA","Adresse e-mail":"nnavalona@gmail.com","ID Application":1} []
-[2024-08-04T17:17:34.745988+00:00] affaire.INFO: Devis ajouté {"Produit":"devi","Nom du responsable":"RANDRIAMANOHISOA","Adresse e-mail":"nnavalona@gmail.com","ID Application":1} []
-[2024-08-04T17:18:04.581395+00:00] affaire.INFO: Produit ajouté au devis {"Produit":"devi","Nom du responsable":"RANDRIAMANOHISOA","Adresse e-mail":"nnavalona@gmail.com","ID Application":1} []
-[2024-08-04T17:18:09.922639+00:00] affaire.INFO: Commande payée {"Produit":"devi","Nom du responsable":"RANDRIAMANOHISOA","Adresse e-mail":"nnavalona@gmail.com","ID Application":1} []
-[2024-08-05T08:31:34.897177+00:00] affaire.INFO: Commande payée {"Produit":"devis2-log","Nom du responsable":"RANDRIAMANOHISOA","Adresse e-mail":"nnavalona@gmail.com","ID Application":1} []

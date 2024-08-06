@@ -23,7 +23,7 @@
 </style>
 
 <div class="pagetitle">
-    <h1>Liste stock vendu </h1>
+    <h1>Inventaire produit  {{produitCategorie.nom}}</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
@@ -31,12 +31,24 @@
       </ol>
     </nav>
   </div>
+  <form name="allInventaireProduit" id="allInventaireProduit" target="_blank"
+                                  action="#" method="post">
 <section class="section">
     <div class="row">
       <div class="col-lg-12">
         <div class="card">
             <div class="row">
-                <div class="col-md-8"></div>
+                <div class="col-md-4">
+                </div>
+                 <div class="col-md-4 dropdown">
+                        <a class=" export-btn bg-warning p-2 dropdown-toggle text-black btn-list" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                          <i class="bi bi-list"></i>
+                        </a>
+                      
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a href="#" onclick="exporterInventaire({{produitCategorie.id}});" class="dropdown-item"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Exporter</span></a></li>
+                        </ul>
+                    </div>
                 <div class="col-md-4 d-flex justify-content-end">
                     <div class="qtt-vendu mb-5 d-flex justify-content-center">
                         <a class="btn btn-primary mx-3" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()"><i class="bi bi-list"></i> </a>
@@ -107,10 +119,19 @@
       </div>
     </div>
   </section>
-
+  </form>
   <script>
     //datatable
-    
+    function exporterInventaire(id = null) {
+
+            var form = $('#allInventaireProduit');
+
+            form.attr('action', '/admin/produit/categorie/inventaire/tout-exporter/'+id);
+            form.submit();
+
+            return false;
+
+        }
     $(document).ready(function() {
     $('#tab-fiche-fournisseur').removeClass('active').empty();
       $('#tab-inventaire-produit').addClass('active');

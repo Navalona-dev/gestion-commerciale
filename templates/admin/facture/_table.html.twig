@@ -19,7 +19,7 @@
         </tr>
         {% elseif type == "tbody" %}
         
-        <tr class="text-nowrap">
+        <tr class="text-nowrap {% if liste.statut == 'annule' %} bg-danger {% endif %}">
                             <td>
                                 <input type="checkbox" class="custom-checkbox" name="" id="">
                             </td>

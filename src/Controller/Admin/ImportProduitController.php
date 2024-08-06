@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Compte;
 use App\Entity\Categorie;
+use App\Entity\DatePeremption;
 use App\Entity\ProduitType;
 use App\Service\AccesService;
 use App\Service\ExcelImporter;
@@ -17,6 +18,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ProduitTypeRepository;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\ProduitCategorieRepository;
+use App\Service\LogService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,6 +35,7 @@ class ImportProduitController extends AbstractController
     private $compteRepository;
     private $em;
     private $produitCategorieRepo;
+    private $logService;
 
     public function __construct(
         ApplicationManager $applicationManager, 
@@ -42,7 +45,8 @@ class ImportProduitController extends AbstractController
         ProduitTypeRepository $typeRepository,
         CompteRepository $compteRepository,
         EntityManagerInterface $em,
-        ProduitCategorieRepository $produitCategorieRepo)
+        ProduitCategorieRepository $produitCategorieRepo,
+        LogService $logService)
     {
         $this->accesService = $accesService;
         $this->application = $applicationManager->getApplicationActive();
@@ -52,6 +56,7 @@ class ImportProduitController extends AbstractController
         $this->compteRepository = $compteRepository;
         $this->em = $em;
         $this->produitCategorieRepo = $produitCategorieRepo;
+        $this->logService = $logService;
     }
 
     #[Route('/', name: '_liste')]
@@ -190,6 +195,15 @@ class ImportProduitController extends AbstractController
                                 $stock->setQtt(0);
                                 $stock->setQttRestant(0);
                             }
+                            if ($dataProduct[15] != "" && $dataProduct[15] != null) {
+                                $datePeremption = new DatePeremption();
+                                $datePeremptio = new \DateTime($dataProduct[15]);
+                                $datePeremption->setDate($datePeremptio);
+                                $datePeremption->setDateCreation($date);
+                                $stock->setDatePeremption($datePeremption);
+                                $this->em->persist($datePeremption);
+                            }
+
                             $produitCategorie->setStockRestant(floatval($stockRestant));
                             $produitCategorie->addStock($stock);
                             $this->em->persist($stock);

@@ -255,58 +255,12 @@ class FactureService
             $qtt = $product->getQtt();
             $stockRestant = $stockRestant - $qtt;
             $produitCategorie->setStockRestant($stockRestant);
-        
+            
             $this->entityManager->persist($produitCategorie);
 
-            // Gestion de notification
-            $stockMin = $produitCategorie->getStockMin();
-            $stockRestant = $produitCategorie->getStockRestant();
+            
 
-            if ($stockRestant <= $stockMin) {
-                $notification = new Notification();
-                $message = 'Le stock du produit ' . '<strong>' . $produitCategorie->getNom() . '</strong>' . ' est presque épuisé, veuillez ajouter un ou plusieurs!!';
-                $notification->setMessage($message)
-                            ->setDateCreation(new \DateTime())
-                            ->setApplication($this->application)
-                            ->setProduitCategorie($produitCategorie)
-                            ->setStockMin(true);
-                $this->persist($notification);
-            }
-
-           // Récupération des stocks et tri par date de péremption (de la plus proche à la plus éloignée)
-            $stocks = $this->entityManager->getRepository(Stock::class)->findByProduitCategorieDatePerremptionIsNotNull($produitCategorie);
-
-            // Tri des stocks par date de péremption (de la plus proche à la plus éloignée)
-            usort($stocks, function($a, $b) {
-                $dateA = $a->getDatePeremption()->getDate();
-                $dateB = $b->getDatePeremption()->getDate();
-                
-                // Comparer les dates
-                return $dateA <=> $dateB;
-            });
-
-            // Réduction des quantités de stock en fonction de la date de péremption la plus proche
-            foreach ($stocks as $stk) {
-                $qttRestant = $stk->getQttRestant();
-                
-                if ($qtt <= 0) {
-                    break; // Si la quantité à réduire est déjà consommée, on sort de la boucle
-                }
-                
-                if ($qttRestant >= $qtt) {
-                    // Réduit la quantité restante du stock actuel
-                    $stk->setQttRestant($qttRestant - $qtt);
-                    $this->persist($stk);
-                    $qtt = 0; // Toute la quantité a été réduite
-                } else {
-                    // Réduit la quantité restante du stock actuel et passe au suivant
-                    $qtt -= $qttRestant;
-                    $stk->setQttRestant(0); // Le stock actuel est épuisé
-                    $this->persist($stk);
-                }
-            }
-
-
+          
             $factureDetail = new FactureDetail();
             $prix = 0;
             $prixVenteGros = null;
@@ -341,6 +295,54 @@ class FactureService
             $factureDetail->setPrixVenteGros($prixVenteGros);
 
             $facture->addFactureDetail($factureDetail);
+
+            // Gestion de notification
+            $stockMin = $produitCategorie->getStockMin();
+            $stockRestant = $produitCategorie->getStockRestant();
+
+            if ($stockRestant <= $stockMin) {
+                $notification = new Notification();
+                $message = 'Le stock du produit ' . '<strong>' . $produitCategorie->getNom() . '</strong>' . ' est presque épuisé, veuillez ajouter un ou plusieurs!!';
+                $notification->setMessage($message)
+                            ->setDateCreation(new \DateTime())
+                            ->setApplication($this->application)
+                            ->setProduitCategorie($produitCategorie)
+                            ->setStockMin(true);
+                $this->persist($notification);
+            }
+
+           // Récupération des stocks et tri par date de péremption (de la plus proche à la plus éloignée)
+            $stocks = $this->entityManager->getRepository(Stock::class)->findByProduitCategorieDatePerremptionIsNotNull($produitCategorie);
+
+            // Tri des stocks par date de péremption (de la plus proche à la plus éloignée)
+            usort($stocks, function($a, $b) {
+                $dateA = $a->getDatePeremption()->getDate();
+                $dateB = $b->getDatePeremption()->getDate();
+                
+                // Comparer les dates
+                return $dateA <=> $dateB;
+            });
+           
+            // Réduction des quantités de stock en fonction de la date de péremption la plus proche
+            foreach ($stocks as $stk) {
+                $qttRestant = $stk->getQttRestant();
+                
+                if ($qtt <= 0) {
+                    break; // Si la quantité à réduire est déjà consommée, on sort de la boucle
+                }
+                
+                if ($qttRestant >= $qtt) {
+                    // Réduit la quantité restante du stock actuel
+                    $stk->setQttRestant($qttRestant - $qtt);
+                    $this->persist($stk);
+                    $qtt = 0; // Toute la quantité a été réduite
+                } else {
+                    // Réduit la quantité restante du stock actuel et passe au suivant
+                    $qtt -= $qttRestant;
+                    $stk->setQttRestant(0); // Le stock actuel est épuisé
+                    $this->persist($stk);
+                }
+            }
 
             //Log product
             $data["produit"] = $produitCategorie->getNom();
