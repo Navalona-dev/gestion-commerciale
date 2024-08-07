@@ -6,19 +6,7 @@
   td, tr {
     border-bottom: none !important;
   }
-  .qtt-vendu span {
-    background-color: #2a4ceB !important;
-    color: #fff;
-    border-radius: 10px;
-    padding: 8px 25px;
-    margin-top: 10px;
-    margin-right: 10px;
-  }
 
-  .qtt-vendu a {
-    margin-top: 10px;
-    
-  }
  
 </style>
 
@@ -36,34 +24,20 @@
 <section class="section">
     <div class="row">
       <div class="col-lg-12">
-        <div class="card">
-            <div class="row">
-                <div class="col-md-4">
+        <div class="card p-5">
+          <div class="form-group d-flex justify-content-end mb-4">
+                <a class="btn btn-primary mx-3 px-3 fs-5" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()"><i class="bi bi-list"></i> </a>
+                <div class="dropdown">
+                    <a class=" export-btn btn btn-warning p-2 fs-5 dropdown-toggle text-black " href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="bi bi-list"></i>
+                    </a>
+                  
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li><a href="#" onclick="exporterInventaire({{produitCategorie.id}});" class="dropdown-item"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Exporter</span></a></li>
+                    </ul>
+                  </div>
                 </div>
-                 <div class="col-md-4 dropdown">
-                        <a class=" export-btn bg-warning p-2 dropdown-toggle text-black btn-list" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                          <i class="bi bi-list"></i>
-                        </a>
-                      
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li><a href="#" onclick="exporterInventaire({{produitCategorie.id}});" class="dropdown-item"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Exporter</span></a></li>
-                        </ul>
-                    </div>
-                <div class="col-md-4 d-flex justify-content-end">
-                    <div class="qtt-vendu mb-5 d-flex justify-content-center">
-                        <a class="btn btn-primary mx-3" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()"><i class="bi bi-list"></i> </a>
-                        {# <span>
-                          {% if countQtt > 0 %}
-                            {{countQtt}}
-                          {% else %}
-                            0
-                          {% endif %} #}
-                        </span>
-                    </div>
-                </div>
-               
-            </div>
-          <div class="card-body px-5 pb-5">
+          <div class="card-body">
             
             <table class="table table-striped" id="liste-table-inventaire-produit" style="width: 100%;">
               <thead>
@@ -134,7 +108,7 @@
         }
     $(document).ready(function() {
     $('#tab-fiche-fournisseur').removeClass('active').empty();
-      $('#tab-inventaire-produit').addClass('active');
+      $('#tab-inventaire-produit').css('display','block');
       $('.tab-categorie').removeClass('active');
       $('.tab-produit-categorie').removeClass('active');
       $('.tab-user').removeClass('active');

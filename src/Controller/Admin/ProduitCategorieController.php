@@ -219,6 +219,7 @@ class ProduitCategorieController extends AbstractController
     #[Route('/inventaire/{produitCategorie}', name: '_inventaire')]
     public function inventaire(Request $request, ProduitCategorie $produitCategorie)
     {
+        $request->getSession()->set('produitCategorieId', $produitCategorie->getId());
         $data = [];
         try {
             $logFilePath = $this->getParameter('kernel.project_dir') . '/public/uploads/historique/';

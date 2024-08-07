@@ -123,6 +123,9 @@ $(document).ready(function() {
     if (anchorName === "tab-produit-date-peremption") {
         showTabProduitDatePeremption();
     }
+    if(anchorName === "tab-inventaire-produit") {
+        showInventaire(idProduit);
+    }
 
 });
 
