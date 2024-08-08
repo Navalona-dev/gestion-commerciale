@@ -6,6 +6,15 @@
   td, tr {
     border-bottom: none !important;
   }
+
+  .icon-reload {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+}
+
+.icon-excel {
+  background-color: #198754 !important;
+}
  
 </style>
 
@@ -72,8 +81,8 @@
             <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-3">
               <div class="form-group d-flex justify-content-center">
                 <a href="#" onclick="return searchCompte({{genre}})" class="filter-icon"><i class="bi bi-check"></i></a>
-                <a href="#" class="filter-icon"><i class="bi bi-file-earmark-excel"></i></a>
-                <a href="#" class="filter-icon"><i class="bi bi-arrow-clockwise"></i></a>
+                <a href="#" class="filter-icon icon-excel"><i class="bi bi-file-earmark-excel"></i></a>
+                <a href="#" onclick="return reloadSearch()" class="filter-icon icon-reload"><i class="bi bi-arrow-clockwise"></i></a>
                 
               </div>
             </div>
@@ -118,7 +127,7 @@
   </section>
 
   <script>
-    function searchCompte(genre = 1) {
+    /*function searchCompte(genre = 1) {
       var anchorName = document.location.hash.substring(1);
       var nomCompte = $("#nom_compte").val();
       var genre = $("#genre").val();
@@ -131,23 +140,7 @@
                   
                  $("#compteList").empty();
                  $("#compteList").append(response.html);
-                    /*$('#modalNewClient').modal('hide');
-                    var nextLink = $('#sidebar').find('li#clients').find('a');
-                    setTimeout(function () {
-                        toastr.options = {
-                            closeButton: true,
-                            progressBar: true,
-                            showMethod: 'slideDown',
-                            timeOut: 1000
-                        };
-                        toastr.success('Avec succèss', 'Enregistrement effectuée');
-
-                        //$(".loadBody").css('display', 'none');
-
-                    }, 800);
-                    if (nextLink.length > 0) {
-                        nextLink.click();
-                    }*/
+                  
                     if (anchorName) {
                         window.location.hash = anchorName;
                     }
@@ -157,7 +150,7 @@
                     alert('Erreur lors de l\'ajout d\'un client.');
                 }
         });
-    }
+    }*/
     
     //datatable
     $(document).ready(function() {
@@ -261,3 +254,118 @@ function newCompte(isNew = false, genre = 1) {
 }
 
   </script>
+
+<script>
+
+  function showSpinner() {
+    document.getElementById('spinner').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+  }
+
+  function hideSpinner() {
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+  }
+
+  // Fonction pour convertir une date au format d-m-Y en Date
+  function parseDate(dateStr) {
+      var parts = dateStr.split('/');
+      return new Date(parts[2], parts[1] - 1, parts[0]);
+  }
+
+  // Fonction appelée lors du clic sur l'icône de recherche
+  function searchCompte() {
+    var anchorName = document.location.hash.substring(1);
+
+      showSpinner();
+      setTimeout(function() {
+          // Récupération des valeurs des filtres
+          var nomCompte = document.getElementById('nom_compte').value.toLowerCase();
+          var dateDebut = document.getElementById('dateDu').value;
+          var dateFin = document.getElementById('dateAu').value;
+          // Récupération des lignes du tableau
+          var table = document.getElementById('liste-table-compte');
+          var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+          // Parcours des lignes pour appliquer les filtres
+          for (var i = 0; i < rows.length; i++) {
+              var row = rows[i];
+              var cells = row.getElementsByTagName('td');
+              var showRow = true;
+
+              // Filtrer par nom de compte
+              if (nomCompte && cells[0].textContent.toLowerCase().indexOf(nomCompte) === -1) {
+                  showRow = false;
+              }
+
+              // Filtrer par dates
+              var dateSearch = parseDate(cells[2].textContent.trim()); // assuming format is d-m-Y
+
+              if (dateDebut) {
+                  var startdateDebut = parseDate(dateDebut);
+                  if (dateSearch < startdateDebut) {
+                      showRow = false;
+                  }
+              }
+              if (dateFin) {
+                  var endDateFin = parseDate(dateFin);
+                  if (dateSearch > endDateFin) {
+                      showRow = false;
+                  }
+              }
+
+              // Afficher ou masquer la ligne en fonction du filtre
+              if (showRow) {
+                  row.style.display = '';
+              } else {
+                  row.style.display = 'none';
+              }
+          }
+
+          if (anchorName) {
+          window.location.hash = anchorName;
+      }
+
+          // Masquer le spinner après le traitement
+          hideSpinner();
+      }, 2000);
+      
+  }
+
+  function reloadSearch() {
+    var anchorName = document.location.hash.substring(1);
+
+      showSpinner();
+      setTimeout(function() {
+      // Réinitialiser les filtres
+      document.getElementById('nom_compte').value = '';
+      document.getElementById('dateDu').value = '';
+      document.getElementById('dateAu').value = '';
+
+      // Recharger la DataTable (ou table) à l'état initial
+      var table = document.getElementById('liste-table-compte');
+      var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+      for (var i = 0; i < rows.length; i++) {
+          rows[i].style.display = '';
+      }
+
+      if (anchorName) {
+          window.location.hash = anchorName;
+      }
+      
+      // Optionnel : si vous utilisez DataTables, vous pouvez réinitialiser comme ceci :
+      // $('#table-facture').DataTable().search('').draw();
+       // Masquer le spinner après le traitement
+       hideSpinner();
+      }, 2000);
+
+      
+  }
+
+  // Ajout de l'événement click à l'icône de recherche
+  document.addEventListener('DOMContentLoaded', function() {
+      var searchButton = document.querySelector('.icon-check');
+      searchButton.addEventListener('click', searchFacture);
+  });
+</script>

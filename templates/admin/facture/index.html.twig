@@ -330,6 +330,7 @@
     </script>
 
 <script>
+
     function showSpinner() {
     document.getElementById('spinner').style.display = 'block';
     document.getElementById('overlay').style.display = 'block';
@@ -358,6 +359,8 @@
 
     // Fonction appelée lors du clic sur l'icône de recherche
     function searchFacture() {
+    var anchorName = document.location.hash.substring(1);
+
         showSpinner();
         setTimeout(function() {
             // Récupération des valeurs des filtres
@@ -426,13 +429,19 @@
                     row.style.display = 'none';
                 }
             }
-
+            if (anchorName) {
+                window.location.hash = anchorName;
+            }
             // Masquer le spinner après le traitement
             hideSpinner();
         }, 2000);
+
+        
     }
 
     function reloadSearch() {
+    var anchorName = document.location.hash.substring(1);
+
         showSpinner();
         setTimeout(function() {
         // Réinitialiser les filtres
@@ -450,12 +459,16 @@
         for (var i = 0; i < rows.length; i++) {
             rows[i].style.display = '';
         }
-        
+        if (anchorName) {
+            window.location.hash = anchorName;
+        }
         // Optionnel : si vous utilisez DataTables, vous pouvez réinitialiser comme ceci :
         // $('#table-facture').DataTable().search('').draw();
          // Masquer le spinner après le traitement
          hideSpinner();
         }, 2000);
+
+        
         
     }
 
