@@ -1,0 +1,61 @@
+<style>
+    a {
+        font-size: 14px;
+    }
+
+    .info {
+        color: #0d6efd !important;
+    }
+
+    .number_doc {
+        background-color: #0d6efd;
+        border-radius: 5px;
+        padding: 3px 8px;
+        float: right;
+    }
+
+    /*.card-list {
+        background-color: #ebecee;
+    }*/
+
+    .nav-link.active {
+        background-color: #0d6dfd38;
+        color: #fff;
+    }
+</style>
+<div class="">
+
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light card py-3">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav flex-column me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        {% if compte.genre == 1 %}
+                            <a class="nav-link liste-projet text-black" href="#affaires_client" id="liste-projet" onclick="return listAffaireByCompte({{compte.id}}, {{compte.genre}})">
+                                <i class="bi bi-info-circle-fill"></i>
+                                <span class="mx-2">Liste projets</span>
+                            </a>
+                        {% elseif compte.genre == 2 %}
+                            <a class="nav-link liste-projet text-black" href="#affaires_fournisseur" id="liste-projet" onclick="return listProduitByCompte({{compte.id}})">
+                                <i class="bi bi-info-circle-fill"></i>
+                                <span class="mx-2">Liste projets</span>
+                            </a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+   
+</div>
+
+<script>
+    $(document).ready(function() {
+        var anchorName = document.location.hash.substring(1);
+        if(anchorName == "tab-fiche-client" || anchorName == "tab-fiche-fournisseur") {
+            $('.nav-link').removeClass('active');
+            $('.nav-link.liste-projet').addClass('active');
+        }
+    })
+</script>

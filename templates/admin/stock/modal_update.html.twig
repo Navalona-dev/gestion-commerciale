@@ -1,5 +1,5 @@
 
-<div class="modal fade" id="modalUpdateStock" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+<div class="modal fade" id="modalUpdateStock" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content p-4 modal-categorie">
             <div class="modal-header modal-header-center">
@@ -13,6 +13,10 @@
                         {{ form_widget(form.qtt) }}
                     </div>  
                       <input type="hidden" name="oldQtt" value = "{{oldQtt}}" />
+                      <div class="form-group mb-3">
+                        <label for="" class="mb-2">Date de peremption</label>
+                        {{ form_widget(form.datePeremption) }}
+                    </div>  
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-sm px-3" style="width: 100%;">Modifier stock</button>
                     </div>
@@ -20,15 +24,50 @@
             </div>
         </div>
     </div>
+    <div id="id-produit-update" data-produit="{{idProduit}}"></div>
 </div>
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 
 <script>
-   
+ 
+ $(document).ready(function() {
+  var dateFormat = 'dd/mm/yyyy';
+  var dateNow = new Date();
+  dateNow.setDate(dateNow.getDate() + 1)
+
+  $('#stock_datePeremption_date').datepicker({
+      format: dateFormat,
+      todayHighlight: true,
+      //daysOfWeekDisabled: '0',
+      startDate: dateNow,
+      language: 'fr',
+      autoclose: true,
+
+  });
+
+});
+
     $(document).ready(function () {
        $('#updateStock').on('submit', function (e) {
             e.preventDefault();
+            var idProduit = $('#id-produit-update').data('produit');
             let form = $(this);
+            var totalStock = {{totalStock}};
+            var quantityTransferer = {{quantity}};
+            var qttRestant = {{qttRestant}};
+            var qttVendu = {{qttVendu}};
+            var totalQttTraiter = qttRestant + quantityTransferer + qttVendu;
+            var qttUpdated = $('#stock_qtt').val();
+            var totalQtt = totalStock;
+            if (null != qttUpdated && qttUpdated != "" && qttUpdated != undefined) {
+                qttUpdated = parseFloat(qttUpdated);
+                totalQtt = totalQtt + qttUpdated;
+            }
+            
+            if (totalQtt < totalQttTraiter || totalQtt > totalQttTraiter) {
+                //return false;
+            }
+            
             $.ajax({
                 url: form.attr('action'),
                 type: form.attr('method'),
@@ -48,7 +87,8 @@
                         //$(".loadBody").css('display', 'none');
 
                     }, 800);
-                    listStockByProduitSession();
+                    listStock(idProduit);
+                
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)

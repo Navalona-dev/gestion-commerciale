@@ -1,5 +1,5 @@
 
-<div class="modal fade" id="modalUpdateFournisseur" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+<div class="modal fade" id="modalUpdateFournisseur" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content p-4 modal-user">
             <div class="modal-header modal-header-center">
@@ -14,6 +14,11 @@
                         <label for="" class="mb-2">Nom <sup class="text-danger">*</sup></label>
                         <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.nom)}} </span>
                         {{ form_widget(form.nom) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Code <sup class="text-danger">*</sup></label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.code)}} </span>
+                        {{ form_widget(form.code) }}
                     </div>
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Email</label>

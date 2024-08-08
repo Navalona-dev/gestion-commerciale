@@ -29,6 +29,12 @@ class Notification
     #[ORM\Column(nullable: true)]
     private ?bool $isView = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $isStockMin = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isStockMax = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -90,6 +96,30 @@ class Notification
     public function setIsView(?bool $isView): static
     {
         $this->isView = $isView;
+
+        return $this;
+    }
+
+    public function isStockMin(): ?bool
+    {
+        return $this->isStockMin;
+    }
+
+    public function setStockMin(?bool $isStockMin): static
+    {
+        $this->isStockMin = $isStockMin;
+
+        return $this;
+    }
+
+    public function isStockMax(): ?bool
+    {
+        return $this->isStockMax;
+    }
+
+    public function setStockMax(?bool $isStockMax): static
+    {
+        $this->isStockMax = $isStockMax;
 
         return $this;
     }

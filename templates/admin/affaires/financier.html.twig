@@ -1,0 +1,434 @@
+<style>
+   .icon-paye {
+    width: 44px;
+    height: 40px;
+    background-color: #ffc107; 
+    color: #000;
+    font-size: 24px; 
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffc107 !important; 
+    cursor: pointer;
+}
+
+.icon-paye:hover {
+    color: #000;
+}
+
+.icon-detail {
+    width: 44px;
+    height: 40px;
+    color: #000;
+    font-size: 24px; 
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 15px;
+}
+
+.icon-cancel {
+    width: 44px;
+    height: 40px;
+    color: #000;
+    font-size: 24px; 
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 15px;
+    border:none !important;
+}
+
+</style>
+
+<section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        {# entete compte #}
+         {% include 'admin/affaires/entete_compte.html.twig' with { 'compte': affaire.compte } %}
+        {# entete affaire #}
+        {% include 'admin/affaires/entete_affaire.html.twig' with { 'affaire': affaire } %}
+    {% set montantHt = 0 %}
+    {% set montantTTC = 0 %}
+           <div class="row mt-5">
+            <div class="col-md-2 col-12">
+               {% include '/admin/affaires/menu_left.html.twig' with { 'affaire' : affaire} %}
+            </div>
+            <div class="col-md-10 col-12" id="financiereProduct">
+                <div class="card p-5">
+                    <div class="date">
+                        <div class="row">
+                            <div class="col-md-10 col-12">
+                                <div class="row">
+                                    <div class="col-md-4 col-12">
+                                        <p class="fw-bold fs-5 text-center"><i class="bi bi-archive-fill text-primary"></i>
+                                            <span class="mx-2 text-primary">Date devis:</span>
+                                            
+                                        </p>
+                                        <p class="fw-bold fs-6 text-center" style="margin-top: -10px;">
+                                            <span class="text-warning">
+                                                {% if affaire.dateDevis is not null %}
+                                                    {{affaire.dateDevis|date("d/m/Y")}}
+                                                {% else %}
+                                                    {{affaire.dateCreation|date("d/m/Y")}}
+                                                {% endif %}
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 col-12">
+                                        <p class="fw-bold fs-5 text-center"><i class="bi bi-archive-fill text-primary"></i>
+                                            <span class="mx-2 text-primary">Date commande:</span>
+                                            
+                                        </p>
+                                        <p class="fw-bold fs-6 text-center" style="margin-top: -10px;">
+                                            <span class="text-warning">
+                                                {% if affaire.dateCommande is not null %}
+                                                    {{affaire.dateCommande|date("d/m/Y")}}
+                                                {% else %}
+                                                    Pas encore commandé
+                                                {% endif %}
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 col-12">
+                                        <p class="fw-bold fs-5 text-center"><i class="bi bi-archive-fill text-primary"></i>
+                                            <span class="mx-2 text-primary">Date facture:</span>
+                                            
+                                        </p>
+                                        <p class="fw-bold fs-6 text-center" style="margin-top: -10px;">
+                                            <span class="text-warning">
+                                                {% if affaire.dateFacture is not null %}
+                                                    {{affaire.dateFacture|date("d/m/Y")}}
+                                                {% else %}
+                                                    Pas encore facturé
+                                                {% endif %}
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                                
+                            {% if affaire.paiement is not null and affaire.paiement == "paye" and factureFile is not null %}
+                             
+                                <div class="col-md-2 col-12">
+                                     <div class="d-flex justify-content-center">
+                                        <a title="Annuler" target="_blank" href="{{path('affaires_annuler', {'affaire': affaire.id})}}" title="Annuler" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
+                                            <i class="bi bi-x"></i>
+                                        </a>
+                                        <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank" title="Voir dernière facture" class="bg-primary icon-detail text-white">
+									        <i class="bi bi-file-earmark-check-fill"></i>
+                                        </a>
+
+                                    </div>
+                                </div>
+                            {% elseif affaire.paiement is not null and affaire.paiement == "annule" %}
+                            <div class="col-md-2 col-12">
+                                <div class="d-flex justify-content-center">
+                                   <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank" title="Voir dernière facture" class="bg-danger icon-detail text-white">
+                                       <i class="bi bi-file-earmark-check-fill"></i>
+                                   </a>
+
+                               </div>
+                           </div>
+                            {% else %}
+                                {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
+                                <div class="col-md-2 col-12">
+                                    {% if affaire.products|length > 0 %}
+                                    <div class="d-flex justify-content-end">
+                                        <a title="Payé" target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="icon-paye d-flex align-items-center justify-content-center border border-secondary">
+                                            <i class="bi bi-credit-card-2-front-fill"></i>
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                    {% if affaire.paiement is not null and affaire.paiement == "annule" %}
+                                <div class="col-md-2 col-12">
+                                     <div class="d-flex justify-content-center">
+                                        <a title="Annuler" target="_blank" href="{{ asset('uploads/factures/annule/' ~ factureFile) }}" title="Annuler" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
+                                            <i class="bi bi-x"></i>
+                                        </a>
+
+                                    </div>
+                                </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    {#<div class="object">
+                        <label for="" class="mb-2 fw-bold">Objet commande</label>
+                        <textarea name="order-object" id="order-object" class="form-control form-control-md ckeditor"></textarea>
+                        <button type="submit" class="btn btn-primary btn-sm px-3 mt-3 btn-save-object">Enregistrer</button>
+                    </div>#}
+                    {# <div class="row justify-content-end align-items-center">
+                        <div class="col-auto">
+                            <input type="checkbox" name="drag-and-drop" id="drag-and-drop" checked>
+                            <label for="drag-and-drop">Activer le 'drag and drop' de la ligne</label>
+                        </div>
+                        <div class="col-auto">
+                            <div class="dropdown">
+                                <a href="#" class="dropdown-toggle btn btn-primary btn-sm btn-drop" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-list"></i>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    <li><a class="dropdown-item" href="#">PDF</a></li>
+                                    <li><a class="dropdown-item" href="#">Excel</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div> #}
+                    <div class="financier-produit mt-4">
+                        <table class="table">
+                            <thead>
+                               
+                                <tr class="bg-light">
+                                    {# <th class="text-center"></th> #}
+                                    <th class="text-center">Ref</th>
+                                    <th class="text-center" style="width: 200px;">Intitulé</th>
+                                    <th class="text-center">Qté</th>
+                                    <th class="text-center">PU(HT)</th>
+                                    {# <th class="text-center">Remise</th>
+                                    <th class="text-center">PT(HT)</th>
+                                    <th class="text-center">TVA</th> #}
+                                    {% if affaire.paiement is not null and affaire.paiement != "paye" or affaire.paiement is null %}
+                                    <th class="text-center">Action</th>
+                                    {% endif %}
+                                    {# <th class="text-center"><input type="checkbox" name="" id="" class="large-checkbox" style="margin-top: 5px !important;"></th> #}
+                                </tr>
+                             
+                            </thead>
+                            <tbody>
+                                 {% for product in produits %}
+                                <tr id="tr_produit_{{ product.id }}" data-id="{{ product.id }}"
+                                            data-id-affaire="{{ affaire.id }}">
+                                    {# <td class="align-middle text-center">{{product.id}}</td> #}
+                                    <td class="align-middle text-center">{{product.reference}} ({{product.typeVente}})</td>
+                                    <td class="align-middle" style="width: 200px;">{{product.nom}}</td>
+                                    {# <td class="align-middle text-center">{{product.qtt}}&nbsp;{% if product.typeVente == "gros" %}{{product.uniteVenteGros}}{% else %}{{product.uniteVenteDetail}}{% endif %} / {{product.produitCategorie.stockRestant}}</td> #}
+                                    <td class="align-middle text-center">{% if product.typeVente == "detail" %}{{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteDetail}} ({% if ((product.qtt / product.produitCategorie.volumeGros) |round(0)) != 0 %} {{ (product.qtt / product.produitCategorie.volumeGros) |round(0)}} {{product.produitCategorie.presentationGros}}  et {% endif %}{{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})   {% else %}
+                                    {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} ({% if product.qtt >= product.produitCategorie.volumeGros %} {{(product.qtt / product.produitCategorie.volumeGros) |round(0)}}  {{product.produitCategorie.presentationGros}} {% if product.qtt - product.produitCategorie.volumeGros != 0 %} et {% endif %} {% endif %} {% if product.qtt >= product.produitCategorie.volumeGros %} {% if product.qtt - product.produitCategorie.volumeGros != 0 %} {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} {% endif %} {% else %} {{product.qtt}} {{product.produitCategorie.presentationDetail}}{% endif %} )
+                                    {% endif %}</td>
+                                    <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(0, '.', ' ')}}{% else %}{{product.prixVenteDetail|number_format(0, '.', ' ')}}{% endif %} Ar</td>
+                                    {# <td class="align-middle text-danger text-center">--</td>
+                                    <td class="align-middle text-center">0,00€</td>
+                                    <td class="align-middle text-center">20%</td> #}
+                                    <td>
+                                        {% if affaire.paiement is null or (affaire.paiement != "paye" and affaire.paiement != "annule") %}
+                                            <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
+                                            {# <a href="#" class="action-plus d-block text-center mb-2"><i class="bi bi-plus"></i></a>
+                                            <a href="#" class="action-list d-block text-center mb-2"><i class="bi bi-list-ul"></i></a> #}
+                                            <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
+                                        {% endif %}
+                                    </td>
+                                    {# {% set montantHt = montantHt + (product.qtt * product.puht) - product.remise %} #}
+                                    {% if product.typeVente == "gros" %}
+                                    {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                                    {% else %}
+                                        {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                                    {% endif %}
+                                    {# <td class="align-middle">
+                                        <input type="checkbox" name="" id="" class="d-block large-checkbox mb-2">
+                                        <a href="#" class="d-block action-files align-middle text-center"><i class="bi bi-file-earmark-arrow-down-fill"></i></a>
+                                    </td> #}
+                                </tr>
+                                   {% endfor %}
+                            </tbody>
+                        </table>
+                        {# <div class="mt-3 mb-4 float-end">
+                            <input type="checkbox" name="drag-and-drop" id="drag-and-drop" checked>
+                            <label for="drag-and-drop">Activer le 'drag and drop' de la ligne</label>
+                        </div> #}
+                        
+                    </div>
+                    <div class="financier-info mt-5">
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <div class="mb-4">
+                                    
+                                {% if affaire.paiement is not null and affaire.paiement == "paye" and factureFile is not null %}
+                                    <a title="Annuler" target="_blank" href="{{path('affaires_annuler', {'affaire': affaire.id})}}" title="Annuler" class="text-danger financier-icon">
+                                        <i class="bi bi-x-square-fill"></i>
+                                    </a>
+                                    <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank" title="Voir dernière facture" class="text-primary financier-icon">
+                                        <i class="bi bi-file-earmark-check-fill"></i>
+                                    </a>
+                                {% elseif affaire.paiement is not null and affaire.paiement == "annule" %}
+                                    <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank" title="Voir dernière facture" class="text-primary financier-icon">
+                                        <i class="bi bi-file-earmark-check-fill"></i>
+                                    </a>
+                                {% else %}
+                                    {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
+                                    <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
+                                    {% if affaire.products|length > 0 %}
+                                        <a target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
+                                    {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                                    {#<a href="#" class="text-danger financier-icon"><i class="bi bi-database-fill-check"></i></a>
+                                    <a href="#" class="text-info icon-t">t</a>
+                                    <a href="#" class="text-success financier-icon"><i class="bi bi-file-earmark-excel-fill"></i></a>#}
+                                </div>
+                                {# <div class="row mb-4">
+                                    <div class="col-md-6 col-12">
+                                        <p>Date valable jusqu'au : </p>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <input type="text" name="" id="" class="date-available form-control form-control-md" placeholder="jj/mm/aaaa">
+                                    </div>
+                                </div> #}
+                                <div class="row mb-4">
+                                    <div class="col-md-6 col-12">
+                                        <p>Statut : </p>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <select name="selectType" id="selectType" class="form-control form-control-md">
+                                            <option value="commande" {% if affaire.statut is not null and affaire.paiement == "commande" %}selected{% endif %}>commande</option>
+                                            <option value="devis" {% if affaire.statut is not null and affaire.paiement == "devis" %}selected{% endif %}>devis</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <div class="box" style="border: 1px solid #5a5858; margin-left: 15px;">
+                                    <div class="row box-content px-3">
+                                        <div class="col-md-6 col-12 align-middle">
+                                            <p class="mt-4">Montant : </p>
+                                        </div>
+                                        <div class="col-md-6 col-12 align-middle d-flex justify-content-end">
+                                            <p class="mt-4">{{ montantHt|number_format(2, ',', ' ') }} Ar</p>
+                                        </div>
+                                    </div>
+                                    {# <div class="row box-content px-3">
+                                        <div class="col-md-10 col-12 align-middle">
+                                            <p class="mt-3">TVA : </p>
+                                        </div>
+                                        <div class="col-md-2 col-12 align-middle">
+                                            <p class="mt-3">0,00€</p>
+                                        </div>
+                                    </div> 
+                                    <hr>
+                                    <div class="row box-content px-3">
+                                        <div class="col-md-10 col-12 align-middle">
+                                            <p>Montant TTC : </p>
+                                        </div>
+                                        <div class="col-md-2 col-12 align-middle">
+                                            <p class="text-success">0,00€</p>
+                                        </div>
+                                    </div>#}
+                                </div>
+                                {# <div class="form-group mt-4" style="margin-left: 15px;">
+                                    <a href="#" class="btn btn-outline-primary btn-sm btn-add-financier"><i class="bi bi-plus"></i><span class="mx-2">Ajouter une remise</span></a>
+                                    <a href="#" class="btn btn-outline-warning btn-sm btn-add-financier mx-3"><i class="bi bi-plus"></i><span class="mx-2">Ajouter une option</span></a>
+                                </div> #}
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           </div>
+        </div>
+       
+    </div>
+
+    <div id="modalListProduitCategorieEmpty"></div>
+   
+  </section>
+<script src="{{ asset('assets/js/produit.js')}}"></script>
+  <script>
+    $(document).ready(function() {
+    $('#tab-compte_1').removeClass('active').empty();
+    $('#tab-compte_2').removeClass('active').empty();
+    $('#affaires_fournisseur').removeClass('active').empty();
+    $('#affaires_client').removeClass('active').empty();
+      $('#tab-produit-date-peremption').removeClass('active').empty();
+
+      $('.tab-categorie').removeClass('active');
+      $('#tab-produit-categorie').removeClass('active');
+      $('.tab-produit-categorie').removeClass('active');
+      $('#tab-categorie').removeClass('active');
+      $('.tab-import-produit').removeClass('active');
+      $('#tab-import-produit').removeClass('active');
+
+      $('.tab-user').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
+      
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+     
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+       $('#tab-transfert-produit').css('display', 'none');
+     
+      
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-produit-type').removeClass('active');
+      $('.tab-produit-type').removeClass('active');
+$('#tab-import-produit').css('display', 'none');
+        $('#tab-facture').css('display', 'none');
+        $('#tab-info-affaire').removeClass('active');
+      $('#tab-fiche-client').removeClass('active').empty();
+      $('#tab-financier-affaire').addClass('active');
+      $('#tab-facture-affaire').removeClass('active').empty();
+        $('#tab-inventaire-produit').css('display','none');
+      
+      
+    });
+
+    $(document).ready(function() {
+        var dateFormat = 'dd/mm/yyyy';
+        var dateNow = new Date();
+        dateNow.setDate(dateNow.getDate() + 1)
+
+        $('.date-available').datepicker({
+            format: dateFormat,
+            todayHighlight: true,
+            daysOfWeekDisabled: '0',
+            startDate: dateNow,
+            language: 'fr',
+            autoclose: true,
+
+        });
+
+    });
+
+    function openModalListProduit(id = null)
+    {
+        var anchorName = document.location.hash.substring(1);
+
+        $.ajax({
+                url: '/admin/affaires/produit/liste/'+id,
+                type: 'post',
+                //data: {},
+                success: function (response) {
+                    $("#modalListProduitCategorieEmpty").empty();
+                    $("#modalListProduitCategorieEmpty").append(response.html);
+                    $('#modalListProduitCategorie').modal('show');
+
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de produit.');
+                }
+            });
+    }
+   
+  </script>

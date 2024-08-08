@@ -1,0 +1,197 @@
+<style>
+    .modal-list-produit {
+        min-width: 260% !important;
+        margin-left: -25rem !important;
+    }
+    td {
+        border-bottom: none !important;
+    }
+    
+    #filter_category_chosen {
+        width: 300px !important;
+    }
+
+    .card-table {
+        background-color: #f6f9ff;
+    }
+</style>
+<div class="modal fade" id="modalListProduitCategorie" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog ">
+        <div class="modal-content p-4 modal-list-produit">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau produit depuis le catalogue</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="return reloadTabFinancier()"></button>
+                <hr>
+                
+            </div>
+            <div class="modal-body">
+                <div class="form-group d-flex align-items-center mt-5">
+                    <label for="" class=" text-nowrap" style="margin-right: 15px;">Filtrer par catégorie :</label>
+                    <select name="filter_category" id="filter_category" class="form-control form-control-sm chosen-select" >
+                        {% for categorie in categories %}
+                            <option value="{{categorie.id}}"> {{categorie.nom}} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="card-table mt-5 p-5">
+                    <table class="table table-striped" id="table-liste-produit" style="width: 100% !important;">
+                        <thead>
+                            <tr>
+                                <th class="text-center text-nowrap">Actions</th>
+                                <th class="text-center text-nowrap">Ref</th>
+                                <th class="text-center text-nowrap">Intitulé/Détail</th>
+                                <th class="text-center text-nowrap">Stock restant</th>
+                                <th class="text-center text-nowrap">Type vente</th>
+                                <th class="text-center text-nowrap">Qtt</th>
+                                <th class="text-center text-nowrap">Vente gros</th>
+                                {# <th class="text-center text-nowrap">Unite gros</th> #}
+                                <th class="text-center text-nowrap">Vente detail</th>
+                                {# <th class="text-center text-nowrap">Unite detail</th> #}
+                                {# <th class="text-center text-nowrap">St.min</th> #}
+                                {# <th class="text-center text-nowrap">Stock</th> #}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for liste in listes %}
+                            <tr class="text-nowrap" data-filter="{{ liste.categorie }}">
+                                <td>
+                                    <a onclick="return addPanier(this, {{ affaire.id }});"
+                                           class="panier" style="cursor: pointer;"><i class="bi bi-cart-plus-fill"></i>
+                                            <span class="mx-1">Ajouter</span></a>
+                                  
+                                </td>
+                                <td><input type="hidden" name="idProduit"
+                                           value="{{ liste.id }}"> 
+                                    {% if liste.reference is not null %}
+                                        {{liste.reference}} 
+                                    {% endif %}
+                                </td>
+                                <td> {{liste.nom}} / (1 {{liste.presentationGros}} de {{liste.volumeGros}} {{liste.uniteVenteGros}})</td>
+                                {% set nombreProduitPresentation = ((liste.stockRestant / liste.volumeGros) |round(0)) %}
+                                {% set qttProduitPresente = nombreProduitPresentation * liste.volumeGros  %}
+                                {% set diffenceQttProduit = (liste.stockRestant - qttProduitPresente) %}
+                                {% if qttProduitPresente > liste.stockRestant %}
+                                        {% set diffenceQttProduit = liste.volumeGros - (qttProduitPresente - liste.stockRestant) %}
+                                {% endif %}
+                                {% set ruptureGros = 0 %}
+                                {% set showParenthese = 1 %}
+                                {% if liste.stockRestant < liste.volumeGros %}
+                                         {% set showParenthese = 0 %}
+                                {% endif %}
+                               
+                                <td> <input type="hidden" name="qttRestant"
+                                           value="{{ liste.stockRestant }}"> {{liste.stockRestant}} {{liste.uniteVenteGros}} {% if showParenthese == 1 %} ( {% endif %} {% if qttProduitPresente > liste.stockRestant %}{% if (nombreProduitPresentation - 1) == 0 %} {% set ruptureGros = 1 %} {% else %} {{ nombreProduitPresentation - 1 }} {% endif %} {% else %}  {{ nombreProduitPresentation }} {% endif %} {% if ruptureGros == 0 %} {{liste.presentationGros}} {% endif %} {% if ruptureGros == 0 %} {% if diffenceQttProduit != 0 %} et {{ diffenceQttProduit }} {{liste.uniteVenteGros}}{% endif %}{% endif %} {% if showParenthese == 1 %} ) {% endif %}</td>
+                                <td> 
+                                <select name="typeVente" id="typeVente" class="form-control">
+                                    <option value="">Type vente</option>
+                                    <option value="gros">Gros</option>
+                                    <option value="detail">Détail</option>
+                                </select>
+                                 </td>
+                                 <td> 
+                                    <input type="text" value="{{ liste.qtt }}" name="qttProduit" class="form-control">
+                                </td>
+                                <td> 
+                                    {% if liste.prixVenteGros is not null %}
+                                        {{liste.prixVenteGros}} Ar {% if liste.uniteVenteGros is not null %} / {{liste.uniteVenteGros}}  {% endif %}
+                                    {% endif %}
+                                </td>
+                                {# <td> 
+                                    {% if liste.uniteVenteGros is not null %}
+                                        {{liste.uniteVenteGros}}  
+                                    {% endif %}
+                                </td> #}
+                                 <td> 
+                                    {% if liste.prixVenteDetail is not null %}
+                                        {{liste.prixVenteDetail}} Ar {% if liste.uniteVenteDetail is not null %} / {{liste.uniteVenteDetail}} ({{liste.presentationDetail}}) {% endif %} 
+                                    {% endif %}
+                                </td>
+                                {# <td> 
+                                    {% if liste.uniteVenteDetail is not null %}
+                                        {{liste.uniteVenteDetail}}  
+                                    {% endif %}
+                                </td> #}
+                                
+                                {# <td> 
+                                    {% if liste.stockMin is not null %}
+                                        {{liste.stockMin}}
+                                    {% endif %}
+                                 </td> #}
+                                {# <td> 
+                                    {% if liste.stockRestant is not null %}
+                                        {{liste.stockRestant}}
+                                    {% endif %} 
+                                </td> #}
+
+                            </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="7">Aucun enregistrement trouvé</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    {# <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td> #}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="form-group mt-5">
+                        <button type="button" class="btn btn-primary btn-sm px-5" data-bs-dismiss="modal" aria-label="Close" onclick="return reloadTabFinancier()">Terminé</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="affaire-id-reload" data-affaire="{{affaire.id}}"></div>
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+
+<script>
+
+$(document).ready(function() {
+    var table = $('#table-liste-produit').DataTable({
+        responsive: true,
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+        },
+        scrollX: true,
+        pageLength: 10,
+        scrollCollapse: false,
+    });
+
+    $('#modalListProduitCategorie').on('shown.bs.modal', function () {
+        if (table.columns.adjust().responsive != undefined) {
+            table.columns.adjust().responsive.recalc();
+        }
+    });
+
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            var selectedCategory = $('#filter_category_chosen .chosen-single span').text().trim().toLowerCase();
+            var rowCategory = $(table.row(dataIndex).node()).data('filter').trim().toLowerCase();
+
+            if (!selectedCategory || selectedCategory === rowCategory) {
+                return true;
+            }
+            return false;
+        }
+    );
+
+    $('#filter_category_chosen').on('DOMSubtreeModified', function() {
+        table.draw();
+    });
+});
+
+function reloadTabFinancier()
+{
+    var affaireId = $('#affaire-id-reload').data('affaire');
+    financier(affaireId);
+}
+</script>

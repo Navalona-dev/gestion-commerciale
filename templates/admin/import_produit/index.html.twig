@@ -57,6 +57,15 @@
   <script>
 
     $(document).ready(function() {
+      $('#tab-fiche-fournisseur').removeClass('active').empty();
+      $('#tab-quantite-vendu').removeClass('active').empty();
+      $('#tab-notification').removeClass('active').empty();
+      $('#tab-historique-produit').removeClass('active').empty();
+      $('#tab-historique-affaire').removeClass('active').empty();
+      $('#tab-produit-date-peremption').removeClass('active').empty();
+       $('#tab-stock').removeClass('active');
+        $('#tab-inventaire-produit').css('display','none');
+
       $('.tab-import-produit').addClass('active');
       $('#tab-import-produit').addClass('active');
       $('#tab-produit-type').removeClass('active');
@@ -83,7 +92,14 @@
       $('#tab-application').removeClass('active');
       $('#tab-profile').removeClass('active');
        $('#tab-compte_1').removeClass('active');
-            $('#tab-transfert-produit').css('display', 'none');
+      $('#tab-transfert-produit').css('display', 'none');
+     $('#affaires_client').removeClass('active').empty();
+       $('#affaires_fournisseur').removeClass('active').empty();
+       $('#tab-info-affaire').removeClass('active').empty();
+       $('#tab-financier-affaire').removeClass('active').empty();
+      $('#tab-fiche-client').removeClass('active').empty();
+        $('#tab-facture').css('display', 'none');
+        $('#tab-facture-affaire').css('display', 'none');
 
 
     })

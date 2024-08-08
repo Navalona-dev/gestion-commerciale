@@ -98,7 +98,7 @@ class ProduitImageController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
-                    $this->produitImageService->add($productImage, $productImage->getProduitCategorie());
+                    $this->produitImageService->add($productImage, $productImage->getProduitCategorie(), true);
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 } 
         
@@ -134,11 +134,15 @@ class ProduitImageController extends AbstractController
     }
 
     #[Route('/{produitCategorie}', name: '_liste')]
-    public function index(Request $request, ProduitCategorie $produitCategorie): Response
+    public function index(
+        Request $request, 
+        ProduitCategorie $produitCategorie,
+        SessionInterface $session): Response
     {   
-        $request->getSession()->set('produitCategorieId', $produitCategorie->getId());
+        $session->set('produitCategorieId', $produitCategorie->getId());
 
         $data = [];
+
         try {
             
             $stocks = $this->produitImageService->getImageByProduit($produitCategorie);

@@ -1,0 +1,236 @@
+<style>
+    .dataTables_scroll {
+      margin-top: 50px !important;
+      margin-bottom: 30px !important;
+    }
+    td, tr {
+      border-bottom: none !important;
+    }
+
+    .card-head {
+        border: 1px solid #2a4ce8;
+    }
+
+    .icon-check {
+        padding: 5px 8px;
+        background-color: #2a4ce8;
+        font-size: 25px;
+        color: #fff;
+        border-radius: 5px;
+    }
+
+    .title {
+        font-size: 19px;
+        color: #04176d;
+        font-size: 30px;
+    }
+
+    .custom-checkbox {
+        width: 20px;  
+        height: 20px; 
+    }
+   
+  </style>
+  
+  <div class="pagetitle">
+      <h1>Facture affaire </h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
+          <li class="breadcrumb-item active">Liste</li>
+        </ol>
+      </nav>
+    </div>
+  <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+             {% include 'admin/affaires/entete_compte.html.twig' with { 'compte': affaire.compte } %}
+
+            {% include 'admin/affaires/entete_affaire.html.twig' with { 'affaire' : affaire} %}
+            <div class="row">
+                <div class="col-md-2 col-12">
+                    {% include '/admin/affaires/menu_left.html.twig' with { 'affaire' : affaire} %}
+                 </div>
+                 <div class="col-md-10 col-12">
+                    <div class="card">
+                        <div class="card-body p-5">
+                            <h3 class="mb-5 title fw-bold"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Factures</span></h3>
+                            <div>
+                                <div class="row mb-5">
+                                    <div class="col-md-10 col-12">
+                                        <div class="form-group">
+                                            <div class="dropdown ms-2 d-inline-block">
+                                                <a class="btn btn-primary btn-sm px-3 dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="bi bi-plus"></i> <span class="mx-2">Ajouter une facture</span>
+                                                </a>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <li><a style="cursor: pointer;" class="dropdown-item">Créer une facture dépuis l'affaire</a></li>
+                                                    <li><a style="cursor: pointer;" class="dropdown-item">Créer une facture vièrge</a></li>
+                                                    <li><a style="cursor: pointer;" class="dropdown-item">Créer une facture d'acompte</a></li>
+                                                    <li><a style="cursor: pointer;" class="dropdown-item">Créer la facture de solde</a></li>
+                                                </ul>
+                                            </div>
+
+                                            {#<div class="dropdown ms-2 d-inline-block">
+                                                <a class="btn btn-warning btn-sm px-3 dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="bi bi-plus"></i> <span class="mx-2">Ajouter un avoir</span>
+                                                </a>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <li><a style="cursor: pointer;" class="dropdown-item">Créer une facture dépuis l'affaire</a></li>
+                                                    <li><a style="cursor: pointer;" class="dropdown-item">Créer une facture vièrge</a></li>
+                                                    <li><a style="cursor: pointer;" class="dropdown-item">Créer une facture d'acompte</a></li>
+                                                    <li><a style="cursor: pointer;" class="dropdown-item">Créer la facture de solde</a></li>
+                                                </ul>
+                                            </div>#}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 col-12">
+                                        <div class="form-group d-flex justify-content-end">
+                                            <a href="#">
+                                                <i class="bi bi-arrow-down-square-fill text-success fs-2"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="table table-striped" id="table-facture-affaire" style="width: 100%;">
+                                <thead>
+                                    <tr class="text-nowrap">
+                                        <tr class="text-nowrap">
+                                            <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
+                                            <th>Validation</th>
+                                            <th>Actions</th>
+                                            <th>PDF</th>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>N°</th>
+                                            <th>Compte</th>
+                                            <th>Affaire</th>
+                                            <th>Prix TTC</th>
+                                            <th>Prix HT</th>
+                                            <th>Règlement</th>
+                                            <th>Status</th>
+                                            <th>Solde</th>
+                                            <th>État</th>
+                                            <th>Rémise</th>
+                                        </tr>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for liste in factures %}
+                                    <tr class="text-nowrap">
+                                        <td>
+                                            <input type="checkbox" class="custom-checkbox" name="" id="">
+                                        </td>
+                                        <td>
+                                            {% if liste.isValid == 0 %}
+                                            <a style="cursor: pointer;"><i class="bi bi-x text-danger fs-4"></i></a>
+                                            {% elseif liste.isValid == 1 %}
+                                            <a style="cursor: pointer;"><i class="bi bi-check text-primary fs-4"></i></a>
+                                            {% endif %}
+                                        </td>
+                                        <td class="d-flex align-items-center">
+                                            <i class="bi bi-arrow-clockwise"></i>
+                                            <div class="dropdown ms-2">
+                                                <a class="btn btn-outline-primary dropdown-toggle text-black" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="bi bi-list"></i>
+                                                </a>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <li><a style="cursor: pointer;" class="dropdown-item">Modifier</a></li>
+                                                    <li><a style="cursor: pointer;" class="dropdown-item">Supprimer</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                        <td><i class="bi bi-file-pdf-fill text-danger fs-4"></i></td>
+                                        <td> {{liste.dateCreation|date('d-m-Y')}} </td>
+                                        <td> {{liste.type}} </td>
+                                        <td> {{liste.numero}} </td>
+                                        <td> {{liste.compte}} </td>
+                                        <td> {{liste.affaire}} </td>
+                                        <td> {{liste.prixTtc|number_format(2, ',', ',')}} Ar </td>
+                                        <td>{{liste.prixHt|number_format(2, ',', ' ')}} Ar</td>
+                                        <td> {{liste.reglement|number_format(2, ',', ' ')}} Ar </td>
+                                        {% set statutPaiement = constant('App\\Entity\\Facture::STATUT') %}
+                                        <td> {{statutPaiement[liste.statut]}} </td>
+                                        <td> {{liste.solde}} </td>
+                                        <td> {{liste.etat}} </td>
+                                        <td> {{liste.remise}} </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="16">Aucune facture trouvé</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                      </div>
+                 </div>
+            </div>
+          
+  
+        </div>
+      </div>
+    </section>
+  
+    <script>
+      //datatable
+      
+      $(document).ready(function() {
+        $('.tab-categorie').removeClass('active');
+        $('#tab-produit-categorie').removeClass('active');
+        $('.tab-produit-categorie').removeClass('active');
+        $('#tab-categorie').removeClass('active');
+        $('.tab-import-produit').removeClass('active');
+        $('#tab-import-produit').removeClass('active');
+      $('#tab-produit-date-peremption').removeClass('active').empty();
+  
+        $('.tab-user').removeClass('active');
+        $('#tab-utilisateur').removeClass('active');
+  
+        $('.tab-permission').removeClass('active');
+        $('.tab-privilege').removeClass('active');
+        $('.tab-cat-permission').removeClass('active');
+        $('#tab-categorie-permission').removeClass('active');
+        
+        $('#tab-dashboard').removeClass('active');
+        $('#tab-profile').removeClass('active');
+       
+        $('#tab-permission').removeClass('active');
+        $('#tab-privilege').removeClass('active');
+        $('#tab-transfert-produit').css('display', 'none');
+        $('#affaires_client').removeClass('active').empty();
+         $('#affaires_fournisseur').removeClass('active').empty();
+         $('#tab-info-affaire').removeClass('active').empty();
+         $('#tab-financier-affaire').removeClass('active').empty();
+        $('#tab-fiche-client').removeClass('active').empty();
+        
+        $('#tab-application').removeClass('active');
+        $('#tab-profile').removeClass('active');
+         $('#tab-compte_1').removeClass('active');
+        $('#tab-produit-type').removeClass('active');
+        $('.tab-produit-type').removeClass('active');
+        $('#tab-import-produit').css('display', 'none');
+        $('#tab-facture').css('display', 'none');
+        $('#tab-facture-affaire').css('display', 'block');
+        $('#tab-inventaire-produit').css('display','none');
+  
+      });
+
+    </script>

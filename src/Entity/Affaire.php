@@ -28,18 +28,19 @@ class Affaire
 
     const PAIEMENT = [
         'non' => 'Non payé',
-        'partiel' => 'Partiel',
-        'litige' => 'En litige',
-        'paye' => 'Payé'
+        //'partiel' => 'Partiel',
+        //'litige' => 'En litige',
+        'paye' => 'Payé',
+        'annule' => 'Annulé'
     ];
 
     const DEVIS = [
         'encours' => 'En cours',
         'gagne' => 'Gagné',
         'perdu' => 'Perdu',
-        'sansSuite' => 'Sans suite',
-        'termine' => 'Terminé',
-        'envoye' => 'Envoyé'
+        //'sansSuite' => 'Sans suite',
+        //'termine' => 'Terminé',
+        //'envoye' => 'Envoyé'
     ];
 
     const ABONNEMENT = [
@@ -146,20 +147,45 @@ class Affaire
     #[ORM\Column(type: "datetime", nullable: true)]
     private $dateModification;
 
+    /**
+     * @var Collection<int, Product>
+     */
+    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'affaires')]
+    private Collection $products;
+
+    /**
+     * @var Collection<int, Facture>
+     */
+    #[ORM\OneToMany(targetEntity: Facture::class, mappedBy: 'affaire')]
+    private Collection $factures;
+
     public function __construct()
     {
         $this->dateCreation = new \DateTime('now');
         $this->paiement = 'non';
         $this->abonnement = 'noncommence';
+        $this->products = new ArrayCollection();
+        $this->factures = new ArrayCollection();
     }
 
-    public static function newAffaire($instance = null, $compte = null)
+    public static function newAffaire($instance, $statut = null, $compte = null)
     {
-        if (is_null($instance->getNom()) or empty($instance->getNom())  or is_null($compte->getNom()) or empty($compte->getNom())) {
+        if (is_null($instance->getNom()) or empty($instance->getNom())) {
             throw new PropertyVideException("Your name doesn't empty");
         }
-
-        return $instance;
+        $date = new \DateTime();
+        $affaire = new self();
+        $affaire->setNom($instance);
+        $affaire->setStatut($statut);
+        $affaire->setCompte($compte);
+        $affaire->setDevisEvol('encours');
+        $affaire->setDateCreation($date);
+        if ($statut == "devis") {
+            $affaire->setDateDevis($date);
+        } else {
+            $affaire->setDateCommande($date);
+        }
+        return $affaire;
     }
 
     public function getId(): ?int
@@ -583,6 +609,63 @@ class Affaire
     public function setDateModification(?\DateTimeInterface $dateModification): self
     {
         $this->dateModification = $dateModification;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): static
+    {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+            $product->addAffaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): static
+    {
+        if ($this->products->removeElement($product)) {
+            $product->removeAffaire($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Facture>
+     */
+    public function getFactures(): Collection
+    {
+        return $this->factures;
+    }
+
+    public function addFacture(Facture $facture): static
+    {
+        if (!$this->factures->contains($facture)) {
+            $this->factures->add($facture);
+            $facture->setAffaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFacture(Facture $facture): static
+    {
+        if ($this->factures->removeElement($facture)) {
+            // set the owning side to null (unless already changed)
+            if ($facture->getAffaire() === $this) {
+                $facture->setAffaire(null);
+            }
+        }
 
         return $this;
     }

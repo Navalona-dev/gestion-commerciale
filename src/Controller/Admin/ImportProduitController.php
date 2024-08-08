@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Compte;
 use App\Entity\Categorie;
+use App\Entity\DatePeremption;
 use App\Entity\ProduitType;
 use App\Service\AccesService;
 use App\Service\ExcelImporter;
@@ -17,6 +18,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ProduitTypeRepository;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\ProduitCategorieRepository;
+use App\Service\LogService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,6 +35,7 @@ class ImportProduitController extends AbstractController
     private $compteRepository;
     private $em;
     private $produitCategorieRepo;
+    private $logService;
 
     public function __construct(
         ApplicationManager $applicationManager, 
@@ -42,7 +45,8 @@ class ImportProduitController extends AbstractController
         ProduitTypeRepository $typeRepository,
         CompteRepository $compteRepository,
         EntityManagerInterface $em,
-        ProduitCategorieRepository $produitCategorieRepo)
+        ProduitCategorieRepository $produitCategorieRepo,
+        LogService $logService)
     {
         $this->accesService = $accesService;
         $this->application = $applicationManager->getApplicationActive();
@@ -52,6 +56,7 @@ class ImportProduitController extends AbstractController
         $this->compteRepository = $compteRepository;
         $this->em = $em;
         $this->produitCategorieRepo = $produitCategorieRepo;
+        $this->logService = $logService;
     }
 
     #[Route('/', name: '_liste')]
@@ -105,14 +110,10 @@ class ImportProduitController extends AbstractController
                     }
                     //$this->em->flush();
                     //dd($existingCategorie, $categorie);
-                   
-                       
-
 
                     //traiter le type
                     $dataType = isset($dataProduct[2]) ? trim($dataProduct[2]) : null;
                     
-
                     $existingType = $this->typeRepository->findOneBy(['nom' => $dataType, 'application' => $this->application]);
                     
                     if($dataType !== null) {
@@ -145,6 +146,7 @@ class ImportProduitController extends AbstractController
                             $compte->setApplication($this->application);
                             $compte->setDateCreation($date);
                             $compte->setGenre(2);
+                            $compte->setCode($dataProduct[4]);
                             $this->em->persist($compte);
                         } else {
                             $compte = $existingCompte;
@@ -180,15 +182,28 @@ class ImportProduitController extends AbstractController
                             $produitCategorie->setApplication($this->application);
             
                             $produitCategorie->setDateCreation($date);
+                            $produitCategorie->setStockMin(10);
+                            $produitCategorie->setStockMax(50);
                             
                             $stock = new Stock();
                             $stockRestant = isset($dataProduct[14]) ? trim($dataProduct[14]) : null;
                             $stock->setDateCreation($date);
                             if (null != $stockRestant) {
                                 $stock->setQtt(floatval($stockRestant));
+                                $stock->setQttRestant(floatval($stockRestant));
                             } else {
                                 $stock->setQtt(0);
+                                $stock->setQttRestant(0);
                             }
+                            if ($dataProduct[15] != "" && $dataProduct[15] != null) {
+                                $datePeremption = new DatePeremption();
+                                $datePeremptio = new \DateTime($dataProduct[15]);
+                                $datePeremption->setDate($datePeremptio);
+                                $datePeremption->setDateCreation($date);
+                                $stock->setDatePeremption($datePeremption);
+                                $this->em->persist($datePeremption);
+                            }
+
                             $produitCategorie->setStockRestant(floatval($stockRestant));
                             $produitCategorie->addStock($stock);
                             $this->em->persist($stock);
@@ -198,6 +213,28 @@ class ImportProduitController extends AbstractController
                             $produitCategorie = $existingProduitCategorie;
                             //$produitCategorie->getStock()
                         }
+
+                        $user = $this->getUser();
+                        $data["produit"] = $produitCategorie->getNom();
+                        $data["dateReception"] = (new \DateTime())->format("d-m-y h:i:s");
+                        $data["dateTransfert"] = null;
+                        $data["dateSortie"] = null;
+                        $data["userDoAction"] = $user->getUserIdentifier();
+                        $data["source"] = "Import";
+                        $data["destination"] = $this->application->getEntreprise();
+                        $data["action"] = "Ajout";
+                        $data["type"] = "Ajout";
+                        $data["qtt"] = $produitCategorie->getQtt();
+                        $data["stockRestant"] = $produitCategorie->getStockRestant();
+                        $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
+                        $data["typeSource"] = "Fichier";
+                        $data["typeDestination"] = "Point de vente";;
+                        $data["commande"] = null;
+                        $data["commandeId"] = null;
+                        $data["sourceId"] =  null;
+                        $data["destinationId"] = $this->application->getId();
+                        $this->logService->addLog($request, "Import", $this->application->getId(), $produitCategorie->getReference(), $data);
+
                     }
                     $this->em->flush();
                 }

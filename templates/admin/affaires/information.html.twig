@@ -1,0 +1,148 @@
+
+<section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+         {# entete compte #}
+         {% include 'admin/affaires/entete_compte.html.twig' with { 'compte': affaire.compte } %}
+        {# entete affaire #}
+        {% include 'admin/affaires/entete_affaire.html.twig' with { 'affaire': affaire } %}
+        
+        <div class="affaire-recherche">
+            <div class="row">
+                <div class="col-md-2 col-12">
+                   {% include '/admin/affaires/menu_left.html.twig' with {'affaire': affaire} %}
+                </div>  
+                
+                <div class="col-md-10 col-12">
+                    <div class="affaire-info card pt-3 pb-5 px-4">
+                        <h3 class="info-title"><i class="bi bi-bell-fill"></i><span class="mx-2">Information</span></h3>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <i class="bi bi-laptop"></i><span class="mx-2">Nom</span>
+                            </div>
+                            <div class="col-md-8 col-12">
+                                <p class="data-info py-2">
+                                    <span>{{affaire.nom}}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <i class="bi bi-list-task"></i><span class="mx-2">Numéro commande</span>
+                            </div>
+                            <div class="col-md-8 col-12">
+                                <p class="data-info py-2">
+                                    <span>{{affaire.statut}} n°{{affaire.id}}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <i class="bi bi-person"></i><span class="mx-2">Client</span>
+                            </div>
+                            <div class="col-md-8 col-12">
+                                <p class="data-info py-2">
+                                    <span>{{affaire.compte.nom}}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <i class="bi bi-calendar2-check-fill"></i><span class="mx-2">Date de création</span>
+                            </div>
+                            <div class="col-md-8 col-12">
+                                <p class="data-info py-2">
+                                    <span> {{affaire.dateCreation|date('d/m/Y')}} </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <i class="bi bi-calendar2-check-fill"></i><span class="mx-2">Date de Devis</span>
+                            </div>
+                            <div class="col-md-8 col-12">
+                                <p class="data-info py-2">
+                                    <span> 
+                                        {% if affaire.dateDevis is not null %}
+                                            {{affaire.dateDevis|date('d/m/Y')}} 
+                                        {% else %}
+                                            {{affaire.dateCreation|date('d/m/Y')}}
+                                        {% endif %}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <i class="bi bi-calendar2-check-fill"></i><span class="mx-2">Date de commande</span>
+                            </div>
+                            <div class="col-md-8 col-12">
+                                <p class="data-info py-2">
+                                    <span>
+                                        {% if affaire.dateCommande is not null %}
+                                            {{affaire.dateCommande|date('d/m/Y')}}
+                                        {% else %}
+                                            Pas encore commande
+                                        {% endif %}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+      </div>
+    </div>
+   
+  </section>
+
+  <script>
+
+$(document).ready(function() {
+    $('#tab-compte_1').removeClass('active').empty();
+    $('#tab-compte_2').removeClass('active').empty();
+    $('#affaires_fournisseur').removeClass('active').empty();
+    $('#affaires_client').removeClass('active').empty();
+      $('.tab-categorie').removeClass('active');
+      $('#tab-produit-categorie').removeClass('active');
+      $('.tab-produit-categorie').removeClass('active');
+      $('#tab-categorie').removeClass('active');
+      $('.tab-import-produit').removeClass('active');
+      $('#tab-import-produit').removeClass('active');
+      $('#tab-produit-date-peremption').removeClass('active').empty();
+        $('#tab-inventaire-produit').css('display','none');
+
+      $('.tab-user').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
+      
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+     
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+       $('#tab-transfert-produit').css('display', 'none');
+     
+      
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-produit-type').removeClass('active');
+      $('.tab-produit-type').removeClass('active');
+$('#tab-import-produit').css('display', 'none');
+        $('#tab-facture').css('display', 'none');      
+        $('#tab-financier-affaire').removeClass('active').empty();
+      $('#tab-fiche-client').removeClass('active').empty();
+      $('#tab-info-affaire').addClass('active');
+      $('#tab-facture-affaire').removeClass('active').empty();
+
+      
+    });
+   
+</script>

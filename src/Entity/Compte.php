@@ -121,6 +121,15 @@ class Compte
     #[ORM\ManyToMany(targetEntity: ProduitCategorie::class, mappedBy: 'comptes')]
     private Collection $produitCategories;
 
+    /**
+     * @var Collection<int, Facture>
+     */
+    #[ORM\OneToMany(targetEntity: Facture::class, mappedBy: 'compte')]
+    private Collection $factures;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $code = null;
+
 
     public function __construct()
     {
@@ -129,6 +138,7 @@ class Compte
         $this->affaires = new ArrayCollection();
         $this->compteApplications = new ArrayCollection();
         $this->produitCategories = new ArrayCollection();
+        $this->factures = new ArrayCollection();
         
     }
 
@@ -485,6 +495,48 @@ class Compte
         if ($this->produitCategories->removeElement($produitCategory)) {
             $produitCategory->removeCompte($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Facture>
+     */
+    public function getFactures(): Collection
+    {
+        return $this->factures;
+    }
+
+    public function addFacture(Facture $facture): static
+    {
+        if (!$this->factures->contains($facture)) {
+            $this->factures->add($facture);
+            $facture->setCompte($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFacture(Facture $facture): static
+    {
+        if ($this->factures->removeElement($facture)) {
+            // set the owning side to null (unless already changed)
+            if ($facture->getCompte() === $this) {
+                $facture->setCompte(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(?string $code): static
+    {
+        $this->code = $code;
 
         return $this;
     }

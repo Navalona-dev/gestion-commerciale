@@ -34,4 +34,33 @@ class Helpers
             }
         ]);
     }
+
+    public function tofloat($num)
+    {
+        $dotPos = strrpos($num, '.');
+        $commaPos = strrpos($num, ',');
+        $sep = (($dotPos > $commaPos) && $dotPos) ? $dotPos :
+            ((($commaPos > $dotPos) && $commaPos) ? $commaPos : false);
+
+        if (!$sep) {
+            return floatval(preg_replace("/[^0-9]/", "", $num));
+        }
+
+        return floatval(
+            preg_replace("/[^0-9]/", "", substr($num, 0, $sep)) . '.' .
+            preg_replace("/[^0-9]/", "", substr($num, $sep + 1, strlen($num)))
+        );
+    }
+
+    public function skip_accents($str, $charset = 'utf-8')
+    {
+
+        $str = htmlentities($str, ENT_NOQUOTES, $charset);
+
+        $str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
+        $str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str);
+        $str = preg_replace('#&[^;]+;#', '', $str);
+
+        return $str;
+    }
 }

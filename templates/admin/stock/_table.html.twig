@@ -3,16 +3,22 @@
         <tr id="thead_stock" class="text-nowrap">
             <th>Action</th>
             <th>Quantité</th>
+            <th>Quantité restant</th>
             <th>Date de création</th>
+            <th>Date de peremption</th>
         </tr>
         {% elseif type == "tbody" %}
         <tr id="tbody_stock" class="text-nowrap">
             <td>
-                <a href="#" onclick="return openModalUpdateStock({{liste.id}}, {{liste.qtt}})" class="mx-1"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return openModalUpdateStock({{liste.id}}, {{liste.qtt}}, {{totalStock}}, {{quantity}}, {{qttVendu}})" class="mx-1"><i class="bi bi-pencil-fill"></i></a>
                 <a href="#" onclick="return deleteStock({{liste.id}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>
             </td>
             <td> {{liste.qtt}} </td>
+            <td> {{liste.qttRestant}} </td>
             <td> {{liste.dateCreation|date('d-m-Y')}} </td>
+            <td>
+                {{ liste.datePeremption is not null ? liste.datePeremption.date|date('d-m-Y') : '' }}
+            </td>
             
         </tr>
          {% endif %}
@@ -40,7 +46,7 @@
                         toastr.success('Avec succèss', 'Suppression effectuée');
 
                         } else {
-                            toastr.error('Suppression échouée, la quantité est supérieur ou égale au stock restant')
+                            toastr.error(response.message)
 
                         }
                         //$(".loadBody").css('display', 'none');
@@ -49,7 +55,7 @@
                     if (anchorName) {
                         window.location.hash = anchorName;
                     }
-                   listStockByProduitSession();
+                   listStock(response.idProduit);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -59,13 +65,13 @@
         }
     }
 
-    function openModalUpdateStock(id = null, oldQtt = null) {
+    function openModalUpdateStock(id = null, oldQtt = null, totalStock = 0, quantity = 0, qttVendu = 0) {
         var anchorName = document.location.hash.substring(1);
-
+        //qttVendu
         $.ajax({
                 url: '/admin/stock/edit/'+id,
                 type: 'POST',
-                data: {id: id, oldQtt: oldQtt},
+                data: {id: id, oldQtt: oldQtt,totalStock: totalStock, quantity: quantity, qttVendu: qttVendu},
                 success: function (response) {
                     if (response.html != "") {
                         $("#blocModalStockEmpty").empty();

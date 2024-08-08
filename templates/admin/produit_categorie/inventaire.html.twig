@@ -1,0 +1,146 @@
+<style>
+  .dataTables_scroll {
+    margin-top: 50px !important;
+    margin-bottom: 30px !important;
+  }
+  td, tr {
+    border-bottom: none !important;
+  }
+
+ 
+</style>
+
+<div class="pagetitle">
+    <h1>Inventaire produit  {{produitCategorie.nom}}</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
+        <li class="breadcrumb-item active">Liste</li>
+      </ol>
+    </nav>
+  </div>
+  <form name="allInventaireProduit" id="allInventaireProduit" target="_blank"
+                                  action="#" method="post">
+<section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card p-5">
+          <div class="form-group d-flex justify-content-end mb-4">
+                <a class="btn btn-primary mx-3 px-3 fs-5" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()"><i class="bi bi-list"></i> </a>
+                <div class="dropdown">
+                    <a class=" export-btn btn btn-warning p-2 fs-5 dropdown-toggle text-black " href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="bi bi-list"></i>
+                    </a>
+                  
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li><a href="#" onclick="exporterInventaire({{produitCategorie.id}});" class="dropdown-item"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Exporter</span></a></li>
+                    </ul>
+                  </div>
+                </div>
+          <div class="card-body">
+            
+            <table class="table table-striped" id="liste-table-inventaire-produit" style="width: 100%;">
+              <thead>
+                    <tr class="text-nowrap">
+                        <th>Produit/Fournisseur</th>
+                        <th>Action</th>
+                        <th>Quantité</th>
+                        <th>Source / Type</th>
+                        <th>Destination / Type</th>
+                        <th>Date reception</th>
+                         <th>Date sortie</th> 
+                        <th>Date transfert</th>
+                        <th>Stock restant</th>
+                        <th>Commande / Numéro</th>
+                    </tr>
+              </thead>
+              <tbody>
+                {% for liste in logLines %}
+                <tr class="text-nowrap">
+                    <td> {{liste.produit}}/{{liste.fournisseur}} </td>
+                    <td> {{liste.action}} ({{liste.userDoAction}}) </td>
+                    <td> {{liste.qtt}} </td>
+                    <td> {{liste.source}} / {{liste.typeSource}} </td>
+                    <td> {{liste.destination}} / {{liste.typeDestination}} </td>
+                    <td> {{liste.dateReception}} </td>
+                     <td> {{liste.dateSortie}} </td> 
+                    <td> {{liste.dateTransfert}} </td>
+                    <td> {{liste.stockRestant}} </td>
+                    <td> {{liste.commande}} / {{liste.commandeId}} </td>
+                    
+                </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="10">Aucun log pour le moment</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+                
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  </form>
+  <script>
+    //datatable
+    function exporterInventaire(id = null) {
+
+            var form = $('#allInventaireProduit');
+
+            form.attr('action', '/admin/produit/categorie/inventaire/tout-exporter/'+id);
+            form.submit();
+
+            return false;
+
+        }
+    $(document).ready(function() {
+    $('#tab-fiche-fournisseur').removeClass('active').empty();
+      $('#tab-inventaire-produit').css('display','block');
+      $('.tab-categorie').removeClass('active');
+      $('.tab-produit-categorie').removeClass('active');
+      $('.tab-user').removeClass('active');
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
+      $('#tab-categorie').removeClass('active');
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-produit-categorie').removeClass('active');
+      $('#tab-compte_1').removeClass('active');
+      $('#tab-produit-type').removeClass('active');
+      $('.tab-produit-type').removeClass('active');
+      $('#tab-stock').removeClass('active');
+      $('.tab-import-produit').removeClass('active');
+$('#tab-import-produit').css('display', 'none');
+        $('#tab-facture').css('display', 'none');
+        $('#tab-facture-affaire').css('display', 'none');
+              $('#tab-transfert-produit').css('display', 'none');
+      $('#affaires_client').removeClass('active').empty();
+       $('#affaires_fournisseur').removeClass('active').empty();
+       $('#tab-info-affaire').removeClass('active').empty();
+       $('#tab-financier-affaire').removeClass('active').empty();
+      $('#tab-fiche-client').removeClass('active').empty();
+
+   
+    });
+
+  </script>

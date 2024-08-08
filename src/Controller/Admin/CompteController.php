@@ -189,11 +189,13 @@ class CompteController extends AbstractController
         $data = [];
         try {
             $compte = new Compte();
-            $form = $this->createForm(CompteType::class, $compte);
+            $genre = $request->request->get('genre');
+
+            $form = $this->createForm(CompteType::class, $compte, ['genre' => $genre]);
 
             $form->handleRequest($request);
 
-            $genre = $request->request->get('genre');
+            
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
@@ -425,4 +427,6 @@ class CompteController extends AbstractController
         // Renvoyer une réponse JSON avec l'état mis à jour
         return new JsonResponse(['isActive' => $user->getIsActive()]);
     }*/
+
+
 }

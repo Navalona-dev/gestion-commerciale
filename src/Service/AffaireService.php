@@ -1,18 +1,20 @@
 <?php
 namespace App\Service;
 
-use App\Entity\Affaire;
-use App\Entity\Compte;
-use App\Service\AuthorizationManager;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
-use App\Exception\PropertyVideException;
-use App\Exception\ActionInvalideException;
 use App\Entity\User;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use App\Entity\Compte;
+use App\Entity\Affaire;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManager;
+use App\Service\AuthorizationManager;
+use App\Exception\PropertyVideException;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Exception\ActionInvalideException;
+use Symfony\Component\Security\Core\Security;
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 //use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class AffaireService
@@ -23,31 +25,35 @@ class AffaireService
     private $session;
     public  $isCurrentDossier = false;
     private $application;
-    public function __construct(AuthorizationManager $authorization, TokenStorageInterface  $TokenStorageInterface, EntityManagerInterface $entityManager, ApplicationManager  $applicationManager)
+    private $logger;
+    private $security;
+
+    public function __construct(
+        AuthorizationManager $authorization, 
+        TokenStorageInterface  $TokenStorageInterface, 
+        EntityManagerInterface $entityManager, 
+        ApplicationManager  $applicationManager,
+        LoggerInterface $affaireLogger, 
+        Security $security
+        )
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
         $this->entityManager = $entityManager;
         $this->application = $applicationManager->getApplicationActive();
+        $this->logger = $affaireLogger;
+        $this->security = $security;
     }
 
-    public function add($instance, $compte = null)
+    public function add($instance, $statut, $compte = null)
     {
-        $affaire = Affaire::newAffaire($instance, $compte);
+        $affaire = Affaire::newAffaire($instance, $statut, $compte);
 
-        $date = new \DateTime();
-
-        $affaire->setEtat($instance->getEtat());
+        //$affaire->setEtat($instance->getEtat());
         $affaire->setApplication($this->application);
-        $affaire->setDateCreation($date);
-        $affaire->setStatut($instance->getStatut());
-        $affaire->setEmail($instance->getEmail());
-        $affaire->setCompte($instance->getTelephone());
-        $affaire->setNbAffaire(0);
-        $affaire->setPrestation($instance->getPrestation());
-        $affaire->setIsLivraison(false);
+        $affaire->setPrestation("Vente");
         $affaire->setNumero(null);
-
+        
         /*foreach($affaire->getUtilisateur() as $utilisateur) {
             $utilisateur->addCompte($affaire);
             $this->entityManager->persist($utilisateur);
@@ -58,6 +64,21 @@ class AffaireService
         }*/
 
         $this->entityManager->persist($affaire);
+
+          // Obtenir l'utilisateur connecté
+          $user = $this->security->getUser();
+
+          // Créer le message de log en fonction de l'action
+          $logMessage = ($affaire->getStatut() == 'devis') ? 'Devis ajouté' : 'Commande ajoutée';
+  
+          // Créer le log
+          $this->logger->info($logMessage, [
+            'Produit' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
+
         $this->update();
         unset($instance);
         return $affaire;
@@ -75,6 +96,14 @@ class AffaireService
 
     public function remove($affaire)
     {
+        $factures = $affaire->getFactures();
+        foreach($factures as $facture) {
+            $factureDetails = $facture->getFactureDetails();
+            foreach($factureDetails as $factureDetail) {
+                $this->entityManager->remove($factureDetail);
+            }
+            $this->entityManager->remove($facture);
+        }
         $this->entityManager->remove($affaire);
     }
 
@@ -83,9 +112,9 @@ class AffaireService
         return $this->entityManager->getRepository(Affaire::class)->find($id);
     }
 
-    public function getAllAffaire($compte = null, $start = 1, $limit = 0)
+    public function getAllAffaire($compte = null, $start = 1, $limit = 0, $statut = null)
     {
-        return $this->entityManager->getRepository(Affaire::class)->searchAffaire($compte, null,null, $limit, $start);
+        return $this->entityManager->getRepository(Affaire::class)->searchAffaire($compte, null,null, $limit, $start, $statut);
     }
 
     public function searchCompteRawSql($genre, $nom, $dateDu, $dateAu, $etat, $start, $limit, $order, $isCount)

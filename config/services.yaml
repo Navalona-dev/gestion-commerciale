@@ -7,6 +7,27 @@ parameters:
     AVATAR_BASEPATH: '/uploads/avatar'
     app.path.product_image: /uploads/product
 services:
+    #log produit
+    App\Service\ProduitCategorieService:
+        arguments:
+            $productLogger: '@logger.product'
+            $security: '@security.helper'
+    logger.product:
+        class: Psr\Log\LoggerInterface
+        factory: ['@monolog.logger', 'product']
+
+    #log affaire
+    App\Service\AffaireService:
+        arguments:
+            $affaireLogger: '@logger.affaire'
+            $security: '@security.helper'
+    logger.affaire:
+        class: Psr\Log\LoggerInterface
+        factory: ['@monolog.logger', 'affaire']
+
+    App\Service\TCPDFService:
+        public: true
+        alias: TCPDF
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.

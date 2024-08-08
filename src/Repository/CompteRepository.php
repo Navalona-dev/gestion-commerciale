@@ -602,10 +602,10 @@ class CompteRepository extends ServiceEntityRepository
         }
 
         $rawSql = $select . ' ' . $joins . ' WHERE ' . $conditions . ' ' . ($sqlLimit ?? '');
-        //dd($rawSql, $parameters, $parameterType);
+      
         $connection = $this->getEntityManager()->getConnection();
         try {
-
+            //dd($connection->fetchOne('SELECT COUNT(*) AS nbCompte FROM (' . $rawSql . ') AS ROWS_LINE ', $parameters, $parameterType), $rawSql, $parameters, $parameterType);
             if ($isCount) {
                 return $connection->fetchOne('SELECT COUNT(*) AS nbCompte FROM (' . $rawSql . ') AS ROWS_LINE ', $parameters, $parameterType);
                 
@@ -617,7 +617,7 @@ class CompteRepository extends ServiceEntityRepository
         if ($isCount) {
             return 0;
         }
-
+        //dd("ici");
         return [];
     }
 
@@ -1093,5 +1093,293 @@ class CompteRepository extends ServiceEntityRepository
             ->orderBy('c.nom', 'ASC') 
             ->getQuery()
             ->getResult();
+    }
+
+     // Nombre de client d'aujourd'hui
+     public function countComptesToday($genre = null)
+     {
+         $today = new \DateTime();
+         $today->setTime(0, 0, 0);
+         $tomorrow = clone $today;
+         $tomorrow->modify('+1 day');
+
+         $qb = $this->createQueryBuilder('c')
+                     ->select('COUNT(c.id)')
+                     ->where('c.dateCreation >= :today')
+                     ->andWhere('c.dateCreation < :tomorrow')
+                     ->andWhere('c.genre = :genre')
+                     ->andWhere('c.application = :application_id')
+                     ->setParameter('today', $today)
+                     ->setParameter('tomorrow', $tomorrow)
+                     ->setParameter('genre', $genre)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+
+                return $qb;
+     }
+
+     // Nombre de client d'hier
+     public function countComptesYesterday($genre = null)
+     {
+         $yesterday = new \DateTime();
+         $yesterday->setTime(0, 0, 0);
+         $yesterday->modify('-1 day');
+         $today = clone $yesterday;
+         $today->modify('+1 day');
+ 
+         $qb = $this->createQueryBuilder('c')
+                     ->select('COUNT(c.id)')
+                     ->where('c.dateCreation >= :yesterday')
+                     ->andWhere('c.dateCreation < :today')
+                     ->andWhere('c.genre = :genre')
+                     ->andWhere('c.application = :application_id')
+                     ->setParameter('yesterday', $yesterday)
+                     ->setParameter('today', $today)
+                     ->setParameter('genre', $genre)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+     // Nombre de client cette semaine
+     public function countComptesThisWeek($genre = null)
+     {
+         $startOfWeek = new \DateTime();
+         $startOfWeek->setISODate((int)$startOfWeek->format('o'), (int)$startOfWeek->format('W'));
+         $startOfWeek->setTime(0, 0, 0);
+ 
+         $endOfWeek = clone $startOfWeek;
+         $endOfWeek->modify('+7 days');
+ 
+         $qb = $this->createQueryBuilder('c')
+                     ->select('COUNT(c.id)')
+                     ->where('c.dateCreation >= :start_of_week')
+                     ->andWhere('c.dateCreation < :end_of_week')
+                     ->andWhere('c.application = :application_id')
+                     ->andWhere('c.genre = :genre')
+                     ->setParameter('start_of_week', $startOfWeek)
+                     ->setParameter('end_of_week', $endOfWeek)
+                     ->setParameter('genre', $genre)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+      // Nombre de client semaine dernière
+      public function countComptesLastWeek($genre = null)
+      {
+          $startOfLastWeek = new \DateTime();
+          $startOfLastWeek->setISODate((int)$startOfLastWeek->format('o'), (int)$startOfLastWeek->format('W') - 1);
+          $startOfLastWeek->setTime(0, 0, 0);
+  
+          $endOfLastWeek = clone $startOfLastWeek;
+          $endOfLastWeek->modify('+7 days');
+  
+          $qb = $this->createQueryBuilder('c')
+                      ->select('COUNT(c.id)')
+                      ->where('c.dateCreation >= :start_of_last_week')
+                      ->andWhere('c.dateCreation < :end_of_last_week')
+                      ->andWhere('c.application = :application_id')
+                      ->andWhere('c.genre = :genre')
+                      ->setParameter('start_of_last_week', $startOfLastWeek)
+                      ->setParameter('end_of_last_week', $endOfLastWeek)
+                      ->setParameter('genre', $genre)
+                      ->setParameter('application_id', $this->application->getId())
+                      ->getQuery()
+                      ->getSingleScalarResult();
+         return $qb;
+      }
+
+      // Nombre de client ce mois-ci
+     public function countComptesThisMonth($genre = null)
+     {
+         $startOfMonth = new \DateTime('first day of this month');
+         $startOfMonth->setTime(0, 0, 0);
+ 
+         $endOfMonth = new \DateTime('first day of next month');
+         $endOfMonth->setTime(0, 0, 0);
+ 
+         $qb = $this->createQueryBuilder('c')
+                     ->select('COUNT(c.id)')
+                     ->where('c.dateCreation >= :start_of_month')
+                     ->andWhere('c.dateCreation < :end_of_month')
+                     ->andWhere('c.genre = :genre')
+                     ->andWhere('c.application = :application_id')
+                     ->setParameter('start_of_month', $startOfMonth)
+                     ->setParameter('end_of_month', $endOfMonth)
+                     ->setParameter('genre', $genre)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+      // Nombre de client mois dernier
+      public function countComptesLastMonth($statut = null)
+      {
+          $startOfLastMonth = new \DateTime('first day of last month');
+          $startOfLastMonth->setTime(0, 0, 0);
+  
+          $endOfLastMonth = new \DateTime('first day of this month');
+          $endOfLastMonth->setTime(0, 0, 0);
+  
+          $qb = $this->createQueryBuilder('c')
+                      ->select('COUNT(c.id)')
+                      ->where('c.dateCreation >= :start_of_last_month')
+                      ->andWhere('c.dateCreation < :end_of_last_month')
+                      ->andWhere('c.statut = :statut')
+                      ->andWhere('c.application = :application_id')
+                      ->setParameter('start_of_last_month', $startOfLastMonth)
+                      ->setParameter('end_of_last_month', $endOfLastMonth)
+                      ->setParameter('statut', $statut)
+                      ->setParameter('application_id', $this->application->getId())
+                      ->getQuery()
+                      ->getSingleScalarResult();
+         return $qb;
+      }
+
+        // Nombre de client cette année
+     public function countComptesThisYear($genre = null)
+     {
+         $startOfYear = new \DateTime('first day of January this year');
+         $startOfYear->setTime(0, 0, 0);
+ 
+         $endOfYear = new \DateTime('first day of January next year');
+         $endOfYear->setTime(0, 0, 0);
+ 
+         $qb = $this->createQueryBuilder('c')
+                     ->select('COUNT(c.id)')
+                     ->where('c.dateCreation >= :start_of_year')
+                     ->andWhere('c.dateCreation < :end_of_year')
+                     ->andWhere('c.genre = :genre')
+                     ->andWhere('c.application = :application_id')
+                     ->setParameter('start_of_year', $startOfYear)
+                     ->setParameter('end_of_year', $endOfYear)
+                     ->setParameter('genre', $genre)
+                     ->setParameter('application_id', $this->application->getId())
+                     ->getQuery()
+                     ->getSingleScalarResult();
+        return $qb;
+     }
+
+      // Nombre de client année dernière
+      public function countComptesLastYear($genre = null)
+      {
+          $startOfLastYear = new \DateTime('first day of January last year');
+          $startOfLastYear->setTime(0, 0, 0);
+  
+          $endOfLastYear = new \DateTime('first day of January this year');
+          $endOfLastYear->setTime(0, 0, 0);
+  
+          $qb = $this->createQueryBuilder('c')
+                      ->select('COUNT(c.id)')
+                      ->where('c.dateCreation >= :start_of_last_year')
+                      ->andWhere('c.dateCreation < :end_of_last_year')
+                      ->andWhere('c.genre = :genre')
+                      ->andWhere('c.application = :application_id')
+                      ->setParameter('start_of_last_year', $startOfLastYear)
+                      ->setParameter('end_of_last_year', $endOfLastYear)
+                      ->setParameter('genre', $genre)
+                      ->setParameter('application_id', $this->application->getId())
+                      ->getQuery()
+                      ->getSingleScalarResult();
+         return $qb;
+      }
+
+      //chart
+
+      public function countClientsThisWeekByDay(\DateTime $day, $genre)
+    {
+        $startOfDay = clone $day;
+        $startOfDay->setTime(0, 0, 0);
+
+        $endOfDay = clone $startOfDay;
+        $endOfDay->modify('+1 day');
+
+        return $this->createQueryBuilder('c')
+                    ->select('COUNT(c.id)')
+                    ->where('c.dateCreation >= :start_of_day')
+                    ->andWhere('c.dateCreation < :end_of_day')
+                    ->andWhere('c.genre = :genre')
+                    ->andWhere('c.application = :application_id')
+                    ->setParameter('start_of_day', $startOfDay)
+                    ->setParameter('end_of_day', $endOfDay)
+                    ->setParameter('genre', $genre)
+                      ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+    }
+
+    public function countClientsLastWeekByDay($dayOfWeek, $genre)
+    {
+        $currentDate = new \DateTime();
+        $startOfLastWeek = new \DateTime();
+        $startOfLastWeek->setISODate((int)$currentDate->format('o'), (int)$currentDate->format('W') - 1);
+        $startOfLastWeek->setTime(0, 0, 0);
+
+        $specificDayOfLastWeek = clone $startOfLastWeek;
+        $specificDayOfLastWeek->modify('+' . ($dayOfWeek - 1) . ' days');
+
+        $startOfDay = clone $specificDayOfLastWeek;
+        $startOfDay->setTime(0, 0, 0);
+
+        $endOfDay = clone $startOfDay;
+        $endOfDay->modify('+1 day');
+
+        return $this->createQueryBuilder('c')
+                    ->select('COUNT(c.id)')
+                    ->where('c.dateCreation >= :start_of_day')
+                    ->andWhere('c.dateCreation < :end_of_day')
+                    ->andWhere('c.genre = :genre')
+                    ->andWhere('c.application = :application_id')
+                    ->setParameter('start_of_day', $startOfDay)
+                    ->setParameter('end_of_day', $endOfDay)
+                    ->setParameter('genre', $genre)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getSingleScalarResult();
+    }
+
+    // Nombre de clients inscrits par mois cette année
+    public function countClientsRegisteredThisYearByMonth($year, $month, $genre)
+    {
+        $startDate = new \DateTime("$year-$month-01 00:00:00");
+        $endDate = clone $startDate;
+        $endDate->modify('last day of this month')->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.dateCreation BETWEEN :start_date AND :end_date')
+            ->andWhere('c.genre = :genre')
+            ->andWhere('c.application = :application_id')
+            ->setParameter('start_date', $startDate)
+            ->setParameter('end_date', $endDate)
+            ->setParameter('genre', $genre)
+            ->setParameter('application_id', $this->application->getId())
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    // Nombre de clients inscrits par mois l'année dernière
+    public function countClientsRegisteredLastYearByMonth($year, $month, $genre)
+    {
+        $startDate = new \DateTime("$year-$month-01 00:00:00");
+        $endDate = clone $startDate;
+        $endDate->modify('last day of this month')->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.dateCreation BETWEEN :start_date AND :end_date')
+            ->andWhere('c.genre = :genre')
+            ->andWhere('c.application = :application_id')
+            ->setParameter('start_date', $startDate)
+            ->setParameter('end_date', $endDate)
+            ->setParameter('genre', $genre)
+            ->setParameter('application_id', $this->application->getId())
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

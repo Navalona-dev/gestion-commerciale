@@ -1,6 +1,8 @@
 monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+        - product
+        - affaire
 
 when@dev:
     monolog:
@@ -10,6 +12,19 @@ when@dev:
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
                 channels: ["!event"]
+
+            product:
+                type: stream
+                path: "%kernel.project_dir%/public/historique/product.txt"
+                level: info
+                channels: ["product"]
+
+            affaire:
+                type: stream
+                path: "%kernel.project_dir%/public/historique/affaire.txt"
+                level: info
+                channels: ["affaire"]
+
             # uncomment to get logging in your browser
             # you may have to allow bigger header sizes in your Web server configuration
             #firephp:
@@ -36,6 +51,16 @@ when@test:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
+            product:
+                type: stream
+                path: "%kernel.project_dir%/public/historique/product.txt"
+                level: info
+                channels: ["product"]
+            affaire:
+                type: stream
+                path: "%kernel.project_dir%/public/historique/affaire.txt"
+                level: info
+                channels: ["affaire"]
 
 when@prod:
     monolog:
@@ -51,6 +76,19 @@ when@prod:
                 path: php://stderr
                 level: debug
                 formatter: monolog.formatter.json
+
+            product:
+                type: stream
+                path: php://stderr
+                level: info
+                formatter: monolog.formatter.json
+                channels: ["product"]
+            affaire:
+                type: stream
+                path: php://stderr
+                level: info
+                formatter: monolog.formatter.json
+                channels: ["affaire"]
             console:
                 type: console
                 process_psr_3_messages: false

@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Stock;
 use App\Entity\ProduitCategorie;
+use App\Form\DatePeremptionType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -22,6 +23,9 @@ class StockType extends AbstractType
                 ],
                 'required' => true
             ])
+            ->add('datePeremption', DatePeremptionType::class, [
+               
+            ]);
            
         ;
     }

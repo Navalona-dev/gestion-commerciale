@@ -3,6 +3,9 @@
 {% block title %}Mon profil | CVB {% endblock %}
 
 {% block body %}
+        <div class="id-affaire" id="elementIdAffaire" data-affaire="{{idAffaire}}"></div>
+        <div class="id-compte" id="elementIdCompte" data-compte="{{idCompte}}"></div>
+        <div class="id-produit" id="elementIdProduit" data-produit="{{idProduit}}"></div>
 
         <div id="tab-dashboard" class="tab-pane active">
                 {% include 'admin/dashboard/index.html.twig' %}
@@ -41,6 +44,39 @@
         </div>
         <div id="tab-transfert-produit">
         </div>
+        <div id="blocModalPriceProduitEmpty">
+        </div>
+        <div id="affaires_client">
+        </div>
+        <div id="affaires_fournisseur">
+        </div>
+        <div id="tab-info-affaire">
+        </div>
+        <div id="tab-financier-affaire">
+        </div>
+        <div id="blocModaAffaireEmpty">
+        </div>
+        <div id="tab-fiche-client">
+        </div>
+        <div id="tab-fiche-fournisseur">
+        </div>
+        <div id="tab-facture">
+        </div>
+        <div id="tab-facture-affaire">
+        </div>
+        <div id="tab-quantite-vendu">
+        </div>
+        <div id="tab-inventaire-produit">
+        </div>
+        <div id="blocModalNotificationStockEmpty">
+        </div>
+         <div id="tab-notification">
+        </div>
+        <div id="tab-historique-produit">
+        </div>
+        <div id="tab-historique-affaire">
+        </div>
+        <div id="tab-produit-date-peremption">
+        </div>
         
-
 {% endblock %}

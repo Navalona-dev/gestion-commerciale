@@ -2,12 +2,12 @@
 
     <div class="d-flex align-items-center justify-content-between">
       {% if app.user.appActive %}
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="{{path('app_admin')}}" class="logo d-flex align-items-center">
         <img src="{{asset('assets/img/logo.png')}}" alt="">
         <span class="d-none d-lg-block">{{ app.user.appActive.entreprise }}</span>
       </a>
       {% else %}
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="{{path('app_admin')}}" class="logo d-flex align-items-center">
         <img src="{{asset('assets/img/logo.png')}}" alt="">
         <span class="d-none d-lg-block">Point de vente</span>
       </a>
@@ -126,6 +126,14 @@
                 </a>
               </div>
               <div class="col-4 mb-3">
+                <a href="#tab-categorie" onClick="return showTabCategorie()" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-tags icons"></i>
+                  </div>
+                  <p class="text-center"><small>Catégories</small></p>
+                </a>
+              </div>
+              <div class="col-4 mb-3">
                 <a href="#tab-produit-categorie" onClick="return showTabProduitCategorie()"  class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-basket icons"></i>
@@ -156,25 +164,50 @@
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
             <li class="dropdown-header">
               Vous avez {{countNotif}} notifications
-              <a href="#"><span class="badge rounded-pill p-2 ms-2">Voir tous</span></a>
+              <a href="#tab-notification" onclick="return showTabNotification()"><span class="badge rounded-pill p-2 ms-2">Voir tous</span></a>
             </li>
             <li>
               <hr class="dropdown-divider">
             </li>
 
             {% for notification in notifications %}
-            <a href="#" onclick="return openModalUpdatePriceProduit({{notification.produitCategorie.id}})">
-              <li class="notification-item">
-                <i class="bi bi-exclamation-circle text-danger"></i>
-                <div>
-                    <h4 class="text-black">Prix à changer</h4>
-                    <p>{{ notification.message }}</p>
-                    <p>{{ notification.dateCreation|format_date }}</p>
-                </div>
-                
-            </li>
-            </a>
-              
+              {% if notification.isStockMin == 1 %}
+                <a style="cursor: pointer;" onclick="return openModalNewStockByNotification({{notification.id}})">
+                  <li class="notification-item">
+                    <i class="bi bi-exclamation-circle text-danger"></i>
+                    <div>
+                        <h4 class="text-black">Stock presque épuisé</h4>
+                        <p>{{ notification.message|raw }}</p>
+                        <p>{{ notification.dateCreation|format_date }}</p>
+                    </div>
+                    
+                </li>
+                </a>
+              {% elseif notification.isStockMax == 1 %}
+                <a href="#tab-stock" onclick="return handleNotificationClick({{notification.produitCategorie.id}}, {{notification.id}})">
+                  <li class="notification-item">
+                    <i class="bi bi-exclamation-circle text-danger"></i>
+                    <div>
+                        <h4 class="text-black">Stock surchargé</h4>
+                        <p>{{ notification.message|raw }}</p>
+                        <p>{{ notification.dateCreation|format_date }}</p>
+                    </div>
+                    
+                </li>
+                </a>
+              {% else %}
+                <a href="#" onclick="return openModalUpdatePriceProduit({{notification.produitCategorie.id}})">
+                  <li class="notification-item">
+                    <i class="bi bi-exclamation-circle text-danger"></i>
+                    <div>
+                        <h4 class="text-black">Prix à changer</h4>
+                        <p>{{ notification.message|raw }}</p>
+                        <p>{{ notification.dateCreation|format_date }}</p>
+                    </div>
+                    
+                </li>
+                </a>
+              {% endif %}
               <li>
                   <hr class="dropdown-divider">
               </li>
@@ -182,7 +215,7 @@
 
 
             <li class="dropdown-footer">
-              <a href="#">Voir tous les notifications</a>
+              <a href="#tab-notification" onclick="return showTabNotification()">Voir tous les notifications</a>
             </li>
 
           </ul>
@@ -202,7 +235,7 @@
             </li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" onClick="return showTabProfile()" href="#">
+              <a class="dropdown-item d-flex align-items-center" onClick="return showTabProfile()" href="#tab-profile">
                 <i class="bi bi-person"></i>
                 <span>Profile</span>
               </a>

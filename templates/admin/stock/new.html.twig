@@ -1,5 +1,5 @@
 
-<div class="modal fade" id="modalNewStock" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true">
+<div class="modal fade" id="modalNewStock" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content p-4 modal-stock">
             <div class="modal-header modal-header-center">
@@ -12,6 +12,11 @@
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Quantité</label>
                         {{ form_widget(form.qtt) }}
+                    </div> 
+                    
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Date de peremption</label>
+                        {{ form_widget(form.datePeremption) }}
                     </div>  
                      
                     <div class="form-group">
@@ -21,17 +26,37 @@
             </div>
         </div>
     </div>
+    <div id="id-produit" data-produit-id="{{idProduit}}"></div>
 </div>
 
 {% block javascripts %}
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 <script>
+
+$(document).ready(function() {
+  var dateFormat = 'dd/mm/yyyy';
+  var dateNow = new Date();
+  dateNow.setDate(dateNow.getDate() + 1)
+
+  $('#stock_datePeremption_date').datepicker({
+      format: dateFormat,
+      todayHighlight: true,
+      //daysOfWeekDisabled: '0',
+      startDate: dateNow,
+      language: 'fr',
+      autoclose: true,
+
+  });
+
+});
   
     $(document).ready(function () {
     
        $('#newStock').on('submit', function (e) {
             e.preventDefault();
             let form = $(this);
+            var idProduit = $('#id-produit').data('produit-id');
+            console.log('id', idProduit);
           
             // Create an FormData object
             let formData = new FormData(form[0]);
@@ -54,10 +79,15 @@
                         };
                         toastr.success('Avec succèss', 'Enregistrement effectuée');
 
+                        // Call listStock function
+                        listStock(idProduit);
+                        
+                        // Refresh the page
+                        //table.ajax.reload();
+
                         //$(".loadBody").css('display', 'none');
 
                     }, 800);
-                    listStockByProduitSession();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)

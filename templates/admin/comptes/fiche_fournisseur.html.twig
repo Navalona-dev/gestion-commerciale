@@ -1,0 +1,184 @@
+<style>
+  .title {
+    color: #0d6efd;
+  }
+
+  .fiche-btn {
+    padding: 6px 12px;
+    color: #fff;
+  }
+
+  .fiche-data {
+    border: 1px solid grey;
+    padding: 10px;
+  }
+</style>
+<section class="section" id="fiche-client">
+  <div class="id-compte-fiche-client" data-compte="{{compte.id}}"></div>
+    <div class="row">
+      <div class="col-lg-12">
+        {# entete compte #}
+        {% include 'admin/affaires/entete_compte.html.twig' with { 'compte': compte } %}
+       {# entete affaire #}
+       
+        
+        <div class="affaire-recherche mt-5">
+            <div class="row">
+                <div class="col-md-2 col-12">
+                   {% include '/admin/affaires/menu_left_compte.html.twig' with {'compte': compte} %}
+                </div>  
+                
+                <div class="col-md-10 col-12">
+                    <div class="card p-5">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="title fw-bold"><i class="bi bi-person-square"></i> <span class="mx-2">Détails du fournisseur</span></h4>
+                        <p>Logo du fournisseur</p>
+                    </div>
+                      <hr>
+                      <div class="my-5">
+                {{ form_start(form, {'attr': {'id': 'updateFicheCompte', 'action': path('affaires_fiche', {'compte': compte.id}) }}) }}
+
+                        <div class="row mb-4">
+                          <div class="col-md-3 col-12">
+                            <p>Nom</p>
+                          </div>
+                          <div class="col-md-9 col-12">
+                           {{form_widget(form.nom)}}
+                          </div>
+                        </div>
+                        <div class="row mb-4">
+                          <div class="col-md-3 col-12">
+                            <p>Email</p>
+                          </div>
+                          <div class="col-md-9 col-12">
+                              {{form_widget(form.email)}}
+                          </div>
+                        </div>
+                        <div class="row mb-4">
+                          <div class="col-md-3 col-12">
+                            <p>Téléphone</p>
+                          </div>
+                          <div class="col-md-9 col-12">
+                              {{form_widget(form.telephone)}}
+                          </div>
+                        </div>
+                        <div class="row mb-4">
+                          <div class="col-md-3 col-12">
+                            <p>Adresse</p>
+                          </div>
+                          <div class="col-md-9 col-12">
+                            {{form_widget(form.adresse)}}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-3 col-12">
+                            <p>Status</p>
+                          </div>
+                          <div class="col-md-9 col-12">
+                            {{form_widget(form.statut)}}
+                          </div>
+                        </div>
+                        <div class="d-flex justify-content-end form-group mt-4">
+                          <a href="#" class="fiche-btn bg-danger mx-2"><i class="bi bi-trash-fill"></i></a>
+                          <button type="submit" class="fiche-btn bg-success mx-2" title="Modifier"><i class="bi bi-pencil-square"></i></button>
+                          <a href="#" class="btn btn-primary btn-sm px-3 mx-2 text-decoration-underline"><i class="bi bi-plus"></i>d'info</a>
+                        </div>
+                        {{form_end(form)}}
+                      </div>
+                     
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+      </div>
+    </div>
+   
+  </section>
+
+  <script>
+
+$(document).ready(function() {
+    $('#tab-compte_1').removeClass('active').empty();
+    $('#tab-compte_2').removeClass('active').empty();
+    $('#affaires_fournisseur').removeClass('active').empty();
+    $('#affaires_client').removeClass('active').empty();
+      $('.tab-categorie').removeClass('active');
+      $('#tab-produit-categorie').removeClass('active');
+      $('.tab-produit-categorie').removeClass('active');
+      $('#tab-categorie').removeClass('active');
+      $('.tab-import-produit').removeClass('active');
+      $('#tab-import-produit').removeClass('active');
+      $('#tab-produit-date-peremption').removeClass('active').empty();
+        $('#tab-inventaire-produit').css('display','none');
+
+      $('.tab-user').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
+      
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+     
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+       $('#tab-transfert-produit').css('display', 'none');
+      
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-produit-type').removeClass('active');
+      $('.tab-produit-type').removeClass('active');
+$('#tab-import-produit').css('display', 'none');
+        $('#tab-facture').css('display', 'none');
+        $('#tab-facture-affaire').css('display', 'none');
+        $('#tab-financier-affaire').removeClass('active').empty();
+      $('#tab-info-affaire').removeClass('active').empty();
+    $('#tab-fiche-client').addClass('active');
+      
+    });
+
+    $(document).ready(function () {
+    var anchorName = document.location.hash.substring(1);
+        var idCompte = $('.id-compte-fiche-client').data('compte');
+
+       $('#updateFicheCompte').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: form.serialize(),
+                success: function (response) {
+                    $('#modalUpdateAffaire').modal('hide');
+                    var nextLink = $('#sidebar').find('li#fiche-client').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Mise à jour effectuée');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }
+
+                    ficheClient(idCompte);
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la mise à jour de compte.');
+                }
+            });
+        });
+    });
+   
+</script>

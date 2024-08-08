@@ -35,7 +35,8 @@ class HeaderDataProvider
         ))
         ->andWhere('n.application = :application')
         ->setParameter('false', false)
-        ->setParameter('application', $this->application);
+        ->setParameter('application', $this->application)
+        ->orderBy('n.dateCreation', 'DESC');
 
         $notifications = $qb->getQuery()->getResult();
 
@@ -43,7 +44,7 @@ class HeaderDataProvider
         return [
             'applications' => $applications,
             'notifications' => $notifications,
-            'countNotif' => $countNotification
+            'countNotif' => $countNotification,
         ];
     }
 

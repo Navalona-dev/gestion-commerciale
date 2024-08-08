@@ -1,0 +1,160 @@
+<style>
+  .dataTables_scroll {
+    margin-top: 50px !important;
+    margin-bottom: 30px !important;
+  }
+  td, tr {
+    border-bottom: none !important;
+  }
+  .qtt-vendu span {
+    background-color: #2a4ceB !important;
+    color: #fff;
+    border-radius: 10px;
+    padding: 8px 25px;
+    margin-top: 10px;
+    margin-right: 10px;
+  }
+
+  .qtt-vendu a {
+    margin-top: 10px;
+    
+  }
+ 
+</style>
+
+<div class="pagetitle">
+    <h1>Liste stock vendu </h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
+        <li class="breadcrumb-item active">Liste</li>
+      </ol>
+    </nav>
+  </div>
+<section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+            <div class="row">
+                <div class="col-md-8"></div>
+                <div class="col-md-4 d-flex justify-content-end">
+                    <div class="qtt-vendu mb-5 d-flex justify-content-center">
+                        <a class="btn btn-primary mx-3" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()"><i class="bi bi-list"></i> </a>
+                        <span>
+                          {% if countQtt > 0 %}
+                            {{countQtt}}
+                          {% else %}
+                            0
+                          {% endif %}
+                        </span>
+                    </div>
+                </div>
+               
+            </div>
+          <div class="card-body px-5 pb-5">
+            
+            <table class="table table-striped" id="liste-table-qtt-vendu" style="width: 100%;">
+              <thead>
+                    <tr class="text-nowrap">
+                        <th>Client</th>
+                        <th>Commande n°</th>
+                        <th>Nom de commande</th>
+                        <th>Date de payement</th>
+                        <th>Quantité</th>
+                        <th>Prix Ht</th>
+                        <th>Prix à payer</th>
+                    </tr>
+              </thead>
+              <tbody>
+                {% for liste in listes %}
+                <tr class="text-nowrap">
+                    <td> {{liste.compte_nom}} </td>
+                    <td> {{liste.affaire_id}} </td>
+                    <td> {{liste.affaire_nom}} </td>
+                    <td> {{liste.dateFacture|date('d-m-Y')}} </td>
+                    <td> {{liste.qtt}} </td>
+                    <td>
+                        {% set prixAchat = 0 %}
+                        {% if liste.typeVente == "gros" %}
+                            {% set prixAchat = liste.prixVenteGros %}
+                        {% else %}
+                            {% set prixAchat = liste.prixVenteDetail %}
+                        {% endif %}
+                        {{ prixAchat|number_format(2, ',', ' ') }} Ar
+
+                    </td>
+                    <td>
+                        {% set montantHt = 0 %}
+                        {% if liste.typeVente == "gros" %}
+                            {% set montantHt = montantHt + (liste.qtt * liste.prixVenteGros) %}
+                        {% else %}
+                            {% set montantHt = montantHt + (liste.qtt * liste.prixVenteDetail) %}
+                        {% endif %}
+                        {{ montantHt|number_format(2, ',', ' ') }} Ar
+                    </td>
+                </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7">Aucun stock vendu pour le moment</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+                
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <script>
+    //datatable
+    
+    $(document).ready(function() {
+        $('#tab-inventaire-produit').css('display','none');
+
+    $('#tab-fiche-fournisseur').removeClass('active').empty();
+      $('#tab-quantite-vendu').addClass('active');
+      $('.tab-categorie').removeClass('active');
+      $('.tab-produit-categorie').removeClass('active');
+      $('.tab-user').removeClass('active');
+      $('.tab-permission').removeClass('active');
+      $('.tab-privilege').removeClass('active');
+      $('.tab-cat-permission').removeClass('active');
+      $('#tab-dashboard').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-utilisateur').removeClass('active');
+      $('#tab-permission').removeClass('active');
+      $('#tab-privilege').removeClass('active');
+      $('#tab-categorie-permission').removeClass('active');
+      $('#tab-categorie').removeClass('active');
+      $('#tab-application').removeClass('active');
+      $('#tab-profile').removeClass('active');
+      $('#tab-produit-categorie').removeClass('active');
+      $('#tab-compte_1').removeClass('active');
+      $('#tab-produit-type').removeClass('active');
+      $('.tab-produit-type').removeClass('active');
+      $('#tab-stock').removeClass('active');
+      $('.tab-import-produit').removeClass('active');
+$('#tab-import-produit').css('display', 'none');
+        $('#tab-facture').css('display', 'none');
+        $('#tab-facture-affaire').css('display', 'none');
+              $('#tab-transfert-produit').css('display', 'none');
+      $('#affaires_client').removeClass('active').empty();
+       $('#affaires_fournisseur').removeClass('active').empty();
+       $('#tab-info-affaire').removeClass('active').empty();
+       $('#tab-financier-affaire').removeClass('active').empty();
+      $('#tab-fiche-client').removeClass('active').empty();
+
+   
+    });
+
+  </script>

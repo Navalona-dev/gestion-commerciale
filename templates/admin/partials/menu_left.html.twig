@@ -1,97 +1,124 @@
+<style>
+  #forms-nav li a {
+    color: #242323 !important;
+  }
+
+  #forms-nav li a.active {
+    color: #4154f1 !important;
+  }
+</style>
 <aside id="sidebar" class="sidebar">
 
     <ul class="nav sidebar-nav flex-column" id="sidebar-nav">
 
       <li class="nav-item" id="dashboard" title="Tableau de board">
-        <a class="nav-link active" href="#tab-dashboard" data-placement="right" data-toggle="tab" onClick="return showTabDasboard()">
+        <a class="nav-link active" href="" data-placement="right" data-toggle="tab" onClick="return showTabDashboard()">
           <i class="bi bi-grid"></i>
           <span>Tableau de board</span>
         </a>
       </li>
 
       <li class="nav-item" id="categorie" title="Catégories">
-        <a class="nav-link collapsed" href="#tab-categorie" onClick="return showTabCategorie()">
+        <a class="nav-link collapsed" href="#tab-categorie" onclick="return showTabCategorie()">
           <i class="bi bi-grid"></i>
           <span>Catégories</span>
         </a>
       </li>
 
-      <li class="nav-item" id="contact" title="Contact">
-        <a class="nav-link collapsed" href="#tab-produit-type" onClick="return showTabProduitType()">
+      <li class="nav-item" id="produit-type" title="Produit type">
+        <a class="nav-link collapsed" href="#tab-produit-type" onclick="return showTabProduitType()">
           <i class="bi bi-tag"></i>
           <span>Produit type</span>
         </a>
       </li>
-
     
       <li class="nav-item" id="clients" title="Clients">
-        <a class="nav-link collapsed" href="#tab-compte_1" onClick="return showTabCompte(1)">
+        <a class="nav-link collapsed" href="#tab-compte_1" onclick="return showTabCompte(1)">
           <i class="bi bi-person"></i>
           <span>Clients</span>
         </a>
       </li>
       <li class="nav-item" id="fournisseur" title="Fournisseurs">
-        <a class="nav-link collapsed" href="#tab-compte_2" onClick="return showTabCompte(2)">
+        <a class="nav-link collapsed" href="#tab-compte_2" onclick="return showTabCompte(2)">
           <i class="bi bi-person"></i>
           <span>Fournisseurs</span>
         </a>
       </li>
       <li class="nav-item" id="devis-client" title="Devis client">
-        <a class="nav-link collapsed" href="#tab-devis-client" onClick="return showTabDevisClient()">
+        <a class="nav-link collapsed" href="#tab-devis-client" onclick="return showTabDevisClient()">
           <i class="bi bi-person"></i>
           <span>Devis clients</span>
         </a>
       </li>
       <li class="nav-item" id="commande-client" title="commande-client">
-        <a class="nav-link collapsed" href="#tab-commande-client" onClick="return showTabCommandeClient()">
+        <a class="nav-link collapsed" href="#tab-commande-client" onclick="return showTabCommandeClient()">
           <i class="bi bi-person"></i>
           <span>Commandes clients</span>
         </a>
       </li>
        <li class="nav-item" id="facture-client" title="Facture clients">
-        <a class="nav-link collapsed" href="#tab-facture-client" onClick="return showTabFactureClient()">
-          <i class="bi bi-bag"></i>
+        <a class="nav-link collapsed" href="#tab-facture" onclick="return showTabFacture()">
+          <i class="bi bi-currency-euro"></i>
           <span>Factures clients</span>
         </a>
       </li>
       {# <li class="nav-item" id="categorie">
-        <a class="nav-link collapsed" href="#tab-categorie" onClick="return showTabCategorie()">
+        <a class="nav-link collapsed" href="#tab-categorie" onclick="return showTabCategorie()">
           <i class="bi bi-grid"></i>
           <span>Catégories</span>
         </a>
       </li> #}
       <li class="nav-item" id="produit-categorie">
-        <a class="nav-link collapsed" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()">
+        <a class="nav-link collapsed" href="#tab-produit-categorie" onclick="return showTabProduitCategorie()">
           <i class="bi bi-bag"></i>
           <span>Produit/Categories</span>
         </a>
       </li>
       <li class="nav-item" id="application" title="Application">
-        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-application" onClick="return showTabApplication()">
+        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-application" onclick="return showTabApplication()">
           <i class="bi bi-app"></i>
           <span>Application</span>
         </a>
       </li>
+
+      <li class="nav-item" id="historique" title="Historique">
+        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-clock"></i><span>Historique</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="#tab-historique-produit" onclick="return showTabHistoriqueProduit()">
+              <i class="bi bi-box fs-6"></i><span>Produit</span>
+            </a>
+          </li>
+          <li>
+            <a href="#tab-historique-affaire" onclick="return showTabHistoriqueAffaire()">
+              <i class="bi bi-cart fs-6"></i><span>Affaire</span>
+            </a>
+          </li>
+        
+        </ul>
+      </li>
       {# <li class="nav-item" id="profile">
-        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-profile" onClick="return showTabProfile()">
+        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-profile" onclick="return showTabProfile()">
           <i class="bi bi-person"></i>
           <span>Profile</span>
         </a>
       </li> 
       <li class="nav-item" id="category_permission">
-        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-categorie-permission" onClick="return showTabCategoriePermission()">
+        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-categorie-permission" onclick="return showTabCategoriePermission()">
           <i class="bi bi-folder"></i>
           <span>Catégorie permission</span>
         </a>
       </li>
        <li class="nav-item" id="permission" title="Permission">
-        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-permission" onClick="return showTabPermission()">
+        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-permission" onclick="return showTabPermission()">
           <i class="bi bi-shield-lock"></i>
           <span>Permission</span>
         </a>
       </li>
       <li class="nav-item" id="privilege" title="Privilège">
-        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-privilege" onClick="return showTabPrivilege()">
+        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-privilege" onclick="return showTabPrivilege()">
           <i class="bi bi-award"></i>
           <span>Privilège</span>
         </a>
@@ -99,7 +126,7 @@
      
 
       <li class="nav-item" id="utilisateur" title="Utilisateur">
-        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-utilisateur" onClick="return showTabUtilisateur()">
+        <a class="nav-link collapsed" data-placement="right" data-toggle="tab" href="#tab-utilisateur" onclick="return showTabUtilisateur()">
           <i class="bi bi-person"></i>
           <span>Utilisateur</span>
         </a>
