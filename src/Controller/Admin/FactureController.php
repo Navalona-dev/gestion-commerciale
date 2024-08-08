@@ -3,21 +3,22 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Facture;
+use Psr\Log\LoggerInterface;
 use App\Service\AccesService;
 use App\Service\AffaireService;
-use App\Service\ApplicationManager;
 use App\Service\FactureService;
 use App\Service\ProductService;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Service\ApplicationManager;
+use App\Repository\FactureRepository;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Psr\Log\LoggerInterface;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/admin/facture', name: 'factures')]
 class FactureController extends AbstractController
@@ -232,7 +233,8 @@ class FactureController extends AbstractController
     #[Route('/tout-exporter', name: '_tout_exporter')]
     public function exporterFacture(
         Request             $request, FactureService $factureService
-    ) {
+    ) 
+    {
         
         $nomCompte = $request->get('nom_compte');
         $genre = 1;
@@ -393,4 +395,6 @@ class FactureController extends AbstractController
         // Return the excel file as an attachment
         return $this->file($temp_file, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
     }
+
+   
 }
