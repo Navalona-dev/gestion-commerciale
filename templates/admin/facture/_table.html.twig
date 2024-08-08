@@ -43,7 +43,7 @@
                                 </div>
                             </td>
                             <td><i class="bi bi-file-pdf-fill text-danger fs-4"></i></td>
-                            <td> {{liste.dateCreation|date('d-m-Y')}} </td>
+                            <td> {{liste.dateCreation|date('d/m/Y')}} </td>
                             <td> {{liste.type}} </td>
                             <td> {{liste.numero}} </td>
                             <td> <a href="{{path('affaires_liste_affaire_from_facture', {'compte': liste.compteId})}}" title="Pdf">

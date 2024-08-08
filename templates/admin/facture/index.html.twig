@@ -19,6 +19,18 @@
         border-radius: 5px;
     }
 
+    .icon-reload {
+        padding: 5px 8px;
+        background-color: #ffc107;
+        font-size: 25px;
+        color: #000;
+        border-radius: 5px;
+    }
+
+    .icon-reload:hover {
+        color: #000;
+    }
+
     .title h3 {
         font-size: 19px;
         color: #2a4ce8;
@@ -53,8 +65,7 @@
         </ol>
       </nav>
     </div>
-    <form name="allFacture" id="allFacture" target="_blank"
-                                  action="#" method="post">
+   
   <section class="section">
       <div class="row">
         <div class="col-lg-12">
@@ -105,10 +116,10 @@
                             <div class="input-group">
                                 {% set statutPaiement = constant('App\\Entity\\Affaire::PAIEMENT') %}
                                 <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-check-circle-fill"></i></span>
-                                <select name="filter_satatus" id="filter_satatus" class="mb-3 form-control form-control-md" style="border-left: none;">
+                                <select name="filter_status" id="filter_status" class="mb-3 form-control form-control-md" style="border-left: none;">
                                     <option value="" disabled selected><span class="mx-3">Statut</span></option>
                                     {% for key,statutPaie in statutPaiement %}
-                                    <option value="{{key}}">{{statutPaie}}</option>
+                                    <option value="{{statutPaie}}">{{statutPaie}}</option>
                                     {% endfor %}
                                 </select>
                               </div>
@@ -120,7 +131,8 @@
                 </div>
                 <div class="col-md-1 col-12 d-flex align-items-center justify-content-center">
                     <div class="text-center">
-                        <a style="cursor: pointer;" onclick="return searchFacture()" class="icon-check"><i class="bi bi-check"></i></a>
+                        <a style="cursor: pointer;" onclick="return searchFacture()" class="icon-check"><i class="bi bi-check"></i></a> <br/><br>
+                        <a style="cursor: pointer;" onclick="return reloadSearch()" class="icon-reload"><i class="bi bi-arrow-clockwise"></i></a>
                     </div>
                 </div>
                 
@@ -143,75 +155,15 @@
                 </div>
                 <table class="table table-striped table-facture" id="table-facture" style="width: 100%;">
                     <thead>
-                        <tr class="text-nowrap">
-                            {# <th><input type="checkbox" class="custom-checkbox" name="" id=""></th> #}
-                            <th>Validation</th>
-                            <th>Actions</th>
-                            <th>PDF</th>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>N°</th>
-                            <th>Compte</th>
-                            <th>Affaire</th>
-                            {# <th>Prix TTC</th> #}
-                            <th>Prix HT</th>
-                            <th>Règlement</th>
-                            <th>Statut</th>
-                            {# <th>Solde</th>
-                            <th>État</th>
-                            <th>Rémise</th> #}
-                        </tr>
+                        {% include 'admin/facture/_table.html.twig' with { 'type': 'thead' } %}
                     </thead>
                     <tbody>
-                        {% for liste in listes %}
-                        <tr class="text-nowrap {% if liste.statut == 'annule' %} bg-danger {% endif %}">
-                            {# <td>
-                                <input type="checkbox" class="custom-checkbox" name="factureList[]" value="{{ liste.id }}">
-                            </td> #}
-                            <td>
-                                {% if liste.isValid == 0 %}
-                                <a style="cursor: pointer;"><i class="bi bi-x text-danger fs-4"></i></a>
-                                {% elseif liste.isValid == 1 %}
-                                <a style="cursor: pointer;"><i class="bi bi-check text-primary fs-4"></i></a>
-                                {% endif %}
-                            </td>
-                            <td class="d-flex align-items-center">
-                                <i class="bi bi-arrow-clockwise"></i>
-                                <div class="dropdown ms-2">
-                                    <a class="btn btn-outline-primary dropdown-toggle text-black" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-list"></i>
-                                    </a>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                        <li><a style="cursor: pointer;" class="dropdown-item">Modifier</a></li>
-                                        <li><a style="cursor: pointer;" class="dropdown-item">Supprimer</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                            {% if liste.file is not null and liste.file != "" %}
-                            <td><a target="_blank" href="{{ app.request.schemeAndHttpHost ~ app.request.baseUrl }}/uploads/factures/valide/{{liste.file}}"><i class="bi bi-file-pdf-fill text-danger fs-4"></i></a></td>
-                            {% else %}
-                            <td>Pas de facture générer</td>
-                            {% endif %}
-                            <td> {{liste.dateCreation|date('d-m-Y')}} </td>
-                            <td> {{liste.type}} </td>
-                            <td> {{liste.numero}} </td>
-                            <td>  <a href="{{path('affaires_liste_affaire_from_facture', {'compte': liste.compteId})}}" title="Pdf">
-                                            {{liste.compte}}
-                                        </a></td>
-                            <td> 
-                                           <a href="{{path('affaires_financier_from_other_page', {'affaire': liste.affaireId})}}" title="Pdf">
-                                            {{liste.affaire}}
-                                        </a></td>
-                            {# <td> {{liste.prixTtc|number_format(2, ',', ',')}} Ar </td> #}
-                            <td>{{liste.prixHt|number_format(2, ',', ' ')}} Ar</td>
-                            <td> {{liste.reglement|number_format(2, ',', ' ')}} Ar </td>
-                            {% set statutPaiement = constant('App\\Entity\\Facture::STATUT') %}
-                            <td> {{statutPaiement[liste.statut]}} </td>
-                            {# <td> {{liste.solde}} </td>
-                             {% set etat = constant('App\\Entity\\Facture::ETAT') %}
-                            <td> {{etat[liste.etat]}} </td>
-                            <td> {{liste.remise}} </td> #}
-                        </tr>
+                        {% if listes|length > 0 %}
+
+                            {% for liste in listes %}
+                                {% include 'admin/facture/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
+                            {% endfor %}
+                        
                         {% else %}
                         <tr>
                             <td colspan="11">Aucun enregistrement trouvé</td>
@@ -231,7 +183,7 @@
                             <td></td>
                             <td></td> #}
                         </tr>
-                        {% endfor %}
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -241,7 +193,8 @@
         </div>
       </div>
     </section>
-  </form>
+  
+
     <script>
 
         function exporterFacture(type) {
@@ -270,9 +223,10 @@
             return false;
 
         }
-        function searchFacture(genre = 1) {
+        
+        /*function searchFacture(genre = 1) {
       var nomCompte = $("#nom_compte").val();
-      var statutPaiement = $("#filter_satatus").val();
+      var statutPaiement = $("#filter_status").val();
       //var genre = $("#genre").val();
       
       $.ajax({
@@ -283,30 +237,14 @@
                   
                  $("#factureList").empty();
                  $("#factureList").append(response.html);
-                    /*$('#modalNewClient').modal('hide');
-                    var nextLink = $('#sidebar').find('li#clients').find('a');
-                    setTimeout(function () {
-                        toastr.options = {
-                            closeButton: true,
-                            progressBar: true,
-                            showMethod: 'slideDown',
-                            timeOut: 1000
-                        };
-                        toastr.success('Avec succèss', 'Enregistrement effectuée');
-
-                        //$(".loadBody").css('display', 'none');
-
-                    }, 800);
-                    if (nextLink.length > 0) {
-                        nextLink.click();
-                    }*/
+                   
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
                     alert('Erreur lors de l\'ajout d\'un client.');
                 }
         });
-    }
+    }*/
       //datatable
       
     $(document).ready(function() {
@@ -390,3 +328,142 @@
     });
   
     </script>
+
+<script>
+    function showSpinner() {
+    document.getElementById('spinner').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+  }
+  
+  function hideSpinner() {
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+  }
+
+    // Fonction pour convertir une date au format d-m-Y en Date
+    function parseDate(dateStr) {
+        var parts = dateStr.split('/');
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+
+     // Fonction pour obtenir le statut mappé
+     function mapStatus(selectedStatus) {
+        var statusMap = {
+            'Non payé': 'Réglée',   // Mappage des valeurs du sélecteur
+            'Payé': 'Réglée',       // Ajustez ce mappage selon votre besoin
+            'Annulé': 'Annulée'
+        };
+        return statusMap[selectedStatus] || '';
+    }
+
+    // Fonction appelée lors du clic sur l'icône de recherche
+    function searchFacture() {
+        showSpinner();
+        setTimeout(function() {
+            // Récupération des valeurs des filtres
+            var nomCompte = document.getElementById('nom_compte').value.toLowerCase();
+            var dateFactureDebut = document.getElementById('date_facture_debut').value;
+            var datePaiementDebut = document.getElementById('date_paiement_debut').value;
+            var dateFactureEnd = document.getElementById('date_facture_end').value;
+            var datePaiementEnd = document.getElementById('date_paiement_end').value;
+            var statut = document.getElementById('filter_status').value.trim();
+            var mappedStatut = mapStatus(statut);
+
+            // Récupération des lignes du tableau
+            var table = document.getElementById('table-facture');
+            var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            // Parcours des lignes pour appliquer les filtres
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                var cells = row.getElementsByTagName('td');
+                var showRow = true;
+
+                // Filtrer par nom de compte
+                if (nomCompte && cells[7].textContent.toLowerCase().indexOf(nomCompte) === -1) {
+                    showRow = false;
+                }
+
+                // Filtrer par statut
+                var cellStatut = cells[11].textContent.trim();
+                if (mappedStatut && cellStatut !== mappedStatut) {
+                    showRow = false;
+                }
+
+                // Filtrer par dates
+                var dateFacture = parseDate(cells[4].textContent.trim()); // assuming format is d-m-Y
+                var datePaiement = parseDate(cells[10].textContent.trim()); // assuming format is d-m-Y
+
+                if (dateFactureDebut) {
+                    var startDateFactureDebut = parseDate(dateFactureDebut);
+                    if (dateFacture < startDateFactureDebut) {
+                        showRow = false;
+                    }
+                }
+                if (dateFactureEnd) {
+                    var endDateFactureEnd = parseDate(dateFactureEnd);
+                    if (dateFacture > endDateFactureEnd) {
+                        showRow = false;
+                    }
+                }
+                if (datePaiementDebut) {
+                    var startDatePaiementDebut = parseDate(datePaiementDebut);
+                    if (datePaiement < startDatePaiementDebut) {
+                        showRow = false;
+                    }
+                }
+                if (datePaiementEnd) {
+                    var endDatePaiementEnd = parseDate(datePaiementEnd);
+                    if (datePaiement > endDatePaiementEnd) {
+                        showRow = false;
+                    }
+                }
+
+                // Afficher ou masquer la ligne en fonction du filtre
+                if (showRow) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+
+            // Masquer le spinner après le traitement
+            hideSpinner();
+        }, 2000);
+    }
+
+    function reloadSearch() {
+        showSpinner();
+        setTimeout(function() {
+        // Réinitialiser les filtres
+        document.getElementById('nom_compte').value = '';
+        document.getElementById('date_facture_debut').value = '';
+        document.getElementById('date_paiement_debut').value = '';
+        document.getElementById('date_facture_end').value = '';
+        document.getElementById('date_paiement_end').value = '';
+        document.getElementById('filter_status').value = '';
+
+        // Recharger la DataTable (ou table) à l'état initial
+        var table = document.getElementById('table-facture');
+        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            rows[i].style.display = '';
+        }
+        
+        // Optionnel : si vous utilisez DataTables, vous pouvez réinitialiser comme ceci :
+        // $('#table-facture').DataTable().search('').draw();
+         // Masquer le spinner après le traitement
+         hideSpinner();
+        }, 2000);
+        
+    }
+
+    // Ajout de l'événement click à l'icône de recherche
+    document.addEventListener('DOMContentLoaded', function() {
+        var searchButton = document.querySelector('.icon-check');
+        searchButton.addEventListener('click', searchFacture);
+    });
+</script>
+
+    

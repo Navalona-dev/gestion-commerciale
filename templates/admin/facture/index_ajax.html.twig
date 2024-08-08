@@ -161,32 +161,7 @@
                 dataType: "json",
                 data: {nomCompte: nomCompte, statutPaiement: statutPaiement, limit: 25, dateDu: dateDu, dateAu: dateAu, datePaieDu: datePaieDu, datePaieAu: datePaieAu },
                 complete: function (result) {
-                   /* var jsonData = result.responseJSON;
-                    var listeIdCompte = jsonData["idComptes"];
-                    var ids = listeIdCompte.join(",");
-                    $("#linkSendMail").attr("onclick", "iframe_url('/mail/new?action=cc_id_compte&id_comptes="+ids+"&id_affaire=1'); return false;");*/
-                   // $(".loadBody").css('display', 'none');
-
-                  /*  $('.i-checks').iCheck({
-                        checkboxClass: 'icheckbox_square-green',
-                        radioClass: 'iradio_square-green'
-                    });
-
-                    $("input[name='selectTout']").on('ifChanged', function () {
-
-                        var _this = jQuery(this);
-
-                        if (_this.is(':checked')) {
-                            $("input[name^='compteList']").each(function (index) {
-                                $(this).iCheck('check');
-                            });
-                        } else {
-                            $("input[name^='compteList']").each(function (index) {
-                                $(this).iCheck('uncheck');
-                            });
-                        }
-                    });*/
-                    //return false;
+                  
                 }
 
             },
