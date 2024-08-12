@@ -195,8 +195,6 @@ class CompteController extends AbstractController
 
             $form->handleRequest($request);
 
-            
-
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
                     // encode the plain password

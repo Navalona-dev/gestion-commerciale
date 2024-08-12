@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Affaire;
 use App\Entity\Facture;
 use Psr\Log\LoggerInterface;
 use App\Service\AccesService;
@@ -394,6 +395,65 @@ class FactureController extends AbstractController
 
         // Return the excel file as an attachment
         return $this->file($temp_file, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
+    }
+
+    #[Route('/new/{affaire}', name: '_create_facture')]
+    public function create(Affaire $affaire, Request $request)
+    {
+        $data = [];
+        try {
+            $statut = $request->get('statut');
+
+            $facture = new Facture();
+            
+           // $form = $this->createForm(AffaireType::class, $affaire);
+
+            //$form->handleRequest($request);
+
+           /* if ($form->isSubmitted() && $form->isValid()) {
+                if ($request->isXmlHttpRequest()) {
+                    // encode the plain password
+                    $this->affaireService->add($affaire, $statut, $compte);
+                    $this->affaireService->update();
+                   
+                    $affaires = $this->affaireService->getAllAffaire($compte);
+
+                    if ($affaires == false) {
+                        $affaires = [];
+                    }
+
+                    $data["html"] = $this->renderView('admin/facture/new.html.twig', [
+                        'compte' => $compte,
+                        'listes' => $affaires,
+
+                    ]);
+                   
+                    return new JsonResponse($data);
+                    
+                }
+
+                $this->addFlash('success', 'Création affaire "' . $affaire->getNom() . '" avec succès.');
+                return $this->redirectToRoute('comptes_liste', [
+                    'genre' => 1
+                ]);
+
+                
+            }*/
+
+            $data["html"] = $this->renderView('admin/facture/new.html.twig', [
+                /*'form' => $form->createView(),
+                'compte' => $compte,
+                'statut' => $statut*/
+            ]);
+           
+            return new JsonResponse($data);
+        } catch (PropertyVideException $PropertyVideException) {
+            $data['exception'] = $PropertyVideException->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        } 
+        return new JsonResponse($data);
     }
 
    

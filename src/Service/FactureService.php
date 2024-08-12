@@ -243,7 +243,7 @@ class FactureService
         $facture->setDate($date);
         $facture->setType("Facture");
         $products = $affaire->getProducts();
-        $filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
+        $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
         $montantHt = 0;
 
         // Sortie du PDF sous forme de réponse HTTP
@@ -434,7 +434,7 @@ class FactureService
         $facture->setValid(true);
         $facture->setStatut('annule');
         $products = $affaire->getProducts();
-        $filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
+        $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
     
 
         foreach ($products as $key => $product) { 

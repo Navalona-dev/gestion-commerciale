@@ -130,6 +130,8 @@ class Compte
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $code = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $indiceFacture = null;
 
     public function __construct()
     {
@@ -540,4 +542,17 @@ class Compte
 
         return $this;
     }
+
+    public function getIndiceFacture(): ?string
+    {
+        return $this->indiceFacture;
+    }
+
+    public function setIndiceFacture(?string $indiceFacture): static
+    {
+        $this->indiceFacture = $indiceFacture;
+
+        return $this;
+    }
+
 }

@@ -97,13 +97,13 @@
           <div class="card-body px-5 pb-5">
             <table class="table table-striped" id="liste-table-compte" style="width: 100%;">
               <thead>
-                    {% include 'admin/comptes/_table.html.twig' with { 'type': 'thead' } %}
+                    {% include 'admin/comptes/_table.html.twig' with { 'type': 'thead', 'genre': genre } %}
               </thead>
               <tbody>
                 {% if listes|length > 0 %}
 
                   {% for liste in listes %}
-                      {% include 'admin/comptes/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
+                      {% include 'admin/comptes/_table.html.twig' with { 'type': 'tbody', 'liste': liste, 'genre': genre } %}
                   {% endfor %}
                 
                 {% else %}

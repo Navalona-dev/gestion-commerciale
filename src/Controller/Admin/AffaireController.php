@@ -841,7 +841,8 @@ class AffaireController extends AbstractController
             list($pdfContent, $facture) = $this->factureService->add($affaire, $documentFolder, $request);
             
             // Utiliser le numéro de la facture pour le nom du fichier
-            $filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
+            //$filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
+            $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
             
             // Retourner le PDF en réponse
             return new Response($pdfContent, 200, [
@@ -869,10 +870,13 @@ class AffaireController extends AbstractController
        
         if (count($affaire->getProducts()) > 0) {
             $documentFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/factures/annule/';
+           
+
             list($pdfContent, $facture) = $this->factureService->annuler($affaire, $documentFolder);
             
             // Utiliser le numéro de la facture pour le nom du fichier
-            $filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
+            //$filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
+            $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
         
             // Retourner le PDF en réponse
             return new Response($pdfContent, 200, [

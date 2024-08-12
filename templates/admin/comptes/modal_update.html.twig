@@ -16,6 +16,11 @@
                         {{ form_widget(form.nom) }}
                     </div>
                     <div class="form-group mb-3">
+                        <label for="" class="mb-2">Nommenclature facture <sup class="text-danger">*</sup></label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.indiceFacture)}} </span>
+                        {{ form_widget(form.indiceFacture) }}
+                    </div>
+                    <div class="form-group mb-3">
                         <label for="" class="mb-2">Email</label>
                         <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.email)}} </span>
                         {{ form_widget(form.email) }}

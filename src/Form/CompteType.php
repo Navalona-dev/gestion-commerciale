@@ -37,6 +37,16 @@ class CompteType extends AbstractType
                     'required' => false
                 ]);
             }
+
+            if ($options['genre'] == 1) {
+                $builder->add('indiceFacture', TextType::class, [
+                    'attr' => [
+                        'class' => 'form-control form-control-md',
+                        'autocomplete' => 'off',
+                    ],
+                    'required' => true
+                ]);
+            }
             
             $builder->remove('etat', TextType::class, [
                 'attr' => [
@@ -82,6 +92,7 @@ class CompteType extends AbstractType
                 ],
                 'required' => false
             ])
+            
             ->remove('isLivraison', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Livrason?'
