@@ -1,5 +1,17 @@
 <style>
-  
+  .icon-check {
+    background-color: #2a4ce8;
+    padding: 10px 13px;
+    color: #fff;
+    border-radius: 10px;
+  }
+
+  .icon-reload {
+    background-color: #ffc107;
+    padding: 10px 13px;
+    margin-left: 15px;
+    border-radius: 10px;
+  }
 </style>
 
 <div class="pagetitle">
@@ -14,6 +26,39 @@
   <section class="section">
     <div class="row">
         <div class="col-lg-12">
+          <div class="card p-5">
+            <div class="row">
+              <div class="col-md-10 col-12">
+                <div class="row">
+                  <div class="col-md-4 col-12">
+                    <div class="form-group">
+                      <label for="" class="mb-2">Nom de produit : </label>
+                      <input type="text" class="product_name form-control form-control-md" id="product_name" placeholder="Entrer le nom de produit">
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <div class="form-group">
+                      <label for="" class="mb-2">Date du : </label>
+                      <input type="text" class="form-control form-control-md historique-date-du" id="historique-date-du" placeholder="Entrer la date de début">
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <div class="form-group">
+                      <label for="" class="mb-2">Date au : </label>
+                      <input type="text" class="form-control form-control-md historique-date-au" id="historique-date-au" placeholder="Entrer la date de fin">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-2 col-12 d-flex align-items-center justify-content-center">
+                <div class="form-group">
+                  <a href="#" onclick="return searchHistorique()"><i class="bi bi-check icon-check"></i></a>
+                  <a href="#tab-historique-produit" onclick="return showTabHistoriqueProduit()"><i class="bi bi-arrow-clockwise icon-reload"></i></a>
+                </div>
+              </div>
+              
+            </div>
+          </div>
             <div class="card p-5">
                 <div class="card-body">
                     {% if logEmpty %}
@@ -118,12 +163,169 @@
 
     })
     
-    $(document).ready(function () {
+   /* $(document).ready(function () {
     $('#customFile').on('change', function () {
         var fileName = $(this).val().split('\\').pop();
         $('#fileLabelText').text(fileName);
     });
-});
+});*/
+
+  /*$(document).ready(function() {
+      var dateFormat = 'dd-mm-yyyy';
+      var dateNow = new Date();
+      dateNow.setDate(dateNow.getDate() + 1)
+
+      $('#historique-date-du, #historique-date-au').datepicker({
+          format: dateFormat,
+          todayHighlight: true,
+          daysOfWeekDisabled: '0',
+          startDate: dateNow,
+          language: 'fr',
+          autoclose: true,
+
+      });
+
+  });*/
 
 
   </script>
+
+<script>
+
+  function showSpinner() {
+    document.getElementById('spinner').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+  }
+
+  function hideSpinner() {
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+  }
+
+  // Fonction pour convertir une date au format d-m-Y en Date
+  function parseDate(dateStr) {
+      var parts = dateStr.split('/');
+      return new Date(parts[2], parts[1] - 1, parts[0]);
+  }
+
+
+  // Fonction appelée lors du clic sur l'icône de recherche
+  /*function searchHistorique() {
+    var anchorName = document.location.hash.substring(1);
+
+    showSpinner();
+    
+    setTimeout(function() {
+        // Récupération des valeurs des filtres
+        var nomProduit = $('#product_name').val().toLowerCase();
+        var dateDebut = $('#historique-date-du').val();
+        var dateFin = $('#historique-date-au').val();
+
+        // Réinitialiser les filtres
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            var dateSearch = parseDate(data[0].trim()); // La première colonne est la date
+            var startDateDebut = dateDebut ? parseDate(dateDebut) : null;
+            var endDateFin = dateFin ? parseDate(dateFin) : null;
+
+            var productMatch = data[2].toLowerCase().indexOf(nomProduit) !== -1;
+            var dateMatch = true;
+            if (startDateDebut && dateSearch < startDateDebut) {
+                dateMatch = false;
+            }
+            if (endDateFin && dateSearch > endDateFin) {
+                dateMatch = false;
+            }
+
+            return productMatch && dateMatch;
+        });
+
+        // Mettre à jour DataTables avec les nouveaux filtres
+        $('#table-historique-produit').DataTable().draw();
+
+        // Réinitialiser les filtres après utilisation
+        $.fn.dataTable.ext.search.pop();
+
+        if (anchorName) {
+            window.location.hash = anchorName;
+        }
+
+        hideSpinner();
+    }, 2000);
+}*/
+
+function searchFacture() {
+        var anchorName = document.location.hash.substring(1);
+
+        showSpinner();
+
+        setTimeout(function() {
+            // Récupération des valeurs des filtres
+            var nomCompte = $('#nom_compte').val().toLowerCase();
+            var dateFactureDebut = $('#date_facture_debut').val();
+            var datePaiementDebut = $('#date_paiement_debut').val();
+            var dateFactureEnd = $('#date_facture_end').val();
+            var datePaiementEnd = $('#date_paiement_end').val();
+            var statut = $('#filter_status').val().trim();
+            var mappedStatut = mapStatus(statut);
+
+            // Réinitialiser les filtres
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                var dateFacture = parseDate(data[4].trim()); // Supposons que la colonne 4 est la date de facture
+                var datePaiement = parseDate(data[10].trim()); // Supposons que la colonne 10 est la date de paiement
+                
+                // Vérifier les correspondances
+                var clientMatch = (nomCompte === '' || data[7].toLowerCase().indexOf(nomCompte) !== -1);
+                var statusMatch = (statut === '' || mappedStatut === '' || data[11].trim() === mappedStatut);
+
+                // Vérifier les dates
+                var dateFactureMatch = true;
+                if (dateFactureDebut) {
+                    var startDateFactureDebut = parseDate(dateFactureDebut);
+                    if (dateFacture < startDateFactureDebut) {
+                        dateFactureMatch = false;
+                    }
+                }
+                if (dateFactureEnd) {
+                    var endDateFactureEnd = parseDate(dateFactureEnd);
+                    if (dateFacture > endDateFactureEnd) {
+                        dateFactureMatch = false;
+                    }
+                }
+                var datePaiementMatch = true;
+                if (datePaiementDebut) {
+                    var startDatePaiementDebut = parseDate(datePaiementDebut);
+                    if (datePaiement < startDatePaiementDebut) {
+                        datePaiementMatch = false;
+                    }
+                }
+                if (datePaiementEnd) {
+                    var endDatePaiementEnd = parseDate(datePaiementEnd);
+                    if (datePaiement > endDatePaiementEnd) {
+                        datePaiementMatch = false;
+                    }
+                }
+
+                return clientMatch && statusMatch && dateFactureMatch && datePaiementMatch;
+            });
+
+            // Mettre à jour DataTables avec les nouveaux filtres
+            $('#table-facture').DataTable().draw();
+
+            // Réinitialiser les filtres après utilisation
+            $.fn.dataTable.ext.search.pop();
+
+            if (anchorName) {
+                window.location.hash = anchorName;
+            }
+
+            hideSpinner();
+        }, 2000);
+    }
+
+ // Ajout de l'événement click à l'icône de recherche
+ document.addEventListener('DOMContentLoaded', function() {
+      var searchButton = document.querySelector('.icon-check');
+      searchButton.addEventListener('click', searchFacture);
+  });
+
+</script>

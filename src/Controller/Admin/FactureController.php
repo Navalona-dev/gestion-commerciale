@@ -398,52 +398,23 @@ class FactureController extends AbstractController
     }
 
     #[Route('/new/{affaire}', name: '_create_facture')]
-    public function create(Affaire $affaire, Request $request)
+    public function create(
+        Affaire $affaire, 
+        Request $request, 
+        SessionInterface $session,
+        ProductService $productService)
     {
         $data = [];
         try {
-            $statut = $request->get('statut');
-
-            $facture = new Facture();
+            $session->set('idAffaire', $affaire->getId());
+            $produits = $productService->findProduitAffaire($affaire);
+            if ($produits == false) {
+                $produits = [];
+            }
             
-           // $form = $this->createForm(AffaireType::class, $affaire);
-
-            //$form->handleRequest($request);
-
-           /* if ($form->isSubmitted() && $form->isValid()) {
-                if ($request->isXmlHttpRequest()) {
-                    // encode the plain password
-                    $this->affaireService->add($affaire, $statut, $compte);
-                    $this->affaireService->update();
-                   
-                    $affaires = $this->affaireService->getAllAffaire($compte);
-
-                    if ($affaires == false) {
-                        $affaires = [];
-                    }
-
-                    $data["html"] = $this->renderView('admin/facture/new.html.twig', [
-                        'compte' => $compte,
-                        'listes' => $affaires,
-
-                    ]);
-                   
-                    return new JsonResponse($data);
-                    
-                }
-
-                $this->addFlash('success', 'Création affaire "' . $affaire->getNom() . '" avec succès.');
-                return $this->redirectToRoute('comptes_liste', [
-                    'genre' => 1
-                ]);
-
-                
-            }*/
-
             $data["html"] = $this->renderView('admin/facture/new.html.twig', [
-                /*'form' => $form->createView(),
-                'compte' => $compte,
-                'statut' => $statut*/
+                'produits' => $produits,
+                'affaire' => $affaire
             ]);
            
             return new JsonResponse($data);

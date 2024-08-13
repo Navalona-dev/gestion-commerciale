@@ -100,7 +100,7 @@
                             <div class="col-md-4 col-12">
                                 <div class="input-group mb-3">
                                     <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-people-fill"></i></span>
-                                    <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" />
+                                    <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" autocomplete="off" placeholder="Nom du client" />
                                     {# <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-file-earmark-text-fill"></i></span>
                                     <select name="filter_facture" id="filter_facture" class="mb-3 form-control form-control-md" style="border-left: none;">
                                         <option value="" disabled selected><span class="mx-3">Toutes les factures</span></option>
@@ -127,14 +127,14 @@
                                 </div>
                                 <input type="text" name="date_facture_end" id="date_facture_end" class="mb-3 form-control form-control-ms date-facture" placeholder="Au dd/mm/yyyy">
                                 <input type="text" name="date_paiement_end" id="date_paiement_end" class="mb-3 form-control form-control-ms date-facture" placeholder="Au dd/mm/yyyy">
-                            
                             </div>
                         </div>
+                       
                     </div>
                     <div class="col-md-1 col-12 d-flex align-items-center justify-content-center">
                         <div class="text-center">
                             <a style="cursor: pointer;" onclick="return searchFacture()" class="icon-check"><i class="bi bi-check"></i></a> <br/><br>
-                            <a style="cursor: pointer;" onclick="return reloadSearch()" class="icon-reload"><i class="bi bi-arrow-clockwise"></i></a>
+                            <a style="cursor: pointer;" onclick="return showTabFacture()" class="icon-reload"><i class="bi bi-arrow-clockwise"></i></a>
                         </div>
                     </div>
                     
@@ -197,139 +197,139 @@
     </section>
 </form>
 
-    <script>
+<script>
 
-        function exporterFacture(type) {
+    function exporterFacture(type) {
 
-            var inc = 0;
-            /*$("input[type=checkbox]").each(function (index) {
-                if ($(this).is(":checked")) {
-                    inc++;
-                }
-            });*/
-
-            //if (inc != 0) { 
-                if (type == "client") {
-                    var form = $('#allFacture');
-                }else {
-                    var form = $('#exportZip');
-                }
-
-                form.attr('action', '/admin/facture/tout-exporter');
-                form.submit();
-            /*} else {
-                alert('Pas de facture séléctionner !!!')
-            }*/
-
-
-            return false;
-
-        }
-        
-        /*function searchFacture(genre = 1) {
-      var nomCompte = $("#nom_compte").val();
-      var statutPaiement = $("#filter_status").val();
-      //var genre = $("#genre").val();
-      
-      $.ajax({
-                url: '/admin/facture/search',
-                type: 'post',
-                data: {nomCompte: nomCompte, statutPaiement: statutPaiement },
-                success: function (response) {
-                  
-                 $("#factureList").empty();
-                 $("#factureList").append(response.html);
-                   
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'ajout d\'un client.');
-                }
-        });
-    }*/
-      //datatable
-      
-    $(document).ready(function() {
-        $('#tab-fiche-fournisseur').removeClass('active').empty();
-        $('#tab-quantite-vendu').removeClass('active').empty();
-        $('#tab-notification').removeClass('active').empty();
-        $('#tab-historique-produit').removeClass('active').empty();
-        $('#tab-historique-affaire').removeClass('active').empty();
-      $('#tab-produit-date-peremption').removeClass('active').empty();
- $('#tab-stock').removeClass('active');
-        $('#tab-inventaire-produit').css('display','none');
-
-        $('.tab-categorie').removeClass('active');
-        $('#tab-produit-categorie').removeClass('active');
-        $('.tab-produit-categorie').removeClass('active');
-        $('#tab-categorie').removeClass('active');
-        $('.tab-import-produit').removeClass('active');
-        $('#tab-import-produit').removeClass('active');
-  
-  
-        $('.tab-user').removeClass('active');
-        $('#tab-utilisateur').removeClass('active');
-  
-        $('.tab-permission').removeClass('active');
-        $('.tab-privilege').removeClass('active');
-        $('.tab-cat-permission').removeClass('active');
-        $('#tab-categorie-permission').removeClass('active');
-        
-        $('#tab-dashboard').removeClass('active');
-        $('#tab-profile').removeClass('active');
-       
-        $('#tab-permission').removeClass('active');
-        $('#tab-privilege').removeClass('active');
-        $('#tab-transfert-produit').css('display', 'none');
-        $('#affaires_client').removeClass('active').empty();
-         $('#affaires_fournisseur').removeClass('active').empty();
-         $('#tab-info-affaire').removeClass('active').empty();
-         $('#tab-financier-affaire').removeClass('active').empty();
-        $('#tab-fiche-client').removeClass('active').empty();
-        
-        $('#tab-application').removeClass('active');
-        $('#tab-profile').removeClass('active');
-         $('#tab-compte_1').removeClass('active');
-        $('#tab-produit-type').removeClass('active');
-        $('.tab-produit-type').removeClass('active');
-        $('#tab-import-produit').css('display', 'none');
-        $('#tab-facture').css('display', 'block');
-        $('#tab-facture-affaire').css('display', 'none');
-
-
-        /*$('.table-facture-affaire').DataTable({
-            responsive: true,
-            language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
-            },
-            border: false,
-            scrollX: '100%',
-            pageLength: 10,
-            scrollCollapse: false,
+        var inc = 0;
+        /*$("input[type=checkbox]").each(function (index) {
+            if ($(this).is(":checked")) {
+                inc++;
+            }
         });*/
 
-      });
+        //if (inc != 0) { 
+            if (type == "client") {
+                var form = $('#allFacture');
+            }else {
+                var form = $('#exportZip');
+            }
 
-      $(document).ready(function() {
-        var dateFormat = 'dd/mm/yyyy';
-        var dateNow = new Date();
-        dateNow.setDate(dateNow.getDate() + 1)
+            form.attr('action', '/admin/facture/tout-exporter');
+            form.submit();
+        /*} else {
+            alert('Pas de facture séléctionner !!!')
+        }*/
 
-        $('.date-facture').datepicker({
-            format: dateFormat,
-            todayHighlight: true,
-            //daysOfWeekDisabled: '0',
-            //startDate: dateNow,
-            language: 'fr',
-            autoclose: true,
-            minDate: null,
-            maxDate: null,
 
-        });
+        return false;
+
+    }
+    
+    /*function searchFacture(genre = 1) {
+    var nomCompte = $("#nom_compte").val();
+    var statutPaiement = $("#filter_status").val();
+    //var genre = $("#genre").val();
+    
+    $.ajax({
+            url: '/admin/facture/search',
+            type: 'post',
+            data: {nomCompte: nomCompte, statutPaiement: statutPaiement },
+            success: function (response) {
+                
+                $("#factureList").empty();
+                $("#factureList").append(response.html);
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                alert('Erreur lors de l\'ajout d\'un client.');
+            }
+    });
+}*/
+    //datatable
+    
+$(document).ready(function() {
+    $('#tab-fiche-fournisseur').removeClass('active').empty();
+    $('#tab-quantite-vendu').removeClass('active').empty();
+    $('#tab-notification').removeClass('active').empty();
+    $('#tab-historique-produit').removeClass('active').empty();
+    $('#tab-historique-affaire').removeClass('active').empty();
+    $('#tab-produit-date-peremption').removeClass('active').empty();
+$('#tab-stock').removeClass('active');
+    $('#tab-inventaire-produit').css('display','none');
+
+    $('.tab-categorie').removeClass('active');
+    $('#tab-produit-categorie').removeClass('active');
+    $('.tab-produit-categorie').removeClass('active');
+    $('#tab-categorie').removeClass('active');
+    $('.tab-import-produit').removeClass('active');
+    $('#tab-import-produit').removeClass('active');
+
+
+    $('.tab-user').removeClass('active');
+    $('#tab-utilisateur').removeClass('active');
+
+    $('.tab-permission').removeClass('active');
+    $('.tab-privilege').removeClass('active');
+    $('.tab-cat-permission').removeClass('active');
+    $('#tab-categorie-permission').removeClass('active');
+    
+    $('#tab-dashboard').removeClass('active');
+    $('#tab-profile').removeClass('active');
+    
+    $('#tab-permission').removeClass('active');
+    $('#tab-privilege').removeClass('active');
+    $('#tab-transfert-produit').css('display', 'none');
+    $('#affaires_client').removeClass('active').empty();
+        $('#affaires_fournisseur').removeClass('active').empty();
+        $('#tab-info-affaire').removeClass('active').empty();
+        $('#tab-financier-affaire').removeClass('active').empty();
+    $('#tab-fiche-client').removeClass('active').empty();
+    
+    $('#tab-application').removeClass('active');
+    $('#tab-profile').removeClass('active');
+        $('#tab-compte_1').removeClass('active');
+    $('#tab-produit-type').removeClass('active');
+    $('.tab-produit-type').removeClass('active');
+    $('#tab-import-produit').css('display', 'none');
+    $('#tab-facture').css('display', 'block');
+    $('#tab-facture-affaire').css('display', 'none');
+
+
+    /*$('.table-facture-affaire').DataTable({
+        responsive: true,
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+        },
+        border: false,
+        scrollX: '100%',
+        pageLength: 10,
+        scrollCollapse: false,
+    });*/
 
     });
-  
-    </script>
+
+    $(document).ready(function() {
+    var dateFormat = 'dd/mm/yyyy';
+    var dateNow = new Date();
+    dateNow.setDate(dateNow.getDate() + 1)
+
+    $('.date-facture').datepicker({
+        format: dateFormat,
+        todayHighlight: true,
+        //daysOfWeekDisabled: '0',
+        //startDate: dateNow,
+        language: 'fr',
+        autoclose: true,
+        minDate: null,
+        maxDate: null,
+
+    });
+
+});
+
+</script>
 
 <script>
 
@@ -440,40 +440,7 @@
 
         
     }
-
-    function reloadSearch() {
-    var anchorName = document.location.hash.substring(1);
-
-        showSpinner();
-        setTimeout(function() {
-        // Réinitialiser les filtres
-        document.getElementById('nom_compte').value = '';
-        document.getElementById('date_facture_debut').value = '';
-        document.getElementById('date_paiement_debut').value = '';
-        document.getElementById('date_facture_end').value = '';
-        document.getElementById('date_paiement_end').value = '';
-        document.getElementById('filter_status').value = '';
-
-        // Recharger la DataTable (ou table) à l'état initial
-        var table = document.getElementById('table-facture');
-        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-
-        for (var i = 0; i < rows.length; i++) {
-            rows[i].style.display = '';
-        }
-        if (anchorName) {
-            window.location.hash = anchorName;
-        }
-        // Optionnel : si vous utilisez DataTables, vous pouvez réinitialiser comme ceci :
-        // $('#table-facture').DataTable().search('').draw();
-         // Masquer le spinner après le traitement
-         hideSpinner();
-        }, 2000);
-
-        
-        
-    }
-
+    
     // Ajout de l'événement click à l'icône de recherche
     document.addEventListener('DOMContentLoaded', function() {
         var searchButton = document.querySelector('.icon-check');

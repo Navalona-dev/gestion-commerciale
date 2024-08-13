@@ -41,7 +41,7 @@
                             <i class="bi bi-person"></i>
                         </span>
                     </div>
-                      <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" />
+                      <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" autocomplete="off" />
                        <input id="genre" type="hidden" name="genre" value="{{genre}}" />
                     {# <select class="form-control form-control-sm chosen-select" id="user-select">
                         <option value="" selected disabled class="option-compte">Nom du client</option>
@@ -82,7 +82,7 @@
               <div class="form-group d-flex justify-content-center">
                 <a href="#" onclick="return searchCompte({{genre}})" class="filter-icon"><i class="bi bi-check"></i></a>
                 <a href="#" class="filter-icon icon-excel"><i class="bi bi-file-earmark-excel"></i></a>
-                <a href="#" onclick="return reloadSearch()" class="filter-icon icon-reload"><i class="bi bi-arrow-clockwise"></i></a>
+                <a href="#" onclick="return showTabCompte({{genre}})" class="filter-icon icon-reload"><i class="bi bi-arrow-clockwise"></i></a>
                 
               </div>
             </div>
@@ -277,91 +277,46 @@ function newCompte(isNew = false, genre = 1) {
   function searchCompte() {
     var anchorName = document.location.hash.substring(1);
 
-      showSpinner();
-      setTimeout(function() {
-          // Récupération des valeurs des filtres
-          var nomCompte = document.getElementById('nom_compte').value.toLowerCase();
-          var dateDebut = document.getElementById('dateDu').value;
-          var dateFin = document.getElementById('dateAu').value;
-          // Récupération des lignes du tableau
-          var table = document.getElementById('liste-table-compte');
-          var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    showSpinner();
+    
+    setTimeout(function() {
+        // Récupération des valeurs des filtres
+        var nomCompte = $('#nom_compte').val().toLowerCase();
+        var dateDebut = $('#dateDu').val();
+        var dateFin = $('#dateAu').val();
 
-          // Parcours des lignes pour appliquer les filtres
-          for (var i = 0; i < rows.length; i++) {
-              var row = rows[i];
-              var cells = row.getElementsByTagName('td');
-              var showRow = true;
+        // Réinitialiser les filtres
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            var dateSearch = parseDate(data[3].trim()); // La première colonne est la date
+            var startDateDebut = dateDebut ? parseDate(dateDebut) : null;
+            var endDateFin = dateFin ? parseDate(dateFin) : null;
 
-              // Filtrer par nom de compte
-              if (nomCompte && cells[0].textContent.toLowerCase().indexOf(nomCompte) === -1) {
-                  showRow = false;
-              }
+            var compteMatch = data[0].toLowerCase().indexOf(nomCompte) !== -1;
+            var dateMatch = true;
+            if (startDateDebut && dateSearch < startDateDebut) {
+                dateMatch = false;
+            }
+            if (endDateFin && dateSearch > endDateFin) {
+                dateMatch = false;
+            }
 
-              // Filtrer par dates
-              var dateSearch = parseDate(cells[2].textContent.trim()); // assuming format is d-m-Y
+            return compteMatch && dateMatch;
+        });
 
-              if (dateDebut) {
-                  var startdateDebut = parseDate(dateDebut);
-                  if (dateSearch < startdateDebut) {
-                      showRow = false;
-                  }
-              }
-              if (dateFin) {
-                  var endDateFin = parseDate(dateFin);
-                  if (dateSearch > endDateFin) {
-                      showRow = false;
-                  }
-              }
+        // Mettre à jour DataTables avec les nouveaux filtres
+        $('#liste-table-compte').DataTable().draw();
 
-              // Afficher ou masquer la ligne en fonction du filtre
-              if (showRow) {
-                  row.style.display = '';
-              } else {
-                  row.style.display = 'none';
-              }
-          }
+        // Réinitialiser les filtres après utilisation
+        $.fn.dataTable.ext.search.pop();
 
-          if (anchorName) {
-          window.location.hash = anchorName;
-      }
+        if (anchorName) {
+            window.location.hash = anchorName;
+        }
 
-          // Masquer le spinner après le traitement
-          hideSpinner();
-      }, 2000);
-      
-  }
+        hideSpinner();
+    }, 2000);
+}
 
-  function reloadSearch() {
-    var anchorName = document.location.hash.substring(1);
-
-      showSpinner();
-      setTimeout(function() {
-      // Réinitialiser les filtres
-      document.getElementById('nom_compte').value = '';
-      document.getElementById('dateDu').value = '';
-      document.getElementById('dateAu').value = '';
-
-      // Recharger la DataTable (ou table) à l'état initial
-      var table = document.getElementById('liste-table-compte');
-      var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-
-      for (var i = 0; i < rows.length; i++) {
-          rows[i].style.display = '';
-      }
-
-      if (anchorName) {
-          window.location.hash = anchorName;
-      }
-      
-      // Optionnel : si vous utilisez DataTables, vous pouvez réinitialiser comme ceci :
-      // $('#table-facture').DataTable().search('').draw();
-       // Masquer le spinner après le traitement
-       hideSpinner();
-      }, 2000);
-
-      
-  }
 
   // Ajout de l'événement click à l'icône de recherche
   document.addEventListener('DOMContentLoaded', function() {
