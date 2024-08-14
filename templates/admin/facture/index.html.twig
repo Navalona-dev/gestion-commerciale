@@ -332,121 +332,96 @@ $('#tab-stock').removeClass('active');
 </script>
 
 <script>
-
     function showSpinner() {
-    document.getElementById('spinner').style.display = 'block';
-    document.getElementById('overlay').style.display = 'block';
-  }
-  
-  function hideSpinner() {
-    document.getElementById('spinner').style.display = 'none';
-    document.getElementById('overlay').style.display = 'none';
-  }
+        document.getElementById('spinner').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+    
+    function hideSpinner() {
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
 
-    // Fonction pour convertir une date au format d-m-Y en Date
     function parseDate(dateStr) {
         var parts = dateStr.split('/');
         return new Date(parts[2], parts[1] - 1, parts[0]);
     }
 
-     // Fonction pour obtenir le statut mappé
-     function mapStatus(selectedStatus) {
+    function mapStatus(selectedStatus) {
         var statusMap = {
-            'Non payé': 'Réglée',   // Mappage des valeurs du sélecteur
-            'Payé': 'Réglée',       // Ajustez ce mappage selon votre besoin
+            'Non payé': 'Réglée',
+            'Payé': 'Réglée',
             'Annulé': 'Annulée'
         };
         return statusMap[selectedStatus] || '';
     }
 
-    // Fonction appelée lors du clic sur l'icône de recherche
     function searchFacture() {
-    var anchorName = document.location.hash.substring(1);
+        var anchorName = document.location.hash.substring(1);
 
         showSpinner();
+
         setTimeout(function() {
             // Récupération des valeurs des filtres
-            var nomCompte = document.getElementById('nom_compte').value.toLowerCase();
-            var dateFactureDebut = document.getElementById('date_facture_debut').value;
-            var datePaiementDebut = document.getElementById('date_paiement_debut').value;
-            var dateFactureEnd = document.getElementById('date_facture_end').value;
-            var datePaiementEnd = document.getElementById('date_paiement_end').value;
-            var statut = document.getElementById('filter_status').value.trim();
+            var nomCompte = $('#nom_compte').val() ? $('#nom_compte').val().toLowerCase() : '';
+            var dateFactureDebut = $('#date_facture_debut').val() || '';
+            var datePaiementDebut = $('#date_paiement_debut').val() || '';
+            var dateFactureEnd = $('#date_facture_end').val() || '';
+            var datePaiementEnd = $('#date_paiement_end').val() || '';
+            var statut = $('#filter_status').val() ? $('#filter_status').val().trim() : '';
             var mappedStatut = mapStatus(statut);
 
-            // Récupération des lignes du tableau
-            var table = document.getElementById('table-facture');
-            var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            // Réinitialiser les filtres
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                var dateFacture = parseDate(data[4].trim());
+                var datePaiement = parseDate(data[10].trim());
+                
+                // Vérifier les correspondances
+                var clientMatch = (nomCompte === '' || data[7].toLowerCase().indexOf(nomCompte) !== -1);
+                var statusMatch = (statut === '' || mappedStatut === '' || data[11].trim() === mappedStatut);
 
-            // Parcours des lignes pour appliquer les filtres
-            for (var i = 0; i < rows.length; i++) {
-                var row = rows[i];
-                var cells = row.getElementsByTagName('td');
-                var showRow = true;
-
-                // Filtrer par nom de compte
-                if (nomCompte && cells[7].textContent.toLowerCase().indexOf(nomCompte) === -1) {
-                    showRow = false;
-                }
-
-                // Filtrer par statut
-                var cellStatut = cells[11].textContent.trim();
-                if (mappedStatut && cellStatut !== mappedStatut) {
-                    showRow = false;
-                }
-
-                // Filtrer par dates
-                var dateFacture = parseDate(cells[4].textContent.trim()); // assuming format is d-m-Y
-                var datePaiement = parseDate(cells[10].textContent.trim()); // assuming format is d-m-Y
-
+                // Vérifier les dates
+                var dateFactureMatch = true;
                 if (dateFactureDebut) {
                     var startDateFactureDebut = parseDate(dateFactureDebut);
-                    if (dateFacture < startDateFactureDebut) {
-                        showRow = false;
-                    }
+                    dateFactureMatch = dateFacture >= startDateFactureDebut;
                 }
                 if (dateFactureEnd) {
                     var endDateFactureEnd = parseDate(dateFactureEnd);
-                    if (dateFacture > endDateFactureEnd) {
-                        showRow = false;
-                    }
+                    dateFactureMatch = dateFactureMatch && dateFacture <= endDateFactureEnd;
                 }
+                var datePaiementMatch = true;
                 if (datePaiementDebut) {
                     var startDatePaiementDebut = parseDate(datePaiementDebut);
-                    if (datePaiement < startDatePaiementDebut) {
-                        showRow = false;
-                    }
+                    datePaiementMatch = datePaiement >= startDatePaiementDebut;
                 }
                 if (datePaiementEnd) {
                     var endDatePaiementEnd = parseDate(datePaiementEnd);
-                    if (datePaiement > endDatePaiementEnd) {
-                        showRow = false;
-                    }
+                    datePaiementMatch = datePaiementMatch && datePaiement <= endDatePaiementEnd;
                 }
 
-                // Afficher ou masquer la ligne en fonction du filtre
-                if (showRow) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            }
+                return clientMatch && statusMatch && dateFactureMatch && datePaiementMatch;
+            });
+
+            // Mettre à jour DataTables avec les nouveaux filtres
+            $('#table-facture').DataTable().draw();
+
+            // Réinitialiser les filtres après utilisation
+            $.fn.dataTable.ext.search.pop();
+
             if (anchorName) {
                 window.location.hash = anchorName;
             }
-            // Masquer le spinner après le traitement
+
             hideSpinner();
         }, 2000);
-
-        
     }
-    
-    // Ajout de l'événement click à l'icône de recherche
-    document.addEventListener('DOMContentLoaded', function() {
-        var searchButton = document.querySelector('.icon-check');
-        searchButton.addEventListener('click', searchFacture);
+
+    $(document).ready(function() {
+        $('.icon-check').on('click', searchFacture);
     });
 </script>
+
 
 
     

@@ -1,5 +1,17 @@
 <style>
-  
+  .icon-check {
+    background-color: #2a4ce8;
+    padding: 8px 10px;
+    color: #fff;
+    border-radius: 10px;
+  }
+
+  .icon-reload {
+    background-color: #ffc107;
+    padding: 8px 10px;
+    margin-left: 15px;
+    border-radius: 10px;
+  }
 </style>
 
 <div class="pagetitle">
@@ -14,6 +26,39 @@
   <section class="section">
     <div class="row">
         <div class="col-lg-12">
+          <div class="card p-5">
+            <div class="row">
+              <div class="col-md-10 col-12">
+                <div class="row">
+                  <div class="col-md-4 col-12">
+                    <div class="form-group">
+                      <label for="" class="mb-2">Nom de l'affaire : </label>
+                      <input type="text" class="historique_affaire_name form-control form-control-md" id="historique_affaire_name" placeholder="Entrer le nom de produit">
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <div class="form-group">
+                      <label for="" class="mb-2">Date du : </label>
+                      <input type="text" class="form-control form-control-md historique-affaire-date-du" id="historique-affaire-date-du" placeholder="Entrer la date de début">
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-12">
+                    <div class="form-group">
+                      <label for="" class="mb-2">Date au : </label>
+                      <input type="text" class="form-control form-control-md historique-affaire-date-au" id="historique-affaire-date-au" placeholder="Entrer la date de fin">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-2 col-12 d-flex align-items-center justify-content-center">
+                <div class="form-group">
+                  <a href="#" onclick="return searchHistorique()"><i class="bi bi-check icon-check"></i></a>
+                  <a href="#tab-historique-affaire" onclick="return showTabHistoriqueAffaire()"><i class="bi bi-arrow-clockwise icon-reload"></i></a>
+                </div>
+              </div>
+              
+            </div>
+          </div>
             <div class="card p-5">
                 <div class="card-body">
                     {% if logEmpty %}
@@ -27,7 +72,7 @@
                                 <tr class="text-nowrap">
                                     <th>Date</th>
                                     <th>Message</th>
-                                    <th>Produit</th>
+                                    <th>Commande</th>
                                     <th>Nom du responsable</th>
                                     <th>Adresse e-mail</th>
                                     {#<th>ID Application</th>#}
@@ -117,12 +162,94 @@
 
     })
     
-    $(document).ready(function () {
+    /*$(document).ready(function () {
     $('#customFile').on('change', function () {
         var fileName = $(this).val().split('\\').pop();
         $('#fileLabelText').text(fileName);
     });
-});
+});*/
 
 
   </script>
+
+<script>
+  $(document).ready(function() {
+     var dateFormat = 'yyyy-mm-dd';
+     var dateNow = new Date();
+     dateNow.setDate(dateNow.getDate() + 1);
+
+     $('#historique-affaire-date-du, #historique-affaire-date-au').datepicker({
+         format: dateFormat,
+         todayHighlight: true,
+         language: 'fr',
+         autoclose: true,
+     });
+ });
+
+ function showSpinner() {
+   document.getElementById('spinner').style.display = 'block';
+   document.getElementById('overlay').style.display = 'block';
+ }
+
+ function hideSpinner() {
+   document.getElementById('spinner').style.display = 'none';
+   document.getElementById('overlay').style.display = 'none';
+ }
+
+ // Fonction pour convertir une date au format yyyy-mm-dd en objet Date
+ function parseDate(dateStr) {
+     if (!dateStr) return null;
+     var date = new Date(dateStr);
+     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+ }
+
+ // Fonction appelée lors du clic sur l'icône de recherche
+ function searchHistorique() {
+   var anchorName = document.location.hash.substring(1);
+
+   showSpinner();
+   
+   setTimeout(function() {
+       // Récupération des valeurs des filtres
+       var nomProduit = $('#historique_affaire_name').val().toLowerCase();
+       var dateDebut = $('#historique-affaire-date-du').val();
+       var dateFin = $('#historique-affaire-date-au').val();
+
+       // Réinitialiser les filtres
+       $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+           var dateSearch = parseDate(data[0].trim()); // La première colonne est la date
+           var startDateDebut = dateDebut ? parseDate(dateDebut) : null;
+           var endDateFin = dateFin ? parseDate(dateFin) : null;
+
+           var productMatch = data[2].toLowerCase().indexOf(nomProduit) !== -1;
+           var dateMatch = true;
+           if (startDateDebut && dateSearch < startDateDebut) {
+               dateMatch = false;
+           }
+           if (endDateFin && dateSearch > endDateFin) {
+               dateMatch = false;
+           }
+
+           return productMatch && dateMatch;
+       });
+
+       // Mettre à jour DataTables avec les nouveaux filtres
+       $('#table-historique-affaire').DataTable().draw();
+
+       // Réinitialiser les filtres après utilisation
+       $.fn.dataTable.ext.search.pop();
+
+       if (anchorName) {
+           window.location.hash = anchorName;
+       }
+
+       hideSpinner();
+   }, 2000);
+}
+
+// Ajout de l'événement click à l'icône de recherche
+document.addEventListener('DOMContentLoaded', function() {
+     var searchButton = document.querySelector('.icon-check');
+     searchButton.addEventListener('click', searchHistorique); 
+ });
+</script>
