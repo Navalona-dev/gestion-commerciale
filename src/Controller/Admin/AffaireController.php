@@ -73,6 +73,45 @@ class AffaireController extends AbstractController
 
     }
 
+    #[Route('/', name: '_liste_affaire')]
+    public function liste(Request $request, SessionInterface $session)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+      
+        $data = [];
+        try {
+
+            $statut = $request->request->get('statut');
+
+            $affaires = $this->affaireService->getAffaires($statut);
+
+            if ($affaires == false) {
+                $affaires = [];
+            }
+
+            if($statut == "devis") {
+                $data["html"] = $this->renderView('admin/affaires/devis.html.twig', [
+                    'listes' => $affaires,
+                ]);
+            } elseif($statut == "commande") {
+                $data["html"] = $this->renderView('admin/affaires/commande.html.twig', [
+                    'listes' => $affaires,
+                ]);
+            }
+            
+            
+
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
     #[Route('/refresh', name: '_liste_refresh')]
     public function indexRefresh(
         CompteService $compteService, 

@@ -131,7 +131,133 @@ $(document).ready(function() {
         showTabNewFacture(idAffaire);
     }
 
+    if(anchorName === "tab-devis") {
+        showTabDevisClient('devis');
+    }
+
+    if(anchorName === "tab-commande") {
+        showTabCommandeClient('commande');
+    }
+
 });
+
+function showTabDevisClient(statut = 'devis') {
+    showSpinner();
+    
+    $.ajax({
+            type: 'post',
+            url: '/admin/affaires/',
+            data: {
+                statut: statut
+            },
+            success: function (response) {
+              
+                $("#tab-devis").empty();
+                $("#tab-devis").append(response.html);
+                $("#tab-devis").addClass('active');
+                $('#tab-dashboard').removeClass('active').empty();
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+                $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
+
+                
+                $(".loadBody").css('display', 'none');
+                // Réinitialiser le DataTable avec un léger retard
+                setTimeout(function() {
+                    $('#liste-table-devis').DataTable({
+                        responsive: true,
+                        language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                    },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                    });
+                    hideSpinner();
+                }, 2000);
+
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+                hideSpinner();
+            }
+
+        });
+}
+
+function showTabCommandeClient(statut = 'commande') {
+    showSpinner();
+    
+    $.ajax({
+            type: 'post',
+            url: '/admin/affaires/',
+            data: {
+                statut: statut
+            },
+            success: function (response) {
+              
+                $("#tab-commande").empty();
+                $("#tab-commande").append(response.html);
+                $("#tab-commande").addClass('active');
+                $('#tab-dashboard').removeClass('active').empty();
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+                $('.sidebar-nav #historique a').addClass('collapsed');
+
+                
+                $(".loadBody").css('display', 'none');
+                // Réinitialiser le DataTable avec un léger retard
+                setTimeout(function() {
+                    $('#liste-table-commande').DataTable({
+                        responsive: true,
+                        language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                    },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                    });
+                    hideSpinner();
+                }, 2000);
+
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+                hideSpinner();
+            }
+
+        });
+}
 
 
 function newCompte(isNew = false, genre = 1) {

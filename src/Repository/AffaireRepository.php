@@ -48,6 +48,53 @@ class AffaireRepository extends ServiceEntityRepository
         
     }
 
+    public function getAllAffaires($statut = null)
+    {
+        $results = $this->createQueryBuilder('a')
+            ->select('a.nom as nom_affaire, a.dateCommande, a.dateDevis, a.statut, a.paiement, a.dateFacture, a.dateAnnule, c.nom as nom_compte, a.dateCreation, p.nom as nom_produit, p.reference, p.puHt, p.qtt, p.prixAchat, p.typeVente, p.prixVenteGros, p.prixVenteDetail')
+            ->leftJoin('a.compte', 'c')
+            ->leftJoin('a.products', 'p')
+            ->innerJoin('a.application', 'app')
+            ->andWhere('app.id = :application')
+            ->setParameter('application', $this->application)
+            ->andWhere('a.statut = :statut')
+            ->setParameter('statut', $statut)
+            ->orderBy('a.dateCreation', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    
+        $affaires = [];
+        foreach ($results as $row) {
+            $affaireId = $row['nom_affaire'];
+    
+            if (!isset($affaires[$affaireId])) {
+                $affaires[$affaireId] = [
+                    'nom_affaire' => $row['nom_affaire'],
+                    'dateCreation' => $row['dateCreation'],
+                    'dateDevis' => $row['dateDevis'],
+                    'dateCommande' => $row['dateCommande'],
+                    'dateFacture' => $row['dateFacture'],
+                    'dateAnnule' => $row['dateAnnule'],
+                    'nom_compte' => $row['nom_compte'],
+                    'paiement' => $row['paiement'],
+                    'produits' => []
+                ];
+            }
+    
+            $affaires[$affaireId]['produits'][] = [
+                'nom_produit' => $row['nom_produit'],
+                'reference' => $row['reference'],
+                'qtt' => $row['qtt'],
+                'prixVenteGros' => $row['prixVenteGros'],
+                'prixVenteDetail' => $row['prixVenteDetail'],
+                'typeVente' => $row['typeVente']
+            ];
+        }
+    
+        return $affaires;
+    }
+    
+
     public function searchAffaire(
         $compte,
         $dateDu = null,

@@ -126,4 +126,9 @@ class AffaireService
     {
         return $this->entityManager->getRepository(Affaire::class)->countAll();
     }
+
+    public function getAffaires($statut = null)
+    {
+        return $this->entityManager->getRepository(Affaire::class)->getAllAffaires($statut);
+    }
 }

@@ -114,60 +114,51 @@
     //datatable
     
     $(document).ready(function() {
-      $('#tab-fiche-fournisseur').removeClass('active').empty();
-      $('#tab-quantite-vendu').removeClass('active').empty();
-      $('#tab-notification').removeClass('active').empty();
-      $('#tab-historique-produit').removeClass('active').empty();
-      $('#tab-historique-affaire').removeClass('active').empty();
-      $('#tab-produit-date-peremption').removeClass('active').empty();
+        $('#tab-fiche-fournisseur').removeClass('active').empty();
+        $('#tab-quantite-vendu').removeClass('active').empty();
+        $('#tab-notification').removeClass('active').empty();
+        $('#tab-historique-produit').removeClass('active').empty();
+        $('#tab-historique-affaire').removeClass('active').empty();
+        $('#tab-produit-date-peremption').removeClass('active').empty();
         $('#tab-inventaire-produit').css('display','none');
 
-      $('.tab-categorie').removeClass('active');
-      $('#tab-produit-categorie').removeClass('active');
-      $('.tab-produit-categorie').removeClass('active');
-      $('#tab-categorie').removeClass('active');
+        $('.tab-categorie').removeClass('active');
+        $('#tab-produit-categorie').removeClass('active');
+        $('.tab-produit-categorie').removeClass('active');
+        $('#tab-categorie').removeClass('active');
 
-      $('.tab-user').removeClass('active');
-      $('#tab-utilisateur').removeClass('active');
+        $('.tab-user').removeClass('active');
+        $('#tab-utilisateur').removeClass('active');
 
-      $('.tab-permission').removeClass('active');
-      $('.tab-privilege').removeClass('active');
-      $('.tab-cat-permission').removeClass('active');
-      $('#tab-categorie-permission').removeClass('active');
+        $('.tab-permission').removeClass('active');
+        $('.tab-privilege').removeClass('active');
+        $('.tab-cat-permission').removeClass('active');
+        $('#tab-categorie-permission').removeClass('active');
+        
+        $('#tab-dashboard').removeClass('active');
+        $('#tab-profile').removeClass('active');
       
-      $('#tab-dashboard').removeClass('active');
-      $('#tab-profile').removeClass('active');
-     
-      $('#tab-permission').removeClass('active');
-      $('#tab-privilege').removeClass('active');
-      $('#tab-application').removeClass('active');
-      $('#tab-profile').removeClass('active');
-       $('#tab-compte_1').removeClass('active');
-      $('#tab-produit-type').removeClass('active');
-      $('.tab-produit-type').removeClass('active');
-      $('#tab-transfert-produit').css('display', 'none');
-      $('#affaires_client').removeClass('active').empty();
-       $('#affaires_fournisseur').removeClass('active').empty();
-       $('#tab-info-affaire').removeClass('active').empty();
-       $('#tab-financier-affaire').removeClass('active').empty();
-      $('#tab-fiche-client').removeClass('active').empty();
+        $('#tab-permission').removeClass('active');
+        $('#tab-privilege').removeClass('active');
+        $('#tab-application').removeClass('active');
+        $('#tab-profile').removeClass('active');
+        $('#tab-compte_1').removeClass('active');
+        $('#tab-produit-type').removeClass('active');
+        $('.tab-produit-type').removeClass('active');
+        $('#tab-transfert-produit').css('display', 'none');
+        $('#affaires_client').removeClass('active').empty();
+        $('#affaires_fournisseur').removeClass('active').empty();
+        $('#tab-info-affaire').removeClass('active').empty();
+        $('#tab-financier-affaire').removeClass('active').empty();
+        $('#tab-fiche-client').removeClass('active').empty();
         $('#tab-facture').css('display', 'none');
         $('#tab-facture-affaire').css('display', 'none');
         $('.tab-import-produit').removeClass('active');
         $('#tab-import-produit').removeClass('active');
         $('#tab-nouveau-facture').css('display','none');
-
-      //listStockByProduitSession();
-      /*var table = $('#liste-table-stock').DataTable({
-        responsive: true,
-        language: {
-          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
-      },
-        border: false,
-        scrollX: '100%',
-        pageLength: 10,
-        scrollCollapse: false,
-      });*/
+        $('#tab-devis').css('display','none');
+        $('#tab-commande').css('display','none');
+        
     });
 
     function newStock(isNew = false) {
