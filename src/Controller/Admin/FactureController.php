@@ -239,7 +239,7 @@ class FactureController extends AbstractController
         
         $nomCompte = $request->get('nom_compte');
         $genre = 1;
-        $statutPaiement = $request->get('filter_satatus');
+        $statutPaiement = $request->get('filter_status');
         $datePaieDu = $request->get('date_paiement_debut');
         $datePaieAu = $request->get('date_paiement_end');
         

@@ -1,6 +1,6 @@
         {% if type == "thead" %}
         <tr id="thead_compte" class="text-nowrap">
-            <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
+            <th><input type="checkbox" class="custom-checkbox" name="" id="selectAll"></th>
             <th>Validation</th>
             <th>Actions</th>
             <th>PDF</th>
@@ -21,7 +21,7 @@
         
         <tr class="text-nowrap {% if liste.statut == 'annule' %} bg-danger {% endif %}">
                             <td>
-                                <input type="checkbox" class="custom-checkbox" name="" id="">
+                                <input type="checkbox" class="custom-checkbox" name="facture_ids[]" value="{{ liste.id }}">
                             </td>
                             <td>
                                 {% if liste.isValid == 0 %}
