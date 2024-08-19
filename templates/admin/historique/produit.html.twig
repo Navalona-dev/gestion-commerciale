@@ -1,16 +1,19 @@
 <style>
   .icon-check {
     background-color: #2a4ce8;
-    padding: 8px 10px;
+    padding: 5px 8px;
     color: #fff;
-    border-radius: 10px;
+    border-radius: 5px;
   }
 
   .icon-reload {
     background-color: #ffc107;
-    padding: 8px 10px;
+    padding: 5px 8px;
     margin-left: 15px;
-    border-radius: 10px;
+    border-radius: 5px;
+  }
+  .title {
+    color: #04176d;
   }
 </style>
 
@@ -26,32 +29,37 @@
   <section class="section">
     <div class="row">
         <div class="col-lg-12">
-          <div class="card p-5">
+          <div class="card p-3 p-lg-5">
             <div class="row">
-              <div class="col-md-10 col-12">
+              <div class="col-md-3 col-12 d-flex justify-content-center align-items-center">
+                <h3 class="fw-bold title">Filtre historique</h3>
+              </div>
+              <div class="col-md-7 col-12 ">
                 <div class="row">
-                  <div class="col-md-4 col-12">
-                    <div class="form-group">
+                  <div class="col-md-6 col-12 ">
+                    <div class="form-group mb-3">
                       <label for="" class="mb-2">Nom de produit : </label>
                       <input type="text" class="product_name form-control form-control-md" id="product_name" placeholder="Entrer le nom de produit">
                     </div>
+                    <div class="form-group mb-3">
+                      <label for="" class="mb-2">Responsable : </label>
+                      <input type="text" class="product_responsable form-control form-control-md" id="product_responsable" placeholder="Entrer le nom de produit">
+                    </div>
                   </div>
-                  <div class="col-md-4 col-12">
-                    <div class="form-group">
+                  <div class="col-md-6 col-12 ">
+                    <div class="form-group mb-3">
                       <label for="" class="mb-2">Date du : </label>
                       <input type="text" class="form-control form-control-md historique-date-du" id="historique-date-du" placeholder="Entrer la date de début">
                     </div>
-                  </div>
-                  <div class="col-md-4 col-12">
-                    <div class="form-group">
+                    <div class="form-group mb-3">
                       <label for="" class="mb-2">Date au : </label>
                       <input type="text" class="form-control form-control-md historique-date-au" id="historique-date-au" placeholder="Entrer la date de fin">
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="col-md-2 col-12 d-flex align-items-center justify-content-center">
-                <div class="form-group">
+              <div class="col-md-2 col-12  d-flex align-items-center justify-content-center">
+                <div class="form-group mb-3">
                   <a href="#" onclick="return searchHistorique()"><i class="bi bi-check icon-check"></i></a>
                   <a href="#tab-historique-produit" onclick="return showTabHistoriqueProduit()"><i class="bi bi-arrow-clockwise icon-reload"></i></a>
                 </div>
@@ -59,7 +67,7 @@
               
             </div>
           </div>
-            <div class="card p-5">
+            <div class="card p-3 p-lg-5">
                 <div class="card-body">
                     {% if logEmpty %}
                         <div class="alert alert-warning p-3">
@@ -146,7 +154,8 @@
       
         $('#tab-application').removeClass('active');
         $('#tab-profile').removeClass('active');
-        $('#tab-compte_1').removeClass('active');
+         $('#tab-compte_1').removeClass('active');
+        $('#tab-compte_2').removeClass('active');
         $('#tab-transfert-produit').css('display', 'none');
         $('#affaires_client').removeClass('active').empty();
         $('#affaires_fournisseur').removeClass('active').empty();
@@ -208,6 +217,7 @@
    setTimeout(function() {
        // Récupération des valeurs des filtres
        var nomProduit = $('#product_name').val().toLowerCase();
+       var nomResponsable = $('#product_responsable').val().toLowerCase();
        var dateDebut = $('#historique-date-du').val();
        var dateFin = $('#historique-date-au').val();
 
@@ -218,6 +228,7 @@
            var endDateFin = dateFin ? parseDate(dateFin) : null;
 
            var productMatch = data[2].toLowerCase().indexOf(nomProduit) !== -1;
+           var responsableMatch = data[3].toLowerCase().indexOf(nomResponsable) !== -1;
            var dateMatch = true;
            if (startDateDebut && dateSearch < startDateDebut) {
                dateMatch = false;
@@ -226,7 +237,7 @@
                dateMatch = false;
            }
 
-           return productMatch && dateMatch;
+           return productMatch && dateMatch && responsableMatch;
        });
 
        // Mettre à jour DataTables avec les nouveaux filtres

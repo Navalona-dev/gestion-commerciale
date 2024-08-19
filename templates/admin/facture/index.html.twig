@@ -72,48 +72,19 @@
                 <div class="col-lg-12">
                 <div class="card card-head py-4 px-3">
                     <div class="row">
-                        <div class="col-md-3 col-12 d-flex align-items-center justify-content-center">
+                        <div class="col-md-2 col-12 d-flex align-items-center justify-content-center">
                             <div class="title">
                                 <h3 class="fw-bold">Factures clients</h3>
                             </div>
                         </div>
-                        
                         <div class="col-md-8 col-12">
                             <div class="row">
                                 <div class="col-md-4 col-12">
                                     <div class="input-group mb-3">
-                                            <div>&nbsp;</div>
-                                        {# <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-people-fill"></i></span>
-                                        <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" /> #}
-                                        {# <select name="filter_compte" id="filter_compte" class="mb-3 form-control form-control-md" style="border-left: none;">
-                                            <option value="" disabled selected><span class="mx-3">Tapez le nom du client</span></option>
-                                            <option value="Client 1">Client 1</option>
-                                            <option value="Client 2">Client 2</option>
-                                            <option value="Client 3">Client 3</option>
-                                            <option value="Client 4">Client 4</option>
-                                        </select> #}
-                                    </div>
-                                    <p class="d-flex justify-content-end mb-4">Date facture</p>
-                                    <p class="d-flex justify-content-end mb-3">Date de paiement</p>
-                                </div>
-                                <div class="col-md-4 col-12">
-                                    <div class="input-group mb-3">
                                         <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-people-fill"></i></span>
                                         <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" autocomplete="off" placeholder="Nom du client" />
-                                        {# <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-file-earmark-text-fill"></i></span>
-                                        <select name="filter_facture" id="filter_facture" class="mb-3 form-control form-control-md" style="border-left: none;">
-                                            <option value="" disabled selected><span class="mx-3">Toutes les factures</span></option>
-                                            <option value="Facture 1">Facture 1</option>
-                                            <option value="Facture 2">Facture 2</option>
-                                            <option value="Facture 3">Facture 3</option>
-                                            <option value="Facture 4">Facture 4</option>
-                                        </select> #}
+                                        
                                     </div>
-
-                                    <input type="text" name="date_facture_debut" id="date_facture_debut" class="mb-3 form-control form-control-ms date-facture" placeholder="Du dd/mm/yyyy">
-                                    <input type="text" name="date_paiement_debut" id="date_paiement_debut" class="mb-3 form-control form-control-ms date-facture" placeholder="Du dd/mm/yyyy">
-                                </div>
-                                <div class="col-md-4 col-12">
                                     <div class="input-group">
                                         {% set statutPaiement = constant('App\\Entity\\Affaire::PAIEMENT') %}
                                         <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-check-circle-fill"></i></span>
@@ -124,24 +95,31 @@
                                             {% endfor %}
                                         </select>
                                     </div>
+                                </div>
+                                <div class="col-md-4 col-12">
+                                    <input type="text" name="date_facture_debut" id="date_facture_debut" class="mb-3 form-control form-control-ms date-facture" placeholder="Facture du dd/mm/yyyy">
                                     <input type="text" name="date_facture_end" id="date_facture_end" class="mb-3 form-control form-control-ms date-facture" placeholder="Au dd/mm/yyyy">
+
+                                </div>
+                                <div class="col-md-4 col-12">
+                                    <input type="text" name="date_paiement_debut" id="date_paiement_debut" class="mb-3 form-control form-control-ms date-facture" placeholder="Paiement du dd/mm/yyyy">
                                     <input type="text" name="date_paiement_end" id="date_paiement_end" class="mb-3 form-control form-control-ms date-facture" placeholder="Au dd/mm/yyyy">
+
                                 </div>
                             </div>
-                        
                         </div>
-                        <div class="col-md-1 col-12 d-flex align-items-center justify-content-center">
+                        <div class="col-md-2 col-12 d-flex align-items-center justify-content-center">
                             <div class="text-center">
-                                <a style="cursor: pointer;" onclick="return searchFacture()" class="icon-check"><i class="bi bi-check"></i></a> <br/><br>
+                                <a style="cursor: pointer;" onclick="return searchFacture()" class="icon-check"><i class="bi bi-check"></i></a>
                                 <a style="cursor: pointer;" onclick="return showTabFacture()" class="icon-reload"><i class="bi bi-arrow-clockwise"></i></a>
                             </div>
                         </div>
-                        
                     </div>
+                   
                 </div>
 
                 <div class="card" id="factureList">
-                    <div class="card-body p-5">
+                    <div class="card-body p-3 p-lg-5">
                         <div class="form-group d-flex justify-content-end mb-4">
                             <div class="dropdown">
                                 <a class=" export-btn bg-warning p-2 dropdown-toggle text-black btn-list" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
@@ -267,8 +245,8 @@
         $('#tab-produit-categorie').removeClass('active');
         $('.tab-produit-categorie').removeClass('active');
         $('#tab-categorie').removeClass('active');
-        $('.tab-import-produit').removeClass('active');
-        $('#tab-import-produit').removeClass('active');
+        $('.tab-import-produit').css('display', 'none');
+        $('#tab-import-produit').css('display', 'none');
 
 
         $('.tab-user').removeClass('active');
@@ -293,7 +271,8 @@
     
         $('#tab-application').removeClass('active');
         $('#tab-profile').removeClass('active');
-        $('#tab-compte_1').removeClass('active');
+         $('#tab-compte_1').removeClass('active');
+        $('#tab-compte_2').removeClass('active');
         $('#tab-produit-type').removeClass('active');
         $('.tab-produit-type').removeClass('active');
         $('#tab-import-produit').css('display', 'none');

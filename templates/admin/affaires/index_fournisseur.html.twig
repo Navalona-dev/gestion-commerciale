@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-lg-12">
         {% include 'admin/affaires/entete_compte.html.twig' with {'compte': compte} %}
-       <div class="card p-5">
+       <div class="card p-3 p-lg-5">
         <table class="table table-striped" id="table-produit-fournisseur" style="width: 100%;">
             <thead>
                 <tr>
@@ -50,8 +50,8 @@
         $('#tab-produit-categorie').removeClass('active');
         $('.tab-produit-categorie').removeClass('active');
         $('#tab-categorie').removeClass('active');
-        $('.tab-import-produit').removeClass('active');
-        $('#tab-import-produit').removeClass('active');
+        $('.tab-import-produit').css('display', 'none');
+        $('#tab-import-produit').css('display', 'none');
             $('#tab-inventaire-produit').css('display','none');
 
         $('.tab-user').removeClass('active');

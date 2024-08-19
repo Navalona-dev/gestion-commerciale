@@ -40,7 +40,6 @@ $(document).ready(function() {
         showTabProduitCategorie();
     }
 
-    var anchorName = document.location.hash.substring(1);
     if (anchorName === "tab-compte_1") {
         showTabCompte(1);
     }
@@ -52,19 +51,11 @@ $(document).ready(function() {
         showTabProduitType();
     }
 
-   /* if (anchorName === "tab-stock") {
-        listStockByProduitSession();
-    }*/
-
-    /*if (anchorName === "tab-produit-image") {
-        listImageByProduitSession();
-    }*/
     if (anchorName === "tab-import-produit") {
         showTabImportProduit();
     }
 
     if (anchorName === "tab-transfert-produit") {
-        //listTransfertByProduitSession();
         listTransfert(idProduit);
     }
 
@@ -155,6 +146,7 @@ function showTabDevisClient(statut = 'devis') {
                 $("#tab-devis").empty();
                 $("#tab-devis").append(response.html);
                 $("#tab-devis").addClass('active');
+                $('.sidebar-nav a[href="#tab-devis"]').removeClass('collapsed');
                 $('#tab-dashboard').removeClass('active').empty();
                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
@@ -172,6 +164,7 @@ function showTabDevisClient(statut = 'devis') {
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
 
                 
                 $(".loadBody").css('display', 'none');
@@ -214,6 +207,7 @@ function showTabCommandeClient(statut = 'commande') {
                 $("#tab-commande").empty();
                 $("#tab-commande").append(response.html);
                 $("#tab-commande").addClass('active');
+                $('.sidebar-nav a[href="#tab-commande"]').removeClass('collapsed');
                 $('#tab-dashboard').removeClass('active').empty();
                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
@@ -231,6 +225,7 @@ function showTabCommandeClient(statut = 'commande') {
                 $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
 
                 
                 $(".loadBody").css('display', 'none');
@@ -687,9 +682,11 @@ function showTabCompte(genre = 1) {
             $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
-                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
-                $('.sidebar-nav #historique a').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+            $('.sidebar-nav #historique a').addClass('collapsed');
 
 
             // Hide all compte tabs
@@ -697,6 +694,14 @@ function showTabCompte(genre = 1) {
 
             // Show the selected compte tab
             $('#tab-compte_' + genre).append(response.html).addClass('active');
+
+            $('.sidebar-nav a[href^="#tab-compte_"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-compte_' + genre + '"]').removeClass('collapsed').tab('show');
+
+            // Handle sidebar navigation
+          
+            $(".loadBody").css('display', 'none');
+
 
             if (genre == 1) {
                 $('.compte-title').text("clients");
@@ -706,13 +711,6 @@ function showTabCompte(genre = 1) {
                 $('.option-compte').text('Nom du fournisseur');
 
             }
-
-            // Handle sidebar navigation
-            $('.sidebar-nav a[href^="#tab-compte_"]').addClass('collapsed');
-            $('.sidebar-nav a[href="#tab-compte_' + genre + '"]').removeClass('collapsed').tab('show');
-
-            $(".loadBody").css('display', 'none');
-
             setTimeout(function() {
                 $('#liste-table-compte').DataTable({
                     responsive: true,
@@ -735,6 +733,7 @@ function showTabCompte(genre = 1) {
         }
     });
 }
+
 
 function showTabProfile() {
     showSpinner();
@@ -1125,6 +1124,8 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
@@ -1173,6 +1174,8 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1229,7 +1232,8 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
-
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1287,6 +1291,8 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
                  setTimeout(function() {
@@ -1342,6 +1348,8 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1386,6 +1394,8 @@ function financier(id = null) {
                 $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                 $(".loadBody").css('display', 'none');
                 setTimeout(function() {
@@ -1437,6 +1447,8 @@ function ficheClient(id = null, genre = 1) {
                 $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                 $("#entete-affaire").addClass('d-none');
                
@@ -1494,6 +1506,8 @@ function listAffaireByCompte(id = null, genre = 1) {
                 $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                 
                 $(".loadBody").css('display', 'none');
@@ -1542,6 +1556,8 @@ function showTabFacture() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
 
                  $(".loadBody").css('display', 'none');
@@ -1596,6 +1612,8 @@ function showTabFacture() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
 
                  $(".loadBody").css('display', 'none');
@@ -1648,6 +1666,8 @@ function showTabFacture() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1720,6 +1740,8 @@ function listImage(id = null) {
                 $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                 $(".loadBody").css('display', 'none');
 
@@ -1771,6 +1793,8 @@ function listTransfert(id = null) {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1823,6 +1847,8 @@ function listTransfert(id = null) {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1875,6 +1901,8 @@ function listTransfert(id = null) {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1951,6 +1979,8 @@ function showTabNotification() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1992,7 +2022,9 @@ function showTabNotification() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');  
+                 $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');              
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
@@ -2044,7 +2076,9 @@ function showTabNotification() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed'); 
+                 $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');               
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
@@ -2096,7 +2130,9 @@ function showTabNotification() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');      
+                 $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');          
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {

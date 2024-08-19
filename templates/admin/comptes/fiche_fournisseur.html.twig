@@ -12,6 +12,12 @@
     border: 1px solid grey;
     padding: 10px;
   }
+
+  @media screen and (max-width: 750px) {
+    .title {
+      font-size: 15px !important;
+    }
+  }
 </style>
 <section class="section" id="fiche-client">
   <div class="id-compte-fiche-client" data-compte="{{compte.id}}"></div>
@@ -29,7 +35,7 @@
                 </div>  
                 
                 <div class="col-md-10 col-12">
-                    <div class="card p-5">
+                    <div class="card p-3 p-lg-5">
                       <div class="d-flex justify-content-between align-items-center">
                         <h4 class="title fw-bold"><i class="bi bi-person-square"></i> <span class="mx-2">Détails du fournisseur</span></h4>
                         <p>Logo du fournisseur</p>
@@ -79,9 +85,9 @@
                           </div>
                         </div>
                         <div class="d-flex justify-content-end form-group mt-4">
-                          <a href="#" class="fiche-btn bg-danger mx-2"><i class="bi bi-trash-fill"></i></a>
+                          <a href="#tab-compte_2" onclick="return deleteFournisseur({{compte.id}}, {{compte.genre}})" class="fiche-btn bg-danger mx-2"><i class="bi bi-trash-fill"></i></a>
                           <button type="submit" class="fiche-btn bg-success mx-2" title="Modifier"><i class="bi bi-pencil-square"></i></button>
-                          <a href="#" class="btn btn-primary btn-sm px-3 mx-2 text-decoration-underline"><i class="bi bi-plus"></i>d'info</a>
+                          {#<a href="#" class="btn btn-primary btn-sm px-3 mx-2 text-decoration-underline"><i class="bi bi-plus"></i>d'info</a>#}
                         </div>
                         {{form_end(form)}}
                       </div>
@@ -107,8 +113,8 @@
         $('#tab-produit-categorie').removeClass('active');
         $('.tab-produit-categorie').removeClass('active');
         $('#tab-categorie').removeClass('active');
-        $('.tab-import-produit').removeClass('active');
-        $('#tab-import-produit').removeClass('active');
+        $('.tab-import-produit').css('display', 'none');
+        $('#tab-import-produit').css('display', 'none');
         $('#tab-produit-date-peremption').removeClass('active').empty();
         $('#tab-inventaire-produit').css('display','none');
 
@@ -184,4 +190,42 @@
         });
     });
    
+    function deleteFournisseur(id = null, genre = 2) {
+      var anchorName = document.location.hash.substring(1);
+         let currentCompte = "fournisseur";
+         let titleCompte = "fournisseur";
+        if (confirm('Voulez vous vraiment supprimer cet '+titleCompte+'?')) {
+            $.ajax({
+                url: '/admin/comptes/delete/'+id,
+                type: 'POST',
+                data: {category: id},
+                success: function (response) {
+                    var nextLink = $('#sidebar').find('li#'+currentCompte).find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Suppression effectuée');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }
+
+                    if (anchorName === "tab-compte_2") {
+                        showTabCompte(2);
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la suppression de la compte.');
+                }
+            });
+        }
+    }
+
 </script>

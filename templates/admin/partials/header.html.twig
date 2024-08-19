@@ -77,24 +77,8 @@
           </a>
           <ul class="p-4 dropdown-menu dropdown-menu-end dropdown-menu-arrow profile list-app custom-dropdown-width">
             <div class="row">
-              {# <div class="col-4 mb-3">
-                  <a href="#" class="work-post-content">
-                    <div class="d-flex justify-content-center">
-                      <i class="bi-tags icons"></i>
-                    </div>
-                  <p class="text-center tesmall>Categories</small></p>
-                  </a>
-              </div> #}
               <div class="col-4 mb-3">
-                <a href="#tab-utilisateur" onClick="return showTabUtilisateur()" class="work-post-content">
-                  <div class="d-flex justify-content-center">
-                    <i class="bi bi-person icons"></i>
-                  </div>
-                  <p class="text-center"><small>Utilisateurs</small></p>
-                </a>
-              </div>
-              <div class="col-4 mb-3">
-                <a href="#tab-application" onClick="return showTabApplication()" class="work-post-content">
+                <a href="#tab-application" onclick="return showTabApplication()" class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-app icons"></i>
                   </div>
@@ -102,31 +86,7 @@
                 </a>
               </div>
               <div class="col-4 mb-3">
-                <a href="#tab-permission" onClick="return showTabPermission()" class="work-post-content">
-                  <div class="d-flex justify-content-center">
-                    <i class="bi bi-shield-lock icons"></i>
-                  </div>
-                  <p class="text-center"><small>Permissions</small></p>
-                </a>
-              </div>
-              <div class="col-4 mb-3">
-                <a href="#tab-privilege" onClick="return showTabPrivilege()" class="work-post-content">
-                  <div class="d-flex justify-content-center">
-                    <i class="bi bi-award icons"></i>
-                  </div>
-                  <p class="text-center"><small>Privilèges</small></p>
-                </a>
-              </div>
-              <div class="col-4 mb-3">
-                <a href="#tab-categorie-permission" onClick="return showTabCategoriePermission()" class="work-post-content">
-                  <div class="d-flex justify-content-center">
-                    <i class="bi bi-folder icons"></i>
-                  </div>
-                  <p class="text-center"><small>Catégorie permission</small></p>
-                </a>
-              </div>
-              <div class="col-4 mb-3">
-                <a href="#tab-categorie" onClick="return showTabCategorie()" class="work-post-content">
+                <a href="#tab-categorie" onclick="return showTabCategorie()" class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-tags icons"></i>
                   </div>
@@ -134,7 +94,55 @@
                 </a>
               </div>
               <div class="col-4 mb-3">
-                <a href="#tab-produit-categorie" onClick="return showTabProduitCategorie()"  class="work-post-content">
+                <a href="#tab-categorie-permission" onclick="return showTabCategoriePermission()" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-folder icons"></i>
+                  </div>
+                  <p class="text-center"><small>Catégorie permission</small></p>
+                </a>
+              </div>
+              <div class="col-4 mb-3">
+                <a href="#tab-compte_1" onclick="return showTabCompte(1)" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-people icons"></i>
+                  </div>
+                  <p class="text-center"><small>Clients</small></p>
+                </a>
+              </div>
+              <div class="col-4 mb-3">
+                <a href="#tab-compte_2" onclick="return showTabCompte(2)" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-people icons"></i>
+                  </div>
+                  <p class="text-center"><small>Fournisseurs</small></p>
+                </a>
+              </div>
+              <div class="col-4 mb-3">
+                <a class="work-post-content" href="#tab-import-produit" onclick="return showTabImportProduit()">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-upload icons"></i>
+                  </div>
+                  <p class="text-center"><small>Import</small></p>
+                </a>
+              </div>
+              <div class="col-4 mb-3">
+                <a href="#tab-permission" onclick="return showTabPermission()" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-shield-lock icons"></i>
+                  </div>
+                  <p class="text-center"><small>Permissions</small></p>
+                </a>
+              </div>
+              <div class="col-4 mb-3">
+                <a href="#tab-privilege" onclick="return showTabPrivilege()" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-award icons"></i>
+                  </div>
+                  <p class="text-center"><small>Privilèges</small></p>
+                </a>
+              </div>
+              <div class="col-4 mb-3">
+                <a href="#tab-produit-categorie" onclick="return showTabProduitCategorie()"  class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-basket icons"></i>
                   </div>
@@ -142,11 +150,19 @@
                 </a>
               </div>
               <div class="col-4 mb-3">
-                <a class="work-post-content" href="#tab-import-produit" onClick="return showTabImportProduit()">
+                <a href="#tab-utilisateur" onclick="return showTabUtilisateur()" class="work-post-content">
                   <div class="d-flex justify-content-center">
-                    <i class="bi bi-upload icons"></i>
+                    <i class="bi bi-person icons"></i>
                   </div>
-                  <p class="text-center"><small>Import</small></p>
+                  <p class="text-center"><small>Utilisateurs</small></p>
+                </a>
+              </div>
+              <div class="col-4 mb-3">
+                <a class="work-post-content" href="#tab-produit-type" onclick="return showTabProduitType()">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-sliders icons"></i>
+                  </div>
+                  <p class="text-center"><small>Type de produit</small></p>
                 </a>
               </div>
               

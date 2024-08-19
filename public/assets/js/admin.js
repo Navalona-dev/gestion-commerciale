@@ -407,14 +407,29 @@ document.addEventListener('DOMContentLoaded', function() {
   /**
    * Add event listener to close sidebar on menu item click in responsive mode
    */
-  const menuItems = select('#sidebar-nav .nav-link', true);
   const isSmallScreen = window.matchMedia('(max-width: 1023.5px)').matches;
 
   if (isSmallScreen) {
-    on('click', '#sidebar-nav .nav-link', function() {
+    on('click', '#sidebar-nav .nav-link, .historique-link', function(event) {
+      const clickedElement = event.target;
+      const parentNavItem = clickedElement.closest('.nav-item');
+  
+      // Si un sous-menu dans "Historique" est cliqué, fermer la sidebar
+      if (parentNavItem && parentNavItem.id === 'historique' && clickedElement.closest('.nav-content')) {
+        closeSidebar();
+        return; // Arrêter l'exécution ici
+      }
+  
+      // Ne pas fermer la sidebar si le menu principal "Historique" est cliqué
+      if (parentNavItem && parentNavItem.id === 'historique') {
+        return; // Ne rien faire pour le menu principal
+      }
+  
+      // Pour tous les autres éléments de menu, fermer la sidebar
       closeSidebar();
     }, true);
   }
+  
 
   /**
    * Add or remove event listener on window resize

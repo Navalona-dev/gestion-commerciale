@@ -82,6 +82,21 @@ class CompteService
 
     public function remove($compte)
     {
+        $factures = $compte->getFactures();
+        foreach($factures as $facture) {
+            $factureDetails = $facture->getFactureDetails();
+            foreach($factureDetails as $factureDetail) {
+                $this->entityManager->remove($factureDetail);
+            }
+            $this->entityManager->remove($facture);
+        }
+
+        $affaires = $compte->getAffaires();
+
+        foreach($affaires as $affaire) {
+            $this->entityManager->remove($affaire);
+        }
+
         $this->entityManager->remove($compte);
     }
 
