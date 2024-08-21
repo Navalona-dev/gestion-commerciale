@@ -102,7 +102,15 @@ class AffaireService
             foreach($factureDetails as $factureDetail) {
                 $this->entityManager->remove($factureDetail);
             }
+
+            $factureEcheances = $facture->getFactureEcheances();
+            foreach($factureEcheances as $factureEcheance) {
+                $this->entityManager->remove($factureEcheance);
+            }
+
             $this->entityManager->remove($facture);
+
+            
         }
         $this->entityManager->remove($affaire);
     }

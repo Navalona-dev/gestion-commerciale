@@ -96,24 +96,22 @@
                             <table class="table table-striped" id="table-facture-affaire" style="width: 100%;">
                                 <thead>
                                     <tr class="text-nowrap">
-                                        <tr class="text-nowrap">
-                                            <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
-                                            <th>Validation</th>
-                                            <th>Actions</th>
-                                            <th>PDF</th>
-                                            <th>Date</th>
-                                            <th>Type</th>
-                                            <th>N°</th>
-                                            <th>Compte</th>
-                                            <th>Affaire</th>
-                                            <th>Prix TTC</th>
-                                            <th>Prix HT</th>
-                                            <th>Règlement</th>
-                                            <th>Status</th>
-                                            <th>Solde</th>
-                                            <th>État</th>
-                                            <th>Rémise</th>
-                                        </tr>
+                                        <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
+                                        <th>Validation</th>
+                                        <th>Actions</th>
+                                        <th>PDF</th>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>N°</th>
+                                        <th>Compte</th>
+                                        <th>Affaire</th>
+                                        <th>Prix TTC</th>
+                                        <th>Prix HT</th>
+                                        <th>Règlement</th>
+                                        <th>Status</th>
+                                        <th>Solde</th>
+                                        <th>État</th>
+                                        <th>Rémise</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -138,6 +136,7 @@
                                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                                     <li><a style="cursor: pointer;" class="dropdown-item">Modifier</a></li>
                                                     <li><a style="cursor: pointer;" class="dropdown-item">Supprimer</a></li>
+                                                    <li><a href="#tab-echeance" onclick="return showTabEcheance({{liste.id}})" class="dropdown-item">Écheance</a></li>
                                                 </ul>
                                             </div>
                                         </td>

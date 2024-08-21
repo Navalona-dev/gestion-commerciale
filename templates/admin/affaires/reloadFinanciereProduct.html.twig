@@ -17,6 +17,24 @@
     color: #000;
 }
 
+.icon-echeance {
+    width: 44px;
+    height: 40px;
+    background-color: #0d6efd; 
+    color: #fff;
+    font-size: 24px; 
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #0d6efd !important; 
+    cursor: pointer;
+}
+
+.icon-echeance:hover {
+    color: #fff;
+}
+
 .icon-detail {
     width: 44px;
     height: 40px;
@@ -73,13 +91,17 @@
                             {% else %}
                                 {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
                                 <div class="col-md-2 col-12">
-                                    {% if affaire.products|length > 0 %}
                                     <div class="d-flex justify-content-end">
-                                        <a title="Payé" target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="icon-paye d-flex align-items-center justify-content-center border border-secondary">
-                                            <i class="bi bi-credit-card-2-front-fill"></i>
+                                        {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
+                                            <a title="Payé" target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="icon-paye d-flex align-items-center justify-content-center border border-secondary">
+                                                <i class="bi bi-credit-card-2-front-fill"></i>
+                                            </a>
+                                        {% endif %}
+
+                                        <a href="#" title="Facture écheance" class="icon-echeance" onclick="return openModalFactureEcheance({{affaire.id}})">
+                                            <i class="bi bi-calendar-heart-fill"></i>
                                         </a>
                                     </div>
-                                    {% endif %}
                                 </div>
                                 {% else %}
                                     {% if affaire.paiement is not null and affaire.paiement == "annule" %}
@@ -154,7 +176,7 @@
                                     <td class="align-middle text-center">0,00€</td>
                                     <td class="align-middle text-center">20%</td> #}
                                     <td>
-                                        {% if affaire.paiement is not null and affaire.paiement != "paye" and affaire.paiement != "annule" or affaire.paiement is null %}
+                                        {% if affaire.paiement is null or (affaire.paiement != "paye" and affaire.paiement != "annule" and affaire.paiement != "enecheance") %}
                                         <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
                                         {# <a href="#" class="action-plus d-block text-center mb-2"><i class="bi bi-plus"></i></a>
                                         <a href="#" class="action-list d-block text-center mb-2"><i class="bi bi-list-ul"></i></a> #}
@@ -193,10 +215,13 @@
                                     </a>
                                 {% else %}
                                     {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
-                                    <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
-                                    {% if affaire.products|length > 0 %}
-                                        <a target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
-                                    {% endif %}
+                                        <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
+                                        {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
+                                            <a target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
+                                        {% endif %}
+                                        <a href="#" title="Facture écheance" class="text-success financier-icon" onclick="return openModalFactureEcheance({{affaire.id}})">
+                                            <i class="bi bi-calendar-heart-fill"></i>
+                                        </a>
                                     {% endif %}
                                 {% endif %}
                                     {#<a href="#" class="text-danger financier-icon"><i class="bi bi-database-fill-check"></i></a>

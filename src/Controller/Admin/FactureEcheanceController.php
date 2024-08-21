@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Affaire;
+use App\Entity\Facture;
 use App\Entity\FactureEcheance;
 use App\Service\ProductService;
 use App\Form\AddFactureEcheanceType;
@@ -109,4 +110,29 @@ class FactureEcheanceController extends AbstractController
             throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
         }
     }
+
+    #[Route('/liste/{facture}', name: '_liste')]
+    public function liste(Facture $facture, Request $request): Response
+    {
+        $request->getSession()->set('idFacture', $facture->getId());
+
+        $data = [];
+
+        try {
+
+            $factureEcheances = $facture->getFactureEcheances();
+
+            $data['exception'] = "";
+            $data["html"] = $this->renderView('admin/facture_echeance/index.html.twig', [
+               'affaire' => $facture->getAffaire(),
+               'listes' => $factureEcheances
+            ]);
+           
+            return new JsonResponse($data);
+
+        } catch (PropertyVideException $PropertyVideException) {
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        }
+    }
+   
 }

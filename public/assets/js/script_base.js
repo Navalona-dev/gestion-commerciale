@@ -5,6 +5,7 @@ $(document).ready(function() {
     var idAffaire = $('.id-affaire').data('affaire');
     var idCompte = $('.id-compte').data('compte');
     var idProduit = $('.id-produit').data('produit');
+    var idFacture = $('.id-facture').data('facture');
 
     if (anchorName === "affaires_client") {
         showTabAffaireClient();
@@ -130,7 +131,71 @@ $(document).ready(function() {
         showTabCommandeClient('commande');
     }
 
+    if(anchorName === "tab-echeance") {
+        showTabEcheance(idFacture);
+    }
+
 });
+
+function showTabEcheance(id = null) {
+    showSpinner();
+    
+    $.ajax({
+            type: 'post',
+            url: '/admin/facture/echeance/liste/'+id,
+            data: {
+            },
+            success: function (response) {
+              
+                $("#tab-echeance").empty();
+                $("#tab-echeance").append(response.html);
+                $("#tab-echeance").addClass('active');
+                $('.sidebar-nav a[href="#tab-echeance"]').removeClass('collapsed');
+                $('#tab-dashboard').removeClass('active').empty();
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+                $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
+
+                
+                $(".loadBody").css('display', 'none');
+                // Réinitialiser le DataTable avec un léger retard
+                setTimeout(function() {
+                    $('#table-date-echeance').DataTable({
+                        responsive: true,
+                        language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                    },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                    });
+                    hideSpinner();
+                }, 2000);
+
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+                hideSpinner();
+            }
+
+        });
+}
 
 function showTabDevisClient(statut = 'devis') {
     showSpinner();
