@@ -1,0 +1,49 @@
+{% block _add_facture_echeance_factureEcheances_widget %}
+
+    {{ form_widget(form) }}
+
+    <input type="hidden" id="widgets-counter" value="0">
+
+    <div class="form-group ">
+        <a class=" mt-3 btn btn-primary btn-sm" style="cursor: pointer;" id="add-echeance"> Ajouter une échenace </a>
+    </div>
+    
+{% endblock %}
+
+{% block _add_facture_echeance_factureEcheances_entry_row %}
+    {{ form_widget(form) }}
+{% endblock %}
+
+{% block _add_facture_echeance_factureEcheances_entry_widget %}
+    <div class="form-content mt-3 mb-3" id="block_{{id}}">
+        <div class="row">
+            <div class="col-lg-11">
+                <label for="" class="mb-2 fw-bold text-decoration-underline">Echeance n° <span class="echeance-number">0</span></label>
+                <div class="form-group mb-3">
+                    <label for="" class="mb-2">Montant à payer <span class="text-danger">*</span></label>
+                    {{ form_widget(form.montant) }}
+                </div>
+                <div class="form-group mb-3">
+                    <label for="" class="mb-2">Délais de paiement <span class="text-danger">*</span></label>
+                    {{ form_widget(form.delaiPaiement) }}
+                </div>
+                <div class="form-group mb-3">
+                    <label for="" class="mb-2">Date écheance <span class="text-danger">*</span></label>
+                    {{ form_widget(form.dateEcheance) }}
+                </div>
+                <div class="form-group mb-3">
+                    <p class="fw-bold">La date d'écheance sera <span class="date-echeance-text"></span></p>
+                </div>
+            </div>
+            <div class="col-lg-1">
+                <a class="text-danger delete-button" type="button" data-action="delete" data-target="#block_{{id}}"><i class="bi bi-trash"></i></a>
+            </div>
+        </div>
+    </div>
+        
+{% endblock %}
+
+
+
+
+

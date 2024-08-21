@@ -31,7 +31,8 @@ class Affaire
         //'partiel' => 'Partiel',
         //'litige' => 'En litige',
         'paye' => 'Payé',
-        'annule' => 'Annulé'
+        'annule' => 'Annulé',
+        'encours' => 'En cours'
     ];
 
     const DEVIS = [

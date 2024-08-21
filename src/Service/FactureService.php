@@ -211,7 +211,7 @@ class FactureService
 
         // Créer le log
         $this->logger->info('Commande payée', [
-            'Produit' => $affaire->getNom(),
+            'Commande' => $affaire->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
             'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
             'ID Application' => $affaire->getApplication()->getId()
@@ -257,9 +257,6 @@ class FactureService
             $produitCategorie->setStockRestant($stockRestant);
             
             $this->entityManager->persist($produitCategorie);
-
-            
-
           
             $factureDetail = new FactureDetail();
             $prix = 0;
@@ -380,6 +377,16 @@ class FactureService
         $affaire->setDateFacture($date);
         $affaire->setStatut("commande");
         $this->persist($affaire);
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Facture ajouté', [
+            'Commande' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
         $this->update();
         
         // Initialize Dompdf
@@ -415,7 +422,7 @@ class FactureService
 
         // Créer le log
         $this->logger->info('Commande payée', [
-            'Produit' => $affaire->getNom(),
+            'Commande' => $affaire->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
             'Adresse e-mail' => $user ? $user->getUserIdentifier() : 'Pas d\'adresse e-mail',
             'ID Application' => $affaire->getApplication()->getId()
@@ -513,6 +520,16 @@ class FactureService
         $affaire->setDevisEvol('perdu');
         $affaire->setPaiement('annule');
         $this->persist($affaire);
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Facture annulé', [
+            'Commande' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
         $this->update();
         
         // Créer une instance de Dompdf
@@ -611,7 +628,7 @@ class FactureService
 
         // Créer le log
         $this->logger->info('Commande annulée', [
-            'Produit' => $affaire->getNom(),
+            'Commande' => $affaire->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
             'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
             'ID Application' => $affaire->getApplication()->getId()

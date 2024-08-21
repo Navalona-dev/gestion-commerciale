@@ -11,10 +11,29 @@
     justify-content: center;
     border: 2px solid #ffc107 !important; 
     cursor: pointer;
+    margin-right: 15px;
+}
+
+.icon-echeance {
+    width: 44px;
+    height: 40px;
+    background-color: #0d6efd; 
+    color: #fff;
+    font-size: 24px; 
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #0d6efd !important; 
+    cursor: pointer;
 }
 
 .icon-paye:hover {
     color: #000;
+}
+
+.icon-echeance:hover {
+    color: #fff;
 }
 
 .icon-detail {
@@ -140,8 +159,11 @@
                                 <div class="col-md-2 col-12">
                                     {% if affaire.products|length > 0 %}
                                     <div class="d-flex justify-content-end">
-                                        <a title="Payé" target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="icon-paye d-flex align-items-center justify-content-center border border-secondary">
+                                        <a title="Payé" target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="icon-paye">
                                             <i class="bi bi-credit-card-2-front-fill"></i>
+                                        </a>
+                                        <a href="#" title="Facture écheance" class="icon-echeance" onclick="return openModalFactureEcheance({{affaire.id}})">
+                                            <i class="bi bi-calendar-heart-fill"></i>
                                         </a>
                                     </div>
                                     {% endif %}
@@ -212,9 +234,25 @@
                                     <td class="align-middle text-center">{{product.reference}} ({{product.typeVente}})</td>
                                     <td class="align-middle" style="width: 200px;">{{product.nom}}</td>
                                     {# <td class="align-middle text-center">{{product.qtt}}&nbsp;{% if product.typeVente == "gros" %}{{product.uniteVenteGros}}{% else %}{{product.uniteVenteDetail}}{% endif %} / {{product.produitCategorie.stockRestant}}</td> #}
-                                    <td class="align-middle text-center">{% if product.typeVente == "detail" %}{{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteDetail}} ({% if ((product.qtt / product.produitCategorie.volumeGros) |round(0)) != 0 %} {{ (product.qtt / product.produitCategorie.volumeGros) |round(0)}} {{product.produitCategorie.presentationGros}}  et {% endif %}{{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})   {% else %}
-                                    {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} ({% if product.qtt >= product.produitCategorie.volumeGros %} {{(product.qtt / product.produitCategorie.volumeGros) |round(0)}}  {{product.produitCategorie.presentationGros}} {% if product.qtt - product.produitCategorie.volumeGros != 0 %} et {% endif %} {% endif %} {% if product.qtt >= product.produitCategorie.volumeGros %} {% if product.qtt - product.produitCategorie.volumeGros != 0 %} {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} {% endif %} {% else %} {{product.qtt}} {{product.produitCategorie.presentationDetail}}{% endif %} )
-                                    {% endif %}</td>
+                                    <td class="align-middle text-center">
+                                        {% if product.typeVente == "detail" %}
+                                        {{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteDetail}} 
+                                        ({% if ((product.qtt / product.produitCategorie.volumeGros) |round(0)) != 0 %} 
+                                        {{ (product.qtt / product.produitCategorie.volumeGros) |round(0)}} 
+                                        {{product.produitCategorie.presentationGros}}  et {% endif %}
+                                        {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})   
+                                        {% else %}
+                                        {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} 
+                                        ({% if product.qtt >= product.produitCategorie.volumeGros %} 
+                                        {{(product.qtt / product.produitCategorie.volumeGros) |round(0)}}  {{product.produitCategorie.presentationGros}} 
+                                        {% if product.qtt - product.produitCategorie.volumeGros != 0 %} et {% endif %} 
+                                        {% endif %} 
+                                        {% if product.qtt >= product.produitCategorie.volumeGros %} 
+                                        {% if product.qtt - product.produitCategorie.volumeGros != 0 %} {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} 
+                                        {% endif %} 
+                                        {% else %} {{product.qtt}} {{product.produitCategorie.presentationDetail}}{% endif %} )
+                                        {% endif %}
+                                </td>
                                     <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(0, '.', ' ')}}{% else %}{{product.prixVenteDetail|number_format(0, '.', ' ')}}{% endif %} Ar</td>
                                     {# <td class="align-middle text-danger text-center">--</td>
                                     <td class="align-middle text-center">0,00€</td>
@@ -340,6 +378,7 @@
     </div>
 
     <div id="modalListProduitCategorieEmpty"></div>
+    <div id="modalFactureEcheanceEmpty"></div>
    
   </section>
 <script src="{{ asset('assets/js/produit.js')}}"></script>
@@ -429,6 +468,32 @@
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
                     alert('Erreur lors de l\'ajout de produit.');
+                }
+            });
+    }
+   
+
+    function openModalFactureEcheance(id = null)
+    {
+        var anchorName = document.location.hash.substring(1);
+
+        $.ajax({
+                url: '/admin/facture/echeance/'+id,
+                type: 'post',
+                //data: {},
+                success: function (response) {
+                    $("#modalFactureEcheanceEmpty").empty();
+                    $("#modalFactureEcheanceEmpty").append(response.html);
+                    $('#modalFactureEcheance').modal('show');
+
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de facture echeance.');
                 }
             });
     }

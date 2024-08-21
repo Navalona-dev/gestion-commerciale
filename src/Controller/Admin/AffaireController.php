@@ -477,7 +477,7 @@ class AffaireController extends AbstractController
             
                     // Créer le log
                     $this->logger->info($logMessage, [
-                        'Produit' => $affaire->getNom(),
+                        'Commande' => $affaire->getNom(),
                         'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
                         'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
                         'ID Application' => $affaire->getApplication()->getId()
@@ -554,7 +554,7 @@ class AffaireController extends AbstractController
         
                 // Créer le log
                 $this->logger->info($logMessage, [
-                    'Produit' => $affaire->getNom(),
+                    'Commande' => $affaire->getNom(),
                     'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
                     'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
                     'ID Application' => $affaire->getApplication()->getId()
