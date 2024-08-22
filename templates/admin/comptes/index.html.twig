@@ -108,11 +108,12 @@
                 
                 {% else %}
                     <tr class="text-nowrap">
-                        <td colspan="{% if genre == 1 %} 5 {% elseif genre == 2 %} 4 {% endif %} ">Aucun enregistrement trouvé</td>
+                        <td colspan="{% if genre == 1 %} 6 {% elseif genre == 2 %} 4 {% endif %} ">Aucun enregistrement trouvé</td>
                          <td></td>
                           <td></td>
                           <td></td>
                           {% if genre == 1 %}
+                          <td></td>
                           <td></td>
                           {% endif %}
                     </tr>
@@ -199,6 +200,7 @@
         $('#tab-nouveau-facture').css('display','none');
         $('#tab-devis').css('display','none');
         $('#tab-commande').css('display','none');
+        $('#tab-echeance').css('display','none');
      
     });
 

@@ -92,7 +92,7 @@
                                       <tr class="text-nowrap">
                                           <td>{{ line['Date'] }}</td>
                                           <td>{{ line['Message'] }}</td>
-                                          <td>{{ line['Produit'] }}</td>
+                                          <td>{{ line['Commande'] }}</td>
                                           <td>{{ line['Nom du responsable'] }}</td>
                                           <td>{{ line['Adresse e-mail'] }}</td>
                                           {#<td>{{ line['ID Application'] }}</td>#}
@@ -171,6 +171,7 @@
         $('#tab-nouveau-facture').css('display','none');
         $('#tab-devis').css('display','none');
         $('#tab-commande').css('display','none');
+        $('#tab-echeance').css('display','none');
 
     })
 

@@ -58,7 +58,7 @@ class FactureEcheanceService
         $this->logService = $logService;
     }
 
-    public function add($affaire = null, $request = null)
+    public function add($affaire = null, $request = null, $folder = null, $form = null, $montant = null, $totalPayer = null)
     {
         $facture = Facture::newFacture($affaire);
         $date = new \DateTime();
@@ -205,31 +205,176 @@ class FactureEcheanceService
         
         $facture->setFile($filename);
         $facture->setSolde($montantHt);
-        $facture->setPrixHt($montantHt);    
-        //$facture->setReglement($montantHt);
-        
+        $facture->setPrixHt($montantHt);   
+
+        $formData = $form->getData();
+        $reglement = $formData->getReglement();
+
+        $facture->setReglement($reglement);
         $this->persist($facture);
+
+        $formDataEcheance = $form->get('factureEcheances')->getData();
+        $factureEcheances = $formDataEcheance;
+
+        foreach($factureEcheances as $factureEcheance) {
+
+            $factureEcheance->setStatus('encours');
+            $factureEcheance->setDateCreation(new \DateTime());
+            $factureEcheance->setFacture($facture);
+
+            $this->persist($factureEcheance);
+
+            $montant += $factureEcheance->getMontant();
+
+            $totalPayer = $montant + $reglement;
+
+        }
+        
         $affaire->setPaiement('encours');
         $affaire->setDatePaiement($date);
         $affaire->setDevisEvol('encours');
         $affaire->setDateFacture($date);
         $affaire->setStatut("commande");
         $this->persist($affaire);
+        $this->update();
 
-        // Obtenir l'utilisateur connecté
-        $user = $this->security->getUser();
+        // Initialize Dompdf
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $pdf = new Dompdf($options);
 
-        // Créer log
-        $this->logger->info('Facture d\'écheance', [
+        // Load HTML content
+        $data = [];
+        $data['produits'] = $products;
+        $data['facture'] = $facture;
+        $data['compte'] = $facture->getCompte();
+        
+        $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
+
+        // Load HTML to Dompdf
+        $pdf->loadHtml($html);
+
+        // (Optional) Set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
+
+        // Render PDF
+        $pdf->render();
+
+        // Get PDF content
+        $pdfContent = $pdf->output();
+
+        // Save PDF to file
+        $fileName = $folder . $filename;
+        file_put_contents($fileName, $pdfContent);
+
+
+        // Créer le log
+        $this->logger->info('Facture  de commande créee', [
             'Commande' => $affaire->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'Adresse e-mail' => $user ? $user->getUserIdentifier() : 'Pas d\'adresse e-mail',
             'ID Application' => $affaire->getApplication()->getId()
         ]);
-//        $this->update();
 
-        return $facture;
+        return [$pdfContent, $facture]; 
         
+    }
+
+    public function addNewFacture($factureEcheance = null, $form = null, $reglement = null, $reste = null, $montant = null, $folder = null)
+    {
+         // Obtenir l'utilisateur connecté
+         $user = $this->security->getUser();
+
+         $date = new \DateTime();
+
+        $facture = $factureEcheance->getFacture();
+        $affaire = $facture->getAffaire();
+
+        if($reste == 0) {
+            $facture->setEtat('regle');
+            $facture->setStatut('regle');
+            $affaire->setPaiement('paye');
+            $affaire->setDevisEvol('gagne');
+            $this->persist($affaire);
+        }
+
+        $facture->setReglement($reglement);
+        $facture->setEcheance(true);
+        $this->persist($facture);
+
+        $formData = $form->getData();
+        $status = $formData->getStatus();
+
+        $factureEcheance->setStatus($status);
+        $this->persist($factureEcheance);
+
+        $newFacture = Facture::newFacture($affaire);
+        $numeroFacture = 1;
+        $tabNumeroFacture = $this->getLastValideFacture();
+        if (count($tabNumeroFacture) > 0) {
+            $numeroFacture = $tabNumeroFacture[0] + 1;
+        }
+        $newFacture->setNumero($numeroFacture);    
+        $newFacture->setApplication($this->application);
+
+        $newFacture->setEtat('regle');
+        $newFacture->setValid(true);
+        $newFacture->setStatut('regle');
+        $newFacture->setDateCreation($date);
+        $newFacture->setDate($date);
+        $newFacture->setType("Facture");
+        $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $newFacture->getNumero() . ".pdf";
+        $newFacture->setFile($filename);
+        $newFacture->setSolde($montant);
+        $newFacture->setPrixHt($montant); 
+        $this->persist($newFacture);  
+
+        $this->update();
+
+         // Initialize Dompdf
+         $options = new Options();
+         $options->set('isHtml5ParserEnabled', true);
+         $options->set('isPhpEnabled', true);
+         $pdf = new Dompdf($options);
+ 
+         // Load HTML content
+         $data = [];
+         $data['facture'] = $facture;
+         $data['newFacture'] = $newFacture;
+         $data['factureEcheance'] = $factureEcheance;
+         $data['compte'] = $facture->getCompte();
+         
+         $html = $this->twig->render('admin/facture_echeance/facturePdf.html.twig', $data);
+ 
+         // Load HTML to Dompdf
+         $pdf->loadHtml($html);
+ 
+         // (Optional) Set paper size and orientation
+         $pdf->setPaper('A4', 'portrait');
+ 
+         // Render PDF
+         $pdf->render();
+ 
+         // Get PDF content
+         $pdfContent = $pdf->output();
+ 
+         // Save PDF to file
+         $fileName = $folder . $filename;
+         file_put_contents($fileName, $pdfContent);
+ 
+ 
+         // Créer le log
+         $this->logger->info('Facture écheance payée', [
+             'Commande' => $affaire->getNom(),
+             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+             'Adresse e-mail' => $user ? $user->getUserIdentifier() : 'Pas d\'adresse e-mail',
+             'ID Application' => $affaire->getApplication()->getId()
+         ]);
+ 
+         return [$pdfContent, $newFacture]; 
+ 
+
     }
 
     public function update()

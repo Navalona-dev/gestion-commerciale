@@ -171,6 +171,15 @@ class ProduitCategorieService
         return false;
     }
 
+    public function getAllProduitCategoriesByStockRestant($affairesProduct = [])
+    {
+        $produitCategories = $this->entityManager->getRepository(ProduitCategorie::class)->getProduitsByStockRestant($affairesProduct);
+        if ($produitCategories != false  && count($produitCategories) > 0) {
+            return $produitCategories;
+        }
+        return false;
+    }
+
     public function getCategorieById($id)
     {
         $produitCategorie = $this->entityManager->getRepository(ProduitCategorie::class)->find($id);

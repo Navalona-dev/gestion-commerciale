@@ -133,6 +133,9 @@ class Compte
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $indiceFacture = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $delaisPaiement = null;
+
     public function __construct()
     {
         $this->utilisateur = new ArrayCollection();
@@ -555,4 +558,17 @@ class Compte
         return $this;
     }
 
+    public function getDelaisPaiement(): ?string
+    {
+        return $this->delaisPaiement;
+    }
+
+    public function setDelaisPaiement(?string $delaisPaiement): static
+    {
+        $this->delaisPaiement = $delaisPaiement;
+
+        return $this;
+    }
+
+   
 }

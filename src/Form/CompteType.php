@@ -39,13 +39,22 @@ class CompteType extends AbstractType
             }
 
             if ($options['genre'] == 1) {
-                $builder->add('indiceFacture', TextType::class, [
+                $builder
+                ->add('indiceFacture', TextType::class, [
                     'attr' => [
                         'class' => 'form-control form-control-md',
                         'autocomplete' => 'off',
                     ],
                     'required' => true
-                ]);
+                ])
+                ->add('delaisPaiement', TextType::class, [
+                    'attr' => [
+                        'class' => 'form-control form-control-md',
+                        'autocomplete' => 'off',
+                    ],
+                    'required' => false
+                ])
+                ;
             }
             
             $builder->remove('etat', TextType::class, [

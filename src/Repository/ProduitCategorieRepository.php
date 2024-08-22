@@ -46,6 +46,36 @@ class ProduitCategorieRepository extends ServiceEntityRepository
         }
         return false;
     }
+
+    public function getProduitsByStockRestant($affairesProduct = [])
+    {
+
+        $entityManager = $this->getEntityManager();
+
+        $sql = "SELECT p.id, p.nom, p.stockRestant, p.reference, p.isChangePrix, p.prixAchat, p.prixHt, p.tva, p.prixTTC, p.qtt, p.stockMin, p.prixVenteGros, p.prixVenteDetail, p.uniteVenteGros, p.uniteVenteDetail, p.application_id, p.presentationGros, p.presentationDetail, p.volumeGros, p.volumeDetail, c.nom AS categorie 
+        FROM `ProduitCategorie` p 
+        LEFT JOIN `Categorie` c ON p.categorie_id = c.id 
+        WHERE p.application_id = ".$this->application->getId()." AND p.stockRestant >= 1
+        ";
+
+        if (count($affairesProduct)> 0) {
+            $sql .= " and p.id NOT IN (".implode(",",$affairesProduct ).")";
+        }
+
+        $sql .= " ORDER BY p.nom";
+        
+        $query = $this->connection->prepare($sql);
+        
+        $query = $this->connection->executeQuery($sql);
+
+        $produits = $query->fetchAll();
+        if (sizeof($produits) > 0) {
+            return $produits;
+        }
+
+        return false;
+    }
+
     
     public function getAllFournisseur()
     {

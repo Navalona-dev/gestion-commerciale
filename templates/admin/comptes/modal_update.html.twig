@@ -1,7 +1,7 @@
 
 <div class="modal fade" id="modalUpdateClient" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
-        <div class="modal-content p-4 modal-user">
+        <div class="modal-content p-4">
             <div class="modal-header modal-header-center">
                 <h5 class="modal-title text-center fw-bold" id="modalNewLabel">Modifier client</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -10,147 +10,43 @@
                 
                 {{ form_start(form, {'attr': {'id': 'updateClient', 'action': path('comptes_edit', {'compte': id}) }}) }}
                 
-                    <div class="row">
-                        <div class="col-md-6 col-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Nom <sup class="text-danger">*</sup></label>
-                                <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.nom)}} </span>
-                                {{ form_widget(form.nom) }}
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Nommenclature facture <sup class="text-danger">*</sup></label>
-                                <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.indiceFacture)}} </span>
-                                {{ form_widget(form.indiceFacture) }}
-                            </div>
-                        </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Nom <sup class="text-danger">*</sup></label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.nom)}} </span>
+                        {{ form_widget(form.nom) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Nommenclature facture <sup class="text-danger">*</sup></label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.indiceFacture)}} </span>
+                        {{ form_widget(form.indiceFacture) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Délais de paiement <sup class="text-danger">*</sup></label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.indiceFacture)}} </span>
+                        {{ form_widget(form.delaisPaiement) }}
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 col-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Email</label>
-                                <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.email)}} </span>
-                                {{ form_widget(form.email) }}
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Statut</label>
-                                <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.statut)}} </span>
-                                {{ form_widget(form.statut) }}
-                            </div>
-                        </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Email</label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.email)}} </span>
+                        {{ form_widget(form.email) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Statut</label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.statut)}} </span>
+                        {{ form_widget(form.statut) }}
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 col-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Téléphone</label>
-                                <span></span>
-                                {{ form_widget(form.telephone) }}
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Adresse</label>
-                                <span></span>
-                                {{ form_widget(form.adresse) }}
-                            </div>
-                        </div>
-                    </div>
-
-                    {#<div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Nom <sup class="text-danger">*</sup></label>
-                                <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.nom)}} </span>
-                                {{ form_widget(form.nom) }}
-                            </div> 
-                        </div>
-                    </div>
-                    <input type="hidden" value="{{genre}}" name="genre">
-                     <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Etat</label>
-                                <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.etat)}} </span>
-                                {{ form_widget(form.etat) }}
-                            </div>
-                        </div>
-                    </div>  
-                    <div class="row">
-                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Statut</label>
-                                <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.statut)}} </span>
-                                {{ form_widget(form.statut) }}
-                            </div>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Email</label>
-                                <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.email)}} </span>
-                                {{ form_widget(form.email) }}
-                            </div>
-                        </div>
-                    </div>
-                     
-                    <div class="row">
-                      
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Nombre d'affaires</label>
-                                <span></span>
-                                {{ form_widget(form.nbAffaire) }}
-                            </div>
-                        </div>
-                    </div> 
-                    
-                    <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                        <div class="form-group mb-3">
-                            <label for="" class="mb-2">Téléphone</label>
-                            <span></span>
-                            {{ form_widget(form.telephone) }}
-                        </div>
-                    </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Adresse</label>
-                                <span></span>
-                                {{ form_widget(form.adresse) }}
-                            </div>
-                        </div>
-                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                            <div class="form-group mb-3">
-                                <label for="" class="mb-2">Numéro</label>
-                                <span></span>
-                                {{ form_widget(form.numero) }}
-                            </div>
-                        </div> 
-                    </div>
-                     <div class="form-group">
-                        <label for="" class="mb-2">Compte application</label>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Téléphone</label>
                         <span></span>
-                        {{form_widget(form.compteApplications)}}
+                        {{ form_widget(form.telephone) }}
                     </div>
-
                     <div class="form-group mb-3">
-                        <label for="" class="mb-2">Utilisateur</label>
-                        {{ form_widget(form.utilisateur) }}
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label for="" class="mb-2">Commentaires</label>
+                        <label for="" class="mb-2">Adresse</label>
                         <span></span>
-                        {{form_widget(form.commentaire)}}
+                        {{ form_widget(form.adresse) }}
                     </div>
-
-                    <div class="form-group mb-3">
-                        {{form_widget(form.isLivraison)}}
-                    </div> #}
                     
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-sm px-3 mt-3" style="width: 100%;">Modifier client</button>

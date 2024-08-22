@@ -92,15 +92,16 @@
                                 {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
                                 <div class="col-md-2 col-12">
                                     <div class="d-flex justify-content-end">
-                                        {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
-                                            <a title="Payé" target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="icon-paye d-flex align-items-center justify-content-center border border-secondary">
+                                        {% if affaire.products|length > 0 %}
+                                        {% if affaire.paiement != "enecheance" %}
+                                            <a title="Payé" target="_blank" href="{{ path('affaires_paiement', {'affaire': affaire.id}) }}" class="icon-paye">
                                                 <i class="bi bi-credit-card-2-front-fill"></i>
                                             </a>
                                         {% endif %}
-
-                                        <a href="#" title="Facture écheance" class="icon-echeance" onclick="return openModalFactureEcheance({{affaire.id}})">
+                                        <a href="#" title="Facture écheance" class="icon-echeance" onclick="return openModalFactureEcheance({{ affaire.id }})">
                                             <i class="bi bi-calendar-heart-fill"></i>
                                         </a>
+                                    {% endif %}
                                     </div>
                                 </div>
                                 {% else %}
@@ -216,12 +217,14 @@
                                 {% else %}
                                     {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
                                         <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
-                                        {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
+                                        {% if affaire.products|length > 0 %}
+                                            {% if affaire.paiement != "enecheance" %}
                                             <a target="_blank" href="{{path('affaires_paiement', {'affaire': affaire.id})}}" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
+                                            {% endif %}
+                                            <a href="#" title="Facture écheance" class="text-success financier-icon" onclick="return openModalFactureEcheance({{affaire.id}})">
+                                                <i class="bi bi-calendar-heart-fill"></i>
+                                            </a>
                                         {% endif %}
-                                        <a href="#" title="Facture écheance" class="text-success financier-icon" onclick="return openModalFactureEcheance({{affaire.id}})">
-                                            <i class="bi bi-calendar-heart-fill"></i>
-                                        </a>
                                     {% endif %}
                                 {% endif %}
                                     {#<a href="#" class="text-danger financier-icon"><i class="bi bi-database-fill-check"></i></a>
@@ -332,6 +335,7 @@
         $('#tab-nouveau-facture').css('display','none');
         $('#tab-devis').css('display','none');
         $('#tab-commande').css('display','none');
+        $('#tab-echeance').css('display','none');
       
       
     });

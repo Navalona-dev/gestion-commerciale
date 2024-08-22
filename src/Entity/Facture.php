@@ -113,6 +113,9 @@ class Facture
     #[ORM\OneToMany(targetEntity: FactureEcheance::class, mappedBy: 'facture')]
     private Collection $factureEcheances;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $isEcheance = null;
+
     public function __construct()
     {
         $this->factureDetails = new ArrayCollection();
@@ -438,6 +441,18 @@ class Facture
                 $factureEcheance->setFacture(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isEcheance(): ?bool
+    {
+        return $this->isEcheance;
+    }
+
+    public function setEcheance(?bool $isEcheance): static
+    {
+        $this->isEcheance = $isEcheance;
 
         return $this;
     }

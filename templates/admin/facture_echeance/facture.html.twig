@@ -1,0 +1,90 @@
+<div class="modal fade" id="modalNewFactureEcheance" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog ">
+        <div class="modal-content p-4 ">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau facture</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <hr>
+            </div>
+            <div class="modal-body">
+                {{ form_start(form, {'attr': {'id': 'createFactureEcheance', 'action': path('factures_echeance_facture', {'factureEcheance': factureEcheance.id}) }}) }}
+                    {{form_widget(form.status)}}
+                
+                    <div class="alert alert-info mb-3">
+                        <h6 class="text-center fw-bold">Révision facture</h6>
+                        <p><span class="fw-bold">Total montant à payer :</span> {{facture.solde|number_format(2,',','')}} Ar </p>
+                        <p><span class="fw-bold">Avance :</span> {{facture.reglement|number_format(2,',','')}} Ar </p>
+                        <p><span class="fw-bold">Date de premier paiement :</span> {{facture.dateCreation|date('d-m-Y')}} </p>
+                    </div>
+                    <div class="facture écheance alert alert-info">
+                        <h6 class="text-center fw-bold">Révision facture écheance</h6>
+                        <p><span class="fw-bold">Montant à payer : </span>{{factureEcheance.montant|number_format(2,',','')}} Ar</p>
+                        <p><span class="fw-bold">Délais de paiement : </span>{{factureEcheance.delaiPaiement}} jours </p>
+                        <p><span class="fw-bold">Date écheance : </span> {{factureEcheance.dateEcheance|date('d-m-Y')}} </p>
+                    </div>
+                    <div class="alert alert-warning">
+                        <p class="fw-bol">Reste à payer : {{reste|number_format(2,',','')}} Ar </p>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm w-100">Créer la facture</button>
+                    </div>
+                {{ form_end(form) }}    
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+<script>
+$(document).ready(function () {
+   
+    $('#createFactureEcheance').on('submit', function (e) {
+         e.preventDefault();
+         let form = $(this);
+       
+         // Create an FormData object
+         let formData = new FormData(form[0]);
+       formData.append('isNew', false);
+         $.ajax({
+             url: form.attr('action'),
+             type: form.attr('method'),
+             data: formData,
+             processData: false,
+             contentType: false,
+             success: function (response) {
+
+                 $('#modalNewFactureEcheance').modal('hide');
+                 var nextLink = $('#sidebar').find('li#facture').find('a');
+                 setTimeout(function () {
+                     toastr.options = {
+                         closeButton: true,
+                         progressBar: true,
+                         showMethod: 'slideDown',
+                         timeOut: 1000
+                     };
+                     toastr.success('Avec succèss', 'Enregistrement effectuée');
+
+                     if (response.pdfUrl) {
+                        window.open(response.pdfUrl, '_blank');
+                    }
+
+                 }, 800);
+                 if (nextLink.length > 0) {
+                     nextLink.click();
+                 }
+
+                 if (anchorName) {
+                    window.location.hash = anchorName;
+                }
+             },
+             error: function (jqXHR, textStatus, errorThrown) {
+                 // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                 alert('Erreur lors de l\'ajout de facture écheance');
+             }
+         });
+     });
+ });
+
+</script>
+{% endblock %}

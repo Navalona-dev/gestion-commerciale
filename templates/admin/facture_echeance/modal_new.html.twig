@@ -1,3 +1,9 @@
+<style>
+    .error-message {
+            color: red;
+            display: none; /* Cacher le message par défaut */
+        }
+</style>
 {% form_theme form 'admin/facture_echeance/_collection.html.twig' %}
 <div class="affaire-id" data-affaire="{{affaire.id}}"></div>
 <div class="modal fade" id="modalFactureEcheance" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -23,8 +29,20 @@
                 </div>
                 {{ form_start(form, {'attr': {'id': 'newFactureEcheance', 'action': path('factures_echeance_create', {'affaire': affaire.id}) }}) }}
                     <input type="hidden" name="montantHt" value="{{ montantHt }}">
+                    <span class="compte-delai-paiement" data-delais="{{affaire.compte.delaisPaiement}}"></span>
+                    <span class="montant-ht" data-montant="{{montantHt}}"></span>
                     <div class="form-group mb-4">
+                        {% if affaire.compte.delaisPaiement is not null %} 
+                        <input type="checkbox" name="compte_delais_paiement" id="compte_delais_paiement" checked >
+                        <label for="" class="label-delais">Délais de paiement client</label>
+                        {% endif %}
+                        <input type="checkbox" name="paye_une_fois" id="paye_une_fois">
+                        <label for="" class="label-payer">Payer une seule fois</label>
+                    </div>
+
+                    <div class="form-group mb-4 avance">
                         <label for="" class="mb-2">Avance</label>
+                        <div id="error-message" class="error-message">Veuillez entrer un nombre valide.</div>
                         {{form_widget(form.reglement)}}
                     </div>
                     <div class="form-group mb-3">
@@ -42,6 +60,128 @@
 {% block javascripts %}
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 <script>
+
+$(document).ready(function() {
+    const delaiCompte = $('.compte-delai-paiement').data('delais');
+    const montantHt = $('.montant-ht').data('montant');
+    const errorMessage = document.getElementById('error-message');
+    console.log('montantHt', montantHt);
+    
+    $('#add_facture_echeance_reglement').on('input', function(){
+        const reglementValue = $(this).val();
+        const montantHtFinal = montantHt - reglementValue;
+
+        if (isNaN(this.value)) {
+            // Affiche le message d'erreur si ce n'est pas un nombre
+            errorMessage.style.display = 'block';
+            $('#add_facture_echeance_factureEcheances_0_montant').val(montantHt).prop('readonly', true);
+
+        } else if(this.value.trim() === '') {
+            errorMessage.style.display = 'none';
+            $('#add_facture_echeance_factureEcheances_0_montant').val(montantHt).prop('readonly', true);
+
+        }
+        else {
+            // Cache le message d'erreur si la valeur est un nombre
+            errorMessage.style.display = 'none';
+            $('#add_facture_echeance_factureEcheances_0_montant').val(montantHtFinal).prop('readonly', true);
+
+        }
+    })
+
+    function handleCheckboxState() {
+        setTimeout(function() {
+        if ($('#compte_delais_paiement').is(':checked')) {
+            $('#compte_delais_paiement').show();
+
+            $('#paye_une_fois').hide();
+            $('.label-payer').hide();
+
+            // Remplir le champ de délai de paiement avec la valeur de delaiCompte
+            $('#add_facture_echeance_factureEcheances_0_delaiPaiement').val(delaiCompte).prop('readonly', true);
+            $('#add_facture_echeance_factureEcheances_0_montant').val(montantHt).prop('readonly', true);
+            $('#add-echeance').hide();
+
+            // Appeler directement calculateDateEcheance après avoir défini le délai de paiement
+            calculateDateEcheance('#block_add_facture_echeance_factureEcheances_0');
+        } else {
+            // Réinitialiser le champ de délai de paiement si la case est décochée
+            $('#add_facture_echeance_factureEcheances_0_delaiPaiement').val('').prop('readonly', false);
+            $('#add_facture_echeance_factureEcheances_0_montant').val('').prop('readonly', false);
+
+            // Réinitialiser la date d'échéance et le texte associé
+            $('#block_add_facture_echeance_factureEcheances_0').find('input[name$="[dateEcheance]"]').val('');
+            $('#block_add_facture_echeance_factureEcheances_0').find('.date-echeance-text').text('');
+            
+            $('#add-echeance').show();
+            $('#compte_delais_paiement').show();
+            $('.label-delais').show();
+            $('#paye_une_fois').show();
+            $('.label-payer').show();
+        }
+    }, 500);
+    }
+
+    // Appeler la fonction au chargement de la page pour vérifier l'état initial de la checkbox
+    handleCheckboxState();
+
+    // Écouter le changement de la checkbox pour gérer les futures interactions
+    $('#paye_une_fois').change(function() {
+        if ($(this).is(':checked')) {
+            $('#compte_delais_paiement').hide();
+            $('.label-delais').hide();
+            $('.avance').hide();
+            
+            // Remplir le champ de délai de paiement avec la valeur de delaiCompte
+            $('#add_facture_echeance_factureEcheances_0_montant').val(montantHt).prop('readonly', true);
+            $('#add-echeance').hide();
+
+            // Appeler directement calculateDateEcheance après avoir défini le délai de paiement
+            calculateDateEcheance('#block_add_facture_echeance_factureEcheances_0');
+        } else {
+            // Réinitialiser le champ de délai de paiement si la case est décochée
+            $('#add_facture_echeance_factureEcheances_0_montant').val('').prop('readonly', false);
+
+            // Réinitialiser la date d'échéance et le texte associé
+            $('#block_add_facture_echeance_factureEcheances_0').find('input[name$="[dateEcheance]"]').val('');
+            $('#block_add_facture_echeance_factureEcheances_0').find('.date-echeance-text').text('');
+            
+            $('#add-echeance').show();
+            $('.avance').show();
+
+        }
+        
+    });
+
+    function calculateDateEcheance($element) {
+        const $dateEcheance = $($element).find('input[name$="[dateEcheance]"]');
+        const $delaiPaiement = $($element).find('input[name$="[delaiPaiement]"]');
+        const $dateEcheanceText = $($element).find('.date-echeance-text');
+
+        const delai = parseInt($delaiPaiement.val(), 10);
+
+        if (!isNaN(delai)) {
+            const today = moment().add(delai, 'days');
+
+            // Formatage de la date au format dd-mm-yyyy pour le champ input
+            const formattedDate = today.format('DD/MM/YYYY');
+
+            // Formatage de la date en lettres pour le texte
+            const formattedDateText = today.format('dddd DD MMMM YYYY');
+
+            // Définir la valeur du champ de date d'échéance
+            $dateEcheance.val(formattedDate);
+
+            // Afficher la date formatée en lettres
+            $dateEcheanceText.text(formattedDateText);
+        } else {
+            $dateEcheance.val('');
+            $dateEcheanceText.text('');
+        }
+    }
+});
+
+
 
 $(document).ready(function() {
     function addEcheance() {
@@ -192,7 +332,9 @@ $(document).ready(function () {
                      };
                      toastr.success('Avec succèss', 'Enregistrement effectuée');
 
-                     //$(".loadBody").css('display', 'none');
+                     if (response.pdfUrl) {
+                        window.open(response.pdfUrl, '_blank');
+                    }
 
                  }, 800);
                  if (nextLink.length > 0) {
@@ -215,4 +357,5 @@ $(document).ready(function () {
  });
 
 </script>
+
 {% endblock %}

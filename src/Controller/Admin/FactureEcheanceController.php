@@ -7,6 +7,7 @@ use App\Entity\Facture;
 use App\Entity\FactureEcheance;
 use App\Service\ProductService;
 use App\Form\AddFactureEcheanceType;
+use App\Form\StatutFactureEcheanceType;
 use App\Service\FactureEcheanceService;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -59,29 +60,21 @@ class FactureEcheanceController extends AbstractController
                 $montantHt = $request->request->get('montantHt');
 
                 if ($request->isXmlHttpRequest()) {
-                    $facture = $this->factureEcheanceService->add($affaire, $request);
-                    $formData = $form->getData();
-                    $reglement = $formData->getReglement();
+                    //$facture = $this->factureEcheanceService->add($affaire, $request);
+                    $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/echeance/';
+                    list($pdfContent, $facture) = $this->factureEcheanceService->add($affaire, $request, $documentFolder, $form, $montant, $totalPayer);
+                
+                    // Utiliser le numéro de la facture pour le nom du fichier
+                    //$filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
+                    $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
+                    $pdfPath = '/uploads/factures/echeance/' . $filename;
+                    file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
+                    // Retourner le PDF en réponse
+                    return new JsonResponse([
+                        'status' => 'success',
+                        'pdfUrl' => $pdfPath,
+                    ]);
 
-                    $facture->setReglement($reglement);
-                    $this->em->persist($facture);
-
-                    $formDataEcheance = $form->get('factureEcheances')->getData();
-                    $factureEcheances = $formDataEcheance;
-
-                    foreach($factureEcheances as $factureEcheance) {
-
-                        $factureEcheance->setStatus('encours');
-                        $factureEcheance->setDateCreation(new \DateTime());
-                        $factureEcheance->setFacture($facture);
-
-                        $this->em->persist($factureEcheance);
-
-                        $montant += $factureEcheance->getMontant();
-
-                        $totalPayer = $montant + $reglement;
-
-                    }
                     
                 }
                 if ($totalPayer > $montantHt) {
@@ -91,9 +84,7 @@ class FactureEcheanceController extends AbstractController
                 {
                     return new JsonResponse(['status' => 'error', 'message' => 'Le total des montants sur les échéances et avances doit être égale au montant à payer.'], Response::HTTP_OK);
                 }
-
-
-                $this->em->flush();
+                
             }
 
             $data['exception'] = "";
@@ -126,6 +117,59 @@ class FactureEcheanceController extends AbstractController
             $data["html"] = $this->renderView('admin/facture_echeance/index.html.twig', [
                'affaire' => $facture->getAffaire(),
                'listes' => $factureEcheances
+            ]);
+           
+            return new JsonResponse($data);
+
+        } catch (PropertyVideException $PropertyVideException) {
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        }
+    }
+
+    #[Route('/facture/{factureEcheance}', name: '_facture')]
+    public function facture(FactureEcheance $factureEcheance, Request $request): Response
+    {
+        $data = [];
+
+        try {
+
+            $form = $this->createForm(StatutFactureEcheanceType::class, $factureEcheance);
+            $form->handleRequest($request);
+
+            $facture = $factureEcheance->getFacture();
+            $affaire = $facture->getAffaire();
+
+            $montant = $factureEcheance->getMontant();
+            $avance = $facture->getReglement();
+            $reglement = $avance + $montant;
+            $montantHt = $facture->getSolde();
+
+            $reste = $montantHt - $reglement;
+
+            if($form->isSubmitted() && $form->isValid()) {
+
+                $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/echeance/';
+                list($pdfContent, $newFacture) = $this->factureEcheanceService->addNewFacture($factureEcheance, $form, $reglement, $reste, $montant, $documentFolder);
+                
+                // Utiliser le numéro de la facture pour le nom du fichier
+                //$filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
+                $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $newFacture->getNumero() . ".pdf";
+                $pdfPath = '/uploads/factures/echeance/' . $filename;
+                file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
+                // Retourner le PDF en réponse
+                return new JsonResponse([
+                    'status' => 'success',
+                    'pdfUrl' => $pdfPath,
+                ]);
+            }
+
+            $data['exception'] = "";
+            $data["html"] = $this->renderView('admin/facture_echeance/facture.html.twig', [
+               'affaire' => $affaire,
+               'facture' => $facture,
+               'factureEcheance' => $factureEcheance,
+               'form' => $form->createView(),
+               'reste' => $reste
             ]);
            
             return new JsonResponse($data);

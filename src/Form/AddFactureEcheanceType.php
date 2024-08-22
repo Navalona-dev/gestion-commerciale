@@ -9,6 +9,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class AddFactureEcheanceType extends AbstractType
@@ -27,7 +29,7 @@ class AddFactureEcheanceType extends AbstractType
           ->add('reglement', TextType::class, [
             'attr' => [
                 'class' => 'form-control form-control-md',
-                'autocomplete' => 'off'
+                'autocomplete' => 'off',
             ],
             'required' => false
           ])
