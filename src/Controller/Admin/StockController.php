@@ -20,6 +20,7 @@ use App\Repository\ProduitCategorieRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Exception\UnsufficientPrivilegeException;
+use App\Service\LogService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -34,14 +35,16 @@ class StockController extends AbstractController
     private $application;
     private $helpers;
     private $productService;
+    private $logService;
 
-    public function __construct(AccesService $AccesService, ApplicationManager $applicationManager, ProduitCategorieService $produitCategorieService, ProductService $productService, Helpers $helpers)
+    public function __construct(AccesService $AccesService, ApplicationManager $applicationManager, ProduitCategorieService $produitCategorieService, ProductService $productService, Helpers $helpers, LogService $logService)
     {
         $this->accesService = $AccesService;
         $this->produitCategorieService = $produitCategorieService;
         $this->productService = $productService;
         $this->application = $applicationManager->getApplicationActive();
         $this->helpers = $helpers;
+        $this->logService = $logService;
     }
 
     #[Route('/new', name: '_create')]
@@ -62,6 +65,28 @@ class StockController extends AbstractController
                    $formData = $form->getData();
                    $datePeremption = $formData->getDatePeremption()->getDate();
                     $stockService->add($stock, $produitCategorie, $datePeremption);
+
+                    $user = $this->getUser();
+                    $data["produit"] = $produitCategorie->getNom();
+                    $data["dateReception"] = (new \DateTime())->format("d-m-Y h:i:s");
+                    $data["dateTransfert"] = null;
+                    $data["dateSortie"] = null;
+                    $data["userDoAction"] = $user->getUserIdentifier();
+                    $data["source"] = $this->application->getEntreprise();
+                    $data["destination"] = $this->application->getEntreprise();
+                    $data["action"] = "Ajout";
+                    $data["type"] = "Ajout";
+                    $data["qtt"] = $produitCategorie->getQtt();
+                    $data["stockRestant"] = $produitCategorie->getStockRestant();
+                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
+                    $data["typeSource"] = "Point de vente";
+                    $data["typeDestination"] = "Point de vente";;
+                    $data["commande"] = null;
+                    $data["commandeId"] = null;
+                    $data["sourceId"] =  $this->application->getId();
+                    $data["destinationId"] = $this->application->getId();
+                    $this->logService->addLog($request, "reception", $this->application->getId(), $produitCategorie->getReference(), $data);
+
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 } 
         

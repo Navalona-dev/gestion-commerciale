@@ -147,7 +147,7 @@ class ProduitCategorieController extends AbstractController
 
                     $user = $this->getUser();
                     $data["produit"] = $produitCategorie->getNom();
-                    $data["dateReception"] = (new \DateTime())->format("d-m-y h:i:s");
+                    $data["dateReception"] = (new \DateTime())->format("d-m-Y h:i:s");
                     $data["dateTransfert"] = null;
                     $data["dateSortie"] = null;
                     $data["userDoAction"] = $user->getUserIdentifier();
@@ -164,7 +164,7 @@ class ProduitCategorieController extends AbstractController
                     $data["commandeId"] = null;
                     $data["sourceId"] =  $this->application->getId();
                     $data["destinationId"] = $this->application->getId();
-                    $this->logService->addLog($request, "transfert", $this->application->getId(), $produitCategorie->getReference(), $data);
+                    $this->logService->addLog($request, "reception", $this->application->getId(), $produitCategorie->getReference(), $data);
 
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
@@ -623,8 +623,8 @@ class ProduitCategorieController extends AbstractController
                     $user = $this->getUser();
                     $data["produit"] = $oldProduitCategorie->getNom();
                     $data["dateReception"] = null;
-                    $data["dateTransfert"] = (new \DateTime())->format("d-m-y h:i:s");
-                    $data["dateSortie"] = (new \DateTime())->format("d-m-y h:i:s");
+                    $data["dateTransfert"] = (new \DateTime())->format("d-m-Y h:i:s");
+                    $data["dateSortie"] = (new \DateTime())->format("d-m-Y h:i:s");
                     $data["userDoAction"] = $user->getUserIdentifier();
                     $data["source"] = $this->application->getEntreprise();
                     $data["destination"] = $newApplication->getEntreprise();

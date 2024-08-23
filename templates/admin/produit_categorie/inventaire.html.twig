@@ -219,7 +219,7 @@
 
 <script>
   $(document).ready(function() {
-    var dateFormat = 'dd-mm-yy';
+    var dateFormat = 'dd-mm-yyyy';
     var dateNow = new Date();
     dateNow.setDate(dateNow.getDate() + 1);
 
@@ -278,10 +278,50 @@
         var dateSortieFilter = dateSortie ? parseDate(dateSortie) : null;
         var dateTransfertFilter = dateTransfert ? parseDate(dateTransfert) : null;
 
-        var dateReceptionMatch = !dateReceptionFilter || (dateReceptionCell && dateReceptionCell >= dateReceptionFilter);
-        var dateSortieMatch = !dateSortieFilter || (dateSortieCell && dateSortieCell <= dateSortieFilter);
-        var dateTransfertMatch = !dateTransfertFilter || (dateTransfertCell && dateTransfertCell <= dateTransfertFilter);
+        let formattedDateReception = null;
+        if (dateReceptionCell != null && dateReceptionCell != "null" && dateReceptionCell != undefined) {
 
+          const dayReception = String(dateReceptionCell.getDate()).padStart(2, '0');
+          const monthReception = String(dateReceptionCell.getMonth() + 1).padStart(2, '0'); // Les mois sont indexés à partir de 0
+          const yearReception = dateReceptionCell.getFullYear();
+
+          // Formatez la date en chaîne
+           formattedDateReception = `${dayReception}-${monthReception}-${yearReception}`;
+           
+        }
+        
+        let formattedDateSortie = null;
+        if (dateSortieCell != null && dateSortieCell != "null" && dateSortieCell != undefined) {
+
+          const daySortie = String(dateSortieCell.getDate()).padStart(2, '0');
+          const monthSortie = String(dateSortieCell.getMonth() + 1).padStart(2, '0'); // Les mois sont indexés à partir de 0
+          const yearSortie = dateSortieCell.getFullYear();
+
+          // Formatez la date en chaîne
+           formattedDateSortie = `${daySortie}-${monthSortie}-${yearSortie}`;
+           
+        }
+
+        let formattedDateTransfert = null;
+        if (dateTransfertCell != null && dateTransfertCell != "null" && dateTransfertCell != undefined) {
+
+          const dayTransfert = String(dateTransfertCell.getDate()).padStart(2, '0');
+          const monthTransfert = String(dateTransfertCell.getMonth() + 1).padStart(2, '0'); // Les mois sont indexés à partir de 0
+          const yearTransfert = dateTransfertCell.getFullYear();
+
+          // Formatez la date en chaîne
+           formattedDateTransfert = `${dayTransfert}-${monthTransfert}-${yearTransfert}`;
+           
+        }
+
+        //var dateReceptionMatch = !dateReceptionFilter || (dateReceptionCell && dateReceptionCell >= dateReceptionFilter);
+        // var dateSortieMatch = !dateSortieFilter || (dateSortieCell && dateSortieCell <= dateSortieFilter);
+        // var dateTransfertMatch = !dateTransfertFilter || (dateTransfertCell && dateTransfertCell <= dateTransfertFilter);
+        var dateReceptionMatch = !dateReceptionFilter || (formattedDateReception && formattedDateReception == dateReception);
+       var dateSortieMatch = !dateSortieFilter || (formattedDateSortie && formattedDateSortie == dateSortie);
+        var dateTransfertMatch = !dateTransfertFilter || (formattedDateTransfert && formattedDateTransfert == dateTransfert);
+ // console.log("ici",formattedDateReception == dateReception, dateReceptionMatch, dateReception, formattedDateReception, typeof dateReceptionCell, dateReceptionFilter);
+      
         return affaireMatch && responsableMatch && sourceTypeMatch && destinationTypeMatch && produitFournisseurMatch && dateReceptionMatch && dateSortieMatch && dateTransfertMatch;
       });
 

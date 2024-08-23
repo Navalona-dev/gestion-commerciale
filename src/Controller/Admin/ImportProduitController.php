@@ -216,7 +216,7 @@ class ImportProduitController extends AbstractController
 
                         $user = $this->getUser();
                         $data["produit"] = $produitCategorie->getNom();
-                        $data["dateReception"] = (new \DateTime())->format("d-m-y h:i:s");
+                        $data["dateReception"] = (new \DateTime())->format("d-m-Y h:i:s");
                         $data["dateTransfert"] = null;
                         $data["dateSortie"] = null;
                         $data["userDoAction"] = $user->getUserIdentifier();
