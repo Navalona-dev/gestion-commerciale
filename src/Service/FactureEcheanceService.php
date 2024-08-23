@@ -230,7 +230,7 @@ class FactureEcheanceService
 
         }
         
-        $affaire->setPaiement('encours');
+        $affaire->setPaiement('enecheance');
         $affaire->setDatePaiement($date);
         $affaire->setDevisEvol('encours');
         $affaire->setDateFacture($date);
@@ -296,18 +296,12 @@ class FactureEcheanceService
             $facture->setStatut('regle');
             $affaire->setPaiement('paye');
             $affaire->setDevisEvol('gagne');
+            $facture->setDate($date);
             $this->persist($affaire);
         }
 
         $facture->setReglement($reglement);
-        $facture->setEcheance(true);
         $this->persist($facture);
-
-        $formData = $form->getData();
-        $status = $formData->getStatus();
-
-        $factureEcheance->setStatus($status);
-        $this->persist($factureEcheance);
 
         $newFacture = Facture::newFacture($affaire);
         $numeroFacture = 1;
@@ -328,7 +322,15 @@ class FactureEcheanceService
         $newFacture->setFile($filename);
         $newFacture->setSolde($montant);
         $newFacture->setPrixHt($montant); 
+        $newFacture->setEcheance(true);
         $this->persist($newFacture);  
+
+        $formData = $form->getData();
+        $status = $formData->getStatus();
+
+        $factureEcheance->setStatus($status);
+        $factureEcheance->setFile($filename);
+        $this->persist($factureEcheance);
 
         $this->update();
 

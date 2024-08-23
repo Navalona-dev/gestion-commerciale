@@ -66,32 +66,32 @@ $(document).ready(function() {
     const montantHt = $('.montant-ht').data('montant');
     const errorMessage = document.getElementById('error-message');
     console.log('montantHt', montantHt);
-    
-    $('#add_facture_echeance_reglement').on('input', function(){
-        const reglementValue = $(this).val();
-        const montantHtFinal = montantHt - reglementValue;
-
-        if (isNaN(this.value)) {
-            // Affiche le message d'erreur si ce n'est pas un nombre
-            errorMessage.style.display = 'block';
-            $('#add_facture_echeance_factureEcheances_0_montant').val(montantHt).prop('readonly', true);
-
-        } else if(this.value.trim() === '') {
-            errorMessage.style.display = 'none';
-            $('#add_facture_echeance_factureEcheances_0_montant').val(montantHt).prop('readonly', true);
-
-        }
-        else {
-            // Cache le message d'erreur si la valeur est un nombre
-            errorMessage.style.display = 'none';
-            $('#add_facture_echeance_factureEcheances_0_montant').val(montantHtFinal).prop('readonly', true);
-
-        }
-    })
 
     function handleCheckboxState() {
         setTimeout(function() {
         if ($('#compte_delais_paiement').is(':checked')) {
+            $('#add_facture_echeance_reglement').on('input', function(){
+                const reglementValue = $(this).val();
+                const montantHtFinal = montantHt - reglementValue;
+
+                if (isNaN(this.value)) {
+                    // Affiche le message d'erreur si ce n'est pas un nombre
+                    errorMessage.style.display = 'block';
+                    $('#add_facture_echeance_factureEcheances_0_montant').val(montantHt).prop('readonly', true);
+
+                } else if(this.value.trim() === '') {
+                    errorMessage.style.display = 'none';
+                    $('#add_facture_echeance_factureEcheances_0_montant').val(montantHt).prop('readonly', true);
+
+                }
+                else {
+                    // Cache le message d'erreur si la valeur est un nombre
+                    errorMessage.style.display = 'none';
+                    $('#add_facture_echeance_factureEcheances_0_montant').val(montantHtFinal).prop('readonly', true);
+
+                }
+            })
+            
             $('#compte_delais_paiement').show();
 
             $('#paye_une_fois').hide();

@@ -689,7 +689,7 @@ class AffaireController extends AbstractController
                 $factures = $affaire->getFactures();
                 if ($affaire->getPaiement() != "annule") {
                     $facturesValide = $factures->filter(function ($item) use ($affaire) {
-                        return ($item->isValid() && 'regle' === $item->getStatut());
+                        return ($item->isValid() && ('regle' === $item->getStatut() || 'encours' === $item->getStatut() ));
                         
                     });
                 } else {
@@ -882,11 +882,16 @@ class AffaireController extends AbstractController
             // Utiliser le numéro de la facture pour le nom du fichier
             //$filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
             $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
-            
+            $pdfPath = '/uploads/factures/valide/' . $filename;
+            file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
             // Retourner le PDF en réponse
-            return new Response($pdfContent, 200, [
+            /*return new Response($pdfContent, 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]);*/
+            return new JsonResponse([
+                'status' => 'success',
+                'pdfUrl' => $pdfPath,
             ]);
         }
         
@@ -916,11 +921,17 @@ class AffaireController extends AbstractController
             // Utiliser le numéro de la facture pour le nom du fichier
             //$filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
             $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
-        
+            $pdfPath = '/uploads/factures/annule/' . $filename;
+            file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
+            
             // Retourner le PDF en réponse
-            return new Response($pdfContent, 200, [
+            /*return new Response($pdfContent, 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]);*/
+            return new JsonResponse([
+                'status' => 'success',
+                'pdfUrl' => $pdfPath,
             ]);
         }
         

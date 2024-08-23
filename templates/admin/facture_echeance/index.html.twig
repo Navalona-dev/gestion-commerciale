@@ -69,7 +69,11 @@
                                     {% for liste in listes %}
                                     <tr>
                                         <td>
+                                            {% if liste.status == "regle" %}
+                                                <a href="{{ asset('uploads/factures/echeance/' ~ liste.file) }}" target="_blank" class="text-danger" title="Voir facture"><i class="bi bi-file-earmark-pdf-fill"></i></a>
+                                            {% else %}
                                             <a href="#" onclick="return openModalNewFactureEcheance({{liste.id}})" title="Facturer" class="text-primary"><i class="bi bi-receipt"></i></a>
+                                            {% endif %}
                                         </td>
                                         <td> {{liste.montant|number_format(2,',','')}} Ar </td>
                                         <td> {{liste.delaiPaiement}} jours </td>

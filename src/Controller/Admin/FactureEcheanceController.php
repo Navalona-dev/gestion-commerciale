@@ -61,7 +61,7 @@ class FactureEcheanceController extends AbstractController
 
                 if ($request->isXmlHttpRequest()) {
                     //$facture = $this->factureEcheanceService->add($affaire, $request);
-                    $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/echeance/';
+                    $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
                     list($pdfContent, $facture) = $this->factureEcheanceService->add($affaire, $request, $documentFolder, $form, $montant, $totalPayer);
                 
                     // Utiliser le numéro de la facture pour le nom du fichier

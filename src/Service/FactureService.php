@@ -443,7 +443,6 @@ class FactureService
         $products = $affaire->getProducts();
         $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
     
-
         foreach ($products as $key => $product) { 
             // Gestion du stock
             $produitCategorie = $product->getProduitCategorie();
@@ -514,7 +513,7 @@ class FactureService
                 // Par exemple, enregistrer un message d'erreur ou ajuster les stocks supplémentaires
             }
         }
-        
+
         $this->persist($facture);
         $affaire->setDateAnnule($date);
         $affaire->setDevisEvol('perdu');
