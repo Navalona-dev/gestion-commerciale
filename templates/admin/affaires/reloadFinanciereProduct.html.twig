@@ -80,80 +80,38 @@
                                         <a title="Annuler" style="cursor: pointer;" onclick="return annuleFacture({{affaire.id}})" title="Annuler" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
                                             <i class="bi bi-x"></i>
                                         </a>
-                                        <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank" title="Voir dernière facture" class="bg-primary icon-detail text-white">
-									        <i class="bi bi-file-earmark-check-fill"></i>
-                                        </a>
-
                                     </div>
                                 </div>
                             {% else %}
                                 {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
-                                <div class="col-md-2 col-12">
-                                    <div class="d-flex justify-content-end">
-                                        {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
-                                            <a title="Payé" style="cursor: pointer;" onclick="paiement({{affaire.id}})" class="icon-paye">
-                                                <i class="bi bi-credit-card-2-front-fill"></i>
-                                            </a>
-                                            <a href="#" title="Facture écheance" class="icon-echeance" onclick="return openModalFactureEcheance({{ affaire.id }})">
-                                                <i class="bi bi-calendar-heart-fill"></i>
-                                            </a>
-                                        {% endif %}
+                                    <div class="col-md-2 col-12">
+                                        <div class="d-flex justify-content-end">
+                                            {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
+                                                <a title="Payé" style="cursor: pointer;" onclick="paiement({{affaire.id}})" class="icon-paye">
+                                                    <i class="bi bi-credit-card-2-front-fill"></i>
+                                                </a>
+                                                <a href="#" title="Facture écheance" class="icon-echeance" onclick="return openModalFactureEcheance({{ affaire.id }})">
+                                                    <i class="bi bi-calendar-heart-fill"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                </div>
-                                {% else %}
-                                    {% if affaire.paiement is not null and affaire.paiement == "annule" %}
-                                <div class="col-md-2 col-12">
-                                     <div class="d-flex justify-content-center">
-                                        <a title="Annuler" target="_blank" href="{{ asset('uploads/factures/annule/' ~ factureFile) }}" title="Annuler" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
-                                            <i class="bi bi-x"></i>
-                                        </a>
-
-                                    </div>
-                                </div>
-                                    {% endif %}
                                 {% endif %}
-                                {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                     <hr>
-                    {#<div class="object">
-                        <label for="" class="mb-2 fw-bold">Objet commande</label>
-                        <textarea name="order-object" id="order-object" class="form-control form-control-md ckeditor"></textarea>
-                        <button type="submit" class="btn btn-primary btn-sm px-3 mt-3 btn-save-object">Enregistrer</button>
-                    </div>#}
-                    {# <div class="row justify-content-end align-items-center">
-                        <div class="col-auto">
-                            <input type="checkbox" name="drag-and-drop" id="drag-and-drop" checked>
-                            <label for="drag-and-drop">Activer le 'drag and drop' de la ligne</label>
-                        </div>
-                        <div class="col-auto">
-                            <div class="dropdown">
-                                <a href="#" class="dropdown-toggle btn btn-primary btn-sm btn-drop" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-list"></i>
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="#">PDF</a></li>
-                                    <li><a class="dropdown-item" href="#">Excel</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div> #}
                     {% set montantHt = 0 %}
                     {% set montantTTC = 0 %}
                     <div class="financier-produit mt-4">
                         <table class="table">
                             <thead>
                                 <tr class="bg-light">
-                                    {# <th></th> #}
                                     <th class="text-center">Ref</th>
                                     <th class="text-center" style="width: 200px;">Intitulé</th>
                                     <th class="text-center">Qté</th>
                                     <th class="text-center">PU(HT)</th>
-                                    {# <th>Remise</th> #}
-                                    {# <th>PT(HT)</th> #}
-                                    {# <th>TVA</th> #}
                                     <th class="text-center">Action</th>
-                                    {# <th class="text-center"><input type="checkbox" name="" id="" class="large-checkbox" style="margin-top: 5px !important;"></th> #}
                                 </tr>
                             
                             </thead>
@@ -161,22 +119,15 @@
                                  {% for product in produits %}
                                 <tr id="tr_produit_{{ product.id }}" data-id="{{ product.id }}"
                                             data-id-affaire="{{ affaire.id }}">
-                                    {# <td class="align-middle text-center">{{product.id}}</td> #}
                                     <td class="align-middle text-center">{{product.reference}} ({{product.typeVente}})</td>
                                     <td class="align-middle" style="width: 200px;">{{product.nom}}</td>
-                                    {# <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.qtt}}&nbsp;{{product.uniteVenteGros}}{% else %}{{product.uniteVenteDetail}}{% endif %} / {{product.produitCategorie.stockRestant}}</td> #}
                                      <td class="align-middle text-center">{% if product.typeVente == "detail" %}{{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteDetail}} ({% if ((product.qtt / product.produitCategorie.volumeGros) |round(0)) != 0 %} {{ (product.qtt / product.produitCategorie.volumeGros) |round(0)}} {{product.produitCategorie.presentationGros}}  et {% endif %}{{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})   {% else %}
                                     {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} ({% if product.qtt >= product.produitCategorie.volumeGros %} {{(product.qtt / product.produitCategorie.volumeGros) |round(0)}}  {{product.produitCategorie.presentationGros}} {% if product.qtt - product.produitCategorie.volumeGros != 0 %} et {% endif %} {% endif %} {% if product.qtt >= product.produitCategorie.volumeGros %} {% if product.qtt - product.produitCategorie.volumeGros != 0 %} {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} {% endif %} {% else %} {{product.qtt}} {{product.produitCategorie.presentationDetail}}{% endif %} )
                                     {% endif %}</td>
                                     <td class="align-middle text-center"> {% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(2, ',', ' ')}}{% else %}{{product.prixVenteDetail|number_format(2, ',', ' ')}}{% endif %}</td>
-                                    {# <td class="align-middle text-danger text-center">--</td>
-                                    <td class="align-middle text-center">0,00€</td>
-                                    <td class="align-middle text-center">20%</td> #}
                                     <td>
                                         {% if affaire.paiement is null or (affaire.paiement != "paye" and affaire.paiement != "annule" and affaire.paiement != "enecheance") %}
                                         <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
-                                        {# <a href="#" class="action-plus d-block text-center mb-2"><i class="bi bi-plus"></i></a>
-                                        <a href="#" class="action-list d-block text-center mb-2"><i class="bi bi-list-ul"></i></a> #}
                                         <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
                                         {% endif %}
                                     </td>
@@ -185,18 +136,11 @@
                                     {% else %}
                                         {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
                                     {% endif %}
-                                    {# <td class="align-middle">
-                                        <input type="checkbox" name="" id="" class="d-block large-checkbox mb-2">
-                                        <a href="#" class="d-block action-files align-middle text-center"><i class="bi bi-file-earmark-arrow-down-fill"></i></a>
-                                    </td> #}
+                                   
                                 </tr>
                                    {% endfor %}
                             </tbody>
                         </table>
-                        {# <div class="mt-3 mb-4 float-end">
-                            <input type="checkbox" name="drag-and-drop" id="drag-and-drop" checked>
-                            <label for="drag-and-drop">Activer le 'drag and drop' de la ligne</label>
-                        </div> #}
                         
                     </div>
                     <div class="financier-info">
@@ -207,32 +151,20 @@
                                     <a title="Annuler" style="cursor: pointer;" onclick="return annuleFacture({{affaire.id}})" title="Annuler" class="text-danger financier-icon">
                                         <i class="bi bi-x-square-fill"></i>
                                     </a>
-                                    <a href="{{ asset('uploads/factures/valide/' ~ factureFile) }}" target="_blank" title="Voir dernière facture" class="text-primary financier-icon">
-                                        <i class="bi bi-file-earmark-check-fill"></i>
-                                    </a>
+                                 
                                 {% else %}
                                     {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
                                         <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
                                         {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
-                                        <a style="cursor: pointer;" onclick="return paiement({{affaire.id}}) class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
+                                        <a style="cursor: pointer;" onclick="return paiement({{affaire.id}})" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
                                             <a href="#" title="Facture écheance" class="text-success financier-icon" onclick="return openModalFactureEcheance({{affaire.id}})">
                                                 <i class="bi bi-calendar-heart-fill"></i>
                                             </a>
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}
-                                    {#<a href="#" class="text-danger financier-icon"><i class="bi bi-database-fill-check"></i></a>
-                                    <a href="#" class="text-info icon-t">t</a>
-                                    <a href="#" class="text-success financier-icon"><i class="bi bi-file-earmark-excel-fill"></i></a>#}
+                                    
                                 </div>
-                                {# <div class="row mb-4">
-                                    <div class="col-md-6 col-12">
-                                        <p>Date valable jusqu'au : </p>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <input type="text" name="" id="" class="date-available form-control form-control-md" placeholder="jj/mm/aaaa">
-                                    </div>
-                                </div> #}
                                 <div class="row mb-4">
                                     <div class="col-md-6 col-12">
                                         <p>Status : </p>
@@ -256,28 +188,7 @@
                                             <p class="mt-4">{{ montantHt|number_format(2, ',', ' ') }} Ar</p>
                                         </div>
                                     </div>
-                                    {# <div class="row box-content px-3">
-                                        <div class="col-md-10 col-12 align-middle">
-                                            <p class="mt-3">TVA : </p>
-                                        </div>
-                                        <div class="col-md-2 col-12 align-middle">
-                                            <p class="mt-3">0,00€</p>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="row box-content px-3">
-                                        <div class="col-md-10 col-12 align-middle">
-                                            <p>Montant TTC : </p>
-                                        </div>
-                                        <div class="col-md-2 col-12 align-middle">
-                                            <p class="text-success">0,00€</p>
-                                        </div>
-                                    </div> #}
                                 </div>
-                                {# <div class="form-group mt-4" style="margin-left: 15px;">
-                                    <a href="#" class="btn btn-outline-primary btn-sm btn-add-financier"><i class="bi bi-plus"></i><span class="mx-2">Ajouter une remise</span></a>
-                                    <a href="#" class="btn btn-outline-warning btn-sm btn-add-financier mx-3"><i class="bi bi-plus"></i><span class="mx-2">Ajouter une option</span></a>
-                                </div> #}
                                
                             </div>
                         </div>

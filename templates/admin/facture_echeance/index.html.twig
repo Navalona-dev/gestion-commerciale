@@ -60,6 +60,7 @@
                                 <thead>
                                     <tr class="text-nowrap">
                                         <th>Actions</th>
+                                        <th>Statut</th>
                                         <th>Montant à payer</th>
                                         <th>Délais de paiement</th>
                                         <th>Date d'écheance</th>
@@ -75,6 +76,8 @@
                                             <a href="#" onclick="return openModalNewFactureEcheance({{liste.id}})" title="Facturer" class="text-primary"><i class="bi bi-receipt"></i></a>
                                             {% endif %}
                                         </td>
+                                        {% set status = constant('App\\Entity\\FactureEcheance::STATUS') %}
+                                        <td> {{status[liste.status]}} </td>
                                         <td> {{liste.montant|number_format(2,',','')}} Ar </td>
                                         <td> {{liste.delaiPaiement}} jours </td>
                                         <td> {{liste.dateEcheance|date('d-m-Y')}} </td>

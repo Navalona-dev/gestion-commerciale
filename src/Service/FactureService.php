@@ -697,4 +697,22 @@ class FactureService
         }
         return false;
     }
+
+    public function delete($facture = null)
+    {
+        $factureDetails = $facture->getFactureDetails();
+        foreach($factureDetails as $factureDetail) {
+            $this->remove($factureDetail);
+        }
+
+        $factureEcheances = $facture->getFactureEcheances();
+        foreach($factureEcheances as $factureEcheance) {
+            this->remove($factureEcheance);
+        }
+
+        $this->remove($facture);
+        
+        return $facture;
+        
+    }
 }

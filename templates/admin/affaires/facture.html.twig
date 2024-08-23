@@ -99,7 +99,6 @@
                                         <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
                                         <th>Validation</th>
                                         <th>Actions</th>
-                                        <th>PDF</th>
                                         <th>Date</th>
                                         <th>Type</th>
                                         <th>N°</th>
@@ -128,19 +127,20 @@
                                             {% endif %}
                                         </td>
                                         <td class="d-flex align-items-center">
-                                            <i class="bi bi-arrow-clockwise"></i>
-                                            <div class="dropdown ms-2">
-                                                <a class="btn btn-outline-primary dropdown-toggle text-black" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-list"></i>
-                                                </a>
-                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                                    <li><a style="cursor: pointer;" class="dropdown-item">Modifier</a></li>
-                                                    <li><a style="cursor: pointer;" class="dropdown-item">Supprimer</a></li>
-                                                    <li><a href="#tab-echeance" onclick="return showTabEcheance({{liste.id}})" class="dropdown-item">Écheance</a></li>
-                                                </ul>
-                                            </div>
+                                            <a href="#" class="text-primary fs-6"><i class="bi bi-pencil-square"></i></a>
+                                            <a href="#" onclick="return deleteFacture({{liste.id}})" class="text-danger fs-6 mx-2"><i class="bi bi-trash-fill"></i></a>
+                                            {% if liste.factureEcheances|length > 0 %}
+                                            <a href="#tab-echeance" onclick="return showTabEcheance({{liste.id}})" class="text-warning fs-6"><i class="bi bi-calendar-date-fill"></i></a>
+                                            {% endif %}
+                                            {% set url = "" %}
+                                            {% if liste.statut == "regle" or liste.statut == "encours" %}
+                                                {% set url = "uploads/factures/valide/" ~ liste.file %}
+                                            {% elseif liste.statut == "annule" %}
+                                                {% set url = "uploads/factures/annule/" ~ liste.file %}
+                                            {% endif %}
+                                            <a href="{{url}}" target="_blank" class="text-danger fs-6 {% if liste.factureEcheances|length > 0 %} mx-2 {% endif %} "><i class="bi bi-file-pdf-fill"></i></a>
+                                            
                                         </td>
-                                        <td><i class="bi bi-file-pdf-fill text-danger fs-4"></i></td>
                                         <td> {{liste.dateCreation|date('d-m-Y')}} </td>
                                         <td> {{liste.type}} </td>
                                         <td> {{liste.numero}} </td>
@@ -152,13 +152,13 @@
                                         {% set statutPaiement = constant('App\\Entity\\Facture::STATUT') %}
                                         <td> {{statutPaiement[liste.statut]}} </td>
                                         <td> {{liste.solde}} </td>
-                                        <td> {{liste.etat}} </td>
+                                        {% set etat = constant('App\\Entity\\Facture::ETAT') %}
+                                        <td> {{etat[liste.etat]}} </td>
                                         <td> {{liste.remise}} </td>
                                     </tr>
                                     {% else %}
                                     <tr>
-                                        <td colspan="16">Aucune facture trouvé</td>
-                                        <td></td>
+                                        <td colspan="15">Aucune facture trouvé</td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -178,11 +178,9 @@
                                 </tbody>
                             </table>
                         </div>
-                        
                       </div>
                  </div>
             </div>
-          
   
         </div>
       </div>
@@ -235,5 +233,7 @@
         $('#tab-commande').css('display','none');
         $('#tab-echeance').css('display','none');
       });
+
+     
 
     </script>

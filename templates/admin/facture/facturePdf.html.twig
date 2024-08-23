@@ -95,9 +95,11 @@
                     <td style="padding-left: 50px;">
                         <p><span class="header-data">N° : </span> 
                             {% if facture.statut == "annule" %}
-                            FA-annulé-{{facture.numero}}
+                                FA-annulé-{{facture.numero}}
                             {% elseif facture.statut == "regle" %}
-                            FA-validé-{{facture.numero}}
+                                FA-validé-{{facture.numero}}
+                            {% elseif facture.statut == "encours" %}
+                                FA-echeance-{{facture.numero}}
                             {%  endif%}
                          </p>
                     </td>

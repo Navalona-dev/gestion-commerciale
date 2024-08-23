@@ -840,6 +840,7 @@ class AffaireController extends AbstractController
     public function facture(SessionInterface $session, Affaire $affaire): Response
     {
         $session->set('idAffaire', $affaire->getId());
+        $session->set('idCompte', $affaire->getCompte()->getId());
 
         $factures = $this->factureService->getAllFacturesByAffaire($affaire->getId());
 
@@ -848,7 +849,7 @@ class AffaireController extends AbstractController
             
             $data["html"] = $this->renderView('admin/affaires/facture.html.twig', [
                 'affaire' => $affaire,
-                'factures' => $factures
+                'factures' => $factures,
             ]);
            
             return new JsonResponse($data);

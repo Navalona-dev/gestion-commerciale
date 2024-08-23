@@ -11,14 +11,21 @@ use App\Service\FactureService;
 use App\Service\ProductService;
 use App\Service\ApplicationManager;
 use App\Repository\FactureRepository;
+use App\Exception\PropertyVideException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Doctrine\ORM\ORMInvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Exception\UnsufficientPrivilegeException;
+use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/admin/facture', name: 'factures')]
@@ -425,6 +432,43 @@ class FactureController extends AbstractController
             throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
         } 
         return new JsonResponse($data);
+    }
+
+    #[Route('/delete/{facture}', name: '_delete')]
+    public function delete(Request $request, Facture $facture)
+    {
+       /* if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+        try {
+           
+            if ($request->isXmlHttpRequest()) {
+                if($facture->getStatut() == 'regle') {
+                    return new JsonResponse(['status' => 'error', 'message' => 'Vous ne pouvez pas supprimer une facture qui est déjà payé'], Response::HTTP_OK);
+                }
+                $this->factureService->remove($facture);
+                return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+            }
+                
+        } catch (PropertyVideException $PropertyVideException) {
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
+            throw $this->createNotFoundException('Exception' . $UniqueConstraintViolationException->getMessage());
+        } catch (MappingException $MappingException) {
+            $this->createNotFoundException('Exception' . $MappingException->getMessage());
+        } catch (ORMInvalidArgumentException $ORMInvalidArgumentException) {
+            $this->createNotFoundException('Exception' . $ORMInvalidArgumentException->getMessage());
+        } catch (UnsufficientPrivilegeException $UnsufficientPrivilegeException) {
+            $this->createNotFoundException('Exception' . $UnsufficientPrivilegeException->getMessage());
+        } catch (ServerException $ServerException) {
+            $this->createNotFoundException('Exception' . $ServerException->getMessage());
+        } catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
+            $this->createNotFoundException('Exception' . $NotNullConstraintViolationException->getMessage());
+        } catch (\Exception $Exception) {
+            $data['exception'] = $Exception->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+        }
     }
 
    

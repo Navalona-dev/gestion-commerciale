@@ -2223,6 +2223,41 @@ function showTabNotification() {
          });
  }
 
+ function deleteFacture(id = null) {
+    var anchorName = document.location.hash.substring(1);
+
+    if (confirm('Voulez vous vraiment supprimer cette facture?')) {
+        $.ajax({
+            url: '/admin/facture/delete/'+id,
+            type: 'POST',
+            data: {facture: id},
+            success: function (response) {
+                var nextLink = $('#sidebar').find('li#facture').find('a');
+                setTimeout(function () {
+                    toastr.options = {
+                        closeButton: true,
+                        progressBar: true,
+                        showMethod: 'slideDown',
+                        timeOut: 1000
+                    };
+                    if(response.status == 'success') {
+                        toastr.success('Avec succèss', 'Suppression effectuée');
+                    }else {
+                        toastr.error(response.message);
+                    }
+
+                }, 1500);
+                if (anchorName) {
+                    window.location.hash = anchorName;
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                alert('Erreur lors de la suppression de l\'application.');
+            }
+        });
+    }
+}
 
  function showSpinner() {
     document.getElementById('spinner').style.display = 'block';
