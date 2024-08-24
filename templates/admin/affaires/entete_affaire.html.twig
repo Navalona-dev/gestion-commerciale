@@ -52,11 +52,13 @@
                                 <i class="bi bi-coin text-black bg-warning action-icon"></i>
                                 <span class="action-text">Financier</span>
                             </a>
-                            {#<a href="#" class="d-flex flex-column align-items-center mx-2">
-                                <i class="bi bi-file-earmark-pdf bg-danger action-icon"></i>
-                                <span class="action-text">Document</span>
+                            {% if affaire.factures|length > 0 %}
+                            <a href="#tab-facture-affaire" onclick="return showTabFactureAffaire({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
+                                <i class="bi bi-file-earmark-pdf bg-success action-icon"></i>
+                                <span class="action-text">Facture</span>
                             </a>
-                            <a href="#" class="d-flex flex-column align-items-center mx-3">
+                            {% endif %}
+                            {#<a href="#" class="d-flex flex-column align-items-center mx-3">
                                 <i class="bi bi-check-circle-fill bg-success action-icon"></i>
                                 <span class="action-text">Tâche</span>
                             </a>

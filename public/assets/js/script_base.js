@@ -183,6 +183,7 @@ function showTabEcheance(id = null) {
                         scrollX: '100%',
                         pageLength: 10,
                         scrollCollapse: false,
+                        order: []
                     });
                     hideSpinner();
                 }, 2000);
@@ -2225,7 +2226,8 @@ function showTabNotification() {
 
  function deleteFacture(id = null) {
     var anchorName = document.location.hash.substring(1);
-
+    var idAffaire = $('.id-affaire').data('affaire');
+    
     if (confirm('Voulez vous vraiment supprimer cette facture?')) {
         $.ajax({
             url: '/admin/facture/delete/'+id,
@@ -2238,18 +2240,19 @@ function showTabNotification() {
                         closeButton: true,
                         progressBar: true,
                         showMethod: 'slideDown',
-                        timeOut: 1000
+                        timeOut: 3000
                     };
                     if(response.status == 'success') {
-                        toastr.success('Avec succèss', 'Suppression effectuée');
+                        toastr.success(response.message);
                     }else {
                         toastr.error(response.message);
                     }
 
-                }, 1500);
+                }, 800);
                 if (anchorName) {
                     window.location.hash = anchorName;
                 }
+                showTabFactureAffaire(idAffaire);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 // Gérer l'erreur (par exemple, afficher un message d'erreur)

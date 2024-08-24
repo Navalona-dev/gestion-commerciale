@@ -1,3 +1,4 @@
+<div class="facture-id" data-facture="{{facture.id}}"></div>
 <div class="modal fade" id="modalNewFactureEcheance" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog ">
         <div class="modal-content p-4 ">
@@ -18,12 +19,26 @@
                     </div>
                     <div class="facture écheance alert alert-info">
                         <h6 class="text-center fw-bold">Révision facture écheance</h6>
-                        <p><span class="fw-bold">Montant à payer : </span>{{factureEcheance.montant|number_format(2,',','')}} Ar</p>
+                        {% if factureEcheance.reglement is not null %}
+                            <p><span class="fw-bold">Avance : </span> {{factureEcheance.reglement|number_format(2, ',', '')}} Ar </p>
+                        {% endif %}
+                        <p><span class="fw-bold">Montant à payer : </span>
+                            {% if factureEcheance.reglement is not null %}
+                                {% if factureEcheance.reglement > factureEcheance.montant %}
+                                    {{(factureEcheance.reglement - factureEcheance.montant)|number_format(2,',','')}} Ar
+                                {% elseif  factureEcheance.montant > factureEcheance.reglement %}
+                                    {{(factureEcheance.montant - factureEcheance.reglement)|number_format(2,',','')}} Ar
+                                {% endif %}
+                            {% else %}
+                            {{factureEcheance.montant|number_format(2,',','')}} Ar
+                            {% endif %}
+                            
+                        </p>
                         <p><span class="fw-bold">Délais de paiement : </span>{{factureEcheance.delaiPaiement}} jours </p>
                         <p><span class="fw-bold">Date écheance : </span> {{factureEcheance.dateEcheance|date('d-m-Y')}} </p>
                     </div>
                     <div class="alert alert-warning">
-                        <p class="fw-bol">Reste à payer : {{reste|number_format(2,',','')}} Ar </p>
+                        <p class="fw-bold">Reste à payer : {{reste|number_format(2,',','')}} Ar </p>
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-sm w-100">Créer la facture</button>
@@ -38,6 +53,7 @@
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 <script>
 $(document).ready(function () {
+    const idFacture = $('.facture-id').data('facture');
    
     $('#createFactureEcheance').on('submit', function (e) {
          e.preventDefault();
@@ -64,6 +80,8 @@ $(document).ready(function () {
                          timeOut: 1000
                      };
                      toastr.success('Avec succèss', 'Enregistrement effectuée');
+
+                     showTabEcheance(idFacture);
 
                      if (response.pdfUrl) {
                         window.open(response.pdfUrl, '_blank');

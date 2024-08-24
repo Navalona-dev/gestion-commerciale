@@ -71,31 +71,31 @@ class FactureRepository extends ServiceEntityRepository
             return $query->fetchAll(); 
     }
 
+
     public function getAllFacturesByAffaire($affaireId = null)
     {
         $sql = "SELECT f.id, f.type, f.numero, f.prixHt, f.prixTtc, f.solde, f.statut, f.reglement, f.numeroCommande, f.etat,
-                f.file, f.dateCreation, f.isValid, f.remise, c.nom as compte, a.nom as affaire, fe.id as factureEcheances
+                f.file, f.dateCreation, f.isValid, f.remise, c.nom as compte, a.nom as affaire, 
+                GROUP_CONCAT(DISTINCT fe.id) as factureEcheances
                 FROM `Facture` f 
                 LEFT JOIN `compte` c ON f.compte_id = c.id 
                 LEFT JOIN `affaire` a ON f.affaire_id = a.id 
                 LEFT JOIN `FactureEcheance` fe ON f.id = fe.facture_id
-                WHERE f.application_id = ".$this->application->getId()." AND f.isEcheance = 0 OR f.isEcheance IS NULL 
+                WHERE f.application_id = ".$this->application->getId()." AND (f.isEcheance = 0 OR f.isEcheance IS NULL) 
                 ";
 
-                if ($affaireId != null) {
-                    $sql .= " and a.id = ".$affaireId."";
-                }
+        if ($affaireId != null) {
+            $sql .= " and a.id = ".$affaireId."";
+        }
 
-            $sql .= " ORDER BY f.dateCreation DESC";
+        $sql .= " GROUP BY f.id
+                ORDER BY f.dateCreation DESC";
 
+        $query = $this->connection->prepare($sql);
+        $query = $this->connection->executeQuery($sql);
 
-            $query = $this->connection->prepare($sql);
-        
-            $query = $this->connection->executeQuery($sql);
-    
-            return $query->fetchAll(); 
+        return $query->fetchAll(); 
     }
-
 
     public function searchFactureRawSql(
         $genre = 1,

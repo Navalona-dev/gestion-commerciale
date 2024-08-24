@@ -64,16 +64,37 @@
                                         <th>Montant à payer</th>
                                         <th>Délais de paiement</th>
                                         <th>Date d'écheance</th>
+                                        <th>Date écheance reportée</th>
+                                        <th>Réglement</th>
+                                        <th>Reporter</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for liste in listes %}
+                                    {% set dernierStatusRegle = false %}
+                                    {% for index, liste in listes %}
                                     <tr>
-                                        <td>
+                                        {#<td>
                                             {% if liste.status == "regle" %}
                                                 <a href="{{ asset('uploads/factures/echeance/' ~ liste.file) }}" target="_blank" class="text-danger" title="Voir facture"><i class="bi bi-file-earmark-pdf-fill"></i></a>
                                             {% else %}
-                                            <a href="#" onclick="return openModalNewFactureEcheance({{liste.id}})" title="Facturer" class="text-primary"><i class="bi bi-receipt"></i></a>
+                                                <a href="#" onclick="return openModalNewFactureEcheance({{liste.id}})" title="Facturer" class="text-primary"><i class="bi bi-receipt"></i></a>
+                                                {% if liste.isReporter != 1 %}
+                                                    <a href="#" onclick="return openModalNewFactureEcheanceReporter({{liste.id}})" title="A reporter" class="mx-2 text-danger"><i class="bi bi-clock-history"></i></a>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>#}
+                                        <td>
+                                            {% if liste.status == "regle" %}
+                                                <a href="{{ asset('uploads/factures/echeance/' ~ liste.file) }}" target="_blank" class="text-danger" title="Voir facture"><i class="bi bi-file-earmark-pdf-fill"></i></a>
+                                                {% set dernierStatusRegle = true %}
+                                            {% else %}
+                                                {% if index == 0 or dernierStatusRegle %}
+                                                    <a href="#" onclick="return openModalNewFactureEcheance({{liste.id}})" title="Facturer" class="text-primary fs-6"><i class="bi bi-receipt"></i></a>
+                                                    {% if liste.isReporter != 1 %}
+                                                        <a href="#" onclick="return openModalNewFactureEcheanceReporter({{liste.id}})" title="A reporter" class="mx-2 text-danger fs-6"><i class="bi bi-clock-fill"></i></a>
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% set dernierStatusRegle = false %}
                                             {% endif %}
                                         </td>
                                         {% set status = constant('App\\Entity\\FactureEcheance::STATUS') %}
@@ -81,10 +102,25 @@
                                         <td> {{liste.montant|number_format(2,',','')}} Ar </td>
                                         <td> {{liste.delaiPaiement}} jours </td>
                                         <td> {{liste.dateEcheance|date('d-m-Y')}} </td>
+                                        <td> 
+                                            {% if liste.dateReporter %}
+                                                {{liste.dateReporter|date('d-m-Y')}}
+                                            {% endif %}
+                                         </td>
+                                        <td> {{liste.reglement}} </td>
+                                        <td>
+                                            {% if liste.isReporter == 1 %} 
+                                            Oui
+                                            {% else %}
+                                            Non
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                     {% else %}
                                         <tr>
-                                            <td colspan="4">Aucun enregistrement trouvé</td>
+                                            <td colspan="6">Aucun enregistrement trouvé</td>
+                                            <td></td>
+                                            <td></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -100,77 +136,106 @@
         </div>
       </div>
       <div id="blockModalNewFactureEcheanceEmpty"></div>
+      <div id="blockModalNewFactureEcheanceReporterEmpty"></div>
     </section>
   
-    <script>
+<script>
 
-$(document).ready(function() {
-        $('#tab-fiche-fournisseur').removeClass('active').empty();
-        $('#tab-quantite-vendu').removeClass('active').empty();
-        $('#tab-notification').removeClass('active').empty();
-        $('#tab-historique-produit').removeClass('active').empty();
-        $('#tab-historique-affaire').removeClass('active').empty();
-        $('#tab-produit-date-peremption').removeClass('active').empty();
-        $('#tab-stock').removeClass('active');
-        $('#tab-inventaire-produit').css('display','none');
+    $(document).ready(function() {
+            $('#tab-fiche-fournisseur').removeClass('active').empty();
+            $('#tab-quantite-vendu').removeClass('active').empty();
+            $('#tab-notification').removeClass('active').empty();
+            $('#tab-historique-produit').removeClass('active').empty();
+            $('#tab-historique-affaire').removeClass('active').empty();
+            $('#tab-produit-date-peremption').removeClass('active').empty();
+            $('#tab-stock').removeClass('active');
+            $('#tab-inventaire-produit').css('display','none');
 
-        $('.tab-categorie').removeClass('active');
-        $('#tab-produit-categorie').removeClass('active');
-        $('.tab-produit-categorie').removeClass('active');
-        $('#tab-categorie').removeClass('active');
-        $('.tab-import-produit').css('display', 'none');
-        $('#tab-import-produit').css('display', 'none');
+            $('.tab-categorie').removeClass('active');
+            $('#tab-produit-categorie').removeClass('active');
+            $('.tab-produit-categorie').removeClass('active');
+            $('#tab-categorie').removeClass('active');
+            $('.tab-import-produit').css('display', 'none');
+            $('#tab-import-produit').css('display', 'none');
 
 
-        $('.tab-user').removeClass('active');
-        $('#tab-utilisateur').removeClass('active');
+            $('.tab-user').removeClass('active');
+            $('#tab-utilisateur').removeClass('active');
 
-        $('.tab-permission').removeClass('active');
-        $('.tab-privilege').removeClass('active');
-        $('.tab-cat-permission').removeClass('active');
-        $('#tab-categorie-permission').removeClass('active');
-    
-        $('#tab-dashboard').removeClass('active');
-        $('#tab-profile').removeClass('active');
-    
-        $('#tab-permission').removeClass('active');
-        $('#tab-privilege').removeClass('active');
-        $('#tab-transfert-produit').css('display', 'none');
-        $('#affaires_client').removeClass('active').empty();
-        $('#affaires_fournisseur').removeClass('active').empty();
-        $('#tab-info-affaire').removeClass('active').empty();
-        $('#tab-financier-affaire').removeClass('active').empty();
-        $('#tab-fiche-client').removeClass('active').empty();
-    
-        $('#tab-application').removeClass('active');
-        $('#tab-profile').removeClass('active');
-         $('#tab-compte_1').removeClass('active');
-        $('#tab-compte_2').removeClass('active');
-        $('#tab-produit-type').removeClass('active');
-        $('.tab-produit-type').removeClass('active');
-        $('#tab-import-produit').css('display', 'none');
-        $('#tab-facture').css('display', 'none');
-        $('#tab-facture-affaire').css('display', 'none');
-        $('#tab-nouveau-facture').css('display','none');
-        $('#tab-devis').css('display','none');
-        $('#tab-commande').css('display','none');
-        $('#tab-echeance').css('display','block');
+            $('.tab-permission').removeClass('active');
+            $('.tab-privilege').removeClass('active');
+            $('.tab-cat-permission').removeClass('active');
+            $('#tab-categorie-permission').removeClass('active');
+        
+            $('#tab-dashboard').removeClass('active');
+            $('#tab-profile').removeClass('active');
+        
+            $('#tab-permission').removeClass('active');
+            $('#tab-privilege').removeClass('active');
+            $('#tab-transfert-produit').css('display', 'none');
+            $('#affaires_client').removeClass('active').empty();
+            $('#affaires_fournisseur').removeClass('active').empty();
+            $('#tab-info-affaire').removeClass('active').empty();
+            $('#tab-financier-affaire').removeClass('active').empty();
+            $('#tab-fiche-client').removeClass('active').empty();
+        
+            $('#tab-application').removeClass('active');
+            $('#tab-profile').removeClass('active');
+            $('#tab-compte_1').removeClass('active');
+            $('#tab-compte_2').removeClass('active');
+            $('#tab-produit-type').removeClass('active');
+            $('.tab-produit-type').removeClass('active');
+            $('#tab-import-produit').css('display', 'none');
+            $('#tab-facture').css('display', 'none');
+            $('#tab-facture-affaire').css('display', 'none');
+            $('#tab-nouveau-facture').css('display','none');
+            $('#tab-devis').css('display','none');
+            $('#tab-commande').css('display','none');
+            $('#tab-echeance').css('display','block');
 
-    });
-     
-      function openModalNewFactureEcheance(id = null) {
+        });
+        
+    function openModalNewFactureEcheance(id = null) {
+    var anchorName = document.location.hash.substring(1);
+
+    $.ajax({
+            url: '/admin/facture/echeance/facture/'+id,
+            type: 'POST',
+            data: {id: id},
+            success: function (response) {
+                if (response.html != "") {
+                    $("#blockModalNewFactureEcheanceEmpty").empty();
+                    $("#blockModalNewFactureEcheanceEmpty").append(response.html);
+
+                    $('#modalNewFactureEcheance').modal('show');
+
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
+
+                }
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                alert('Erreur lors de l\'ajout de facture d\'écheance.');
+            }
+        });
+}
+
+    function openModalNewFactureEcheanceReporter(id = null) {
         var anchorName = document.location.hash.substring(1);
 
         $.ajax({
-                url: '/admin/facture/echeance/facture/'+id,
+                url: '/admin/facture/echeance/facture/reporter/'+id,
                 type: 'POST',
                 data: {id: id},
                 success: function (response) {
                     if (response.html != "") {
-                        $("#blockModalNewFactureEcheanceEmpty").empty();
-                        $("#blockModalNewFactureEcheanceEmpty").append(response.html);
+                        $("#blockModalNewFactureEcheanceReporterEmpty").empty();
+                        $("#blockModalNewFactureEcheanceReporterEmpty").append(response.html);
 
-                        $('#modalNewFactureEcheance').modal('show');
+                        $('#modalFactureEcheanceReporter').modal('show');
 
                         if (anchorName) {
                             window.location.hash = anchorName;
@@ -185,4 +250,5 @@ $(document).ready(function() {
                 }
             });
     }
-    </script>
+
+</script>

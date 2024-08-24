@@ -14,7 +14,8 @@ class FactureEcheance
         'presenter' => 'Présenter',
         'reglePartiel' => 'Rglt. partiel',
         'annule' => 'Annulée',
-        'encours' => 'En cours'
+        'encours' => 'En cours',
+        'reporter' => 'Reporter'
     ];
 
     #[ORM\Id]
@@ -43,6 +44,18 @@ class FactureEcheance
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $file = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateReporter = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $reglement = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nouveauDelaiPaiement = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isReporter = null;
 
     public function getId(): ?int
     {
@@ -129,6 +142,54 @@ class FactureEcheance
     public function setFile(?string $file): static
     {
         $this->file = $file;
+
+        return $this;
+    }
+
+    public function getDateReporter(): ?\DateTimeInterface
+    {
+        return $this->dateReporter;
+    }
+
+    public function setDateReporter(?\DateTimeInterface $dateReporter): static
+    {
+        $this->dateReporter = $dateReporter;
+
+        return $this;
+    }
+
+    public function getReglement(): ?float
+    {
+        return $this->reglement;
+    }
+
+    public function setReglement(?float $reglement): static
+    {
+        $this->reglement = $reglement;
+
+        return $this;
+    }
+
+    public function getNouveauDelaiPaiement(): ?string
+    {
+        return $this->nouveauDelaiPaiement;
+    }
+
+    public function setNouveauDelaiPaiement(?string $nouveauDelaiPaiement): static
+    {
+        $this->nouveauDelaiPaiement = $nouveauDelaiPaiement;
+
+        return $this;
+    }
+
+    public function isReporter(): ?bool
+    {
+        return $this->isReporter;
+    }
+
+    public function setReporter(?bool $isReporter): static
+    {
+        $this->isReporter = $isReporter;
 
         return $this;
     }

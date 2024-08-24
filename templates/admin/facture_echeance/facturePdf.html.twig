@@ -110,8 +110,24 @@
         <div class="">
             <p><strong>Total à payer : </strong> {{facture.solde|number_format(2,',','')}} Ar </p>
             <p><strong>Déjà payer : </strong> {{facture.reglement|number_format(2,',','')}} Ar </p>
-            <p><strong>Montant payer : </strong> {{factureEcheance.montant|number_format(2,',','')}} Ar </p>
-            <p><strong>Reste à payer : </strong> {{(facture.solde - facture.reglement)|number_format(2,',','')}} Ar </p>
+            <p><strong>Montant payer : </strong> 
+                {% set montant = '' %}
+                {% if factureEcheance.reglement is not null %}
+                    {% if factureEcheance.reglement > factureEcheance.montant %}
+                        {% set montant = factureEcheance.reglement - factureEcheance.montant %}
+                    {% elseif factureEcheance.montant > factureEcheance.reglement %}
+                        {% set montant = factureEcheance.montant - factureEcheance.reglement %}
+                    {% endif %}
+                {% elseif factureEcheance.reglement is null and factureEcheance.montant is not null %}
+                    {% set montant = factureEcheance.montant %}
+                {% elseif factureEcheance.reglement is null %}
+                    {% set montant = 0 %}
+                {% endif %}
+                {{montant|number_format(2,',','')}} Ar 
+            </p>
+            <p><strong>Reste à payer : </strong> 
+                {{(facture.solde - facture.reglement)|number_format(2,',','')}} Ar 
+            </p>
             <p><strong>Délai de paiement : </strong> {{factureEcheance.delaiPaiement}} jours</p>
             <p><strong>Délai d'écheance : </strong> {{factureEcheance.dateEcheance|date('d-m-Y')}} </p>
             {% set status = constant('App\\Entity\\FactureEcheance::STATUS') %}

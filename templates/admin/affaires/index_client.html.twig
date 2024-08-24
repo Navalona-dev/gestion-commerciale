@@ -14,42 +14,15 @@
         <div class="affaire-recherche">
             <div class="row">
                 <div class="col-md-2 col-12">
-                    <div class="card shadow p-3 p-lg-5 card-search">
+                    <div class="card shadow p-3 card-search">
                         <div class="search-affaire">
                             <h5 class="mb-3 text-center">Recherche</h5>
-                            {# <select class="form-control form-control-sm mb-3" id="affaire-contact" name="affaire-contact">
-                                <option value="" disabled selected>Par contact</option>
-                                <option value="1">Lorem 1</option>
-                                <option value="2">Lorem 2</option>
-                                <option value="3">Lorem 3</option>
-                            </select> #}
-                       
                             <select class="form-control form-control-sm mb-3" id="affaire-type" name="affaire-type">
                                 <option value="" disabled selected>Type(devis ou commande)</option>
                                 <option value="devis">Dévis</option>
                                 <option value="commande">Commande</option>
                             </select>
     
-                            {# <select class="form-control form-control-sm mb-3" id="affaire-mois" name="affaire-mois">
-                                <option value="" disabled selected>Mois...</option>
-                                <option value="1">Lorem 1</option>
-                                <option value="2">Lorem 2</option>
-                                <option value="3">Lorem 3</option>
-                            </select> #}
-    
-                            {# <select class="form-control form-control-sm mb-3" id="affaire-annee" name="affaire-annee">
-                                <option value="" disabled selected>Année...</option>
-                                <option value="1">Lorem 1</option>
-                                <option value="2">Lorem 2</option>
-                                <option value="3">Lorem 3</option>
-                            </select> #}
-    
-                            {# <select class="form-control form-control-sm mb-3" id="affaire-ca" name="affaire-ca">
-                                <option value="" disabled selected>Type de CA...</option>
-                                <option value="1">Lorem 1</option>
-                                <option value="2">Lorem 2</option>
-                                <option value="3">Lorem 3</option>
-                            </select> #}
                             <div class="affaire-result d-flex justify-content-between align-items-center">
                                 <p class="mb-0"><span id="result-count"> {{count}} </span> résultats</p>
                                 <i class="bi bi-arrow-clockwise" style="cursor: pointer;" onclick="return searchAffaire({{compte.id}})"></i>
@@ -60,123 +33,149 @@
                 </div>  
                 
                 <div class="col-md-10 col-12" id = "listeAffaire">
-                    {% for affaire in listes %}
-                    <div class="affaire-produit card shadow p-4 mb-3 position-relative">
-                        <div class="filter position-absolute top-0 end-0 p-3">
-                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                {# <li class="dropdown-header text-start">
-                                    <h6>Filter</h6>
-                                </li> #}
-                                <li><a class="dropdown-item" href="#" onclick="return updateAffaire({{affaire.id}})">Modifier</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="return deleteAffaire({{affaire.id}})">Supprimer</a></li>
-                                {# <li><a class="dropdown-item" href="#">Dupliquer</a></li> #}
-                            </ul>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4 col-12">
-                                <a href="#tab-financier-affaire" onclick="return financier({{affaire.id}})">
-                                    <div class="info-produit">
-                                        <h4 class="fw-bold mb-3">
-                                            <i class="bi bi-lock"></i>
-                                            <span class="">{{affaire.nom}}</span>
-                                        </h4>
-                                        <p class="date mb-3">
-                                            <i class="bi bi-calendar-date-fill"></i>
-                                            <span class="">{{affaire.dateCreation|date("Y-m-d")}}</span>
-                                        </p>
-                                        <p class="order-number py-1 px-2 mb-3">
-                                            <i class="bi bi-info-circle-fill"></i>
-                                            <span class="mx-2">{{affaire.statut}} n°{{affaire.id}}</span>
-                                        </p>
-                                        {% set montantHt = 0 %}
-                                        {% for product in affaire.products %}
-                                            {% if product.typeVente == "gros" %}
-                                            {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
-                                            {% else %}
-                                                {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                    {% if listes|length > 0 %}
+                        {% for affaire in listes %}
+                        <div class="affaire-produit card shadow p-4 mb-3 position-relative">
+                            <div class="filter position-absolute top-0 end-0 p-3">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                    {# <li class="dropdown-header text-start">
+                                        <h6>Filter</h6>
+                                    </li> #}
+                                    <li><a class="dropdown-item" href="#" onclick="return updateAffaire({{affaire.id}})">Modifier</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="return deleteAffaire({{affaire.id}})">Supprimer</a></li>
+                                    {# <li><a class="dropdown-item" href="#">Dupliquer</a></li> #}
+                                </ul>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 col-12">
+                                    <a href="#tab-financier-affaire" onclick="return financier({{affaire.id}})">
+                                        <div class="info-produit">
+                                            <h4 class="fw-bold mb-3">
+                                                <i class="bi bi-lock"></i>
+                                                <span class="">{{affaire.nom}}</span>
+                                            </h4>
+                                            <p class="date mb-3">
+                                                <i class="bi bi-calendar-date-fill"></i>
+                                                <span class="">{{affaire.dateCreation|date("Y-m-d")}}</span>
+                                            </p>
+                                            <p class="order-number py-1 px-2 mb-3">
+                                                <i class="bi bi-info-circle-fill"></i>
+                                                <span class="mx-2">{{affaire.statut}} n°{{affaire.id}}</span>
+                                            </p>
+                                            {% set montantHt = 0 %}
+                                            {% for product in affaire.products %}
+                                                {% if product.typeVente == "gros" %}
+                                                {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                                                {% else %}
+                                                    {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <p class="text-danger">
+                                                {{ montantHt|number_format(2, ',', ' ') }} Ar HT
+                                            </p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-4 col-12 mb-5">
+                                    <div class="container mt-5 ">
+                                        <div class="action-produit d-flex justify-content-around">
+                                            <a href="#tab-info-affaire" onclick="return information({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
+                                                <i class="bi bi-info-circle bg-info text-black action-icon"></i>
+                                                <span class="action-text">Information</span>
+                                            </a>
+                                            <a href="#tab-financier-affaire" onclick="return financier({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
+                                                <i class="bi bi-coin text-black bg-warning action-icon"></i>
+                                                <span class="action-text">Financier</span>
+                                            </a>
+                                            {% if affaire.factures|length > 0 %}
+                                            <a href="#tab-facture-affaire" onclick="return showTabFactureAffaire({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
+                                                <i class="bi bi-file-earmark-pdf bg-success action-icon"></i>
+                                                <span class="action-text">Facture</span>
+                                            </a>
                                             {% endif %}
-                                        {% endfor %}
-                                        <p class="text-danger">
-                                            {{ montantHt|number_format(2, ',', ' ') }} Ar HT
-                                        </p>
+                                            {#<a href="#" class="d-flex flex-column align-items-center mx-2">
+                                                <i class="bi bi-file-earmark-pdf bg-danger action-icon"></i>
+                                                <span class="action-text">Document</span>
+                                            </a>
+                                            <a href="#" class="d-flex flex-column align-items-center mx-3">
+                                                <i class="bi bi-check-circle-fill bg-success action-icon"></i>
+                                                <span class="action-text">Tâche</span>
+                                            </a>
+                                            <a href="#" class="d-flex flex-column align-items-center mx-3">
+                                                <i class="bi bi-journal-text bg-primary action-icon"></i>
+                                                <span class="action-text">Notes</span>
+                                            </a>#}
+                                        </div>
                                     </div>
+                                </div>
+                                <div class="col-md-4 col-12">
+                                    <div class="menu_produit">
+                                        <div class="menu-icon mb-3">
+                                            <div class="form-group">
+                                                {# <a href="#"><i class="bi bi-skip-end-fill"></i></a>#}
+                                                <a href="#" onclick="return updateAffaire({{affaire.id}})"><i class="bi bi-pencil-square edit"></i></a>
+                                                <a href="#" onclick="return deleteAffaire({{affaire.id}})"><i class="bi bi-trash delete"></i></a>
+                                                
+                                                {# <a href="#"><i class="bi bi-bell-fill"></i></a>
+                                                <a href="#"><i class="bi bi-calendar-fill"></i></a> #}
+                                                {# <a href="#"><i class="bi bi-hourglass-split"></i></a> #}
+                                                {# <a href="#"><i class="bi bi-send"></i></a>
+                                                <a href="#"><i class="bi bi-star-fill"></i></a> #}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 col-12 status">
+                                                <label for="" class="mb-2 label-status">Statut devis</label>
+                                                {% set statutDevis = constant('App\\Entity\\Affaire::DEVIS') %}
+                                                <select name="status-devis" id="status-devis" class="form-control form-control-sm">
+                                                    {% for key,statutDev in statutDevis %}
+                                                    <option value="{{key}}" {% if affaire.devisEvol is not null and affaire.devisEvol == key %} selected {% endif %}>{{statutDev}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            {#<div class="col-md-4 col-12 status">
+                                                <label for="" class="mb-2 label-status">Statut projet</label>
+                                                <select name="status-projet" id="status-projet" class="form-control form-control-sm">
+                                                    <option value="1">Gagné</option>
+                                                    <option value="2">Perdu</option>
+                                                    <option value="3">Terminé</option>
+                                                </select>
+                                            </div>#}
+                                            <div class="col-md-6 col-12 status">
+                                                <label for="" class="mb-2 label-status">Statut paiement</label>
+                                                {% set statutPaiement = constant('App\\Entity\\Affaire::PAIEMENT') %}
+                                                <select name="status-paiement" id="status-paiement" class="form-control form-control-sm">
+                                                {% for key,statutPaie in statutPaiement %}
+                                                    <option value="{{key}}" {% if affaire.paiement is not null and affaire.paiement == key %} selected {% endif %}>{{statutPaie}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="card p-5">
+                        <div class="d-flex align-items-center">
+                            <p class="mb-0">Ce client n'a pas encore fait de commande</p>
+                            <div class="dropdown ms-3">
+                                <a class="dropdown-toggle btn-sm px-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-plus-circle"></i>
+                                    <span class="mx-2">Ajouter</span>
                                 </a>
-                            </div>
-                            <div class="col-md-4 col-12 mb-5">
-                                <div class="container mt-5 ">
-                                    <div class="action-produit d-flex justify-content-around">
-                                        <a href="#tab-info-affaire" onclick="return information({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
-                                            <i class="bi bi-info-circle bg-info text-black action-icon"></i>
-                                            <span class="action-text">Information</span>
-                                        </a>
-                                        <a href="#tab-financier-affaire" onclick="return financier({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
-                                            <i class="bi bi-coin text-black bg-warning action-icon"></i>
-                                            <span class="action-text">Financier</span>
-                                        </a>
-                                        {#<a href="#" class="d-flex flex-column align-items-center mx-2">
-                                            <i class="bi bi-file-earmark-pdf bg-danger action-icon"></i>
-                                            <span class="action-text">Document</span>
-                                        </a>
-                                        <a href="#" class="d-flex flex-column align-items-center mx-3">
-                                            <i class="bi bi-check-circle-fill bg-success action-icon"></i>
-                                            <span class="action-text">Tâche</span>
-                                        </a>
-                                        <a href="#" class="d-flex flex-column align-items-center mx-3">
-                                            <i class="bi bi-journal-text bg-primary action-icon"></i>
-                                            <span class="action-text">Notes</span>
-                                        </a>#}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-12">
-                                <div class="menu_produit">
-                                    <div class="menu-icon mb-3">
-                                        <div class="form-group">
-                                            {# <a href="#"><i class="bi bi-skip-end-fill"></i></a>#}
-                                            <a href="#" onclick="return updateAffaire({{affaire.id}})"><i class="bi bi-pencil-square edit"></i></a>
-                                            <a href="#" onclick="return deleteAffaire({{affaire.id}})"><i class="bi bi-trash delete"></i></a>
-                                             
-                                            {# <a href="#"><i class="bi bi-bell-fill"></i></a>
-                                            <a href="#"><i class="bi bi-calendar-fill"></i></a> #}
-                                            {# <a href="#"><i class="bi bi-hourglass-split"></i></a> #}
-                                            {# <a href="#"><i class="bi bi-send"></i></a>
-                                            <a href="#"><i class="bi bi-star-fill"></i></a> #}
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 col-12 status">
-                                            <label for="" class="mb-2 label-status">Statut devis</label>
-                                            {% set statutDevis = constant('App\\Entity\\Affaire::DEVIS') %}
-                                            <select name="status-devis" id="status-devis" class="form-control form-control-sm">
-                                                {% for key,statutDev in statutDevis %}
-                                                <option value="{{key}}" {% if affaire.devisEvol is not null and affaire.devisEvol == key %} selected {% endif %}>{{statutDev}}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        {#<div class="col-md-4 col-12 status">
-                                            <label for="" class="mb-2 label-status">Statut projet</label>
-                                            <select name="status-projet" id="status-projet" class="form-control form-control-sm">
-                                                <option value="1">Gagné</option>
-                                                <option value="2">Perdu</option>
-                                                <option value="3">Terminé</option>
-                                            </select>
-                                        </div>#}
-                                        <div class="col-md-6 col-12 status">
-                                            <label for="" class="mb-2 label-status">Statut paiement</label>
-                                            {% set statutPaiement = constant('App\\Entity\\Affaire::PAIEMENT') %}
-                                            <select name="status-paiement" id="status-paiement" class="form-control form-control-sm">
-                                            {% for key,statutPaie in statutPaiement %}
-                                                <option value="{{key}}" {% if affaire.paiement is not null and affaire.paiement == key %} selected {% endif %}>{{statutPaie}}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" onclick="return newAffaire({{compte.id}},'devis')">Un devis</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="return newAffaire({{compte.id}},'commande')">Une commande</a></li>
+                                </ul>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
+                    
+                    
+                    {% endif %}
                 </div>
             </div>
         </div>

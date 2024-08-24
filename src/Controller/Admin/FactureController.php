@@ -443,11 +443,13 @@ class FactureController extends AbstractController
         try {
            
             if ($request->isXmlHttpRequest()) {
-                if($facture->getStatut() == 'regle') {
+                if($facture->getStatut() == 'regle' && $facture->getAffaire()->getPaiement() == "paye") {
                     return new JsonResponse(['status' => 'error', 'message' => 'Vous ne pouvez pas supprimer une facture qui est déjà payé'], Response::HTTP_OK);
+                } else {
+                    $this->factureService->delete($facture);
+                    return new JsonResponse(['status' => 'success', 'message' => 'Facture supprimée avec succès'], Response::HTTP_OK);
                 }
-                $this->factureService->remove($facture);
-                return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                
             }
                 
         } catch (PropertyVideException $PropertyVideException) {

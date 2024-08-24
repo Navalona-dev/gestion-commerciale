@@ -1,0 +1,198 @@
+<style>
+    .error-message {
+            color: red;
+            display: none; /* Cacher le message par défaut */
+        }
+</style>
+<div class="facture-id" data-facture="{{facture.id}}"></div>
+<div class="modal fade" id="modalFactureEcheanceReporter" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog ">
+        <div class="modal-content p-4 ">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Echeance réportée</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <hr>
+            </div>
+            <div class="modal-body">
+                <div class="montant-paye" data-montant="{{factureEcheance.montant}}"></div>
+                <div class="reste-paye" data-reste="{{reste}}"></div>
+                {{ form_start(form, {'attr': {'id': 'createFactureEcheanceReporter', 'action': path('factures_echeance_facture_reporter', {'factureEcheance': factureEcheance.id}) }}) }}
+                    <div class="alert alert-danger error">
+                        <p>L'avance ne doit pas supérieur au montant à payer {{factureEcheance.montant|number_format(2,',','')}} Ar </p>
+                    </div>
+                    <div class="alert alert-info mb-3">
+                        <h6 class="text-center fw-bold">Révision facture</h6>
+                        <p><span class="fw-bold">Total montant à payer :</span> {{facture.solde|number_format(2,',','')}} Ar </p>
+                        <p><span class="fw-bold">Avance :</span> {{facture.reglement|number_format(2,',','')}} Ar </p>
+                        <p><span class="fw-bold">Date de premier paiement :</span> {{facture.dateCreation|date('d-m-Y')}} </p>
+                    </div>
+                    <div class="facture écheance alert alert-info">
+                        <h6 class="text-center fw-bold">Révision facture écheance</h6>
+                        <p><span class="fw-bold">Montant à payer : </span>{{factureEcheance.montant|number_format(2,',','')}} Ar</p>
+                        <p><span class="fw-bold">Délais de paiement : </span>{{factureEcheance.delaiPaiement}} jours </p>
+                        <p><span class="fw-bold">Date écheance : </span> {{factureEcheance.dateEcheance|date('d-m-Y')}} </p>
+                    </div>
+                   
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-3">Avance</label>
+                        {{form_widget(form.reglement)}}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-3">Nouveau délais de paiement</label>
+                        {{form_widget(form.nouveauDelaiPaiement)}}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-3">Nouveau date écheance</label>
+                        {{form_widget(form.dateReporter)}}
+                    </div>
+                    <div class="form-group mb-3">
+                        <p class="fw-bold">La date d'écheance sera <span class="date-echeance-text"></span></p>
+                    </div>
+                    <div class="alert alert-warning">
+                        <p class="fw-bold">Reste : <span class="reste-montant-echeance"></span> Ar </p>
+                    </div>
+                    <div class="alert alert-warning">
+                        <p class="fw-bold">Reste à payer : <span class="reste-a-payer"></span> Ar </p>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm w-100">Réporter</button>
+                    </div>
+                {{ form_end(form) }}    
+               
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+
+<script>
+    $(document).ready(function() {
+        const montantPaye = $('.montant-paye').data('montant');
+        const montantRestePayer = $('.reste-paye').data('reste');
+        let reste = '';
+        let restePaye = '';
+        //calculer le reste si il existe une avance pendant la reportation
+        $('#facture_echeance_reporter_reglement').on('input', function() {
+            const avance = $(this).val();
+            if(montantPaye > avance) {
+                reste = montantPaye - avance;
+            } else if(montantPaye < avance) {
+                reste = avance - montantPaye;
+            }
+            restePaye = montantRestePayer - avance;
+            if(avance != '') {
+                $('.reste-a-payer').text(parseFloat(restePaye).toFixed(2));
+                $('.reste-montant-echeance').text(parseFloat(reste).toFixed(2));
+
+            } else {
+                $('.reste-a-payer').text(parseFloat(montantRestePayer).toFixed(2));
+                $('.reste-montant-echeance').text('0,00');
+            }
+
+        });
+
+        $('.reste-montant-echeance').text('0,00');
+        $('.reste-a-payer').text(parseFloat(montantRestePayer).toFixed(2));
+
+        // Écouter le changement de la checkbox pour gérer les futures interactions
+        $('#facture_echeance_reporter_nouveauDelaiPaiement').on('input',function() {
+                // Appeler directement calculateDateEcheance après avoir défini le délai de paiement
+            calculateDateEcheance();
+            
+        });
+
+        function calculateDateEcheance() {
+            const $dateEcheance = $('#facture_echeance_reporter_dateReporter');
+            const $delaiPaiement = $('#facture_echeance_reporter_nouveauDelaiPaiement');
+            const $dateEcheanceText = $('.date-echeance-text');
+
+            const delai = parseInt($delaiPaiement.val(), 10);
+
+            if (!isNaN(delai)) {
+                const today = moment().add(delai, 'days');
+
+                // Formatage de la date au format dd-mm-yyyy pour le champ input
+                const formattedDate = today.format('DD/MM/YYYY');
+
+                // Formatage de la date en lettres pour le texte
+                const formattedDateText = today.format('dddd DD MMMM YYYY');
+
+                // Définir la valeur du champ de date d'échéance
+                $dateEcheance.val(formattedDate);
+
+                // Afficher la date formatée en lettres
+                $dateEcheanceText.text(formattedDateText);
+            } else {
+                $dateEcheance.val('');
+                $dateEcheanceText.text('');
+            }
+        }
+});
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.error').hide();
+
+        const idFacture = $('.facture-id').data('facture');
+    $('#createFactureEcheanceReporter').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+        
+            // Create an FormData object
+            let formData = new FormData(form[0]);
+        formData.append('isNew', false);
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if(response.status == 'error') {
+                        $('#modalFactureEcheanceReporter').modal('show');
+                        $('.error').show();
+
+                    } else {
+
+                        $('#modalFactureEcheanceReporter').modal('hide');
+                        var nextLink = $('#sidebar').find('li#facture').find('a');
+                        setTimeout(function () {
+                            toastr.options = {
+                                closeButton: true,
+                                progressBar: true,
+                                showMethod: 'slideDown',
+                                timeOut: 1000
+                            };
+                            toastr.success('Avec succèss', 'Negociation paiement éffectuée');
+
+                            showTabEcheance(idFacture);
+
+                            if (response.pdfUrl) {
+                            window.open(response.pdfUrl, '_blank');
+                        }
+
+                        }, 800);
+                        if (nextLink.length > 0) {
+                            nextLink.click();
+                        }
+
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
+                   }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de facture écheance');
+                }
+            });
+        });
+    });
+
+</script>
+
+{% endblock %}

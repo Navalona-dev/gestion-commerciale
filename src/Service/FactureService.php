@@ -295,7 +295,6 @@ class FactureService
 
             // Gestion de notification
             $stockMin = $produitCategorie->getStockMin();
-            $stockRestant = $produitCategorie->getStockRestant();
 
             if ($stockRestant <= $stockMin) {
                 $notification = new Notification();
@@ -707,10 +706,12 @@ class FactureService
 
         $factureEcheances = $facture->getFactureEcheances();
         foreach($factureEcheances as $factureEcheance) {
-            this->remove($factureEcheance);
+            $this->remove($factureEcheance);
         }
 
         $this->remove($facture);
+
+        $this->update();
         
         return $facture;
         
