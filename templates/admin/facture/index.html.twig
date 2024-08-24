@@ -1,3 +1,6 @@
+ {% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+ {% endblock %}
 <style>
     .dataTables_scroll {
       margin-top: 50px !important;
@@ -66,7 +69,7 @@
       </nav>
     </div>
 
-    <form name="allFacture" id="allFacture" target="_blank" action="#" method="post">
+    <form name="allFacture" id="allFacture" target="_blank"  action="{{ path('factures_tout_exporter') }}" method="post">
         <section class="section">
             <div class="row">
                 <div class="col-lg-12">
@@ -128,7 +131,7 @@
                             
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                     <li><a href="#" onclick="exporterAllFacture('client');" class="dropdown-item"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Exporter tout</span></a></li>
-                                    <li><a href="#" class="dropdown-item"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Exporter</span></a></li>
+                                    <li><a href="#" onclick="exporterFacture('client');" class="dropdown-item"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Exporter</span></a></li>
                                 </ul>
                             </div>
                         
@@ -139,11 +142,9 @@
                             </thead>
                             <tbody>
                                 {% if listes|length > 0 %}
-
                                     {% for liste in listes %}
                                         {% include 'admin/facture/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
                                     {% endfor %}
-                                
                                 {% else %}
                                 <tr>
                                     <td colspan="11">Aucun enregistrement trouvé</td>
@@ -174,30 +175,62 @@
             </div>
         </section>
     </form>
-
 <script>
- function exporterAllFacture(type) {
-        var anchorName = document.location.hash.substring(1);
 
+
+
+ function exporterFacture(type) {
+        var anchorName = document.location.hash.substring(1);
+          
         var inc = 0;
-        /*$("input[type=checkbox]").each(function (index) {
+        $("input[type=checkbox]").each(function (index) {
             if ($(this).is(":checked")) {
                 inc++;
             }
-        });*/
-
+        });
+       
         //if (inc != 0) { 
-            if (type == "client") {
-                var form = $('#allFacture');
-            }else {
-                var form = $('#exportZip');
+            
+
+            if (inc != 0) {
+                 var form = $('#allFacture');
+                 form.attr('action', '/admin/facture/tout-exporter');
+                 form.submit();
+            } else {
+                alert('Pas de facture séléctionner !!!')
             }
 
-            form.attr('action', '/admin/facture/tout-exporter');
-            form.submit();
-        /*} else {
-            alert('Pas de facture séléctionner !!!')
-        }*/
+
+        if (anchorName) {
+           window.location.hash = anchorName;
+       }
+
+        return false;
+
+    }
+
+ function exporterAllFacture(type) {
+        var anchorName = document.location.hash.substring(1);
+           
+        var inc = 0;
+        $("input[type=checkbox]").each(function (index) {
+            if ($(this).is(":checked")) {
+                inc++;
+            }
+        });
+        //console.log("incc",idsFacture, inc);
+        //return false;
+        //if (inc != 0) { 
+            
+
+            if (inc != 0) {
+                 var form = $('#allFacture');
+                 form.attr('action', '/admin/facture/tout-exporter');
+                 form.submit();
+            } else {
+                alert('Pas de facture séléctionner !!!')
+            }
+
 
         if (anchorName) {
            window.location.hash = anchorName;
@@ -307,6 +340,8 @@
 </script>
 
 <script>
+
+
     function showSpinner() {
         document.getElementById('spinner').style.display = 'block';
         document.getElementById('overlay').style.display = 'block';
