@@ -520,9 +520,13 @@ class ProduitCategorieController extends AbstractController
         try {
            
             if ($request->isXmlHttpRequest()) {
-                $this->produitCategorieService->remove($produitCategorie);
-                $this->produitCategorieService->update();
-                return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                if (count($produitCategorie->getProduits()) == 0) {
+                    $this->produitCategorieService->remove($produitCategorie);
+                    $this->produitCategorieService->update();
+                    return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                } else {
+                    return new JsonResponse(['status' => 'error'], Response::HTTP_OK);
+                }
             }
                 
         } catch (PropertyVideException $PropertyVideException) {
