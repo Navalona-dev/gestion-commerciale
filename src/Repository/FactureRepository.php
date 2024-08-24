@@ -110,7 +110,8 @@ class FactureRepository extends ServiceEntityRepository
         $search = null,
         $statutPaiement = null,
         $datePaieDu = null,
-        $datePaieAu = null
+        $datePaieAu = null,
+        $tabIdFactureFiltered = null
     ) {
         ini_set('memory_limit', '-1');
         ini_set('max_execution_time', '-1');
@@ -199,6 +200,10 @@ class FactureRepository extends ServiceEntityRepository
             $parameterType['typeClient'] = ParameterType::INTEGER;
             
         //}
+
+        if ($tabIdFactureFiltered != null && count($tabIdFactureFiltered)> 0) {
+            $conditions .= " and f.id IN (".implode(",",$tabIdFactureFiltered ).")";
+        }
 
         if (null != $limit) {
             $sqlLimit = ' LIMIT ' . intval($limit) . ' OFFSET ' . intval($pg);

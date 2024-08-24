@@ -344,7 +344,7 @@ class FactureService
             $data["produit"] = $produitCategorie->getNom();
             $data["dateReception"] = null;
             $data["dateTransfert"] = null;
-            $data["dateSortie"] = (new \DateTime())->format("d-m-y h:i:s");
+            $data["dateSortie"] = (new \DateTime())->format("d-m-Y h:i:s");
             $data["userDoAction"] = $user->getUserIdentifier();
             $data["source"] = $this->application->getEntreprise();
             $data["destination"] = $affaire->getCompte()->getNom();
@@ -639,9 +639,9 @@ class FactureService
         $this->entityManager->flush();
     }
 
-    public function searchFactureRawSql($genre, $nom, $dateDu, $dateAu, $etat, $start, $limit, $order, $isCount, $search, $statutPaiement, $datePaieDu, $datePaieAu)
+    public function searchFactureRawSql($genre, $nom, $dateDu, $dateAu, $etat, $start, $limit, $order, $isCount, $search, $statutPaiement, $datePaieDu, $datePaieAu, $tabIdFactureFiltered)
     {
-        return $this->entityManager->getRepository(Facture::class)->searchFactureRawSql($genre, $nom, $dateDu,$dateAu, $etat, $limit, $start, $order, $isCount, $search, $statutPaiement, $datePaieDu, $datePaieAu);
+        return $this->entityManager->getRepository(Facture::class)->searchFactureRawSql($genre, $nom, $dateDu,$dateAu, $etat, $limit, $start, $order, $isCount, $search, $statutPaiement, $datePaieDu, $datePaieAu, $tabIdFactureFiltered);
     }
 
     public function persist($entity)

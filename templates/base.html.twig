@@ -17,14 +17,14 @@
         <link href="{{ asset('plugins/remixicon/remixicon.css') }}" rel="stylesheet">
         <link href="{{ asset('plugins/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
         <link href="{{ asset('plugins/datatable/datatable.min.css') }}" rel="stylesheet">
-
-        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+        
+     
 
         
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
         {% block stylesheets %}
         {% endblock %}
-
+    
         {% block javascripts %}
         {% endblock %}
     </head>
@@ -48,6 +48,7 @@
         <script src="{{ asset('plugins/swiper/swiper-bundle.min.js') }}"></script>
         <script src="{{ asset('plugins/datatable/datatable.min.js') }}"></script>
         <script src="{{ asset('assets/js/main.js') }}"></script>
+     
        
     </body>
 </html>

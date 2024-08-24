@@ -254,7 +254,7 @@ class FactureController extends AbstractController
         $dateAu = $request->get('date_facture_end');
 
         $factureList = $request->get('factureList');
-
+      
         if (null != $datePaieDu && "" != $datePaieDu) {
             $datePaieDuExplode = explode("/", $datePaieDu);
             $datePaieDu = new \DateTime($datePaieDuExplode[2] . "-" . $datePaieDuExplode[1] . "-" . $datePaieDuExplode[0]);
@@ -276,7 +276,7 @@ class FactureController extends AbstractController
             $dateAuExplode = explode("/", $dateAu);
             $dateAu = new \DateTime($dateAuExplode[2] . "-" . $dateAuExplode[1] . "-" . $dateAuExplode[0]);
         }
-        $tabFactures = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, null, null, null, false, null, $statutPaiement, $datePaieDu, $datePaieAu);
+        $tabFactures = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, null, null, null, false, null, $statutPaiement, $datePaieDu, $datePaieAu, $factureList);
        // dd($facturesAssoc);
         $typeFacture = $request->get('type');
         $typeFacture = "Facture";
