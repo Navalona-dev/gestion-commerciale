@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-lg-12">
         {% include 'admin/affaires/entete_compte.html.twig' with {'compte': compte} %}
-       <div class="card p-5">
+       <div class="card p-3 p-lg-5">
         <table class="table table-striped" id="table-produit-fournisseur" style="width: 100%;">
             <thead>
                 <tr>
@@ -40,56 +40,48 @@
 
   <script>
 
-$(document).ready(function() {
-    $('#tab-compte_1').removeClass('active').empty();
-    $('#tab-compte_2').removeClass('active').empty();
-    $('#tab-fiche-fournisseur').removeClass('active').empty();
-    $('#affaires_fournisseur').append(response.html).addClass('active');
-    $('#affaires_client').removeClass('active').empty();
-      $('.tab-categorie').removeClass('active');
-      $('#tab-produit-categorie').removeClass('active');
-      $('.tab-produit-categorie').removeClass('active');
-      $('#tab-categorie').removeClass('active');
-      $('.tab-import-produit').removeClass('active');
-      $('#tab-import-produit').removeClass('active');
-        $('#tab-inventaire-produit').css('display','none');
+    $(document).ready(function() {
+        $('#tab-compte_1').removeClass('active').empty();
+        $('#tab-compte_2').removeClass('active').empty();
+        $('#tab-fiche-fournisseur').removeClass('active').empty();
+        $('#affaires_fournisseur').append(response.html).addClass('active');
+        $('#affaires_client').removeClass('active').empty();
+        $('.tab-categorie').removeClass('active');
+        $('#tab-produit-categorie').removeClass('active');
+        $('.tab-produit-categorie').removeClass('active');
+        $('#tab-categorie').removeClass('active');
+        $('.tab-import-produit').css('display', 'none');
+        $('#tab-import-produit').css('display', 'none');
+            $('#tab-inventaire-produit').css('display','none');
 
-      $('.tab-user').removeClass('active');
-      $('#tab-utilisateur').removeClass('active');
+        $('.tab-user').removeClass('active');
+        $('#tab-utilisateur').removeClass('active');
 
-      $('.tab-permission').removeClass('active');
-      $('.tab-privilege').removeClass('active');
-      $('.tab-cat-permission').removeClass('active');
-      $('#tab-categorie-permission').removeClass('active');
-      
-      $('#tab-dashboard').removeClass('active');
-      $('#tab-profile').removeClass('active');
-     
-      $('#tab-permission').removeClass('active');
-      $('#tab-privilege').removeClass('active');
-       $('#tab-transfert-produit').css('display', 'none');
-     
-      
-      $('#tab-application').removeClass('active');
-      $('#tab-profile').removeClass('active');
-      $('#tab-produit-type').removeClass('active');
-      $('.tab-produit-type').removeClass('active');
-    $('#tab-import-produit').css('display', 'none');
-    $('#tab-fiche-client').removeClass('active').empty();
-      $('#tab-facture-affaire').removeClass('active').empty();
-      $('#tab-produit-date-peremption').removeClass('active').empty();
-
-
-    /*$('#table-produit-fournisseur').DataTable({
-            responsive: true,
-            language: {
-            url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
-        },
-            border: false,
-            scrollX: '100%',
-            pageLength: 10,
-            scrollCollapse: false,
-        });*/
+        $('.tab-permission').removeClass('active');
+        $('.tab-privilege').removeClass('active');
+        $('.tab-cat-permission').removeClass('active');
+        $('#tab-categorie-permission').removeClass('active');
+        
+        $('#tab-dashboard').removeClass('active');
+        $('#tab-profile').removeClass('active');
+        
+        $('#tab-permission').removeClass('active');
+        $('#tab-privilege').removeClass('active');
+        $('#tab-transfert-produit').css('display', 'none');
+        
+        
+        $('#tab-application').removeClass('active');
+        $('#tab-profile').removeClass('active');
+        $('#tab-produit-type').removeClass('active');
+        $('.tab-produit-type').removeClass('active');
+        $('#tab-import-produit').css('display', 'none');
+        $('#tab-fiche-client').removeClass('active').empty();
+        $('#tab-facture-affaire').removeClass('active').empty();
+        $('#tab-produit-date-peremption').removeClass('active').empty();
+        $('#tab-nouveau-facture').css('display','none');
+        $('#tab-devis').css('display','none');
+        $('#tab-commande').css('display','none');
+        $('#tab-echeance').css('display','none');
       
     });
 

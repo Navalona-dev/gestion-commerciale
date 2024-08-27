@@ -73,6 +73,45 @@ class AffaireController extends AbstractController
 
     }
 
+    #[Route('/', name: '_liste_affaire')]
+    public function liste(Request $request, SessionInterface $session)
+    {
+        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+      
+        $data = [];
+        try {
+
+            $statut = $request->request->get('statut');
+
+            $affaires = $this->affaireService->getAffaires($statut);
+
+            if ($affaires == false) {
+                $affaires = [];
+            }
+
+            if($statut == "devis") {
+                $data["html"] = $this->renderView('admin/affaires/devis.html.twig', [
+                    'listes' => $affaires,
+                ]);
+            } elseif($statut == "commande") {
+                $data["html"] = $this->renderView('admin/affaires/commande.html.twig', [
+                    'listes' => $affaires,
+                ]);
+            }
+            
+            
+
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
     #[Route('/refresh', name: '_liste_refresh')]
     public function indexRefresh(
         CompteService $compteService, 
@@ -438,7 +477,7 @@ class AffaireController extends AbstractController
             
                     // Créer le log
                     $this->logger->info($logMessage, [
-                        'Produit' => $affaire->getNom(),
+                        'Commande' => $affaire->getNom(),
                         'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
                         'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
                         'ID Application' => $affaire->getApplication()->getId()
@@ -515,7 +554,7 @@ class AffaireController extends AbstractController
         
                 // Créer le log
                 $this->logger->info($logMessage, [
-                    'Produit' => $affaire->getNom(),
+                    'Commande' => $affaire->getNom(),
                     'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
                     'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
                     'ID Application' => $affaire->getApplication()->getId()
@@ -650,7 +689,7 @@ class AffaireController extends AbstractController
                 $factures = $affaire->getFactures();
                 if ($affaire->getPaiement() != "annule") {
                     $facturesValide = $factures->filter(function ($item) use ($affaire) {
-                        return ($item->isValid() && 'regle' === $item->getStatut());
+                        return ($item->isValid() && ('regle' === $item->getStatut() || 'encours' === $item->getStatut() ));
                         
                     });
                 } else {
@@ -719,7 +758,7 @@ class AffaireController extends AbstractController
                     }
                 }
             }
-            $produitCategories = $produitCategorieService->getAllProduitCategories($tabIdProduitCategorieInAffaires);
+            $produitCategories = $produitCategorieService->getAllProduitCategoriesByStockRestant($tabIdProduitCategorieInAffaires);
            
             $data["html"] = $this->renderView('admin/affaires/liste_produit.html.twig', [
                 'listes' => $produitCategories,
@@ -801,6 +840,7 @@ class AffaireController extends AbstractController
     public function facture(SessionInterface $session, Affaire $affaire): Response
     {
         $session->set('idAffaire', $affaire->getId());
+        $session->set('idCompte', $affaire->getCompte()->getId());
 
         $factures = $this->factureService->getAllFacturesByAffaire($affaire->getId());
 
@@ -809,7 +849,7 @@ class AffaireController extends AbstractController
             
             $data["html"] = $this->renderView('admin/affaires/facture.html.twig', [
                 'affaire' => $affaire,
-                'factures' => $factures
+                'factures' => $factures,
             ]);
            
             return new JsonResponse($data);
@@ -841,12 +881,18 @@ class AffaireController extends AbstractController
             list($pdfContent, $facture) = $this->factureService->add($affaire, $documentFolder, $request);
             
             // Utiliser le numéro de la facture pour le nom du fichier
-            $filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
-            
+            //$filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
+            $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
+            $pdfPath = '/uploads/factures/valide/' . $filename;
+            file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
             // Retourner le PDF en réponse
-            return new Response($pdfContent, 200, [
+            /*return new Response($pdfContent, 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]);*/
+            return new JsonResponse([
+                'status' => 'success',
+                'pdfUrl' => $pdfPath,
             ]);
         }
         
@@ -869,15 +915,24 @@ class AffaireController extends AbstractController
        
         if (count($affaire->getProducts()) > 0) {
             $documentFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/factures/annule/';
+           
+
             list($pdfContent, $facture) = $this->factureService->annuler($affaire, $documentFolder);
             
             // Utiliser le numéro de la facture pour le nom du fichier
-            $filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
-        
+            //$filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
+            $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
+            $pdfPath = '/uploads/factures/annule/' . $filename;
+            file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
+            
             // Retourner le PDF en réponse
-            return new Response($pdfContent, 200, [
+            /*return new Response($pdfContent, 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]);*/
+            return new JsonResponse([
+                'status' => 'success',
+                'pdfUrl' => $pdfPath,
             ]);
         }
         

@@ -53,7 +53,7 @@
                  </div>
                  <div class="col-md-10 col-12">
                     <div class="card">
-                        <div class="card-body p-5">
+                        <div class="card-body p-3 p-lg-5">
                             <h3 class="mb-5 title fw-bold"><i class="bi bi-file-earmark-excel-fill"></i><span class="mx-2">Factures</span></h3>
                             <div>
                                 <div class="row mb-5">
@@ -64,7 +64,7 @@
                                                     <i class="bi bi-plus"></i> <span class="mx-2">Ajouter une facture</span>
                                                 </a>
                                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                                    <li><a style="cursor: pointer;" class="dropdown-item">Créer une facture dépuis l'affaire</a></li>
+                                                    <li><a href="#tab-nouveau-facture" onclick="return showTabNewFacture({{affaire.id}})" class="dropdown-item">Créer une facture dépuis l'affaire</a></li>
                                                     <li><a style="cursor: pointer;" class="dropdown-item">Créer une facture vièrge</a></li>
                                                     <li><a style="cursor: pointer;" class="dropdown-item">Créer une facture d'acompte</a></li>
                                                     <li><a style="cursor: pointer;" class="dropdown-item">Créer la facture de solde</a></li>
@@ -96,24 +96,21 @@
                             <table class="table table-striped" id="table-facture-affaire" style="width: 100%;">
                                 <thead>
                                     <tr class="text-nowrap">
-                                        <tr class="text-nowrap">
-                                            <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
-                                            <th>Validation</th>
-                                            <th>Actions</th>
-                                            <th>PDF</th>
-                                            <th>Date</th>
-                                            <th>Type</th>
-                                            <th>N°</th>
-                                            <th>Compte</th>
-                                            <th>Affaire</th>
-                                            <th>Prix TTC</th>
-                                            <th>Prix HT</th>
-                                            <th>Règlement</th>
-                                            <th>Status</th>
-                                            <th>Solde</th>
-                                            <th>État</th>
-                                            <th>Rémise</th>
-                                        </tr>
+                                        <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
+                                        <th>Validation</th>
+                                        <th>Actions</th>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>N°</th>
+                                        <th>Compte</th>
+                                        <th>Affaire</th>
+                                        <th>Prix TTC</th>
+                                        <th>Prix HT</th>
+                                        <th>Règlement</th>
+                                        <th>Status</th>
+                                        <th>Solde</th>
+                                        <th>État</th>
+                                        <th>Rémise</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -130,18 +127,20 @@
                                             {% endif %}
                                         </td>
                                         <td class="d-flex align-items-center">
-                                            <i class="bi bi-arrow-clockwise"></i>
-                                            <div class="dropdown ms-2">
-                                                <a class="btn btn-outline-primary dropdown-toggle text-black" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-list"></i>
-                                                </a>
-                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                                    <li><a style="cursor: pointer;" class="dropdown-item">Modifier</a></li>
-                                                    <li><a style="cursor: pointer;" class="dropdown-item">Supprimer</a></li>
-                                                </ul>
-                                            </div>
+                                            <a href="#" class="text-primary fs-6"><i class="bi bi-pencil-square"></i></a>
+                                            <a href="#" onclick="return deleteFacture({{liste.id}})" class="text-danger fs-6 mx-2"><i class="bi bi-trash-fill"></i></a>
+                                            {% if liste.factureEcheances|length > 0 %}
+                                            <a href="#tab-echeance" onclick="return showTabEcheance({{liste.id}})" class="text-warning fs-6"><i class="bi bi-calendar-date-fill"></i></a>
+                                            {% endif %}
+                                            {% set url = "" %}
+                                            {% if liste.statut == "regle" or liste.statut == "encours" %}
+                                                {% set url = "uploads/factures/valide/" ~ liste.file %}
+                                            {% elseif liste.statut == "annule" %}
+                                                {% set url = "uploads/factures/annule/" ~ liste.file %}
+                                            {% endif %}
+                                            <a href="{{url}}" target="_blank" class="text-danger fs-6 {% if liste.factureEcheances|length > 0 %} mx-2 {% endif %} "><i class="bi bi-file-pdf-fill"></i></a>
+                                            
                                         </td>
-                                        <td><i class="bi bi-file-pdf-fill text-danger fs-4"></i></td>
                                         <td> {{liste.dateCreation|date('d-m-Y')}} </td>
                                         <td> {{liste.type}} </td>
                                         <td> {{liste.numero}} </td>
@@ -153,13 +152,13 @@
                                         {% set statutPaiement = constant('App\\Entity\\Facture::STATUT') %}
                                         <td> {{statutPaiement[liste.statut]}} </td>
                                         <td> {{liste.solde}} </td>
-                                        <td> {{liste.etat}} </td>
+                                        {% set etat = constant('App\\Entity\\Facture::ETAT') %}
+                                        <td> {{etat[liste.etat]}} </td>
                                         <td> {{liste.remise}} </td>
                                     </tr>
                                     {% else %}
                                     <tr>
-                                        <td colspan="16">Aucune facture trouvé</td>
-                                        <td></td>
+                                        <td colspan="15">Aucune facture trouvé</td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -179,11 +178,9 @@
                                 </tbody>
                             </table>
                         </div>
-                        
                       </div>
                  </div>
             </div>
-          
   
         </div>
       </div>
@@ -197,9 +194,9 @@
         $('#tab-produit-categorie').removeClass('active');
         $('.tab-produit-categorie').removeClass('active');
         $('#tab-categorie').removeClass('active');
-        $('.tab-import-produit').removeClass('active');
-        $('#tab-import-produit').removeClass('active');
-      $('#tab-produit-date-peremption').removeClass('active').empty();
+        $('.tab-import-produit').css('display', 'none');
+        $('#tab-import-produit').css('display', 'none');
+        $('#tab-produit-date-peremption').removeClass('active').empty();
   
         $('.tab-user').removeClass('active');
         $('#tab-utilisateur').removeClass('active');
@@ -216,21 +213,27 @@
         $('#tab-privilege').removeClass('active');
         $('#tab-transfert-produit').css('display', 'none');
         $('#affaires_client').removeClass('active').empty();
-         $('#affaires_fournisseur').removeClass('active').empty();
-         $('#tab-info-affaire').removeClass('active').empty();
-         $('#tab-financier-affaire').removeClass('active').empty();
+        $('#affaires_fournisseur').removeClass('active').empty();
+        $('#tab-info-affaire').removeClass('active').empty();
+        $('#tab-financier-affaire').removeClass('active').empty();
         $('#tab-fiche-client').removeClass('active').empty();
         
         $('#tab-application').removeClass('active');
         $('#tab-profile').removeClass('active');
          $('#tab-compte_1').removeClass('active');
+        $('#tab-compte_2').removeClass('active');
         $('#tab-produit-type').removeClass('active');
         $('.tab-produit-type').removeClass('active');
         $('#tab-import-produit').css('display', 'none');
         $('#tab-facture').css('display', 'none');
         $('#tab-facture-affaire').css('display', 'block');
         $('#tab-inventaire-produit').css('display','none');
-  
+        $('#tab-nouveau-facture').css('display','none');
+        $('#tab-devis').css('display','none');
+        $('#tab-commande').css('display','none');
+        $('#tab-echeance').css('display','none');
       });
+
+     
 
     </script>

@@ -1,0 +1,122 @@
+ <style>
+    .table > thead {
+        background-color: #04176d !important;
+    }
+ </style>
+
+ <section class="section">
+     <div class="row">
+       <div class="col-lg-12">
+         {# entete compte #}
+          {% include 'admin/affaires/entete_compte.html.twig' with { 'compte': affaire.compte } %}
+         {# entete affaire #}
+         {% include 'admin/affaires/entete_affaire.html.twig' with { 'affaire': affaire } %}
+     {% set montantHt = 0 %}
+     {% set montantTTC = 0 %}
+            <div class="row mt-5">
+             <div class="col-md-2 col-12">
+                {% include '/admin/affaires/menu_left.html.twig' with { 'affaire' : affaire} %}
+             </div>
+             <div class="col-md-10 col-12" id="financiereProduct">
+                 <div class="card p-5">
+                    <h4 class="fw-bold">Nouveau facture dépuis l'affaire</h4>
+                    <hr>
+                     <div class="facture-produit mt-4">
+                         <table class="table">
+                             <thead>
+                                 <tr class="text-white">
+                                     <th class="text-center">Ref</th>
+                                     <th class="text-center" style="width: 200px;">Intitulé</th>
+                                     <th class="text-center">Qté</th>
+                                     <th class="text-center">PU(HT)</th>
+                                     {% if affaire.paiement is not null and affaire.paiement != "paye" or affaire.paiement is null %}
+                                     <th class="text-center">Action</th>
+                                     {% endif %}
+                                 </tr>
+                              
+                             </thead>
+                             <tbody>
+                                  {% for product in produits %}
+                                 <tr id="tr_produit_{{ product.id }}" data-id="{{ product.id }}"
+                                             data-id-affaire="{{ affaire.id }}">
+                                     <td class="align-middle text-center">{{product.reference}} ({{product.typeVente}})</td>
+                                     <td class="align-middle" style="width: 200px;">{{product.nom}}</td>
+                                     <td class="align-middle text-center">{% if product.typeVente == "detail" %}{{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteDetail}} ({% if ((product.qtt / product.produitCategorie.volumeGros) |round(0)) != 0 %} {{ (product.qtt / product.produitCategorie.volumeGros) |round(0)}} {{product.produitCategorie.presentationGros}}  et {% endif %}{{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})   {% else %}
+                                     {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} ({% if product.qtt >= product.produitCategorie.volumeGros %} {{(product.qtt / product.produitCategorie.volumeGros) |round(0)}}  {{product.produitCategorie.presentationGros}} {% if product.qtt - product.produitCategorie.volumeGros != 0 %} et {% endif %} {% endif %} {% if product.qtt >= product.produitCategorie.volumeGros %} {% if product.qtt - product.produitCategorie.volumeGros != 0 %} {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} {% endif %} {% else %} {{product.qtt}} {{product.produitCategorie.presentationDetail}}{% endif %} )
+                                     {% endif %}</td>
+                                     <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(0, '.', ' ')}}{% else %}{{product.prixVenteDetail|number_format(0, '.', ' ')}}{% endif %} Ar</td>
+                                     <td>
+                                             <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
+                                             <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
+                                     </td>
+                                     {# {% set montantHt = montantHt + (product.qtt * product.puht) - product.remise %} #}
+                                     {% if product.typeVente == "gros" %}
+                                     {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                                     {% else %}
+                                         {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                                     {% endif %}
+                                 </tr>
+                                    {% endfor %}
+                             </tbody>
+                         </table>
+                         
+                     </div>
+                   
+                 </div>
+             </div>
+            </div>
+         </div>
+        
+     </div>
+ 
+   </section>
+ <script src="{{ asset('assets/js/produit.js')}}"></script>
+   <script>
+     $(document).ready(function() {
+     $('#tab-compte_1').removeClass('active').empty();
+     $('#tab-compte_2').removeClass('active').empty();
+     $('#affaires_fournisseur').removeClass('active').empty();
+     $('#affaires_client').removeClass('active').empty();
+       $('#tab-produit-date-peremption').removeClass('active').empty();
+ 
+       $('.tab-categorie').removeClass('active');
+       $('#tab-produit-categorie').removeClass('active');
+       $('.tab-produit-categorie').removeClass('active');
+       $('#tab-categorie').removeClass('active');
+       $('.tab-import-produit').removeClass('active');
+       $('#tab-import-produit').removeClass('active');
+ 
+       $('.tab-user').removeClass('active');
+       $('#tab-utilisateur').removeClass('active');
+ 
+       $('.tab-permission').removeClass('active');
+       $('.tab-privilege').removeClass('active');
+       $('.tab-cat-permission').removeClass('active');
+       $('#tab-categorie-permission').removeClass('active');
+       
+       $('#tab-dashboard').removeClass('active');
+       $('#tab-profile').removeClass('active');
+      
+       $('#tab-permission').removeClass('active');
+       $('#tab-privilege').removeClass('active');
+        $('#tab-transfert-produit').css('display', 'none');
+      
+       
+       $('#tab-application').removeClass('active');
+       $('#tab-profile').removeClass('active');
+       $('#tab-produit-type').removeClass('active');
+       $('.tab-produit-type').removeClass('active');
+ $('#tab-import-produit').css('display', 'none');
+         $('#tab-facture').css('display', 'none');
+         $('#tab-info-affaire').removeClass('active');
+       $('#tab-fiche-client').removeClass('active').empty();
+       $('#tab-financier-affaire').addClass('active');
+       $('#tab-facture-affaire').removeClass('active').empty();
+         $('#tab-inventaire-produit').css('display','none');
+         $('#tab-nouveau-facture').css('display','block');
+       
+       
+     });
+ 
+  
+   </script>

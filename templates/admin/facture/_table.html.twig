@@ -1,6 +1,6 @@
         {% if type == "thead" %}
         <tr id="thead_compte" class="text-nowrap">
-            <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
+            <th><input type="checkbox" class="i-checks" name="selectAll" id="selectAll"></th>
             <th>Validation</th>
             <th>Actions</th>
             <th>PDF</th>
@@ -20,53 +20,76 @@
         {% elseif type == "tbody" %}
         
         <tr class="text-nowrap {% if liste.statut == 'annule' %} bg-danger {% endif %}">
-                            <td>
-                                <input type="checkbox" class="custom-checkbox" name="" id="">
-                            </td>
-                            <td>
-                                {% if liste.isValid == 0 %}
-                                <a style="cursor: pointer;"><i class="bi bi-x text-danger fs-4"></i></a>
-                                {% elseif liste.isValid == 1 %}
-                                <a style="cursor: pointer;"><i class="bi bi-check text-primary fs-4"></i></a>
-                                {% endif %}
-                            </td>
-                            <td class="d-flex align-items-center">
-                                <i class="bi bi-arrow-clockwise"></i>
-                                <div class="dropdown ms-2">
-                                    <a class="btn btn-outline-primary dropdown-toggle text-black" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-list"></i>
-                                    </a>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                        <li><a style="cursor: pointer;" class="dropdown-item">Modifier</a></li>
-                                        <li><a style="cursor: pointer;" class="dropdown-item">Supprimer</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                            <td><i class="bi bi-file-pdf-fill text-danger fs-4"></i></td>
-                            <td> {{liste.dateCreation|date('d-m-Y')}} </td>
-                            <td> {{liste.type}} </td>
-                            <td> {{liste.numero}} </td>
-                            <td> <a href="{{path('affaires_liste_affaire_from_facture', {'compte': liste.compteId})}}" title="Pdf">
-                                            {{liste.compte}}
-                                        </a> </td>
-                            <td>  <a href="{{path('affaires_financier_from_other_page', {'affaire': liste.affaireId})}}" title="Pdf">
-                                            {{liste.affaire}}
-                                        </a></td>
-                            {# <td> {{liste.prixTtc|number_format(2, ',', ',')}} Ar </td> #}
-                            <td>{{liste.prixHt|number_format(2, ',', ' ')}} Ar</td>
-                            <td> {{liste.reglement|number_format(2, ',', ' ')}} Ar </td>
-                            {% set statutPaiement = constant('App\\Entity\\Facture::STATUT') %}
-                            <td> {{statutPaiement[liste.statut]}} </td>
-                            {# <td> {{liste.solde}} </td> #}
-                             {% set etat = constant('App\\Entity\\Facture::ETAT') %}
-                            {# <td> {{etat[liste.etat]}} </td> #}
-                            {# <td> {{liste.remise}} </td> #}
-                        </tr>
+            <td>
+                <input type="checkbox" class="i-checks" name="factureList[]" value="{{ liste.id }}">
+            </td>
+            <td>
+                {% if liste.isValid == 0 %}
+                <a style="cursor: pointer;"><i class="bi bi-x text-danger fs-4"></i></a>
+                {% elseif liste.isValid == 1 %}
+                <a style="cursor: pointer;"><i class="bi bi-check text-primary fs-4"></i></a>
+                {% endif %}
+            </td>
+            <td class="d-flex align-items-center">
+                <i class="bi bi-arrow-clockwise"></i>
+                <div class="dropdown ms-2">
+                    <a class="btn btn-outline-primary dropdown-toggle text-black" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-list"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li><a style="cursor: pointer;" class="dropdown-item">Modifier</a></li>
+                        <li><a style="cursor: pointer;" class="dropdown-item">Supprimer</a></li>
+                    </ul>
+                </div>
+            </td>
+            <td><i class="bi bi-file-pdf-fill text-danger fs-4"></i></td>
+            <td> {{liste.dateCreation|date('d/m/Y')}} </td>
+            <td> {{liste.type}} </td>
+            <td> {{liste.numero}} </td>
+            <td> <a href="{{path('affaires_liste_affaire_from_facture', {'compte': liste.compteId})}}" title="Pdf">
+                            {{liste.compte}}
+                        </a> </td>
+            <td>  <a href="{{path('affaires_financier_from_other_page', {'affaire': liste.affaireId})}}" title="Pdf">
+                            {{liste.affaire}}
+                        </a></td>
+            {# <td> {{liste.prixTtc|number_format(2, ',', ',')}} Ar </td> #}
+            <td>{{liste.prixHt|number_format(2, ',', ' ')}} Ar</td>
+            <td> {{liste.reglement|number_format(2, ',', ' ')}} Ar </td>
+            {% set statutPaiement = constant('App\\Entity\\Facture::STATUT') %}
+            <td> {{statutPaiement[liste.statut]}} </td>
+            {# <td> {{liste.solde}} </td> #}
+                {% set etat = constant('App\\Entity\\Facture::ETAT') %}
+            {# <td> {{etat[liste.etat]}} </td> #}
+            {# <td> {{liste.remise}} </td> #}
+        </tr>
         
          {% endif %}
+  {% block javascripts %}
+      <script>
+    $(document).ready(function() {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                //radioClass: 'iradio_square-green'
+            });
+
+            $("input[name='selectAll']").on('ifChanged', function () {
+                    console.log("ici");
+                            var _this = jQuery(this);
+
+                            if (_this.is(':checked')) {
+                                $("input[name^='factureList']").each(function (index) {
+                                    $(this).iCheck('check');
+                                });
+                            } else {
+                                $("input[name^='factureList']").each(function (index) {
+                                    $(this).iCheck('uncheck');
+                                });
+                            }
+                        });
+
+});
+</script>
 <script>
-
-
 
     function deleteCompte(id = null, genre = 1) {
     var anchorName = document.location.hash.substring(1);
@@ -147,3 +170,4 @@
     }
 
 </script>
+{% endblock %}

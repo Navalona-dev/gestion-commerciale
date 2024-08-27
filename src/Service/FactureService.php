@@ -211,7 +211,7 @@ class FactureService
 
         // Créer le log
         $this->logger->info('Commande payée', [
-            'Produit' => $affaire->getNom(),
+            'Commande' => $affaire->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
             'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
             'ID Application' => $affaire->getApplication()->getId()
@@ -243,7 +243,7 @@ class FactureService
         $facture->setDate($date);
         $facture->setType("Facture");
         $products = $affaire->getProducts();
-        $filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
+        $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
         $montantHt = 0;
 
         // Sortie du PDF sous forme de réponse HTTP
@@ -257,9 +257,6 @@ class FactureService
             $produitCategorie->setStockRestant($stockRestant);
             
             $this->entityManager->persist($produitCategorie);
-
-            
-
           
             $factureDetail = new FactureDetail();
             $prix = 0;
@@ -298,7 +295,6 @@ class FactureService
 
             // Gestion de notification
             $stockMin = $produitCategorie->getStockMin();
-            $stockRestant = $produitCategorie->getStockRestant();
 
             if ($stockRestant <= $stockMin) {
                 $notification = new Notification();
@@ -348,7 +344,7 @@ class FactureService
             $data["produit"] = $produitCategorie->getNom();
             $data["dateReception"] = null;
             $data["dateTransfert"] = null;
-            $data["dateSortie"] = (new \DateTime())->format("d-m-y h:i:s");
+            $data["dateSortie"] = (new \DateTime())->format("d-m-Y h:i:s");
             $data["userDoAction"] = $user->getUserIdentifier();
             $data["source"] = $this->application->getEntreprise();
             $data["destination"] = $affaire->getCompte()->getNom();
@@ -380,6 +376,16 @@ class FactureService
         $affaire->setDateFacture($date);
         $affaire->setStatut("commande");
         $this->persist($affaire);
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Facture ajouté', [
+            'Commande' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
         $this->update();
         
         // Initialize Dompdf
@@ -415,7 +421,7 @@ class FactureService
 
         // Créer le log
         $this->logger->info('Commande payée', [
-            'Produit' => $affaire->getNom(),
+            'Commande' => $affaire->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
             'Adresse e-mail' => $user ? $user->getUserIdentifier() : 'Pas d\'adresse e-mail',
             'ID Application' => $affaire->getApplication()->getId()
@@ -434,9 +440,8 @@ class FactureService
         $facture->setValid(true);
         $facture->setStatut('annule');
         $products = $affaire->getProducts();
-        $filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
+        $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
     
-
         foreach ($products as $key => $product) { 
             // Gestion du stock
             $produitCategorie = $product->getProduitCategorie();
@@ -507,12 +512,22 @@ class FactureService
                 // Par exemple, enregistrer un message d'erreur ou ajuster les stocks supplémentaires
             }
         }
-        
+
         $this->persist($facture);
         $affaire->setDateAnnule($date);
         $affaire->setDevisEvol('perdu');
         $affaire->setPaiement('annule');
         $this->persist($affaire);
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Facture annulé', [
+            'Commande' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
         $this->update();
         
         // Créer une instance de Dompdf
@@ -611,7 +626,7 @@ class FactureService
 
         // Créer le log
         $this->logger->info('Commande annulée', [
-            'Produit' => $affaire->getNom(),
+            'Commande' => $affaire->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
             'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
             'ID Application' => $affaire->getApplication()->getId()
@@ -624,9 +639,9 @@ class FactureService
         $this->entityManager->flush();
     }
 
-    public function searchFactureRawSql($genre, $nom, $dateDu, $dateAu, $etat, $start, $limit, $order, $isCount, $search, $statutPaiement, $datePaieDu, $datePaieAu)
+    public function searchFactureRawSql($genre, $nom, $dateDu, $dateAu, $etat, $start, $limit, $order, $isCount, $search, $statutPaiement, $datePaieDu, $datePaieAu, $tabIdFactureFiltered)
     {
-        return $this->entityManager->getRepository(Facture::class)->searchFactureRawSql($genre, $nom, $dateDu,$dateAu, $etat, $limit, $start, $order, $isCount, $search, $statutPaiement, $datePaieDu, $datePaieAu);
+        return $this->entityManager->getRepository(Facture::class)->searchFactureRawSql($genre, $nom, $dateDu,$dateAu, $etat, $limit, $start, $order, $isCount, $search, $statutPaiement, $datePaieDu, $datePaieAu, $tabIdFactureFiltered);
     }
 
     public function persist($entity)
@@ -680,5 +695,25 @@ class FactureService
             return $factures;
         }
         return false;
+    }
+
+    public function delete($facture = null)
+    {
+        $factureDetails = $facture->getFactureDetails();
+        foreach($factureDetails as $factureDetail) {
+            $this->remove($factureDetail);
+        }
+
+        $factureEcheances = $facture->getFactureEcheances();
+        foreach($factureEcheances as $factureEcheance) {
+            $this->remove($factureEcheance);
+        }
+
+        $this->remove($facture);
+
+        $this->update();
+        
+        return $facture;
+        
     }
 }

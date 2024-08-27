@@ -6,6 +6,15 @@
   td, tr {
     border-bottom: none !important;
   }
+
+  .icon-reload {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+}
+
+.icon-excel {
+  background-color: #198754 !important;
+}
  
 </style>
 
@@ -21,7 +30,7 @@
 <section class="section">
     <div class="row">
       <div class="col-lg-12">
-        <div class="card p-5" style="border-radius: 20px; border: 1px solid #2a4ce8;">
+        <div class="card p-3 p-lg-5" style="border-radius: 20px; border: 1px solid #2a4ce8;">
           <div class="row">
             <div class="col-xl-10 col-lg-10 col-md-12 col-sm-12 mb-3">
               <div class="row">
@@ -32,7 +41,7 @@
                             <i class="bi bi-person"></i>
                         </span>
                     </div>
-                      <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" />
+                      <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" autocomplete="off" />
                        <input id="genre" type="hidden" name="genre" value="{{genre}}" />
                     {# <select class="form-control form-control-sm chosen-select" id="user-select">
                         <option value="" selected disabled class="option-compte">Nom du client</option>
@@ -72,8 +81,8 @@
             <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-3">
               <div class="form-group d-flex justify-content-center">
                 <a href="#" onclick="return searchCompte({{genre}})" class="filter-icon"><i class="bi bi-check"></i></a>
-                <a href="#" class="filter-icon"><i class="bi bi-file-earmark-excel"></i></a>
-                <a href="#" class="filter-icon"><i class="bi bi-arrow-clockwise"></i></a>
+                {#<a href="#" class="filter-icon icon-excel"><i class="bi bi-file-earmark-excel"></i></a>#}
+                <a href="#" onclick="return showTabCompte({{genre}})" class="filter-icon icon-reload"><i class="bi bi-arrow-clockwise"></i></a>
                 
               </div>
             </div>
@@ -88,20 +97,25 @@
           <div class="card-body px-5 pb-5">
             <table class="table table-striped" id="liste-table-compte" style="width: 100%;">
               <thead>
-                    {% include 'admin/comptes/_table.html.twig' with { 'type': 'thead' } %}
+                    {% include 'admin/comptes/_table.html.twig' with { 'type': 'thead', 'genre': genre } %}
               </thead>
               <tbody>
                 {% if listes|length > 0 %}
 
                   {% for liste in listes %}
-                      {% include 'admin/comptes/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
+                      {% include 'admin/comptes/_table.html.twig' with { 'type': 'tbody', 'liste': liste, 'genre': genre } %}
                   {% endfor %}
                 
                 {% else %}
                     <tr class="text-nowrap">
-                        <td>Aucun enregistrement trouvé</td>
-                         <td>&nbsp;</td>
-                          <td>&nbsp;</td>
+                        <td colspan="{% if genre == 1 %} 6 {% elseif genre == 2 %} 4 {% endif %} ">Aucun enregistrement trouvé</td>
+                         <td></td>
+                          <td></td>
+                          <td></td>
+                          {% if genre == 1 %}
+                          <td></td>
+                          <td></td>
+                          {% endif %}
                     </tr>
                 {% endif %}
                 
@@ -118,7 +132,7 @@
   </section>
 
   <script>
-    function searchCompte(genre = 1) {
+    /*function searchCompte(genre = 1) {
       var anchorName = document.location.hash.substring(1);
       var nomCompte = $("#nom_compte").val();
       var genre = $("#genre").val();
@@ -131,23 +145,7 @@
                   
                  $("#compteList").empty();
                  $("#compteList").append(response.html);
-                    /*$('#modalNewClient').modal('hide');
-                    var nextLink = $('#sidebar').find('li#clients').find('a');
-                    setTimeout(function () {
-                        toastr.options = {
-                            closeButton: true,
-                            progressBar: true,
-                            showMethod: 'slideDown',
-                            timeOut: 1000
-                        };
-                        toastr.success('Avec succèss', 'Enregistrement effectuée');
-
-                        //$(".loadBody").css('display', 'none');
-
-                    }, 800);
-                    if (nextLink.length > 0) {
-                        nextLink.click();
-                    }*/
+                  
                     if (anchorName) {
                         window.location.hash = anchorName;
                     }
@@ -157,59 +155,53 @@
                     alert('Erreur lors de l\'ajout d\'un client.');
                 }
         });
-    }
+    }*/
     
     //datatable
     $(document).ready(function() {
-      $('.tab-compte_1').addClass('active');
-       $('.tab-user').removeClass('active');
-      $('.tab-permission').removeClass('active');
-      $('.tab-privilege').removeClass('active');
-      $('.tab-cat-permission').removeClass('active');
-      $('#tab-dashboard').removeClass('active');
-      $('#tab-profile').removeClass('active');
-      $('#tab-utilisateur').removeClass('active');
-      $('#tab-permission').removeClass('active');
-      $('#tab-privilege').removeClass('active');
-      $('#categorie-permission').removeClass('active');
-      $('#tab-categorie-permission').removeClass('active');
-      $('#tab-application').removeClass('active');
-      $('.tab-categorie').removeClass('active');
-      $('#tab-produit-categorie').removeClass('active');
-      $('.tab-produit-categorie').removeClass('active');
-      $('#tab-categorie').removeClass('active');  
-      $('#tab-produit-type').removeClass('active');
-      $('#tab-produit-image').removeClass('active');
-      $('#tab-stock').removeClass('active');
-      $('.tab-import-produit').removeClass('active');
-      $('#tab-import-produit').removeClass('active');
-       $('#tab-transfert-produit').css('display', 'none');
-       $('#affaires_client').removeClass('active').empty();
-       $('#affaires_fournisseur').removeClass('active').empty();
+        $('.tab-compte_1').addClass('active');
+        $('.tab-user').removeClass('active');
+        $('.tab-permission').removeClass('active');
+        $('.tab-privilege').removeClass('active');
+        $('.tab-cat-permission').removeClass('active');
+        $('#tab-dashboard').removeClass('active');
+        $('#tab-profile').removeClass('active');
+        $('#tab-utilisateur').removeClass('active');
+        $('#tab-permission').removeClass('active');
+        $('#tab-privilege').removeClass('active');
+        $('#categorie-permission').removeClass('active');
+        $('#tab-categorie-permission').removeClass('active');
+        $('#tab-application').removeClass('active');
+        $('.tab-categorie').removeClass('active');
+        $('#tab-produit-categorie').removeClass('active');
+        $('.tab-produit-categorie').removeClass('active');
+        $('#tab-categorie').removeClass('active');  
+        $('#tab-produit-type').removeClass('active');
+        $('#tab-produit-image').removeClass('active');
+        $('#tab-stock').removeClass('active');
+        $('.tab-import-produit').css('display', 'none');
+        $('#tab-import-produit').css('display', 'none');
+        $('#tab-transfert-produit').css('display', 'none');
+        $('#affaires_client').removeClass('active').empty();
+        $('#affaires_fournisseur').removeClass('active').empty();
         $('#tab-facture').css('display', 'none');
         $('#tab-facture-affaire').css('display', 'none');
 
-      $('#tab-info-affaire').removeClass('active').empty();
-       $('#tab-financier-affaire').removeClass('active').empty();
-      $('#tab-fiche-client').removeClass('active').empty();
-      $('#tab-fiche-fournisseur').removeClass('active').empty();
-      $('#tab-quantite-vendu').removeClass('active').empty();
-      $('#tab-notification').removeClass('active').empty();
-      $('#tab-historique-produit').removeClass('active').empty();
-      $('#tab-historique-affaire').removeClass('active').empty();
-      $('#tab-produit-date-peremption').removeClass('active').empty();
+        $('#tab-info-affaire').removeClass('active').empty();
+        $('#tab-financier-affaire').removeClass('active').empty();
+        $('#tab-fiche-client').removeClass('active').empty();
+        $('#tab-fiche-fournisseur').removeClass('active').empty();
+        $('#tab-quantite-vendu').removeClass('active').empty();
+        $('#tab-notification').removeClass('active').empty();
+        $('#tab-historique-produit').removeClass('active').empty();
+        $('#tab-historique-affaire').removeClass('active').empty();
+        $('#tab-produit-date-peremption').removeClass('active').empty();
         $('#tab-inventaire-produit').css('display','none');
-
-      /*$('#liste-table-compte').DataTable({
-        responsive: true,
-        language: {
-          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
-      },
-        border: false,
-        scrollX: '100%',
-        pageLength: 10,
-        scrollCollapse: false,
-      });*/
+        $('#tab-nouveau-facture').css('display','none');
+        $('#tab-devis').css('display','none');
+        $('#tab-commande').css('display','none');
+        $('#tab-echeance').css('display','none');
+     
     });
 
      //date-picker
@@ -261,3 +253,73 @@ function newCompte(isNew = false, genre = 1) {
 }
 
   </script>
+
+<script>
+
+  function showSpinner() {
+    document.getElementById('spinner').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+  }
+
+  function hideSpinner() {
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+  }
+
+  // Fonction pour convertir une date au format d-m-Y en Date
+  function parseDate(dateStr) {
+      var parts = dateStr.split('/');
+      return new Date(parts[2], parts[1] - 1, parts[0]);
+  }
+
+  // Fonction appelée lors du clic sur l'icône de recherche
+  function searchCompte() {
+    var anchorName = document.location.hash.substring(1);
+
+    showSpinner();
+    
+    setTimeout(function() {
+        // Récupération des valeurs des filtres
+        var nomCompte = $('#nom_compte').val().toLowerCase();
+        var dateDebut = $('#dateDu').val();
+        var dateFin = $('#dateAu').val();
+
+        // Réinitialiser les filtres
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            var dateSearch = parseDate(data[3].trim()); // La première colonne est la date
+            var startDateDebut = dateDebut ? parseDate(dateDebut) : null;
+            var endDateFin = dateFin ? parseDate(dateFin) : null;
+
+            var compteMatch = data[0].toLowerCase().indexOf(nomCompte) !== -1;
+            var dateMatch = true;
+            if (startDateDebut && dateSearch < startDateDebut) {
+                dateMatch = false;
+            }
+            if (endDateFin && dateSearch > endDateFin) {
+                dateMatch = false;
+            }
+
+            return compteMatch && dateMatch;
+        });
+
+        // Mettre à jour DataTables avec les nouveaux filtres
+        $('#liste-table-compte').DataTable().draw();
+
+        // Réinitialiser les filtres après utilisation
+        $.fn.dataTable.ext.search.pop();
+
+        if (anchorName) {
+            window.location.hash = anchorName;
+        }
+
+        hideSpinner();
+    }, 2000);
+}
+
+
+  // Ajout de l'événement click à l'icône de recherche
+  document.addEventListener('DOMContentLoaded', function() {
+      var searchButton = document.querySelector('.icon-check');
+      searchButton.addEventListener('click', searchFacture);
+  });
+</script>

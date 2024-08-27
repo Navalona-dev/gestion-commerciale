@@ -71,29 +71,31 @@ class FactureRepository extends ServiceEntityRepository
             return $query->fetchAll(); 
     }
 
+
     public function getAllFacturesByAffaire($affaireId = null)
     {
-        $sql = "SELECT f.type, f.numero, f.prixHt, f.prixTtc, f.solde, f.statut, f.reglement, f.numeroCommande, f.etat,
-                f.file, f.dateCreation, f.isValid, f.remise, c.nom as compte, a.nom as affaire
+        $sql = "SELECT f.id, f.type, f.numero, f.prixHt, f.prixTtc, f.solde, f.statut, f.reglement, f.numeroCommande, f.etat,
+                f.file, f.dateCreation, f.isValid, f.remise, c.nom as compte, a.nom as affaire, 
+                GROUP_CONCAT(DISTINCT fe.id) as factureEcheances
                 FROM `Facture` f 
                 LEFT JOIN `compte` c ON f.compte_id = c.id 
                 LEFT JOIN `affaire` a ON f.affaire_id = a.id 
-                WHERE f.application_id = ".$this->application->getId()."";
+                LEFT JOIN `FactureEcheance` fe ON f.id = fe.facture_id
+                WHERE f.application_id = ".$this->application->getId()." AND (f.isEcheance = 0 OR f.isEcheance IS NULL) 
+                ";
 
-                if ($affaireId != null) {
-                    $sql .= " and a.id = ".$affaireId."";
-                }
+        if ($affaireId != null) {
+            $sql .= " and a.id = ".$affaireId."";
+        }
 
-            $sql .= " ORDER BY f.dateCreation DESC";
+        $sql .= " GROUP BY f.id
+                ORDER BY f.dateCreation DESC";
 
+        $query = $this->connection->prepare($sql);
+        $query = $this->connection->executeQuery($sql);
 
-            $query = $this->connection->prepare($sql);
-        
-            $query = $this->connection->executeQuery($sql);
-    
-            return $query->fetchAll(); 
+        return $query->fetchAll(); 
     }
-
 
     public function searchFactureRawSql(
         $genre = 1,
@@ -108,7 +110,8 @@ class FactureRepository extends ServiceEntityRepository
         $search = null,
         $statutPaiement = null,
         $datePaieDu = null,
-        $datePaieAu = null
+        $datePaieAu = null,
+        $tabIdFactureFiltered = null
     ) {
         ini_set('memory_limit', '-1');
         ini_set('max_execution_time', '-1');
@@ -197,6 +200,10 @@ class FactureRepository extends ServiceEntityRepository
             $parameterType['typeClient'] = ParameterType::INTEGER;
             
         //}
+
+        if ($tabIdFactureFiltered != null && count($tabIdFactureFiltered)> 0) {
+            $conditions .= " and f.id IN (".implode(",",$tabIdFactureFiltered ).")";
+        }
 
         if (null != $limit) {
             $sqlLimit = ' LIMIT ' . intval($limit) . ' OFFSET ' . intval($pg);

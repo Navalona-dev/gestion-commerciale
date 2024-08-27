@@ -82,7 +82,7 @@
 </head>
 <body>
     {% set compte = facture.affaire.compte %}
-    {% set backgroundClass = facture.statut == 'regle' ? 'background-regle' : 'background-impaye' %}
+    {% set backgroundClass = facture.statut != 'annule' ? 'background-regle' : 'background-impaye' %}
 
     <section class="header {{ backgroundClass }}">
         <div class="header-content">
@@ -95,9 +95,11 @@
                     <td style="padding-left: 50px;">
                         <p><span class="header-data">N° : </span> 
                             {% if facture.statut == "annule" %}
-                            FA-annulé-{{facture.numero}}
+                                FA-annulé-{{facture.numero}}
                             {% elseif facture.statut == "regle" %}
-                            FA-validé-{{facture.numero}}
+                                FA-validé-{{facture.numero}}
+                            {% elseif facture.statut == "encours" %}
+                                FA-echeance-{{facture.numero}}
                             {%  endif%}
                          </p>
                     </td>
@@ -206,8 +208,8 @@
             </p>
         </div>
         <div class="data-total">
-            <p class="total" style="{% if facture.statut == 'regle' %} background-color: #4154f1; {% else %} background-color: #b02d30; {% endif %}">
-            {% if facture.statut == "regle" %}
+            <p class="total {{backgroundClass}}">
+            {% if facture.statut == "regle" or facture.statut == "encours" %}
             Total à payer : {{subTotal|number_format(2, ',', ' ')}} Ar 
             {% elseif facture.statut == "annule" %}
             Total à rembourser : {{subTotal|number_format(2, ',', ' ')}} Ar 

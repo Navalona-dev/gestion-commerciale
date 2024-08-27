@@ -73,7 +73,7 @@ class AffaireService
   
           // Créer le log
           $this->logger->info($logMessage, [
-            'Produit' => $affaire->getNom(),
+            'Commande' => $affaire->getNom(),
             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
             'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
             'ID Application' => $affaire->getApplication()->getId()
@@ -102,7 +102,15 @@ class AffaireService
             foreach($factureDetails as $factureDetail) {
                 $this->entityManager->remove($factureDetail);
             }
+
+            $factureEcheances = $facture->getFactureEcheances();
+            foreach($factureEcheances as $factureEcheance) {
+                $this->entityManager->remove($factureEcheance);
+            }
+
             $this->entityManager->remove($facture);
+
+            
         }
         $this->entityManager->remove($affaire);
     }
@@ -125,5 +133,10 @@ class AffaireService
     public function getNombreTotalCompte()
     {
         return $this->entityManager->getRepository(Affaire::class)->countAll();
+    }
+
+    public function getAffaires($statut = null)
+    {
+        return $this->entityManager->getRepository(Affaire::class)->getAllAffaires($statut);
     }
 }

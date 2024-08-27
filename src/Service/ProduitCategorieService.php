@@ -137,6 +137,9 @@ class ProduitCategorieService
         $stocks = $produitCategorie->getStocks();
 
         foreach($stocks as $stock) {
+            if ($stock->getDatePeremption() != null) {
+                $this->entityManager->remove($stock->getDatePeremption());
+            } 
             $this->entityManager->remove($stock);
         }
 
@@ -144,6 +147,18 @@ class ProduitCategorieService
 
         foreach($images as $image) {
             $this->entityManager->remove($image);
+        }
+
+        $transferts = $produitCategorie->getTransferts();
+
+        foreach($transferts as $transfert) {
+            $this->entityManager->remove($transfert);
+        }
+
+        $notifications = $produitCategorie->getNotifications();
+
+        foreach($notifications as $notification) {
+            $this->entityManager->remove($notification);
         }
 
         $this->entityManager->remove($produitCategorie);
@@ -165,6 +180,15 @@ class ProduitCategorieService
     public function getAllProduitCategories($affairesProduct = [])
     {
         $produitCategories = $this->entityManager->getRepository(ProduitCategorie::class)->getProduits($affairesProduct);
+        if ($produitCategories != false  && count($produitCategories) > 0) {
+            return $produitCategories;
+        }
+        return false;
+    }
+
+    public function getAllProduitCategoriesByStockRestant($affairesProduct = [])
+    {
+        $produitCategories = $this->entityManager->getRepository(ProduitCategorie::class)->getProduitsByStockRestant($affairesProduct);
         if ($produitCategories != false  && count($produitCategories) > 0) {
             return $produitCategories;
         }

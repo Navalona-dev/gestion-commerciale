@@ -7,6 +7,19 @@
     border-bottom: none !important;
   }
 
+  .icon-check {
+    background-color: #2a4ce8;
+    padding: 8px 10px;
+    color: #fff;
+    border-radius: 10px;
+  }
+
+  .icon-reload {
+    background-color: #ffc107;
+    padding: 8px 10px;
+    margin-left: 15px;
+    border-radius: 10px;
+  }
  
 </style>
 
@@ -24,11 +37,66 @@
 <section class="section">
     <div class="row">
       <div class="col-lg-12">
+        <div class="card p-3 p-lg-5">
+          <div class="row">
+            <div class="col-md-10 col-12">
+              <div class="row">
+                <div class="col-md-4 col-12 mb-4">
+                  <div class="form-group">
+                    <input type="text" class="affaire_name form-control form-control-md" id="affaire_name" placeholder="Commande/numéro">
+                  </div>
+                </div>
+                <div class="col-md-4 col-12 mb-4">
+                  <div class="form-group">
+                    <input type="text" class="form-control form-control-md responsable" id="responsable" placeholder="Responsable/action">
+                  </div>
+                </div>
+                <div class="col-md-4 col-12 mb-4">
+                  <div class="form-group">
+                    <input type="text" class="form-control form-control-md source-type" id="source-type" placeholder="Source/type">
+                  </div>
+                </div>
+                <div class="col-md-4 col-12 mb-4">
+                  <div class="form-group">
+                    <input type="text" class="form-control form-control-md destination-type" id="destination-type" placeholder="Destination/type">
+                  </div>
+                </div>
+                <div class="col-md-4 col-12 mb-4">
+                  <div class="form-group">
+                    <input type="text" class="form-control form-control-md produit-fournisseur" id="produit-fournisseur" placeholder="Produit/fournisseur">
+                  </div>
+                </div>
+                <div class="col-md-4 col-12 mb-4">
+                  <div class="form-group">
+                    <input type="text" class="form-control form-control-md date-reception" id="date-reception" placeholder="Date de reception">
+                  </div>
+                </div>
+                <div class="col-md-4 col-12 mb-4">
+                  <div class="form-group">
+                    <input type="text" class="form-control form-control-md date-sortie" id="date-sortie" placeholder="Date de sortie">
+                  </div>
+                </div>
+                <div class="col-md-4 col-12 mb-4">
+                  <div class="form-group">
+                    <input type="text" class="form-control form-control-md date-transfert" id="date-transfert" placeholder="Date de transfert">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 col-12 d-flex align-items-center justify-content-center">
+              <div class="form-group">
+                <a href="#" onclick="return searchHistorique()"><i class="bi bi-check icon-check"></i></a>
+                <a href="#tab-inventaire-produit" onclick="return showInventaire({{produitCategorie.id}})"><i class="bi bi-arrow-clockwise icon-reload"></i></a>
+              </div>
+            </div>
+            
+          </div>
+        </div>
         <div class="card p-5">
           <div class="form-group d-flex justify-content-end mb-4">
-                <a class="btn btn-primary mx-3 px-3 fs-5" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()"><i class="bi bi-list"></i> </a>
+                <a class="btn btn-primary mx-3" href="#tab-produit-categorie" onClick="return showTabProduitCategorie()"><i class="bi bi-list"></i> </a>
                 <div class="dropdown">
-                    <a class=" export-btn btn btn-warning p-2 fs-5 dropdown-toggle text-black " href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class=" export-btn btn btn-warning dropdown-toggle text-black " href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                       <i class="bi bi-list"></i>
                     </a>
                   
@@ -107,40 +175,174 @@
 
         }
     $(document).ready(function() {
-    $('#tab-fiche-fournisseur').removeClass('active').empty();
-      $('#tab-inventaire-produit').css('display','block');
-      $('.tab-categorie').removeClass('active');
-      $('.tab-produit-categorie').removeClass('active');
-      $('.tab-user').removeClass('active');
-      $('.tab-permission').removeClass('active');
-      $('.tab-privilege').removeClass('active');
-      $('.tab-cat-permission').removeClass('active');
-      $('#tab-dashboard').removeClass('active');
-      $('#tab-profile').removeClass('active');
-      $('#tab-utilisateur').removeClass('active');
-      $('#tab-permission').removeClass('active');
-      $('#tab-privilege').removeClass('active');
-      $('#tab-categorie-permission').removeClass('active');
-      $('#tab-categorie').removeClass('active');
-      $('#tab-application').removeClass('active');
-      $('#tab-profile').removeClass('active');
-      $('#tab-produit-categorie').removeClass('active');
-      $('#tab-compte_1').removeClass('active');
-      $('#tab-produit-type').removeClass('active');
-      $('.tab-produit-type').removeClass('active');
-      $('#tab-stock').removeClass('active');
-      $('.tab-import-produit').removeClass('active');
-$('#tab-import-produit').css('display', 'none');
+        $('#tab-fiche-fournisseur').removeClass('active').empty();
+        $('#tab-inventaire-produit').css('display','block');
+        $('.tab-categorie').removeClass('active');
+        $('.tab-produit-categorie').removeClass('active');
+        $('.tab-user').removeClass('active');
+        $('.tab-permission').removeClass('active');
+        $('.tab-privilege').removeClass('active');
+        $('.tab-cat-permission').removeClass('active');
+        $('#tab-dashboard').removeClass('active');
+        $('#tab-profile').removeClass('active');
+        $('#tab-utilisateur').removeClass('active');
+        $('#tab-permission').removeClass('active');
+        $('#tab-privilege').removeClass('active');
+        $('#tab-categorie-permission').removeClass('active');
+        $('#tab-categorie').removeClass('active');
+        $('#tab-application').removeClass('active');
+        $('#tab-profile').removeClass('active');
+        $('#tab-produit-categorie').removeClass('active');
+         $('#tab-compte_1').removeClass('active');
+        $('#tab-compte_2').removeClass('active');
+        $('#tab-produit-type').removeClass('active');
+        $('.tab-produit-type').removeClass('active');
+        $('#tab-stock').removeClass('active');
+        $('.tab-import-produit').removeClass('active');
+        $('#tab-import-produit').css('display', 'none');
         $('#tab-facture').css('display', 'none');
         $('#tab-facture-affaire').css('display', 'none');
-              $('#tab-transfert-produit').css('display', 'none');
-      $('#affaires_client').removeClass('active').empty();
-       $('#affaires_fournisseur').removeClass('active').empty();
-       $('#tab-info-affaire').removeClass('active').empty();
-       $('#tab-financier-affaire').removeClass('active').empty();
-      $('#tab-fiche-client').removeClass('active').empty();
-
+        $('#tab-transfert-produit').css('display', 'none');
+        $('#affaires_client').removeClass('active').empty();
+        $('#affaires_fournisseur').removeClass('active').empty();
+        $('#tab-info-affaire').removeClass('active').empty();
+        $('#tab-financier-affaire').removeClass('active').empty();
+        $('#tab-fiche-client').removeClass('active').empty();
+        $('#tab-nouveau-facture').css('display','none');
+        $('#tab-devis').css('display','none');
+        $('#tab-commande').css('display','none');
+        $('#tab-echeance').css('display','none');
    
     });
 
   </script>
+
+<script>
+  $(document).ready(function() {
+    var dateFormat = 'dd-mm-yyyy';
+    var dateNow = new Date();
+    dateNow.setDate(dateNow.getDate() + 1);
+
+    $('#date-reception, #date-sortie, #date-transfert').datepicker({
+      format: dateFormat,
+      todayHighlight: true,
+      language: 'fr',
+      autoclose: true
+    });
+  });
+
+  function showSpinner() {
+    document.getElementById('spinner').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+  }
+
+  function hideSpinner() {
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+  }
+
+  // Fonction pour convertir une date au format dd-mm-yy en Date
+  function parseDate(dateStr) {
+    if (!dateStr) return null;
+    var parts = dateStr.split('-');
+    return new Date(parts[2], parts[1] - 1, parts[0]);
+  }
+
+  function searchHistorique() {
+    showSpinner();
+
+    setTimeout(function() {
+      // Récupération des valeurs des filtres
+      var affaireName = $('#affaire_name').val().toLowerCase();
+      var responsable = $('#responsable').val().toLowerCase();
+      var sourceType = $('#source-type').val().toLowerCase();
+      var destinationType = $('#destination-type').val().toLowerCase();
+      var produitFournisseur = $('#produit-fournisseur').val().toLowerCase();
+      var dateReception = $('#date-reception').val();
+      var dateSortie = $('#date-sortie').val();
+      var dateTransfert = $('#date-transfert').val();
+
+      // Réinitialiser les filtres
+      $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        var dateReceptionCell = data[5] ? parseDate(data[5].split(' ')[0]) : null; // La colonne Date reception est à l'index 5
+        var dateSortieCell = data[6] ? parseDate(data[6].split(' ')[0]) : null; // La colonne Date sortie est à l'index 6
+        var dateTransfertCell = data[7] ? parseDate(data[7].split(' ')[0]) : null; // La colonne Date transfert est à l'index 7
+
+        var affaireMatch = data[9].toLowerCase().indexOf(affaireName) !== -1;
+        var responsableMatch = data[1].toLowerCase().indexOf(responsable) !== -1;
+        var sourceTypeMatch = data[3].toLowerCase().indexOf(sourceType) !== -1;
+        var destinationTypeMatch = data[4].toLowerCase().indexOf(destinationType) !== -1;
+        var produitFournisseurMatch = data[0].toLowerCase().indexOf(produitFournisseur) !== -1;
+
+        var dateReceptionFilter = dateReception ? parseDate(dateReception) : null;
+        var dateSortieFilter = dateSortie ? parseDate(dateSortie) : null;
+        var dateTransfertFilter = dateTransfert ? parseDate(dateTransfert) : null;
+
+        let formattedDateReception = null;
+        if (dateReceptionCell != null && dateReceptionCell != "null" && dateReceptionCell != undefined) {
+
+          const dayReception = String(dateReceptionCell.getDate()).padStart(2, '0');
+          const monthReception = String(dateReceptionCell.getMonth() + 1).padStart(2, '0'); // Les mois sont indexés à partir de 0
+          const yearReception = dateReceptionCell.getFullYear();
+
+          // Formatez la date en chaîne
+           formattedDateReception = `${dayReception}-${monthReception}-${yearReception}`;
+           
+        }
+        
+        let formattedDateSortie = null;
+        if (dateSortieCell != null && dateSortieCell != "null" && dateSortieCell != undefined) {
+
+          const daySortie = String(dateSortieCell.getDate()).padStart(2, '0');
+          const monthSortie = String(dateSortieCell.getMonth() + 1).padStart(2, '0'); // Les mois sont indexés à partir de 0
+          const yearSortie = dateSortieCell.getFullYear();
+
+          // Formatez la date en chaîne
+           formattedDateSortie = `${daySortie}-${monthSortie}-${yearSortie}`;
+           
+        }
+
+        let formattedDateTransfert = null;
+        if (dateTransfertCell != null && dateTransfertCell != "null" && dateTransfertCell != undefined) {
+
+          const dayTransfert = String(dateTransfertCell.getDate()).padStart(2, '0');
+          const monthTransfert = String(dateTransfertCell.getMonth() + 1).padStart(2, '0'); // Les mois sont indexés à partir de 0
+          const yearTransfert = dateTransfertCell.getFullYear();
+
+          // Formatez la date en chaîne
+           formattedDateTransfert = `${dayTransfert}-${monthTransfert}-${yearTransfert}`;
+           
+        }
+
+        //var dateReceptionMatch = !dateReceptionFilter || (dateReceptionCell && dateReceptionCell >= dateReceptionFilter);
+        // var dateSortieMatch = !dateSortieFilter || (dateSortieCell && dateSortieCell <= dateSortieFilter);
+        // var dateTransfertMatch = !dateTransfertFilter || (dateTransfertCell && dateTransfertCell <= dateTransfertFilter);
+        var dateReceptionMatch = !dateReceptionFilter || (formattedDateReception && formattedDateReception == dateReception);
+       var dateSortieMatch = !dateSortieFilter || (formattedDateSortie && formattedDateSortie == dateSortie);
+        var dateTransfertMatch = !dateTransfertFilter || (formattedDateTransfert && formattedDateTransfert == dateTransfert);
+ // console.log("ici",formattedDateReception == dateReception, dateReceptionMatch, dateReception, formattedDateReception, typeof dateReceptionCell, dateReceptionFilter);
+      
+        return affaireMatch && responsableMatch && sourceTypeMatch && destinationTypeMatch && produitFournisseurMatch && dateReceptionMatch && dateSortieMatch && dateTransfertMatch;
+      });
+
+      // Mettre à jour DataTables avec les nouveaux filtres
+      $('#liste-table-inventaire-produit').DataTable().draw();
+
+      // Réinitialiser les filtres après utilisation
+      $.fn.dataTable.ext.search.pop();
+
+      hideSpinner();
+    }, 2000);
+
+    return false; // Pour éviter de recharger la page
+  }
+
+  // Ajout de l'événement click à l'icône de recherche
+  document.addEventListener('DOMContentLoaded', function() {
+    var searchButton = document.querySelector('.icon-check');
+    searchButton.addEventListener('click', searchHistorique);
+  });
+</script>
+
+
+

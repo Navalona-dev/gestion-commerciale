@@ -26,12 +26,14 @@ class Facture
         'presenter' => 'Présenter',
         'reglePartiel' => 'Rglt. partiel',
         'annule' => 'Annulée',
+        'encours' => 'En cours'
     ];
 
     const ETAT = [
         'a_regler' => 'A régler',
         'regle' => 'Réglée',
         'annule' => 'Annulée',
+        'encours' => 'En cours'
     ];
 
     #[ORM\Id]
@@ -105,10 +107,20 @@ class Facture
     #[ORM\OneToMany(targetEntity: ReglementFacture::class, mappedBy: 'facture')]
     private Collection $reglementFactures;
 
+    /**
+     * @var Collection<int, FactureEcheance>
+     */
+    #[ORM\OneToMany(targetEntity: FactureEcheance::class, mappedBy: 'facture')]
+    private Collection $factureEcheances;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isEcheance = null;
+
     public function __construct()
     {
         $this->factureDetails = new ArrayCollection();
         $this->reglementFactures = new ArrayCollection();
+        $this->factureEcheances = new ArrayCollection();
     }
 
     public static function newFacture($affaire = null)
@@ -399,6 +411,48 @@ class Facture
                 $reglementFacture->setFacture(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FactureEcheance>
+     */
+    public function getFactureEcheances(): Collection
+    {
+        return $this->factureEcheances;
+    }
+
+    public function addFactureEcheance(FactureEcheance $factureEcheance): static
+    {
+        if (!$this->factureEcheances->contains($factureEcheance)) {
+            $this->factureEcheances->add($factureEcheance);
+            $factureEcheance->setFacture($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFactureEcheance(FactureEcheance $factureEcheance): static
+    {
+        if ($this->factureEcheances->removeElement($factureEcheance)) {
+            // set the owning side to null (unless already changed)
+            if ($factureEcheance->getFacture() === $this) {
+                $factureEcheance->setFacture(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isEcheance(): ?bool
+    {
+        return $this->isEcheance;
+    }
+
+    public function setEcheance(?bool $isEcheance): static
+    {
+        $this->isEcheance = $isEcheance;
 
         return $this;
     }

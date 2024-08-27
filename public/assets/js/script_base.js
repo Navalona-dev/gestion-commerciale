@@ -5,6 +5,7 @@ $(document).ready(function() {
     var idAffaire = $('.id-affaire').data('affaire');
     var idCompte = $('.id-compte').data('compte');
     var idProduit = $('.id-produit').data('produit');
+    var idFacture = $('.id-facture').data('facture');
 
     if (anchorName === "affaires_client") {
         showTabAffaireClient();
@@ -40,7 +41,6 @@ $(document).ready(function() {
         showTabProduitCategorie();
     }
 
-    var anchorName = document.location.hash.substring(1);
     if (anchorName === "tab-compte_1") {
         showTabCompte(1);
     }
@@ -52,19 +52,11 @@ $(document).ready(function() {
         showTabProduitType();
     }
 
-   /* if (anchorName === "tab-stock") {
-        listStockByProduitSession();
-    }*/
-
-    /*if (anchorName === "tab-produit-image") {
-        listImageByProduitSession();
-    }*/
     if (anchorName === "tab-import-produit") {
         showTabImportProduit();
     }
 
     if (anchorName === "tab-transfert-produit") {
-        //listTransfertByProduitSession();
         listTransfert(idProduit);
     }
 
@@ -127,7 +119,206 @@ $(document).ready(function() {
         showInventaire(idProduit);
     }
 
+    if(anchorName === "tab-nouveau-facture") {
+        showTabNewFacture(idAffaire);
+    }
+
+    if(anchorName === "tab-devis") {
+        showTabDevisClient('devis');
+    }
+
+    if(anchorName === "tab-commande") {
+        showTabCommandeClient('commande');
+    }
+
+    if(anchorName === "tab-echeance") {
+        showTabEcheance(idFacture);
+    }
+
 });
+
+function showTabEcheance(id = null) {
+    showSpinner();
+    
+    $.ajax({
+            type: 'post',
+            url: '/admin/facture/echeance/liste/'+id,
+            data: {
+            },
+            success: function (response) {
+              
+                $("#tab-echeance").empty();
+                $("#tab-echeance").append(response.html);
+                $("#tab-echeance").addClass('active');
+                $('.sidebar-nav a[href="#tab-echeance"]').removeClass('collapsed');
+                $('#tab-dashboard').removeClass('active').empty();
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+                $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
+
+                
+                $(".loadBody").css('display', 'none');
+                // Réinitialiser le DataTable avec un léger retard
+                setTimeout(function() {
+                    $('#table-date-echeance').DataTable({
+                        responsive: true,
+                        language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                    },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                        order: []
+                    });
+                    hideSpinner();
+                }, 2000);
+
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+                hideSpinner();
+            }
+
+        });
+}
+
+function showTabDevisClient(statut = 'devis') {
+    showSpinner();
+    
+    $.ajax({
+            type: 'post',
+            url: '/admin/affaires/',
+            data: {
+                statut: statut
+            },
+            success: function (response) {
+              
+                $("#tab-devis").empty();
+                $("#tab-devis").append(response.html);
+                $("#tab-devis").addClass('active');
+                $('.sidebar-nav a[href="#tab-devis"]').removeClass('collapsed');
+                $('#tab-dashboard').removeClass('active').empty();
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+                $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
+
+                
+                $(".loadBody").css('display', 'none');
+                // Réinitialiser le DataTable avec un léger retard
+                setTimeout(function() {
+                    $('#liste-table-devis').DataTable({
+                        responsive: true,
+                        language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                    },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                    });
+                    hideSpinner();
+                }, 2000);
+
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+                hideSpinner();
+            }
+
+        });
+}
+
+function showTabCommandeClient(statut = 'commande') {
+    showSpinner();
+    
+    $.ajax({
+            type: 'post',
+            url: '/admin/affaires/',
+            data: {
+                statut: statut
+            },
+            success: function (response) {
+              
+                $("#tab-commande").empty();
+                $("#tab-commande").append(response.html);
+                $("#tab-commande").addClass('active');
+                $('.sidebar-nav a[href="#tab-commande"]').removeClass('collapsed');
+                $('#tab-dashboard').removeClass('active').empty();
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+                $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
+
+                
+                $(".loadBody").css('display', 'none');
+                // Réinitialiser le DataTable avec un léger retard
+                setTimeout(function() {
+                    $('#liste-table-commande').DataTable({
+                        responsive: true,
+                        language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                    },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                    });
+                    hideSpinner();
+                }, 2000);
+
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+                hideSpinner();
+            }
+
+        });
+}
 
 
 function newCompte(isNew = false, genre = 1) {
@@ -157,6 +348,49 @@ function newCompte(isNew = false, genre = 1) {
             alert('Erreur lors de l\'ajout de client.');
         }
     });
+}
+
+function showTabNewFacture(id = null) {
+    showSpinner();
+    $.ajax({
+            type: 'post',
+            url: '/admin/facture/new/'+id,
+            data: {id: id},
+            success: function (response) {
+                $("#tab-nouveau-facture").empty();
+                $("#tab-nouveau-facture").append(response.html);
+                $("#tab-nouveau-facture").addClass('active');
+                $("#tab-nouveau-facture").css('display', 'block');
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+                 $('.sidebar-nav a[href="#tab-info-affaire"]').removeClass('active');    
+                $('.sidebar-nav #historique a').addClass('collapsed');
+
+                $(".loadBody").css('display', 'none');
+
+                // Réinitialiser le DataTable avec un léger retard
+            setTimeout(function() {
+                hideSpinner();
+            }, 2000);
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+                hideSpinner();
+            }
+
+        });
 }
 
 function information(id = null) {
@@ -492,6 +726,8 @@ function listStockByProduitSession() {
  }
 
 function showTabCompte(genre = 1) {
+    var anchorName = document.location.hash.substring(1);
+
     showSpinner();
     
     $.ajax({
@@ -512,9 +748,11 @@ function showTabCompte(genre = 1) {
             $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
             $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
-                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
-                $('.sidebar-nav #historique a').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+            $('.sidebar-nav #historique a').addClass('collapsed');
 
 
             // Hide all compte tabs
@@ -522,6 +760,14 @@ function showTabCompte(genre = 1) {
 
             // Show the selected compte tab
             $('#tab-compte_' + genre).append(response.html).addClass('active');
+
+            $('.sidebar-nav a[href^="#tab-compte_"]').addClass('collapsed');
+            $('.sidebar-nav a[href="#tab-compte_' + genre + '"]').removeClass('collapsed').tab('show');
+
+            // Handle sidebar navigation
+          
+            $(".loadBody").css('display', 'none');
+
 
             if (genre == 1) {
                 $('.compte-title').text("clients");
@@ -531,13 +777,6 @@ function showTabCompte(genre = 1) {
                 $('.option-compte').text('Nom du fournisseur');
 
             }
-
-            // Handle sidebar navigation
-            $('.sidebar-nav a[href^="#tab-compte_"]').addClass('collapsed');
-            $('.sidebar-nav a[href="#tab-compte_' + genre + '"]').removeClass('collapsed').tab('show');
-
-            $(".loadBody").css('display', 'none');
-
             setTimeout(function() {
                 $('#liste-table-compte').DataTable({
                     responsive: true,
@@ -549,6 +788,9 @@ function showTabCompte(genre = 1) {
                     pageLength: 10,
                     scrollCollapse: false,
                   });
+                if (anchorName) {
+                    window.location.hash = anchorName;
+                }
                 hideSpinner();
             }, 2000);
         },
@@ -557,6 +799,7 @@ function showTabCompte(genre = 1) {
         }
     });
 }
+
 
 function showTabProfile() {
     showSpinner();
@@ -947,6 +1190,8 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
@@ -995,6 +1240,8 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1051,7 +1298,8 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
-
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1109,6 +1357,8 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
                  setTimeout(function() {
@@ -1164,6 +1414,8 @@ function showTabPrivilege() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1208,6 +1460,8 @@ function financier(id = null) {
                 $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                 $(".loadBody").css('display', 'none');
                 setTimeout(function() {
@@ -1259,6 +1513,8 @@ function ficheClient(id = null, genre = 1) {
                 $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                 $("#entete-affaire").addClass('d-none');
                
@@ -1316,6 +1572,8 @@ function listAffaireByCompte(id = null, genre = 1) {
                 $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                 
                 $(".loadBody").css('display', 'none');
@@ -1364,6 +1622,8 @@ function showTabFacture() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
 
                  $(".loadBody").css('display', 'none');
@@ -1418,6 +1678,8 @@ function showTabFacture() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
 
                  $(".loadBody").css('display', 'none');
@@ -1470,6 +1732,8 @@ function showTabFacture() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1542,6 +1806,8 @@ function listImage(id = null) {
                 $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                 $(".loadBody").css('display', 'none');
 
@@ -1593,6 +1859,8 @@ function listTransfert(id = null) {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1645,6 +1913,8 @@ function listTransfert(id = null) {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1697,6 +1967,8 @@ function listTransfert(id = null) {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1773,6 +2045,8 @@ function showTabNotification() {
                  $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
                  $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
                 $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
 
                  $(".loadBody").css('display', 'none');
 
@@ -1814,7 +2088,9 @@ function showTabNotification() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');  
+                 $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');              
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
@@ -1866,7 +2142,9 @@ function showTabNotification() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed'); 
+                 $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');               
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
@@ -1918,7 +2196,9 @@ function showTabNotification() {
                  $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
                  $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
-                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');                
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');      
+                 $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');          
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
@@ -1944,6 +2224,43 @@ function showTabNotification() {
          });
  }
 
+ function deleteFacture(id = null) {
+    var anchorName = document.location.hash.substring(1);
+    var idAffaire = $('.id-affaire').data('affaire');
+    
+    if (confirm('Voulez vous vraiment supprimer cette facture?')) {
+        $.ajax({
+            url: '/admin/facture/delete/'+id,
+            type: 'POST',
+            data: {facture: id},
+            success: function (response) {
+                var nextLink = $('#sidebar').find('li#facture').find('a');
+                setTimeout(function () {
+                    toastr.options = {
+                        closeButton: true,
+                        progressBar: true,
+                        showMethod: 'slideDown',
+                        timeOut: 3000
+                    };
+                    if(response.status == 'success') {
+                        toastr.success(response.message);
+                    }else {
+                        toastr.error(response.message);
+                    }
+
+                }, 800);
+                if (anchorName) {
+                    window.location.hash = anchorName;
+                }
+                showTabFactureAffaire(idAffaire);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                alert('Erreur lors de la suppression de l\'application.');
+            }
+        });
+    }
+}
 
  function showSpinner() {
     document.getElementById('spinner').style.display = 'block';

@@ -2,22 +2,31 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Affaire;
 use App\Entity\Facture;
+use Psr\Log\LoggerInterface;
 use App\Service\AccesService;
 use App\Service\AffaireService;
-use App\Service\ApplicationManager;
 use App\Service\FactureService;
 use App\Service\ProductService;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Service\ApplicationManager;
+use App\Repository\FactureRepository;
+use App\Exception\PropertyVideException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Psr\Log\LoggerInterface;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Exception\UnsufficientPrivilegeException;
+use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/admin/facture', name: 'factures')]
 class FactureController extends AbstractController
@@ -232,11 +241,12 @@ class FactureController extends AbstractController
     #[Route('/tout-exporter', name: '_tout_exporter')]
     public function exporterFacture(
         Request             $request, FactureService $factureService
-    ) {
+    ) 
+    {
         
         $nomCompte = $request->get('nom_compte');
         $genre = 1;
-        $statutPaiement = $request->get('filter_satatus');
+        $statutPaiement = $request->get('filter_status');
         $datePaieDu = $request->get('date_paiement_debut');
         $datePaieAu = $request->get('date_paiement_end');
         
@@ -244,7 +254,7 @@ class FactureController extends AbstractController
         $dateAu = $request->get('date_facture_end');
 
         $factureList = $request->get('factureList');
-
+      
         if (null != $datePaieDu && "" != $datePaieDu) {
             $datePaieDuExplode = explode("/", $datePaieDu);
             $datePaieDu = new \DateTime($datePaieDuExplode[2] . "-" . $datePaieDuExplode[1] . "-" . $datePaieDuExplode[0]);
@@ -266,7 +276,7 @@ class FactureController extends AbstractController
             $dateAuExplode = explode("/", $dateAu);
             $dateAu = new \DateTime($dateAuExplode[2] . "-" . $dateAuExplode[1] . "-" . $dateAuExplode[0]);
         }
-        $tabFactures = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, null, null, null, false, null, $statutPaiement, $datePaieDu, $datePaieAu);
+        $tabFactures = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, null, null, null, false, null, $statutPaiement, $datePaieDu, $datePaieAu, $factureList);
        // dd($facturesAssoc);
         $typeFacture = $request->get('type');
         $typeFacture = "Facture";
@@ -393,4 +403,75 @@ class FactureController extends AbstractController
         // Return the excel file as an attachment
         return $this->file($temp_file, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
     }
+
+    #[Route('/new/{affaire}', name: '_create_facture')]
+    public function create(
+        Affaire $affaire, 
+        Request $request, 
+        SessionInterface $session,
+        ProductService $productService)
+    {
+        $data = [];
+        try {
+            $session->set('idAffaire', $affaire->getId());
+            $produits = $productService->findProduitAffaire($affaire);
+            if ($produits == false) {
+                $produits = [];
+            }
+            
+            $data["html"] = $this->renderView('admin/facture/new.html.twig', [
+                'produits' => $produits,
+                'affaire' => $affaire
+            ]);
+           
+            return new JsonResponse($data);
+        } catch (PropertyVideException $PropertyVideException) {
+            $data['exception'] = $PropertyVideException->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        } 
+        return new JsonResponse($data);
+    }
+
+    #[Route('/delete/{facture}', name: '_delete')]
+    public function delete(Request $request, Facture $facture)
+    {
+       /* if (!$this->accesService->insufficientPrivilege('oatf')) {
+            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
+        }*/
+        try {
+           
+            if ($request->isXmlHttpRequest()) {
+                if($facture->getStatut() == 'regle' && $facture->getAffaire()->getPaiement() == "paye") {
+                    return new JsonResponse(['status' => 'error', 'message' => 'Vous ne pouvez pas supprimer une facture qui est déjà payé'], Response::HTTP_OK);
+                } else {
+                    $this->factureService->delete($facture);
+                    return new JsonResponse(['status' => 'success', 'message' => 'Facture supprimée avec succès'], Response::HTTP_OK);
+                }
+                
+            }
+                
+        } catch (PropertyVideException $PropertyVideException) {
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
+            throw $this->createNotFoundException('Exception' . $UniqueConstraintViolationException->getMessage());
+        } catch (MappingException $MappingException) {
+            $this->createNotFoundException('Exception' . $MappingException->getMessage());
+        } catch (ORMInvalidArgumentException $ORMInvalidArgumentException) {
+            $this->createNotFoundException('Exception' . $ORMInvalidArgumentException->getMessage());
+        } catch (UnsufficientPrivilegeException $UnsufficientPrivilegeException) {
+            $this->createNotFoundException('Exception' . $UnsufficientPrivilegeException->getMessage());
+        } catch (ServerException $ServerException) {
+            $this->createNotFoundException('Exception' . $ServerException->getMessage());
+        } catch (NotNullConstraintViolationException $NotNullConstraintViolationException) {
+            $this->createNotFoundException('Exception' . $NotNullConstraintViolationException->getMessage());
+        } catch (\Exception $Exception) {
+            $data['exception'] = $Exception->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+        }
+    }
+
+   
 }
