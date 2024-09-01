@@ -109,10 +109,16 @@ class RequestListener implements EventSubscriberInterface
 
                     $dossierUser = "./uploads/historique/" . $emailUser;
 
-                    if (!is_dir($dossierUser)) {
+                   /* if (!is_dir($dossierUser)) {
 
                         @mkdir($dossierUser, 0777);
                         
+                    }*/
+                    // Création du répertoire historique de l'utilisateur
+                    if (!is_dir($dossierUser)) {
+                        if (!mkdir($dossierUser, 0777, true)) {
+                            error_log("Échec de la création du répertoire : " . $dossierUser);
+                        }
                     }
 
                     $application = "";
