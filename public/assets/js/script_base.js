@@ -1385,6 +1385,8 @@ function showTabPrivilege() {
  }
 
  function showTabImportProduit() {
+    $('#modalListProduitCategorie').modal('hide');
+    $('.modal-backdrop.fade.show').hide();
     showSpinner();
     
     $.ajax({

@@ -1,0 +1,139 @@
+<div class="facture-id" data-facture="{{facture.id}}"></div>
+<div class="modal fade" id="modalUpdateFactureEcheance" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog ">
+        <div class="modal-content p-4 ">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau facture d'écheance</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <hr>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger error">
+
+                </div>
+                <div class="alert alert-info">
+                    <p class="fw-bold">Total à payer : {{facture.solde|number_format(2,',','')}} Ar </p>
+                </div>
+                {{ form_start(form, {'attr': {'id': 'updateFactureEcheance', 'action': path('factures_echeance_edit', {'factureEcheance': factureEcheance.id}) }}) }}
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Montant</label>
+                        {{form_widget(form.montant)}}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Délais de paiement</label>
+                        {{form_widget(form.delaiPaiement)}}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Date de paiement</label>
+                        {{form_widget(form.dateEcheance)}}
+                    </div>
+                    <div class="form-group mb-3">
+                        <p class="fw-bold">La date d'écheance sera <span class="date-echeance-text"></span></p>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Ajouter écheance</button>
+                    </div>
+                {{ form_end(form) }}               
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+
+<script>
+    $(document).ready(function () {
+    var anchorName = document.location.hash.substring(1);
+    $('.error').hide();
+    var idFacture = $('.facture-id').data('facture');
+
+    $('#updateFactureEcheance').on('submit', function (e) {
+         e.preventDefault();
+         let form = $(this);
+       
+         // Create an FormData object
+         let formData = new FormData(form[0]);
+       formData.append('isNew', false);
+         $.ajax({
+             url: form.attr('action'),
+             type: form.attr('method'),
+             data: formData,
+             processData: false,
+             contentType: false,
+             success: function (response) {
+
+                if(response.status == "error") {
+                     $('#modalUpdateFactureEcheance').modal('show');
+                     $('.error').show();
+                     $('.error').text(response.message);
+                } else {
+
+                 $('#modalUpdateFactureEcheance').modal('hide');
+                 var nextLink = $('#sidebar').find('li#facture').find('a');
+                 setTimeout(function () {
+                     toastr.options = {
+                         closeButton: true,
+                         progressBar: true,
+                         showMethod: 'slideDown',
+                         timeOut: 1000
+                     };
+                     toastr.success('Avec succèss', 'Mise à jour effectuée');
+
+
+                 }, 800);
+
+                 if (anchorName) {
+                    window.location.hash = anchorName;
+                }
+
+                showTabEcheance(idFacture);
+
+            }
+             },
+             error: function (jqXHR, textStatus, errorThrown) {
+                 // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                 alert('Erreur lors de mise à jour de facture écheance');
+             }
+         });
+     });
+ });
+</script>
+
+<script>
+    $(document).ready(function() {
+        function calculateDateEcheance() {
+        const $dateEcheance = $('#facture_echeance_dateEcheance');
+            const $delaiPaiement = $('#facture_echeance_delaiPaiement');
+            const $dateEcheanceText = $('.date-echeance-text');
+
+            const delai = parseInt($delaiPaiement.val(), 10);
+
+            if (!isNaN(delai)) {
+                const today = moment().add(delai, 'days');
+
+                // Formatage de la date au format dd-mm-yyyy pour le champ input
+                const formattedDate = today.format('DD/MM/YYYY');
+
+                // Formatage de la date en lettres pour le texte
+                const formattedDateText = today.format('dddd DD MMMM YYYY');
+
+                // Définir la valeur du champ de date d'échéance
+                $dateEcheance.val(formattedDate);
+
+                // Afficher la date formatée en lettres
+                $dateEcheanceText.text(formattedDateText);
+            } else {
+                $dateEcheance.val('');
+                $dateEcheanceText.text('');
+            }
+        }
+
+        $('#facture_echeance_delaiPaiement').on('input', function() {
+            calculateDateEcheance();
+        })
+
+    })
+</script>
+
+{% endblock %}

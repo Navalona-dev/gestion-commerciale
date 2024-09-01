@@ -109,27 +109,23 @@
     <section class="body" style="margin-top: 50px;">
         <div class="">
             <p><strong>Total à payer : </strong> {{facture.solde|number_format(2,',','')}} Ar </p>
-            <p><strong>Déjà payer : </strong> {{facture.reglement|number_format(2,',','')}} Ar </p>
+            <p><strong>Déjà payer : </strong> 
+                {{facture.reglement|number_format(2,',','')}} Ar 
+            </p>
             <p><strong>Montant payer : </strong> 
-                {% set montant = '' %}
-                {% if factureEcheance.reglement is not null %}
-                    {% if factureEcheance.reglement > factureEcheance.montant %}
-                        {% set montant = factureEcheance.reglement - factureEcheance.montant %}
-                    {% elseif factureEcheance.montant > factureEcheance.reglement %}
-                        {% set montant = factureEcheance.montant - factureEcheance.reglement %}
-                    {% endif %}
-                {% elseif factureEcheance.reglement is null and factureEcheance.montant is not null %}
-                    {% set montant = factureEcheance.montant %}
-                {% elseif factureEcheance.reglement is null %}
-                    {% set montant = 0 %}
-                {% endif %}
-                {{montant|number_format(2,',','')}} Ar 
+                {{montantPaye|number_format(2,',','')}} Ar 
             </p>
             <p><strong>Reste à payer : </strong> 
                 {{(facture.solde - facture.reglement)|number_format(2,',','')}} Ar 
             </p>
             <p><strong>Délai de paiement : </strong> {{factureEcheance.delaiPaiement}} jours</p>
-            <p><strong>Délai d'écheance : </strong> {{factureEcheance.dateEcheance|date('d-m-Y')}} </p>
+            <p><strong>Date d'écheance : </strong> {{factureEcheance.dateEcheance|date('d-m-Y')}} </p>
+            {% if factureEcheance.nouveauDelaiPaiement is not null %}
+            <p><strong>Nouveau délai de paiement : </strong> {{factureEcheance.nouveauDelaiPaiement}} jours</p>
+            {% endif %}
+            {% if factureEcheance.dateReporter is not null %}
+            <p><strong>Nouvelle date d'écheance : </strong> {{factureEcheance.dateReporter|date('d-m-Y')}} </p>
+            {% endif %}
             {% set status = constant('App\\Entity\\FactureEcheance::STATUS') %}
             <p><strong>Statut : </strong> {{status[factureEcheance.status]}} </p>
         </div>

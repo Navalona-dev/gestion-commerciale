@@ -21,7 +21,11 @@
             <td> {{liste.adresse|slice(0,50)|raw}} </td>
             {% if genre == 1 %}
             <td> {{liste.indiceFacture}} </td>
-            <td> {{liste.delaisPaiement}} jours</td>
+            <td> 
+                {% if liste.delaisPaiement is not null %}
+                {{liste.delaisPaiement}} jours
+                {% endif %}
+            </td>
             {% endif %}
             <td> {{liste.dateCreation|date('d/m/Y')}} </td>
             <td>

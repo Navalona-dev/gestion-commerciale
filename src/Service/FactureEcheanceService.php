@@ -11,6 +11,7 @@ use App\Entity\Notification;
 use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
 use App\Service\TCPDFService;
+use App\Entity\FactureEcheance;
 use App\Service\ApplicationManager;
 use App\Service\AuthorizationManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -264,7 +265,7 @@ class FactureEcheanceService
                 $produitCategorie->setStockRestant($stockRestant);
                 
                 $this->persist($produitCategorie);
-    
+
                 if ($stockRestant <= $stockMin) {
                     $notification = new Notification();
                     $message = 'Le stock du produit ' . '<strong>' . $produitCategorie->getNom() . '</strong>' . ' est presque épuisé, veuillez ajouter un ou plusieurs!!';
@@ -344,6 +345,18 @@ class FactureEcheanceService
         $factureEcheance->setFile($filename);
         $this->persist($factureEcheance);
 
+        $montantPaye = null;
+
+        if($factureEcheance->getReglement() != null && $factureEcheance->getReglement() > $factureEcheance->getMontant()) {
+            $montantPaye = $factureEcheance->getReglement() - $factureEcheance->getMontant();
+            
+        } elseif($factureEcheance->getReglement() != null && $factureEcheance->getMontant() > $factureEcheance->getReglement())
+        {
+            $montantPaye = $factureEcheance->getMontant() - $factureEcheance->getReglement();
+        } elseif($factureEcheance->getReglement() == null ) {
+            $montantPaye = $factureEcheance->getMontant();
+        }
+
         $this->update();
 
          // Initialize Dompdf
@@ -358,6 +371,7 @@ class FactureEcheanceService
          $data['newFacture'] = $newFacture;
          $data['factureEcheance'] = $factureEcheance;
          $data['compte'] = $facture->getCompte();
+         $data['montantPaye'] = $montantPaye;
          
          $html = $this->twig->render('admin/facture_echeance/facturePdf.html.twig', $data);
  
@@ -443,6 +457,13 @@ class FactureEcheanceService
             //erreur
         } else {
 
+        $montantPaye = 0;
+        if($factureEcheance->getReglement() == null) {
+            $montantPaye = 0;
+        } else {
+            $montantPaye = $factureEcheance->getReglement();
+        }
+
         $this->update();
 
          // Initialize Dompdf
@@ -457,6 +478,7 @@ class FactureEcheanceService
          $data['newFacture'] = $newFacture;
          $data['factureEcheance'] = $factureEcheance;
          $data['compte'] = $facture->getCompte();
+         $data['montantPaye'] = $montantPaye;
          
          $html = $this->twig->render('admin/facture_echeance/facturePdf.html.twig', $data);
  
@@ -490,7 +512,73 @@ class FactureEcheanceService
  
     }
 
-  
+    public function nouveauEcheance($newFactureEcheance = null, $facture = null, $form = null)
+    {
+        $formData = $form->getData();
+        $montantData = $formData->getMontant();
+        $delaiPaiement = $formData->getDelaiPaiement();
+        $datePaiement = $formData->getDateEcheance();
+
+        $factureEcheances = $facture->getFactureEcheances();
+
+        $error = false;
+
+        $isFirst = true;
+
+        foreach($factureEcheances as $factureEcheance) {
+            $montant = $factureEcheance->getMontant();
+            
+            // Exécuter la condition seulement pour le premier élément
+            if($isFirst) {
+                if($montantData < $montant) {
+                    $factureEcheance->setMontant($montant - $montantData);
+                    $this->persist($factureEcheance);
+                } elseif($montantData > $montant) {
+                    $error = true;
+                }
+                $isFirst = false; 
+            }
+        }
+
+        $date = new \DateTime();
+        $newFactureEcheance->setDateCreation($date);
+        $newFactureEcheance->setFacture($facture);
+        $newFactureEcheance->setStatus('encours');
+        $newFactureEcheance->setMontant($montantData);
+        $newFactureEcheance->setDelaiPaiement($delaiPaiement);
+        $newFactureEcheance->setDateEcheance($datePaiement);
+        $this->persist($newFactureEcheance);
+        if($error) {
+            //pas de flush
+        }else {
+            $this->update();
+        }
+        return [$newFactureEcheance, $error];
+    }
+
+    public function edit($factureEcheance = null)
+    {
+        $this->persist($factureEcheance);
+
+        $facture = $factureEcheance->getFacture();
+        $factureEcheances = $facture->getFactureEcheances();
+        $montantHt = 0;
+
+        foreach($factureEcheances as $facEcheance)
+        {
+            $montantHt += $facEcheance->getMontant();
+        }
+        $error = false;
+        if($montantHt > $facture->getSolde())
+        {
+            $error = true;
+        } else {
+            $this->update();
+        }
+
+        return [$factureEcheance, $error];
+    }
+
 
     public function update()
     {
