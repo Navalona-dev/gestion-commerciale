@@ -6,7 +6,9 @@ use App\Entity\Affaire;
 use App\Entity\Facture;
 use App\Entity\FactureEcheance;
 use App\Service\ProductService;
+use App\Form\FactureEcheanceType;
 use App\Form\AddFactureEcheanceType;
+use App\Repository\FactureRepository;
 use App\Form\StatutFactureEcheanceType;
 use App\Service\FactureEcheanceService;
 use App\Exception\PropertyVideException;
@@ -24,16 +26,19 @@ class FactureEcheanceController extends AbstractController
     private $factureEcheanceService;
     private $em;
     private $productService;
+    private $factureRepository;
 
     public function __construct(
         FactureEcheanceService $factureEcheanceService,
         EntityManagerInterface $em,
-        ProductService $productService
+        ProductService $productService,
+        FactureRepository $factureRepository
     )
     {
         $this->factureEcheanceService = $factureEcheanceService;
         $this->em = $em;
         $this->productService = $productService;
+        $this->factureRepository = $factureRepository;
     }
 
     #[Route('/{affaire}', name: '_create')]
@@ -61,6 +66,15 @@ class FactureEcheanceController extends AbstractController
 
                 if ($request->isXmlHttpRequest()) {
                     $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
+                     // Chemin du dossier des échéances
+                    $echeanceFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/factures/echeance/';
+                    
+                    // Vérifier si le dossier des échéances existe, sinon le créer
+                    if (!is_dir($echeanceFolder)) {
+                        if (!mkdir($echeanceFolder, 0775, true)) {
+                            return new JsonResponse(['status' => 'error', 'message' => 'Le dossier des échéances ne peut pas être créé.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+                        }
+                    }
                     list($pdfContent, $facture, $totalPayer) = $this->factureEcheanceService->add($affaire, $request, $documentFolder, $form, $montant, $totalPayer, $montantHt);
                 
                     // Utiliser le numéro de la facture pour le nom du fichier
@@ -85,6 +99,8 @@ class FactureEcheanceController extends AbstractController
                 }
                 
             }
+
+
 
             $data['exception'] = "";
             $data["html"] = $this->renderView('admin/facture_echeance/modal_new.html.twig', [
@@ -112,6 +128,19 @@ class FactureEcheanceController extends AbstractController
 
             $factureEcheances = $facture->getFactureEcheances()->toArray();
 
+            $montantHt = 0;
+            $solde = $facture->getSolde();
+
+            foreach($factureEcheances as $factureEcheance) {
+                $montantHt += $factureEcheance->getMontant();
+            }
+
+            $error = false;
+
+            if($montantHt != $solde) {
+                $error = true;
+            }
+
             // Trier par ID croissant
             usort($factureEcheances, function($a, $b) {
                 return $a->getId() <=> $b->getId();
@@ -120,7 +149,10 @@ class FactureEcheanceController extends AbstractController
             $data['exception'] = "";
             $data["html"] = $this->renderView('admin/facture_echeance/index.html.twig', [
                'affaire' => $facture->getAffaire(),
-               'listes' => $factureEcheances
+               'listes' => $factureEcheances,
+               'facture' => $facture,
+               'error' => $error,
+               'montantHt' => $montantHt
             ]);
            
             return new JsonResponse($data);
@@ -145,34 +177,49 @@ class FactureEcheanceController extends AbstractController
             $montant = 0;
             $reste = 0;
             $avance = 0;
+            $factureEcheanceReglement = 0;
             if($facture->getReglement() == null){
                 $avance = 0;
+                $factureEcheanceReglement = 0;
             }else {
                 $avance = $facture->getReglement();
+                $factureEcheanceReglement = $factureEcheance->getReglement();
             }
             $montantHt = $facture->getSolde();     
             $reglement = 0; 
 
-            if($factureEcheance->getReglement() == null) {
-                $reste = $montantHt - $avance;
-                
+            if(($factureEcheance->isReporter() == null || $factureEcheance->isReporter() == 0) && ($factureEcheanceReglement + $factureEcheance->getMontant() == $facture->getSolde()) ) {
+                $reste = 0;
+                $reglement = $facture->getSolde();
             } else {
-               
-                if($factureEcheance->getReglement() > $factureEcheance->getMontant()) {
-                    $montant = $factureEcheance->getReglement() - $factureEcheance->getMontant();
+                if($factureEcheance->getReglement() == null) {
+                    $reglement = $avance + $factureEcheance->getMontant();
+                } else {
+                   
+                    if($factureEcheance->getReglement() > $factureEcheance->getMontant()) {
+                        $montant = $factureEcheance->getReglement() - $factureEcheance->getMontant();
+                        
+                    } elseif($factureEcheance->getMontant() > $factureEcheance->getReglement())
+                    {
+                        $montant = $factureEcheance->getMontant() - $factureEcheance->getReglement();
+                    }
+                    $reglement = $avance + $montant;   
                     
-                } elseif($factureEcheance->getMontant() > $factureEcheance->getReglement())
-                {
-                    $montant = $factureEcheance->getMontant() - $factureEcheance->getReglement();
                 }
-                $reglement = $avance + $montant;   
-                $reste = $montantHt - $reglement;
-                
             }
+            $reste = $montantHt - $reglement;
 
             if($form->isSubmitted() && $form->isValid()) {
 
                 $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/echeance/';
+                $echeanceFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/factures/echeance/';
+                    
+                // Vérifier si le dossier des échéances existe, sinon le créer
+                if (!is_dir($echeanceFolder)) {
+                    if (!mkdir($echeanceFolder, 0775, true)) {
+                        return new JsonResponse(['status' => 'error', 'message' => 'Le dossier des échéances ne peut pas être créé.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+                    }
+                }
                 list($pdfContent, $newFacture) = $this->factureEcheanceService->addNewFacture($factureEcheance, $form, $reglement, $reste, $montant, $documentFolder);
                 
                 // Utiliser le numéro de la facture pour le nom du fichier
@@ -246,6 +293,14 @@ class FactureEcheanceController extends AbstractController
 
             if($form->isSubmitted() && $form->isValid()) {
                 $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/echeance/';
+                $echeanceFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/factures/echeance/';
+                    
+                // Vérifier si le dossier des échéances existe, sinon le créer
+                if (!is_dir($echeanceFolder)) {
+                    if (!mkdir($echeanceFolder, 0775, true)) {
+                        return new JsonResponse(['status' => 'error', 'message' => 'Le dossier des échéances ne peut pas être créé.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+                    }
+                }
                 list($pdfContent, $newFacture, $reglementEcheance) = $this->factureEcheanceService->factureReporter($factureEcheance, $form, $documentFolder);
                 
                 // Utiliser le numéro de la facture pour le nom du fichier
@@ -253,7 +308,7 @@ class FactureEcheanceController extends AbstractController
                 $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $newFacture->getNumero() . ".pdf";
                 $pdfPath = '/uploads/factures/echeance/' . $filename;
                 file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
-                if($reglementEcheance > $montant) {
+                if($reglementEcheance > $factureEcheance->getMontant()) {
                     return new JsonResponse([
                         'status' => 'error'
                     ]
@@ -273,6 +328,103 @@ class FactureEcheanceController extends AbstractController
                'factureEcheance' => $factureEcheance,
                'form' => $form->createView(),
                'reste' => $reste
+            ]);
+           
+            return new JsonResponse($data);
+
+        } catch (PropertyVideException $PropertyVideException) {
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        }
+    }
+
+    #[Route('/nouveau/{facture}', name: '_add')]
+    public function add(Request $request, Facture $facture): Response
+    {
+        $data = [];
+
+        try {
+
+            $factureEcheance = $facture->getFactureEcheances()[0];
+            $montantFirst = $factureEcheance->getMontant();
+
+            $newFactureEcheance = new FactureEcheance();
+
+            $form = $this->createForm(FactureEcheanceType::class, null);
+            $form->handleRequest($request);
+
+            if($form->isSubmitted() && $form->isValid()) {
+                $formData = $form->getData();
+                $montantData = $formData->getMontant();
+
+                if ($request->isXmlHttpRequest()) {
+                    
+                    list($newFactureEcheance, $error) = $this->factureEcheanceService->nouveauEcheance($newFactureEcheance, $facture, $form);
+                    if($error){
+                        return new JsonResponse([
+                            'status' => 'error',
+                            'message' => 'Le montant à ajouter ne doit pas dépasser le montant total du facture'
+                        ]
+                        );
+                    } else {
+                        return new JsonResponse([
+                            'status' => 'success'
+                        ]);
+                    }
+                }
+                
+            }
+
+            $data['exception'] = "";
+            $data["html"] = $this->renderView('admin/facture_echeance/modal_add.html.twig', [
+               'form' => $form->createView(),
+               'facture' => $facture,
+               'montantFirst' => $montantFirst
+            ]);
+           
+            return new JsonResponse($data);
+
+        } catch (PropertyVideException $PropertyVideException) {
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        }
+    }
+
+    #[Route('/edit/{factureEcheance}', name: '_edit')]
+    public function edit(Request $request, FactureEcheance $factureEcheance): Response
+    {
+        $data = [];
+
+        try {
+
+            $facture = $factureEcheance->getFacture();
+
+            $form = $this->createForm(FactureEcheanceType::class, $factureEcheance);
+            $form->handleRequest($request);
+
+            if($form->isSubmitted() && $form->isValid()) {
+
+                if ($request->isXmlHttpRequest()) {
+                    
+                    list($factureEcheance, $error) = $this->factureEcheanceService->edit($factureEcheance);
+                    
+                    if($error) {
+                        return new JsonResponse([
+                            'status' => 'error',
+                            'message' => 'Le montant que vous avez ajouter donne un resultat qui dépasse le solde total ' . number_format($facture->getSolde(), 2, ',', ' ') . ' Ar, vous devez changer cela!!'
+                        ]);
+                    } else {
+                        return new JsonResponse([
+                            'status' => 'success'
+                        ]);
+                    }
+                }
+                
+            }
+
+            $data['exception'] = "";
+            $data["html"] = $this->renderView('admin/facture_echeance/modal_update.html.twig', [
+               'form' => $form->createView(),
+               'facture' => $facture,
+               'factureEcheance' => $factureEcheance,
             ]);
            
             return new JsonResponse($data);

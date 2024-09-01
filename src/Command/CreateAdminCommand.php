@@ -8,6 +8,7 @@ use Doctrine\ORM\ORMException;
 use App\Repository\UserRepository;
 use App\Repository\AdminRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\ApplicationRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -22,24 +23,28 @@ class CreateAdminCommand extends Command
     private $userRepository;
     private $em;
     protected $passwordEncoder;
+    private $applicationRepository;
 
     /**
      * CreateUserCommand constructor.
-     * @param AdminRepository $userRepository
+     * @param UserRepository $userRepository
      * @param EntityManagerInterface $em
      * @param UserPasswordHasherInterface $passwordEncoder
+     * @param ApplicationRepository $applicationRepository
      * @param string|null $name
      */
     public function __construct(
         UserRepository $userRepository,
         EntityManagerInterface $em,
         UserPasswordHasherInterface $passwordEncoder,
+        ApplicationRepository $applicationRepository,
         string $name = null
     )
     {
         $this->adminRepository = $userRepository;
         $this->em = $em;
         $this->passwordEncoder = $passwordEncoder;
+        $this->applicationRepository = $applicationRepository;
         parent::__construct($name);
     }
 
@@ -70,6 +75,7 @@ class CreateAdminCommand extends Command
         $email = $input->getArgument('email');
         $password = $input->getArgument('password');
         $role = $input->getArgument('role');
+
         if ($nom && $prenom && $email && $password && $role && in_array($role, User::$ROLES, false)) {
             $userExist = $this->adminRepository->findOneBy([
                 'email' => $email
@@ -85,13 +91,27 @@ class CreateAdminCommand extends Command
                 $roles [] = $role;
                 $user->setRoles(array_unique($roles));
                 $user->setPassword($this->passwordEncoder->hashPassword($user, $password));
+                $idApplication = 1;
+                $application = $this->applicationRepository->findOneById($idApplication);
+                //$applications = $this->applicationRepository->findAll();
+                //$countApp = count($applications);
+                //$application = null;
+
+                if(!$application) {
+                    $io->error('Application does not exist,You must first create an application using this command : php bin/console app:create-application NOM_APPLICATION');
+                } 
+
+                $user->addApplication($application);
+                $user->setAppActive($application);
+                $application->addUser($user);
                 $this->em->persist($user);
+                $this->em->persist($application);
                 $this->em->flush();
                 $io->success('Admin has been created.');
                 return Command::SUCCESS;
             }
         }
-        $io->error('Email already used or role invalid.');
+        $io->error('Email already used or role invalid or application does not exist.');
         return Command::FAILURE;
     }
 }

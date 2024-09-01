@@ -88,12 +88,12 @@
 
             } else {
                 $('.reste-a-payer').text(parseFloat(montantRestePayer).toFixed(2));
-                $('.reste-montant-echeance').text('0,00');
+                $('.reste-montant-echeance').text(parseFloat(montantPaye).toFixed(2));
             }
 
         });
 
-        $('.reste-montant-echeance').text('0,00');
+        $('.reste-montant-echeance').text(parseFloat(montantPaye).toFixed(2));
         $('.reste-a-payer').text(parseFloat(montantRestePayer).toFixed(2));
 
         // Écouter le changement de la checkbox pour gérer les futures interactions
