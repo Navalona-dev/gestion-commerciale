@@ -132,7 +132,12 @@ class FactureEcheanceController extends AbstractController
             $solde = $facture->getSolde();
 
             foreach($factureEcheances as $factureEcheance) {
-                $montantHt += $factureEcheance->getMontant();
+                if($facture->getReglement() == null || $facture->getReglement() == 0) {
+                    $montantHt += $factureEcheance->getMontant();
+                } else {
+                    $montantHt = $montantHt + $factureEcheance->getMontant() + $facture->getReglement();
+                }
+
             }
 
             $error = false;
