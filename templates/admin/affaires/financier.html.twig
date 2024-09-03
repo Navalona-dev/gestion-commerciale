@@ -86,12 +86,12 @@
                             <div class="col-md-10 col-12">
                                 <div class="row">
                                     <div class="col-md-4 col-12">
-                                        <p class="fw-bold fs-5 text-center"><i class="bi bi-archive-fill text-primary"></i>
+                                        <p class="fw-bold text-center"><i class="bi bi-archive-fill text-primary"></i>
                                             <span class="mx-2 text-primary">Date devis:</span>
                                             
                                         </p>
                                         <p class="fw-bold fs-6 text-center" style="margin-top: -10px;">
-                                            <span class="text-warning">
+                                            <span class="text-black-50">
                                                 {% if affaire.dateDevis is not null %}
                                                     {{affaire.dateDevis|date("d/m/Y")}}
                                                 {% else %}
@@ -101,12 +101,12 @@
                                         </p>
                                     </div>
                                     <div class="col-md-4 col-12">
-                                        <p class="fw-bold fs-5 text-center"><i class="bi bi-archive-fill text-primary"></i>
+                                        <p class="fw-bold text-center"><i class="bi bi-archive-fill text-primary"></i>
                                             <span class="mx-2 text-primary">Date commande:</span>
                                             
                                         </p>
                                         <p class="fw-bold fs-6 text-center" style="margin-top: -10px;">
-                                            <span class="text-warning">
+                                            <span class="text-black-50">
                                                 {% if affaire.dateCommande is not null %}
                                                     {{affaire.dateCommande|date("d/m/Y")}}
                                                 {% else %}
@@ -116,12 +116,12 @@
                                         </p>
                                     </div>
                                     <div class="col-md-4 col-12">
-                                        <p class="fw-bold fs-5 text-center"><i class="bi bi-archive-fill text-primary"></i>
+                                        <p class="fw-bold text-center"><i class="bi bi-archive-fill text-primary"></i>
                                             <span class="mx-2 text-primary">Date facture:</span>
                                             
                                         </p>
                                         <p class="fw-bold fs-6 text-center" style="margin-top: -10px;">
-                                            <span class="text-warning">
+                                            <span class="text-black-50">
                                                 {% if affaire.dateFacture is not null %}
                                                     {{affaire.dateFacture|date("d/m/Y")}}
                                                 {% else %}
@@ -252,10 +252,11 @@
                                         <p>Statut : </p>
                                     </div>
                                     <div class="col-md-6 col-12">
-                                        <select name="selectType" id="selectType" class="form-control form-control-md">
+                                        {#<select name="selectType" id="selectType" class="form-control form-control-md">
                                             <option value="commande" {% if affaire.statut is not null and affaire.paiement == "commande" %}selected{% endif %}>commande</option>
                                             <option value="devis" {% if affaire.statut is not null and affaire.paiement == "devis" %}selected{% endif %}>devis</option>
-                                        </select>
+                                        </select>#}
+                                        <input type="text" class="form-control form-control-md" readonly value="{{affaire.statut}}">
                                     </div>
                                 </div>
                                 
