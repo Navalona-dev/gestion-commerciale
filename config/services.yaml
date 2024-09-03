@@ -7,6 +7,8 @@ parameters:
     AVATAR_BASEPATH: '/uploads/avatar'
     app.path.product_image: /uploads/product
 services:
+    App\Twig\FileExistsExtension:
+        tags: ['twig.extension']
     #log produit
     App\Service\ProduitCategorieService:
         arguments:
