@@ -48,6 +48,7 @@
       </nav>
     </div>
   <section class="section">
+    <div class="facture-id" data-facture="{{facture.id}}"></div>
       <div class="row">
         <div class="col-lg-12">
              {% include 'admin/affaires/entete_compte.html.twig' with { 'compte': affaire.compte } %}
@@ -60,7 +61,9 @@
                  <div class="col-md-10 col-12">
                     <div class="card">
                         <div class="d-flex justify-content-end p-2">
-                            <a href="#" onclick="return openModalAddFactureEcheance({{facture.id}})" class="btn-add bg-warning"><i class="bi bi-plus fs-4"></i></a>
+                            {% if montantHt != facture.solde %}
+                                <a href="#" onclick="return openModalAddFactureEcheance({{facture.id}})" class="btn-add bg-warning"><i class="bi bi-plus fs-4"></i></a>
+                            {% endif %}
                         </div>
                         <div class="card-body p-3 p-lg-5">
                             <div class="row mb-5">
@@ -101,7 +104,7 @@
                                 <tbody>
                                     {% set dernierStatusRegle = false %}
                                     {% for index, liste in listes %}
-                                    <tr>
+                                    <tr class="text-nowrap">
                                         {#<td>
                                             {% if liste.status == "regle" %}
                                                 <a href="{{ asset('uploads/factures/echeance/' ~ liste.file) }}" target="_blank" class="text-danger" title="Voir facture"><i class="bi bi-file-earmark-pdf-fill"></i></a>
@@ -127,6 +130,7 @@
                                                 {% endif %}
                                                 {% set dernierStatusRegle = false %}
                                                 <a href="#" onclick="return openModalUpdateFactureEcheance({{liste.id}}) " title="Modifier" class="text-primary  fs-6"><i class="bi bi-pencil-square"></i></a>
+                                                <a href="#" onclick="return deleteFactureEcheance({{liste.id}}) " title="supprimer" class="text-danger  fs-6"><i class="bi bi-trash"></i></a>
                                             {% endif %}
                                         </td>
                                         {% set status = constant('App\\Entity\\FactureEcheance::STATUS') %}
@@ -338,4 +342,44 @@
                 }
             });
     }
+
+    function deleteFactureEcheance(id = null) {
+        var idFacture = $('.facture-id').data('facture');
+        var anchorName = document.location.hash.substring(1);
+        if (confirm('Voulez vous vraiment supprimer cette écheance?')) {
+            $.ajax({
+                url: '/admin/facture/echeance/delete/'+id,
+                type: 'POST',
+                data: {id: id},
+                success: function (response) {
+                    var nextLink = $('#sidebar').find('li#facture').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Suppression effectuée');
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
+
+                    showTabEcheance(idFacture);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la suppression d\'écheance.');
+                }
+            });
+    
+     }
+    }
+
+
 </script>

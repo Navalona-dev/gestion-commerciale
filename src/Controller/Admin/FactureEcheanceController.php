@@ -135,9 +135,8 @@ class FactureEcheanceController extends AbstractController
                 if($facture->getReglement() == null || $facture->getReglement() == 0) {
                     $montantHt += $factureEcheance->getMontant();
                 } else {
-                    $montantHt = $montantHt + $factureEcheance->getMontant() + $facture->getReglement();
+                    $montantHt = $montantHt + $factureEcheance->getMontant() + $facture->getAvance();
                 }
-
             }
 
             $error = false;
@@ -349,10 +348,19 @@ class FactureEcheanceController extends AbstractController
 
         try {
 
-            $factureEcheance = $facture->getFactureEcheances()[0];
-            $montantFirst = $factureEcheance->getMontant();
+            $factureEcheances = $facture->getFactureEcheances();
+            $factureEcheanceFirst = $facture->getFactureEcheances()[0];
+            $montantFirst = $factureEcheanceFirst->getMontant();
 
             $newFactureEcheance = new FactureEcheance();
+
+            $montantHt = 0;
+
+            foreach($factureEcheances as $factureEcheance) {
+                $montantHt += $factureEcheance->getMontant();
+            }
+
+            $reste = $facture->getSolde() - $montantHt;
 
             $form = $this->createForm(FactureEcheanceType::class, null);
             $form->handleRequest($request);
@@ -383,7 +391,8 @@ class FactureEcheanceController extends AbstractController
             $data["html"] = $this->renderView('admin/facture_echeance/modal_add.html.twig', [
                'form' => $form->createView(),
                'facture' => $facture,
-               'montantFirst' => $montantFirst
+               'montantFirst' => $montantFirst,
+               'reste' => $reste
             ]);
            
             return new JsonResponse($data);
@@ -436,6 +445,24 @@ class FactureEcheanceController extends AbstractController
 
         } catch (PropertyVideException $PropertyVideException) {
             throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        }
+    }
+
+    #[Route('/delete/{factureEcheance}', name: '_delete')]
+    public function delete(Request $request, FactureEcheance $factureEcheance)
+    {
+     
+        try {
+           
+            if ($request->isXmlHttpRequest()) {
+                $this->factureEcheanceService->remove($factureEcheance);
+                return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+            }
+                
+        } catch (\Exception $Exception) {
+            $data['exception'] = $Exception->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
         }
     }
    
