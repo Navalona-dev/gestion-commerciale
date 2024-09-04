@@ -1,5 +1,4 @@
  {% block stylesheets %}
-<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
  {% endblock %}
 <style>
     .dataTables_scroll {
@@ -17,7 +16,7 @@
     .icon-check {
         padding: 5px 8px;
         background-color: #2a4ce8;
-        font-size: 25px;
+        font-size: 20px;
         color: #fff;
         border-radius: 5px;
     }
@@ -25,7 +24,7 @@
     .icon-reload {
         padding: 5px 8px;
         background-color: #ffc107;
-        font-size: 25px;
+        font-size: 20px;
         color: #000;
         border-radius: 5px;
     }
@@ -359,9 +358,11 @@
 
     function mapStatus(selectedStatus) {
         var statusMap = {
-            'Non payé': 'Réglée',
+            'Non payé': 'Non payé',
             'Payé': 'Réglée',
-            'Annulé': 'Annulée'
+            'Annulé': 'Annulée',
+            'En cours': 'En cours',
+            'En écheance': 'En écheance'
         };
         return statusMap[selectedStatus] || '';
     }

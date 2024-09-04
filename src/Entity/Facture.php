@@ -116,6 +116,9 @@ class Facture
     #[ORM\Column(nullable: true)]
     private ?bool $isEcheance = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $avance = null;
+
     public function __construct()
     {
         $this->factureDetails = new ArrayCollection();
@@ -453,6 +456,18 @@ class Facture
     public function setEcheance(?bool $isEcheance): static
     {
         $this->isEcheance = $isEcheance;
+
+        return $this;
+    }
+
+    public function getAvance(): ?string
+    {
+        return $this->avance;
+    }
+
+    public function setAvance(?string $avance): static
+    {
+        $this->avance = $avance;
 
         return $this;
     }

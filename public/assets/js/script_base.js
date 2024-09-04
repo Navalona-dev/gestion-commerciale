@@ -726,8 +726,6 @@ function listStockByProduitSession() {
  }
 
 function showTabCompte(genre = 1) {
-    var anchorName = document.location.hash.substring(1);
-
     showSpinner();
     
     $.ajax({
@@ -788,11 +786,10 @@ function showTabCompte(genre = 1) {
                     pageLength: 10,
                     scrollCollapse: false,
                   });
-                if (anchorName) {
-                    window.location.hash = anchorName;
-                }
+               
                 hideSpinner();
             }, 2000);
+
         },
         error: function() {
             $(".chargementError").css('display', 'block');

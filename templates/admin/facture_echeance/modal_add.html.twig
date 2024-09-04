@@ -1,5 +1,5 @@
 <div class="facture-id" data-facture="{{facture.id}}"></div>
-<div class="modal fade" id="modalUpdateFactureEcheance" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="modalAddFactureEcheance" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog ">
         <div class="modal-content p-4 ">
             <div class="modal-header modal-header-center">
@@ -14,7 +14,16 @@
                 <div class="alert alert-info">
                     <p class="fw-bold">Total à payer : {{facture.solde|number_format(2,',','')}} Ar </p>
                 </div>
-                {{ form_start(form, {'attr': {'id': 'updateFactureEcheance', 'action': path('factures_echeance_edit', {'factureEcheance': factureEcheance.id}) }}) }}
+                <div class="alert alert-info">
+                    <p class="fw-bold">Total à diviser : 
+                        {% if reste == 0 %}
+                        {{montantFirst|number_format(2,',','')}} Ar 
+                        {% elseif reste > 0 %}
+                        {{reste|number_format(2,',','')}} Ar 
+                        {% endif %}
+                    </p>
+                </div>
+                {{ form_start(form, {'attr': {'id': 'addFactureEcheance', 'action': path('factures_echeance_add', {'facture': facture.id}) }}) }}
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Montant</label>
                         {{form_widget(form.montant)}}
@@ -48,7 +57,7 @@
     $('.error').hide();
     var idFacture = $('.facture-id').data('facture');
 
-    $('#updateFactureEcheance').on('submit', function (e) {
+    $('#addFactureEcheance').on('submit', function (e) {
          e.preventDefault();
          let form = $(this);
        
@@ -64,12 +73,12 @@
              success: function (response) {
 
                 if(response.status == "error") {
-                     $('#modalUpdateFactureEcheance').modal('show');
+                     $('#modalAddFactureEcheance').modal('show');
                      $('.error').show();
                      $('.error').text(response.message);
                 } else {
 
-                 $('#modalUpdateFactureEcheance').modal('hide');
+                 $('#modalAddFactureEcheance').modal('hide');
                  var nextLink = $('#sidebar').find('li#facture').find('a');
                  setTimeout(function () {
                      toastr.options = {
@@ -78,7 +87,7 @@
                          showMethod: 'slideDown',
                          timeOut: 1000
                      };
-                     toastr.success('Avec succèss', 'Mise à jour effectuée');
+                     toastr.success('Avec succèss', 'Enregistrement effectuée');
 
 
                  }, 800);
@@ -93,7 +102,7 @@
              },
              error: function (jqXHR, textStatus, errorThrown) {
                  // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                 alert('Erreur lors de mise à jour de facture écheance');
+                 alert('Erreur lors de l\'ajout de facture écheance');
              }
          });
      });

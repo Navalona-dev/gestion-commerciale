@@ -72,6 +72,7 @@ class FactureEcheanceService
         if (count($tabNumeroFacture) > 0) {
             $numeroFacture = $tabNumeroFacture[0] + 1;
         }
+
         $facture->setNumero($numeroFacture);    
         $facture->setApplication($this->application);
 
@@ -158,6 +159,7 @@ class FactureEcheanceService
         $reglement = $formData->getReglement();
 
         $facture->setReglement($reglement);
+        $facture->setAvance($reglement);
         $this->persist($facture);
 
         $formDataEcheance = $form->get('factureEcheances')->getData();
@@ -520,24 +522,38 @@ class FactureEcheanceService
         $datePaiement = $formData->getDateEcheance();
 
         $factureEcheances = $facture->getFactureEcheances();
+        $factureEcheanceFirst = $facture->getFactureEcheances()[0];
+        $montant = $factureEcheanceFirst->getMontant();
 
         $error = false;
 
         $isFirst = true;
 
+        $montantHt = 0;
+
+        $solde = $facture->getSolde();
+
         foreach($factureEcheances as $factureEcheance) {
-            $montant = $factureEcheance->getMontant();
+            $montantHt += $factureEcheance->getMontant();
             
+        }
+
+        $reste = $solde - $montantHt;
+
+        if($reste == 0) {
             // Exécuter la condition seulement pour le premier élément
-            if($isFirst) {
+            if($factureEcheanceFirst) {
                 if($montantData < $montant) {
-                    $factureEcheance->setMontant($montant - $montantData);
-                    $this->persist($factureEcheance);
+                    $factureEcheanceFirst->setMontant($montant - $montantData);
+                    $this->persist($factureEcheanceFirst);
                 } elseif($montantData > $montant) {
                     $error = true;
                 }
-                $isFirst = false; 
             }
+        } elseif($reste > 0) {
+            if($reste < $montantData) {
+                $error = true;
+            } 
         }
 
         $date = new \DateTime();
@@ -593,5 +609,12 @@ class FactureEcheanceService
     public function getLastValideFacture()
     {
         return $this->entityManager->getRepository(Facture::class)->getLastValideFacture();
+    }
+
+    public function remove($factureEcheance)
+    {
+        $this->entityManager->remove($factureEcheance);
+
+        $this->update();
     }
 }
