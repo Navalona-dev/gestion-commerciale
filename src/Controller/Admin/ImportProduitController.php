@@ -87,9 +87,12 @@ class ImportProduitController extends AbstractController
                     // Traiter la catégorie
                     $dataCategorie = isset($dataProduct[0]) ? trim($dataProduct[0]) : null;
                     $dataCategorie = trim($dataCategorie);
+                    $nameCategorie = $dataCategorie;
+                    if($dataCategorie == null) {
+                      $nameCategorie = 'Autre' ;  
+                    } 
+                    $existingCategorie = $this->categorieRepository->findOneBy(['nom' => $nameCategorie, 'application' => $this->application]);
                     
-                    $existingCategorie = $this->categorieRepository->findOneBy(['nom' => $dataCategorie, 'application' => $this->application]);
-                 
                     if ($dataCategorie !== null) {
                        
                     //dd($dataCategorie, $categorieName,in_array($categorieName, array_column($categories, 'nom')), array_column($categories, 'nom'), $categories);
@@ -99,7 +102,8 @@ class ImportProduitController extends AbstractController
                             $categorie = null;
                             // Si la catégorie n'existe pas dans la base de données
                             $categorie = new Categorie();
-                            $categorie->setNom($dataCategorie);
+                           
+                            $categorie->setNom($nameCategorie);
                             $categorie->setDateCreation($date);
                             $categorie->setApplication($this->application);
                             $this->em->persist($categorie);
@@ -113,8 +117,11 @@ class ImportProduitController extends AbstractController
 
                     //traiter le type
                     $dataType = isset($dataProduct[2]) ? trim($dataProduct[2]) : null;
-                    
-                    $existingType = $this->typeRepository->findOneBy(['nom' => $dataType, 'application' => $this->application]);
+                    $nameType = $dataType;
+                    if($dataType == null) {
+                        $nameType = "Autre";
+                    }
+                    $existingType = $this->typeRepository->findOneBy(['nom' => $nameType, 'application' => $this->application]);
                     
                     if($dataType !== null) {
 
@@ -123,7 +130,8 @@ class ImportProduitController extends AbstractController
                         //si le type existe déjà dans la base de données
                         if ($existingType == null) {
                             $type = new ProduitType();
-                            $type->setNom($dataType);
+                            
+                            $type->setNom($nameType);
                             $type->setDateCreation($date);
                             $type->setApplication($this->application);
                             $type->setIsActive(true);

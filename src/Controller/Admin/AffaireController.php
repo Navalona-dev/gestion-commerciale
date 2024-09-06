@@ -759,7 +759,7 @@ class AffaireController extends AbstractController
                 }
             }
             $produitCategories = $produitCategorieService->getAllProduitCategoriesByStockRestant($tabIdProduitCategorieInAffaires);
-           
+          
             $data["html"] = $this->renderView('admin/affaires/liste_produit.html.twig', [
                 'listes' => $produitCategories,
                 'affaire' => $affaire,

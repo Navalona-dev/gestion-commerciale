@@ -58,36 +58,50 @@
                                 <td>
                                     <a onclick="return addPanier(this, {{ affaire.id }});"
                                            class="panier" style="cursor: pointer;"><i class="bi bi-cart-plus-fill"></i>
-                                            <span class="mx-1">Ajouter</span></a>
+                                        <span class="mx-1">Ajouter</span>
+                                    </a>
                                   
                                 </td>
-                                <td><input type="hidden" name="idProduit"
+                                <td>
+                                    <input type="hidden" name="idProduit"
                                            value="{{ liste.id }}"> 
                                     {% if liste.reference is not null %}
                                         {{liste.reference}} 
                                     {% endif %}
                                 </td>
-                                <td> {{liste.nom}} / (1 {{liste.presentationGros}} de {{liste.volumeGros}} {{liste.uniteVenteGros}})</td>
-                                {% set nombreProduitPresentation = ((liste.stockRestant / liste.volumeGros) |round(0)) %}
-                                {% set qttProduitPresente = nombreProduitPresentation * liste.volumeGros  %}
+                                <td> 
+                                    {{liste.nom}} / (1 {{liste.presentationGros}} de {{liste.volumeGros}} {{liste.uniteVenteGros}})
+                                </td>
+                                {% set volumeGros = liste.volumeGros %}
+                                {% if liste.volumeGros == 0 %}
+                                         {% set nombreProduitPresentation = ((liste.stockRestant) |round(0)) %}
+                                         {% set qttProduitPresente = nombreProduitPresentation %}
+                                {% else %}
+                                         {% set nombreProduitPresentation = ((liste.stockRestant / volumeGros) |round(0)) %}
+                                         {% set qttProduitPresente = nombreProduitPresentation * volumeGros  %}
+                                {% endif %}
+                               
+                                
                                 {% set diffenceQttProduit = (liste.stockRestant - qttProduitPresente) %}
-                                {% if qttProduitPresente > liste.stockRestant %}
+                                {% if qttProduitPresente > liste.stockRestant and liste.volumeGros > 0 %}
                                         {% set diffenceQttProduit = liste.volumeGros - (qttProduitPresente - liste.stockRestant) %}
                                 {% endif %}
                                 {% set ruptureGros = 0 %}
                                 {% set showParenthese = 1 %}
-                                {% if liste.stockRestant < liste.volumeGros %}
+                                {% if liste.volumeGros > 0 and liste.stockRestant < liste.volumeGros %}
                                          {% set showParenthese = 0 %}
                                 {% endif %}
                                
-                                <td> <input type="hidden" name="qttRestant"
-                                           value="{{ liste.stockRestant }}"> {{liste.stockRestant}} {{liste.uniteVenteGros}} {% if showParenthese == 1 %} ( {% endif %} {% if qttProduitPresente > liste.stockRestant %}{% if (nombreProduitPresentation - 1) == 0 %} {% set ruptureGros = 1 %} {% else %} {{ nombreProduitPresentation - 1 }} {% endif %} {% else %}  {{ nombreProduitPresentation }} {% endif %} {% if ruptureGros == 0 %} {{liste.presentationGros}} {% endif %} {% if ruptureGros == 0 %} {% if diffenceQttProduit != 0 %} et {{ diffenceQttProduit }} {{liste.uniteVenteGros}}{% endif %}{% endif %} {% if showParenthese == 1 %} ) {% endif %}</td>
                                 <td> 
-                                <select name="typeVente" id="typeVente" class="form-control">
-                                    <option value="">Type vente</option>
-                                    <option value="gros">Gros</option>
-                                    <option value="detail">Détail</option>
-                                </select>
+                                    <input type="hidden" name="qttRestant"
+                                           value="{{ liste.stockRestant }}"> {{liste.stockRestant}} {{liste.uniteVenteGros}} {% if showParenthese == 1 %} ( {% endif %} {% if qttProduitPresente > liste.stockRestant %}{% if (nombreProduitPresentation - 1) == 0 %} {% set ruptureGros = 1 %} {% else %} {{ nombreProduitPresentation - 1 }} {% endif %} {% else %}  {{ nombreProduitPresentation }} {% endif %} {% if ruptureGros == 0 %} {{liste.presentationGros}} {% endif %} {% if ruptureGros == 0 %} {% if diffenceQttProduit != 0 %} et {{ diffenceQttProduit }} {{liste.uniteVenteGros}}{% endif %}{% endif %} {% if showParenthese == 1 %} ) {% endif %}
+                                </td>
+                                <td> 
+                                    <select name="typeVente" id="typeVente" class="form-control">
+                                        <option value="">Type vente</option>
+                                        <option value="gros">Gros</option>
+                                        <option value="detail">Détail</option>
+                                    </select>
                                  </td>
                                  <td> 
                                     <input type="text" value="{{ liste.qtt }}" name="qttProduit" class="form-control">
@@ -97,33 +111,11 @@
                                         {{liste.prixVenteGros}} Ar {% if liste.uniteVenteGros is not null %} / {{liste.uniteVenteGros}}  {% endif %}
                                     {% endif %}
                                 </td>
-                                {# <td> 
-                                    {% if liste.uniteVenteGros is not null %}
-                                        {{liste.uniteVenteGros}}  
-                                    {% endif %}
-                                </td> #}
                                  <td> 
                                     {% if liste.prixVenteDetail is not null %}
                                         {{liste.prixVenteDetail}} Ar {% if liste.uniteVenteDetail is not null %} / {{liste.uniteVenteDetail}} ({{liste.presentationDetail}}) {% endif %} 
                                     {% endif %}
                                 </td>
-                                {# <td> 
-                                    {% if liste.uniteVenteDetail is not null %}
-                                        {{liste.uniteVenteDetail}}  
-                                    {% endif %}
-                                </td> #}
-                                
-                                {# <td> 
-                                    {% if liste.stockMin is not null %}
-                                        {{liste.stockMin}}
-                                    {% endif %}
-                                 </td> #}
-                                {# <td> 
-                                    {% if liste.stockRestant is not null %}
-                                        {{liste.stockRestant}}
-                                    {% endif %} 
-                                </td> #}
-
                             </tr>
                             {% else %}
                                 <tr>
