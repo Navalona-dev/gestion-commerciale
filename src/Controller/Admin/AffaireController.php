@@ -916,6 +916,11 @@ class AffaireController extends AbstractController
         if (count($affaire->getProducts()) > 0) {
             $documentFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/factures/annule/';
            
+            if (!is_dir($documentFolder)) {
+                if (!mkdir($documentFolder, 0775, true)) {
+                    return new JsonResponse(['status' => 'error', 'message' => 'Le dossier des annulations ne peut pas être créé.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+                }
+            }
 
             list($pdfContent, $facture) = $this->factureService->annuler($affaire, $documentFolder);
             

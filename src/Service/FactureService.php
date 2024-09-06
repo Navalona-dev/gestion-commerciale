@@ -452,7 +452,11 @@ class FactureService
         
             $this->entityManager->persist($produitCategorie);
         
-            $datePeremptionProduct = $product->getDatePeremption()->format('d-m-Y');
+            $datePeremptionProduct = $product->getDatePeremption();
+            if($datePeremptionProduct)
+            {
+                $datePeremptionProduct->format('d-m-Y');
+            }
         
             $stocks = $this->entityManager->getRepository(Stock::class)->findByProduitCategorieDatePerremption($produitCategorie);
         
@@ -468,11 +472,14 @@ class FactureService
             $firstStockProcessed = false;
         
             foreach ($stocks as $stock) {
-                $datePeremptionStock = $stock->getDatePeremption()->getDate()->format('d-m-Y');
+                $datePeremptionStock = $stock->getDatePeremption();
+                if($datePeremptionStock) {
+                    $datePeremptionStock->getDate()->format('d-m-Y');
+                }
                 $qttStock = $stock->getQtt(); 
                 $qttRestant = $stock->getQttRestant(); 
         
-                if (!$firstStockProcessed && $datePeremptionProduct == $datePeremptionStock) {
+                if ($datePeremptionProduct && $datePeremptionStock && !$firstStockProcessed && $datePeremptionProduct == $datePeremptionStock) {
                     // Pour le premier stock qui correspond à la date de péremption
                     if ($remainingQtt + $qttRestant > $qttStock) {
                         $qttRestant = $qttStock; // Utiliser la quantité totale du stock
@@ -492,6 +499,17 @@ class FactureService
                     }
                 } elseif ($remainingQtt > 0) {
                     // Pour les stocks suivants ou si la date de péremption ne correspond pas
+                    $qttRestant += $remainingQtt; // Ajouter le reste de la quantité au stock suivant
+        
+                    if ($qttRestant > $qttStock) {
+                        $qttRestant = $qttStock; // Ne pas dépasser la capacité du stock
+                        $remainingQtt -= $qttStock; // Réduire la quantité restante
+                    } else {
+                        $remainingQtt = 0; // Toute la quantité a été réduite
+                    }
+                    $stock->setQttRestant($qttRestant);
+                    $this->entityManager->persist($stock);
+                } else {
                     $qttRestant += $remainingQtt; // Ajouter le reste de la quantité au stock suivant
         
                     if ($qttRestant > $qttStock) {

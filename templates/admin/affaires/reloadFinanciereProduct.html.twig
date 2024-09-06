@@ -121,9 +121,75 @@
                                             data-id-affaire="{{ affaire.id }}">
                                     <td class="align-middle text-center">{{product.reference}} ({{product.typeVente}})</td>
                                     <td class="align-middle" style="width: 200px;">{{product.nom}}</td>
-                                     <td class="align-middle text-center">{% if product.typeVente == "detail" %}{{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteDetail}} ({% if ((product.qtt / product.produitCategorie.volumeGros) |round(0)) != 0 %} {{ (product.qtt / product.produitCategorie.volumeGros) |round(0)}} {{product.produitCategorie.presentationGros}}  et {% endif %}{{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})   {% else %}
-                                    {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} ({% if product.qtt >= product.produitCategorie.volumeGros %} {{(product.qtt / product.produitCategorie.volumeGros) |round(0)}}  {{product.produitCategorie.presentationGros}} {% if product.qtt - product.produitCategorie.volumeGros != 0 %} et {% endif %} {% endif %} {% if product.qtt >= product.produitCategorie.volumeGros %} {% if product.qtt - product.produitCategorie.volumeGros != 0 %} {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} {% endif %} {% else %} {{product.qtt}} {{product.produitCategorie.presentationDetail}}{% endif %} )
-                                    {% endif %}</td>
+                                    <td class="align-middle text-center">
+                                        {% set volumeGros = product.produitCategorie.volumeGros %}
+                                        {% if volumeGros == 0 %}
+
+                                            {% if product.typeVente == "detail" %}
+                                                {{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteDetail}} 
+                                    
+                                                (
+                                                    {% if ((product.qtt) |round(0)) != 0 %} 
+                                                        {{ (product.qtt) |round(0)}} 
+                                                        {{product.produitCategorie.presentationGros}}  
+                                                            et 
+                                                    {% endif %}
+                                                    {{product.qtt - ( (product.qtt) |round(0))}} {{product.produitCategorie.presentationDetail}})   
+                                            {% else %}
+                                                {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} 
+                                                (
+                                                    {% if product.qtt >= product.produitCategorie.volumeGros %} 
+                                                        {{(product.qtt) |round(0)}}  {{product.produitCategorie.presentationGros}} 
+                                                        {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
+                                                            et 
+                                                        {% endif %} 
+                                                    {% endif %} 
+
+                                                    {% if product.qtt >= product.produitCategorie.volumeGros %} 
+                                                        {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
+                                                            {{product.qtt - ( (product.qtt) |round(0))}} {{product.produitCategorie.presentationDetail}} 
+                                                        {% endif %} 
+                                                    {% else %} 
+                                                        {{product.qtt}} {{product.produitCategorie.presentationDetail}}
+                                                    {% endif %} 
+                                                )
+                                            {% endif %}
+
+                                        {% else %}
+
+                                            {% if product.typeVente == "detail" %}
+                                                {{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteDetail}} 
+                                        
+                                                (
+                                                    {% if ((product.qtt / product.produitCategorie.volumeGros) |round(0)) != 0 %} 
+                                                        {{ (product.qtt / product.produitCategorie.volumeGros) |round(0)}} 
+                                                        {{product.produitCategorie.presentationGros}}  
+                                                            et 
+                                                    {% endif %}
+                                                        {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})   
+                                            {% else %}
+                                                {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} 
+                                                (
+                                                    {% if product.qtt >= product.produitCategorie.volumeGros %} 
+                                                        {{(product.qtt / product.produitCategorie.volumeGros) |round(0)}}  {{product.produitCategorie.presentationGros}} 
+                                                        {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
+                                                            et 
+                                                        {% endif %} 
+                                                    {% endif %} 
+
+                                                {% if product.qtt >= product.produitCategorie.volumeGros %} 
+                                                    {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
+                                                        {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} 
+                                                    {% endif %} 
+                                                {% else %} 
+                                                    {{product.qtt}} {{product.produitCategorie.presentationDetail}}
+                                                {% endif %} 
+                                            )
+                                            {% endif %}
+                                        {% endif %}
+                                        
+                                       
+                                    </td>
                                     <td class="align-middle text-center"> {% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(2, ',', ' ')}}{% else %}{{product.prixVenteDetail|number_format(2, ',', ' ')}}{% endif %}</td>
                                     <td>
                                         {% if affaire.paiement is null or (affaire.paiement != "paye" and affaire.paiement != "annule" and affaire.paiement != "enecheance") %}
