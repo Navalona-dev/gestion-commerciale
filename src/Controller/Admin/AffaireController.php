@@ -242,7 +242,11 @@ class AffaireController extends AbstractController
 
             $session->set('compte', $compte->getId());
 
-            return $this->redirect("http://www.gestion-commerciale.com/admin#affaires_client");
+            $scheme = $request->getScheme(); // 'http' ou 'https'
+            $host = $request->getHost(); // exemple: 'www.example.com'
+            $fullUrl = $scheme . '://' . $host;
+
+            return $this->redirect($fullUrl."/admin#affaires_client");
         } catch (\Exception $Exception) {
             $data["exception"] = $Exception->getMessage();
             $data["html"] = "";
@@ -725,7 +729,11 @@ class AffaireController extends AbstractController
         $data = [];
         try {
             $session->set('idAffaire', $affaire->getId());
-            return $this->redirect("http://www.gestion-commerciale.com/admin#tab-financier-affaire");
+            $scheme = $request->getScheme(); // 'http' ou 'https'
+            $host = $request->getHost(); // exemple: 'www.example.com'
+            $fullUrl = $scheme . '://' . $host;
+
+            return $this->redirect($fullUrl."/admin#tab-financier-affaire");
         } catch (\Exception $Exception) {
             $data["exception"] = $Exception->getMessage();
             $data["html"] = "";
