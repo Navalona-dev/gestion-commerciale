@@ -174,6 +174,10 @@ function showTabEcheance(id = null) {
                 $(".loadBody").css('display', 'none');
                 // Réinitialiser le DataTable avec un léger retard
                 setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#table-date-echeance')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#table-date-echeance').DataTable().clear().destroy();
+                    }
                     $('#table-date-echeance').DataTable({
                         responsive: true,
                         language: {
@@ -236,6 +240,10 @@ function showTabDevisClient(statut = 'devis') {
                 $(".loadBody").css('display', 'none');
                 // Réinitialiser le DataTable avec un léger retard
                 setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-devis')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-devis').DataTable().clear().destroy();
+                    }
                     $('#liste-table-devis').DataTable({
                         responsive: true,
                         language: {
@@ -297,6 +305,10 @@ function showTabCommandeClient(statut = 'commande') {
                 $(".loadBody").css('display', 'none');
                 // Réinitialiser le DataTable avec un léger retard
                 setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-commande')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-commande').DataTable().clear().destroy();
+                    }
                     $('#liste-table-commande').DataTable({
                         responsive: true,
                         language: {
@@ -470,6 +482,10 @@ function listProduitByCompte(id = null) {
                 $(".loadBody").css('display', 'none');
                 // Réinitialiser le DataTable avec un léger retard
                 setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#table-produit-fournisseur')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#table-produit-fournisseur').DataTable().clear().destroy();
+                    }
                     $('#table-produit-fournisseur').DataTable({
                         responsive: true,
                         language: {
@@ -703,6 +719,10 @@ function listStockByProduitSession() {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-transfert')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-transfert').DataTable().clear().destroy();
+                    }
                     $('#liste-table-transfert').DataTable({
                         responsive: true,
                         language: {
@@ -776,19 +796,26 @@ function showTabCompte(genre = 1) {
 
             }
             setTimeout(function() {
+                if ($.fn.dataTable.isDataTable('#liste-table-compte')) {
+                    // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                    $('#liste-table-compte').DataTable().clear().destroy();
+                }
+            
                 $('#liste-table-compte').DataTable({
                     responsive: true,
                     language: {
-                      url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
-                  },
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                    },
                     border: false,
                     scrollX: '100%',
                     pageLength: 10,
                     scrollCollapse: false,
-                  });
-               
+                    order: [[ 4, 'desc' ]]
+                });
+            
                 hideSpinner();
             }, 2000);
+            
 
         },
         error: function() {
@@ -874,6 +901,10 @@ function showTabApplication() {
 
                   // Réinitialiser le DataTable avec un léger retard
                 setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-application')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-application').DataTable().clear().destroy();
+                    }
                     $('#liste-table-application').DataTable({
                         responsive: true,
                         language: {
@@ -929,6 +960,10 @@ function showTabUtilisateur() {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-utilisateur')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-utilisateur').DataTable().clear().destroy();
+                    }
                     $('#liste-table-utilisateur').DataTable({
                         responsive: true,
                         language: {
@@ -983,6 +1018,10 @@ function showTabPrivilege() {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-privilege')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-privilege').DataTable().clear().destroy();
+                    }
                     $('#liste-table-privilege').DataTable({
                         responsive: true,
                         language: {
@@ -1035,6 +1074,10 @@ function showTabPrivilege() {
 
             // Réinitialiser le DataTable avec un léger retard
             setTimeout(function() {
+                if ($.fn.dataTable.isDataTable('#liste-table-permission')) {
+                    // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                    $('#liste-table-permission').DataTable().clear().destroy();
+                }
                 $('#liste-table-permission').DataTable({
                     responsive: true,
                     language: {
@@ -1089,6 +1132,10 @@ function showTabPrivilege() {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-category-permission')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-category-permission').DataTable().clear().destroy();
+                    }
                     $('#liste-table-category-permission').DataTable({
                         responsive: true,
                         language: {
@@ -1243,6 +1290,10 @@ function showTabPrivilege() {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-categorie')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-categorie').DataTable().clear().destroy();
+                    }
                     $('#liste-table-categorie').DataTable({
                         responsive: true,
                         language: {
@@ -1301,6 +1352,10 @@ function showTabPrivilege() {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-produi-categorie')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-produi-categorie').DataTable().clear().destroy();
+                    }
                     $('#liste-table-produi-categorie').DataTable({
                         responsive: true,
                         language: {
@@ -1359,6 +1414,10 @@ function showTabPrivilege() {
 
                  $(".loadBody").css('display', 'none');
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-type')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-type').DataTable().clear().destroy();
+                    }
                     $('#liste-table-type').DataTable({
                         responsive: true,
                         language: {
@@ -1627,6 +1686,10 @@ function showTabFacture() {
 
                  $(".loadBody").css('display', 'none');
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('.table-facture')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('.table-facture').DataTable().clear().destroy();
+                    }
                     $('.table-facture').DataTable({
                         responsive: true,
                         language: {
@@ -1683,6 +1746,10 @@ function showTabFacture() {
 
                  $(".loadBody").css('display', 'none');
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#table-facture-affaire')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#table-facture-affaire').DataTable().clear().destroy();
+                    }
                     $('#table-facture-affaire').DataTable({
                         responsive: true,
                         language: {
@@ -1737,7 +1804,11 @@ function showTabFacture() {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
-                    var table = $('#liste-table-stock').DataTable({
+                    if ($.fn.dataTable.isDataTable('#liste-table-stock')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-stock').DataTable().clear().destroy();
+                    }
+                    $('#liste-table-stock').DataTable({
                         responsive: true,
                         language: {
                           url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
@@ -1746,6 +1817,8 @@ function showTabFacture() {
                         scrollX: '100%',
                         pageLength: 10,
                         scrollCollapse: false,
+                        order: [[4, 'asc']],
+
                       });
                     hideSpinner();
                 }, 2000);
@@ -1811,6 +1884,10 @@ function listImage(id = null) {
                 $(".loadBody").css('display', 'none');
 
                 setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-produit-image')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-produit-image').DataTable().clear().destroy();
+                    }
                     $('#liste-table-produit-image').DataTable({
                         responsive: true,
                         language: {
@@ -1864,6 +1941,10 @@ function listTransfert(id = null) {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-transfert')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-transfert').DataTable().clear().destroy();
+                    }
                     $('#liste-table-transfert').DataTable({
                         responsive: true,
                         language: {
@@ -1918,6 +1999,10 @@ function listTransfert(id = null) {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-qtt-vendu')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-qtt-vendu').DataTable().clear().destroy();
+                    }
                     $('#liste-table-qtt-vendu').DataTable({
                         responsive: true,
                         language: {
@@ -1972,6 +2057,10 @@ function listTransfert(id = null) {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-inventaire-produit')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-inventaire-produit').DataTable().clear().destroy();
+                    }
                     $('#liste-table-inventaire-produit').DataTable({
                         responsive: true,
                         language: {
@@ -2093,6 +2182,10 @@ function showTabNotification() {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#table-historique-produit')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#table-historique-produit').DataTable().clear().destroy();
+                    }
                     $('#table-historique-produit').DataTable({
                         responsive: true,
                         language: {
@@ -2147,6 +2240,10 @@ function showTabNotification() {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#table-historique-affaire')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#table-historique-affaire').DataTable().clear().destroy();
+                    }
                     $('#table-historique-affaire').DataTable({
                         responsive: true,
                         language: {
@@ -2201,6 +2298,10 @@ function showTabNotification() {
                  $(".loadBody").css('display', 'none');
 
                  setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-produit-categorie-date-peremption')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-produit-categorie-date-peremption').DataTable().clear().destroy();
+                    }
                     $('#liste-table-produit-categorie-date-peremption').DataTable({
                         responsive: true,
                         language: {

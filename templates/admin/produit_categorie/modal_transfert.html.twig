@@ -1,5 +1,3 @@
-{% form_theme form 'admin/produit_categorie/_collection.html.twig' %}
-
 <div class="modal fade" id="modalTransfertProduitCategorie" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content p-4">
@@ -8,6 +6,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+
+                <div class="alert alert-info">
+                    Stocks restant : {{produitCategorie.stockRestant}}
+                </div>
                 
                 {{ form_start(form, {'attr': {'id': 'transfertProduitCategorie', 'action': path('produit_categories_transfert', {'produitCategorie': id}) }}) }}
                     

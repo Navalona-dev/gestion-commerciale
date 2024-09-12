@@ -653,7 +653,9 @@ class ProduitCategorieController extends AbstractController
             $data["html"] = $this->renderView('admin/produit_categorie/modal_transfert.html.twig', [
                 'form' => $form->createView(),
                 'id' => $oldProduitCategorie->getId(),
-                'applicationName' => $oldApplicationName
+                'applicationName' => $oldApplicationName,
+                'produitCategorie' => $oldProduitCategorie
+
             ]);
             return new JsonResponse($data);
         } catch (PropertyVideException $PropertyVideException) {

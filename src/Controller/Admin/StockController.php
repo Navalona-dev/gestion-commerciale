@@ -148,7 +148,9 @@ class StockController extends AbstractController
                     
                     $datePeremption = $formData->getDatePeremption()->getDate();
 
-                    $stockService->edit($stock, $produitCategorie, $oldQtt, $datePeremption);
+                    $qtt = $formData->getQtt();
+
+                    $stockService->edit($stock, $produitCategorie, $oldQtt, $datePeremption, $qtt);
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
                 //$this->addFlash('success', 'Modification application "' . $stock->getTitle() . '" avec succès.');
