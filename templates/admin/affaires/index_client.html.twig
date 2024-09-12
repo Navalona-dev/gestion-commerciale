@@ -128,11 +128,13 @@
                                             <div class="col-md-6 col-12 status">
                                                 <label for="" class="mb-2 label-status">Statut devis</label>
                                                 {% set statutDevis = constant('App\\Entity\\Affaire::DEVIS') %}
-                                                <select name="status-devis" id="status-devis" class="form-control form-control-sm">
+                                                {#<select name="status-devis" id="status-devis" class="form-control form-control-sm">
                                                     {% for key,statutDev in statutDevis %}
                                                     <option value="{{key}}" {% if affaire.devisEvol is not null and affaire.devisEvol == key %} selected {% endif %}>{{statutDev}}</option>
                                                     {% endfor %}
-                                                </select>
+                                                </select>#}
+                                                <input type="text" name="status-devis" id="status-devis" class="form-control form-control-sm" value="{{statutDevis[affaire.devisEvol]}}">
+
                                             </div>
                                             {#<div class="col-md-4 col-12 status">
                                                 <label for="" class="mb-2 label-status">Statut projet</label>
@@ -145,11 +147,12 @@
                                             <div class="col-md-6 col-12 status">
                                                 <label for="" class="mb-2 label-status">Statut paiement</label>
                                                 {% set statutPaiement = constant('App\\Entity\\Affaire::PAIEMENT') %}
-                                                <select name="status-paiement" id="status-paiement" class="form-control form-control-sm">
+                                                {#<select name="status-paiement" id="status-paiement" class="form-control form-control-sm">
                                                 {% for key,statutPaie in statutPaiement %}
                                                     <option value="{{key}}" {% if affaire.paiement is not null and affaire.paiement == key %} selected {% endif %}>{{statutPaie}}</option>
                                                     {% endfor %}
-                                                </select>
+                                                </select>#}
+                                                <input type="text" name="status-paiement" id="status-paiement" class="form-control form-control-sm" value="{{statutPaiement[affaire.paiement]}}">
                                             </div>
                                         </div>
                                     </div>

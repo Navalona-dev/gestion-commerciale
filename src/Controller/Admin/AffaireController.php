@@ -886,22 +886,25 @@ class AffaireController extends AbstractController
 
         if (count($affaire->getProducts()) > 0) {
             $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
+
+            // Vérifier si le dossier existe, sinon le créer avec les permissions appropriées
+            if (!is_dir($documentFolder)) {
+                mkdir($documentFolder, 0777, true); // 0777 pour les permissions, et `true` pour créer récursivement les sous-dossiers
+            }
+            
             list($pdfContent, $facture) = $this->factureService->add($affaire, $documentFolder, $request);
             
-            // Utiliser le numéro de la facture pour le nom du fichier
-            //$filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
             $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
             $pdfPath = '/uploads/factures/valide/' . $filename;
+            
+            // Sauvegarder le fichier PDF
             file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
-            // Retourner le PDF en réponse
-            /*return new Response($pdfContent, 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . $filename . '"',
-            ]);*/
+            
             return new JsonResponse([
                 'status' => 'success',
                 'pdfUrl' => $pdfPath,
             ]);
+            
         }
         
         return new JsonResponse([]);

@@ -142,31 +142,6 @@
   </section>
 
   <script>
-    /*function searchCompte(genre = 1) {
-      var anchorName = document.location.hash.substring(1);
-      var nomCompte = $("#nom_compte").val();
-      var genre = $("#genre").val();
-      
-      $.ajax({
-                url: '/admin/comptes/search',
-                type: 'post',
-                data: {nomCompte: nomCompte, genre: genre},
-                success: function (response) {
-                  
-                 $("#compteList").empty();
-                 $("#compteList").append(response.html);
-                  
-                    if (anchorName) {
-                        window.location.hash = anchorName;
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'ajout d\'un client.');
-                }
-        });
-    }*/
-    
     //datatable
     $(document).ready(function() {
         $('.tab-compte_1').addClass('active');
@@ -296,7 +271,7 @@ function newCompte(isNew = false, genre = 1) {
 
         // Réinitialiser les filtres
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            var dateSearch = parseDate(data[3].trim()); // La première colonne est la date
+            var dateSearch = parseDate(data[4].trim()); // La première colonne est la date
             var startDateDebut = dateDebut ? parseDate(dateDebut) : null;
             var endDateFin = dateFin ? parseDate(dateFin) : null;
 

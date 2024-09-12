@@ -25,11 +25,12 @@ class StockRepository extends ServiceEntityRepository
             ->join('s.produitCategorie', 'pc')
             ->andWhere('pc.id = :produit_categorie_id')
             ->setParameter('produit_categorie_id', $produitCategorie->getId())
-            ->orderBy('s.id', 'ASC')
+            ->orderBy('s.datePeremption', 'ASC')
             ->getQuery()
             ->getResult()
         ;
     }
+
 
     public function findOneByProduitCategorie($produitCategorie)
     {
