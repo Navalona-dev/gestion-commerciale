@@ -99,6 +99,7 @@ class ProduitCategorieService
         }
 
         $stock->setQtt($qtt);
+        $stock->setQttRestant($qtt);
         $stock->setProduitCategorie($produitCategorie);
         $stock->setDateCreation($date);
 
@@ -117,7 +118,7 @@ class ProduitCategorieService
             'ID Application' => $produitCategorie->getApplication()->getId()
         ]);
 
-        $this->update();
+        //$this->update();
         unset($instance);
         return $produitCategorie;
     }
@@ -235,7 +236,7 @@ class ProduitCategorieService
     }
 
     
-    public function updateStockRestant($oldProduitCategorie, $quantity)
+    public function updateStockRestant($oldProduitCategorie, $quantity, $application)
     {
         $oldStockRestant = $oldProduitCategorie->getStockRestant();
         $newStockRestant = $oldStockRestant - $quantity;
@@ -248,10 +249,13 @@ class ProduitCategorieService
         
         $this->entityManager->persist($oldProduitCategorie);
 
+        if($oldProduitCategorie->getStockRestant() <= $oldProduitCategorie->getStockMin()) {
+            $this->createNotification($application, "Le stock du produit " . $oldProduitCategorie->getNom() . " est presque épuisé, veuillez ajouter un ou plusieurs" , $oldProduitCategorie);
+        }
         
     }
 
-    public function addNewProductForNewApplication($productReferenceExists, $oldProduitCategorie, $quantity, $application, $isChangePrice)
+    /*public function addNewProductForNewApplication($productReferenceExists, $oldProduitCategorie, $quantity, $application, $isChangePrice)
     {
         $newProduitCategorie = $productReferenceExists ? $productReferenceExists : new ProduitCategorie();
         $date = new \DateTime();
@@ -286,12 +290,6 @@ class ProduitCategorieService
             $this->entityManager->persist($productImage);
         }
 
-        $stock = new Stock();
-        $stock->setProduitCategorie($newProduitCategorie);
-        $stock->setQtt($quantity);
-        $stock->setDateCreation($date);
-        $this->entityManager->persist($stock);
-
         foreach ($oldProduitCategorie->getComptes() as $compte) {
             $existingCompte = $this->compteRepo->findOneBy(['nom' => $compte->getNom(), 'application' => $application]);
             $newCompte = $existingCompte ?: $this->createNewCompte($compte, $application);
@@ -300,8 +298,13 @@ class ProduitCategorieService
             $this->entityManager->persist($newCompte);
         }
 
+        $stock = new Stock();
+        $stock->setProduitCategorie($newProduitCategorie);
+        $stock->setQtt($quantity);
+        $stock->setDateCreation($date);
+        $this->entityManager->persist($stock);
+
         $this->entityManager->persist($newProduitCategorie);
-        $this->update();
 
         if ($isChangePrice) {
             $newProduitCategorie->setIsChangePrix(true);
@@ -339,6 +342,120 @@ class ProduitCategorieService
         }
 
         $this->entityManager->persist($newProduitCategorie);
+
+         // Obtenir l'utilisateur connecté
+         $user = $this->security->getUser();
+
+         // Créer log
+         $this->logger->info('Produit catégorie transféré', [
+             'Produit' => $oldProduitCategorie->getNom(),
+             'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+             'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+             'ID Application' => $oldProduitCategorie->getApplication()->getId()
+         ]);
+
+        $this->update();
+
+    }*/
+
+    public function addNewProductForNewApplication($productReferenceExists, $oldProduitCategorie, $quantity, $application, $isChangePrice)
+    {
+        $newProduitCategorie = $productReferenceExists ? $productReferenceExists : new ProduitCategorie();
+        $date = new \DateTime();
+        $categorie = $oldProduitCategorie->getCategorie();
+        $type = $oldProduitCategorie->getType();
+
+        $existingCategorie = $this->categorieRepo->findOneBy(['nom' => $categorie->getNom(), 'application' => $application]);
+        $existingType = $this->typeRepo->findOneBy(['nom' => $type->getNom(), 'application' => $application]);
+
+        $newProduitCategorie->setCategorie($existingCategorie ?: $this->createNewCategorie($categorie, $application));
+        $newProduitCategorie->setType($existingType ?: $this->createNewType($type, $application));
+
+        $newProduitCategorie->setNom($oldProduitCategorie->getNom())
+            ->setApplication($application)
+            ->setReference($oldProduitCategorie->getReference())
+            ->setTva($oldProduitCategorie->getTva())
+            ->setQtt($oldProduitCategorie->getQtt())
+            ->setStockMin($oldProduitCategorie->getStockMin())
+            ->setStockMax($oldProduitCategorie->getStockMax())
+            ->setUniteVenteGros($oldProduitCategorie->getUniteVenteGros())
+            ->setUniteVenteDetail($oldProduitCategorie->getUniteVenteDetail())
+            ->setPrixVenteGros($oldProduitCategorie->getPrixVenteGros())
+            ->setPrixVenteDetail($oldProduitCategorie->getPrixVenteDetail())
+            ->setPrixTTC($oldProduitCategorie->getPrixTTC())
+            ->setPrixAchat($oldProduitCategorie->getPrixAchat())
+            ->setPrixHt($oldProduitCategorie->getPrixHt())
+            ->setDateCreation($date);
+
+        foreach ($oldProduitCategorie->getProductImages() as $productImage) {
+            $productImage->setProduitCategorie($newProduitCategorie);
+            $productImage->setDateCreation($date);
+            $this->entityManager->persist($productImage);
+        }
+
+        foreach ($oldProduitCategorie->getComptes() as $compte) {
+            $existingCompte = $this->compteRepo->findOneBy(['nom' => $compte->getNom(), 'application' => $application]);
+            $newCompte = $existingCompte ?: $this->createNewCompte($compte, $application);
+            $newProduitCategorie->addCompte($newCompte);
+            $compte->addProduitCategory($newProduitCategorie);
+            $this->entityManager->persist($newCompte);
+        }
+
+        // Copie des stocks de l'ancienne application
+        $stocksOldProduitCategorie = $oldProduitCategorie->getStocks();
+        $stockArray = $stocksOldProduitCategorie->toArray();
+
+        // Trier les stocks de l'ancienne application par quantité restante
+        usort($stockArray, function($a, $b) {
+            return $b->getQttRestant() <=> $a->getQttRestant();
+        });
+
+        $newStockRestantNewProduitCategorie = 0;
+
+        // Transférer la quantité en plusieurs stocks avec date de péremption
+        foreach ($stockArray as $oldStock) {
+            if ($quantity <= 0) {
+                break;
+            }
+
+            $qttRestant = $oldStock->getQttRestant();
+
+            if ($qttRestant > 0) {
+                $toTransfer = min($quantity, $qttRestant);
+
+                // Créer un nouveau stock pour la nouvelle application
+                $newStock = new Stock();
+                $newStock->setProduitCategorie($newProduitCategorie);
+                $newStock->setQtt($toTransfer);
+                $newStock->setDateCreation($date);
+                $newStock->setDatePeremption($oldStock->getDatePeremption()); // Conserver la date de péremption
+                $newStock->setQttRestant($toTransfer);
+
+                // Persist le nouveau stock
+                $this->entityManager->persist($newStock);
+
+                $newStockRestantNewProduitCategorie += $newStock->getQttRestant();
+
+                // Réduire la quantité à transférer
+                $quantity -= $toTransfer;
+
+                // Mettre à jour le stock restant dans l'ancienne application
+                $oldStock->setQttRestant($qttRestant - $toTransfer);
+                $this->entityManager->persist($oldStock);
+            }
+        }
+
+        $newProduitCategorie->setStockRestant($newStockRestantNewProduitCategorie);
+
+       // dd($newStockRestantNewProduitCategorie, $newProduitCategorie->getStockRestant());
+
+        $this->entityManager->persist($newProduitCategorie);
+
+        if ($isChangePrice) {
+            $newProduitCategorie->setIsChangePrix(true);
+            $this->createNotification($application, "Le prix du produit transféré doit être modifié en raison des nouvelles conditions d'application.", $newProduitCategorie);
+        }
+
 
          // Obtenir l'utilisateur connecté
          $user = $this->security->getUser();

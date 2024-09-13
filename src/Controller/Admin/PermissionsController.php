@@ -2,23 +2,24 @@
 
 namespace App\Controller\Admin;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\ORMInvalidArgumentException;
-use App\Exception\PropertyVideException;
-use Doctrine\Persistence\Mapping\MappingException;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use App\Exception\UnsufficientPrivilegeException;
-use Symfony\Component\HttpClient\Exception\ServerException;
-use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use App\Entity\Permission;
-use App\Service\PermissionService;
 use App\Form\PermissionType;
 use App\Service\AccesService;
+use App\Service\PermissionService;
 use App\Service\ApplicationManager;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Exception\PropertyVideException;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use App\Exception\UnsufficientPrivilegeException;
+use App\Repository\CategoryofpermissionRepository;
+use Doctrine\Persistence\Mapping\MappingException;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpClient\Exception\ServerException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/admin/permissions', name: 'permissions')]
 class PermissionsController extends AbstractController
@@ -26,12 +27,19 @@ class PermissionsController extends AbstractController
     private $permissionService;
     private $accesService;
     private $application;
+    private $categoriePermissionRepo;
 
-    public function __construct(PermissionService $permissionService, ApplicationManager $applicationManager, AccesService $accesService)
+    public function __construct(
+        PermissionService $permissionService, 
+        ApplicationManager $applicationManager, 
+        AccesService $accesService,
+        CategoryofpermissionRepository $categoriePermissionRepo
+        )
     {
         $this->permissionService = $permissionService;
         $this->accesService = $accesService;
         $this->application = $applicationManager->getApplicationActive();
+        $this->categoriePermissionRepo = $categoriePermissionRepo;
     }
 
     #[Route('/', name: '_liste')]
@@ -74,6 +82,15 @@ class PermissionsController extends AbstractController
         $data = [];
         try {
 
+            $categoriePermissions = $this->categoriePermissionRepo->findAll();
+
+            $error = false;
+
+            if(count($categoriePermissions) < 1) {
+                $error = true;
+                return new JsonResponse(['status' => 'error']);
+            }
+
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
@@ -90,6 +107,7 @@ class PermissionsController extends AbstractController
             $data['exception'] = "";
             $data["html"] = $this->renderView('admin/permissions/new.html.twig', [
                 'form' => $form->createView(),
+                'error' => $error
             ]);
            
             return new JsonResponse($data);

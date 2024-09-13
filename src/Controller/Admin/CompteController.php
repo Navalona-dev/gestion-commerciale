@@ -285,7 +285,9 @@ class CompteController extends AbstractController
         }*/
         $data = [];
         try {
-            $form = $this->createForm(CompteType::class, $compte, []);
+            $genre = $compte->getGenre();
+
+            $form = $this->createForm(CompteType::class, $compte, ['genre' => $genre]);
 
             $form->handleRequest($request);
 

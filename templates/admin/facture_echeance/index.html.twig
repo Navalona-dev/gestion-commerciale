@@ -61,9 +61,11 @@
                  <div class="col-md-10 col-12">
                     <div class="card">
                         <div class="d-flex justify-content-end p-2">
-                            {% if montantHt != facture.solde %}
+                            {#{% if montantHt != facture.solde %}
                                 <a href="#" onclick="return openModalAddFactureEcheance({{facture.id}})" class="btn-add bg-warning"><i class="bi bi-plus fs-4"></i></a>
-                            {% endif %}
+                            {% endif %}#}
+                            <a href="#" onclick="return openModalAddFactureEcheance({{facture.id}})" class="btn-add bg-warning"><i class="bi bi-plus fs-4"></i></a>
+
                         </div>
                         <div class="card-body p-3 p-lg-5">
                             <div class="row mb-5">
@@ -80,7 +82,7 @@
                             </div>
 
                             {% if error %}
-                                {% set montantManquant = facture.solde - montantHt %}
+                                
                                 <div class="alert alert-danger">
                                     Attention le montant total {{montantHt|number_format(2,',','')}} Ar d'écheance n'est pas égal au montant total à payer {{facture.solde|number_format(2,',','')}} Ar , 
                                     alors vous devez verifier le calcul avant de faire quoi que ce soit.
@@ -143,7 +145,7 @@
                                                 {{liste.dateReporter|date('d-m-Y')}}
                                             {% endif %}
                                          </td>
-                                        <td> {{liste.reglement}} </td>
+                                        <td> {{liste.reglement|number_format(2,',','')}} Ar </td>
                                         <td>
                                             {% if liste.isReporter == 1 %} 
                                             Oui
@@ -154,7 +156,9 @@
                                     </tr>
                                     {% else %}
                                         <tr>
-                                            <td colspan="6">Aucun enregistrement trouvé</td>
+                                            <td colspan="8">Aucun enregistrement trouvé</td>
+                                            <td></td>
+                                            <td></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -230,6 +234,8 @@
             $('#tab-devis').css('display','none');
             $('#tab-commande').css('display','none');
             $('#tab-echeance').css('display','block');
+            $('#tab-produit-image').removeClass('active');
+        $('#tab-stock').removeClass('active');
 
         });
         

@@ -61,7 +61,7 @@
                     <div class="row">
                         <div class="col-md-6 col-12">
                             <div class="form-group mb-3">
-                                <label for="" class="mb-2">Telephone</label>
+                                <label for="" class="mb-2">Téléphone <span class="text-danger">*</span></label>
                                 {{ form_widget(form.telephone) }}
                             </div>
                         </div>
@@ -122,6 +122,7 @@
                     if (nextLink.length > 0) {
                         nextLink.click();
                     }
+                    showTabUtilisateur();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)

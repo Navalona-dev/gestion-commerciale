@@ -46,6 +46,8 @@
                     if (anchorName) {
                         window.location.hash = anchorName;
                     }
+                    showTabPrivilege();
+
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -77,7 +79,23 @@
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'ajout de l\'assigantion du privilège.');
+                    //alert('Erreur lors de l\'ajout de l\'assigantion du privilège.');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 3000
+                        };
+                        toastr.error('Veuillez d\'abord ajouter une catégorie permission');
+
+                        //$(".loadBody").css('display', 'none');
+
+                    }, 800);
+
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
                 }
             });
     }

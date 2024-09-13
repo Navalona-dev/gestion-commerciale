@@ -107,6 +107,8 @@
         $('#tab-devis').css('display','none');
         $('#tab-commande').css('display','none');
         $('#tab-echeance').css('display','none');
+        $('#tab-produit-image').removeClass('active');
+        $('#tab-stock').removeClass('active');
 
     });
 
@@ -116,13 +118,28 @@
                 type: 'POST',
                 data: {isNew: isNew},
                 success: function (response) {
+                  if(response.status == 'error') {
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 4000
+                        };
+                        toastr.error('Veuillez d\'abord ajouter une catégorie permission avant de faire cette action');
+
+                    }, 800);
+                  } else {
                     $("#blocModalPermissionEmpty").empty();
                     $("#blocModalPermissionEmpty").append(response.html);
                     $('#modalNewPermission').modal('show');
+                  }
+                    
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
                     alert('Erreur lors de l\'ajout de la permission.');
+
                 }
             });
     }

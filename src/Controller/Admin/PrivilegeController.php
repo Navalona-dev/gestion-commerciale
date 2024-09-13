@@ -2,27 +2,28 @@
 
 namespace App\Controller\Admin;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\ORMInvalidArgumentException;
-use App\Exception\PropertyVideException;
-use Doctrine\Persistence\Mapping\MappingException;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use App\Exception\UnsufficientPrivilegeException;
-use Symfony\Component\HttpClient\Exception\ServerException;
-use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use App\Entity\Privilege;
+use App\Service\AccesService;
+use App\Form\PrivilegeBasicType;
 use App\Service\PrivilegeService;
 use App\Service\PermissionService;
-use App\Service\CategoryPermissionService;
-use App\Form\PrivilegeBasicType;
-use App\Form\PrivilegeAssignationPermissionType;
-use App\Service\AuthorizationManager;
-use App\Service\AccesService;
 use App\Service\ApplicationManager;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Service\AuthorizationManager;
+use App\Exception\PropertyVideException;
+use App\Repository\PermissionRepository;
+use App\Service\CategoryPermissionService;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use App\Form\PrivilegeAssignationPermissionType;
+use App\Exception\UnsufficientPrivilegeException;
+use Doctrine\Persistence\Mapping\MappingException;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpClient\Exception\ServerException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/admin/privileges', name: 'privileges')]
 class PrivilegeController extends AbstractController
@@ -30,12 +31,19 @@ class PrivilegeController extends AbstractController
     private $privilegeService;
     private $accesService;
     private $application;
+    private $permissionRepo;
 
-    public function __construct(PrivilegeService $privilegeService, ApplicationManager $applicationManager, AccesService $accesService)
+    public function __construct(
+        PrivilegeService $privilegeService, 
+        ApplicationManager $applicationManager, 
+        AccesService $accesService,
+        PermissionRepository $permissionRepo
+        )
     {
         $this->privilegeService = $privilegeService;
         $this->accesService = $accesService;
         $this->application = $applicationManager->getApplicationActive();
+        $this->permissionRepo = $permissionRepo;
     }
 
     #[Route('/', name: '_liste')]
@@ -204,6 +212,12 @@ class PrivilegeController extends AbstractController
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
         }*/
         try {
+            $error = false;
+            $permissions = $this->permissionRepo->findAll();
+            if(count($permissions) < 1) {
+                $error = true;
+            }
+
             $categories = $CategoryPermissionService->getAllCategoryPermission();
             if (count($categories) > 0) {
                 $tabCategories = [];
@@ -231,14 +245,17 @@ class PrivilegeController extends AbstractController
                     'tabCategories' => $tabCategories,
                     'id' => $privilege->getId(),
                     'title' => $privilege->getTitle(),
+                    'error' => $error
+
                 ]);
                 return new JsonResponse($data);
-            }
+            } 
 
             $data['exception'] = "";
             $data["html"] = $this->renderView('admin/privileges/assignation.html.twig', [
                 'id' => $privilege->getId(),
                 'title' => $privilege->getTitle(),
+                'error' => $error
             ]);
 
             return new JsonResponse($data);
@@ -296,8 +313,11 @@ class PrivilegeController extends AbstractController
         } else {
             // remove all permissions du privilege
             if ($request->isXmlHttpRequest()) {
-                $this->privilegeService->removeAllPermissionPrivilege($privilege);
-                return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                if(count($privilege->getPermissions()) > 0) {
+                    $this->privilegeService->removeAllPermissionPrivilege($privilege);
+                    return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                } 
+               
             }
             //$this->addFlash('success', 'Assignation permission au "' . $privilege->getTitle() . '" avec succès.');
             //return $this->redirectToRoute('privilege_assignation_permission', ['privilege' => $privilege->getId()]);

@@ -43,6 +43,10 @@ class CategoryPermissionService
 
     public function remove($categoryofPermission)
     {
+        $permissions = $categoryofPermission->getPermissions();
+        foreach($permissions as $permission) {
+            $this->entityManager->remove($permission);
+        }
         $this->entityManager->remove($categoryofPermission);
         $this->update();
     }

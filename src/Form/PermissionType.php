@@ -25,7 +25,7 @@ class PermissionType extends AbstractType
                 'attr' => array(
                     'readonly' => (($options['isEdit']) ? true : false),
                     'class' => 'form-control form-control-md mb-3',
-                    'autocmplete' => 'off'
+                    'autocomplete' => 'off'
                 ),
             ])
             ->add('description', TextareaType::class, [

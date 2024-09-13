@@ -138,12 +138,12 @@ class StockService
         return $newStock;
     }
 
-    public function edit($stock, $produitCategorie, $oldQtt, $datePeremption, $editQtt)
+    public function edit($stock = null, $produitCategorie = null, $oldQtt = null, $datePeremption = null, $editQtt = null)
     {
         $stocks = $produitCategorie->getStocks();
         $datePeremptions = [];
         foreach($stocks as $stk) {
-            if ($stk->getDatePeremption()) {
+            if ($stk->getDatePeremption() !== null && $stk->getDatePeremption()->getDate() !== null) {
                 $datePeremptions[] = $stk->getDatePeremption()->getDate()->format('d-m-Y');
             }
         }
@@ -167,6 +167,7 @@ class StockService
 
             $oldStock = $qb->getQuery()->getOneOrNullResult();
 
+            //verifier si le oldStock existe et l'id de stock est different de l'id oldStock
             if ($oldStock && $oldStock->getId() != $stock->getId()) {
                 $qttStock = $oldStock->getQtt();
                 $oldStock->setQtt($qttStock + $editQtt);
@@ -175,54 +176,57 @@ class StockService
                 $this->entityManager->remove($stock);
             } else {
                 // Obtenez la quantité et le stock restant actuels
-            $oldStockRestant = $produitCategorie->getStockRestant();
-            // Initialisation de $newDatePeremption
-            $newDatePeremption = null;
+                $oldStockRestant = $produitCategorie->getStockRestant();
+                // Initialisation de $newDatePeremption
+                $newDatePeremption = null;
 
-            // Obtenez l'ID de la date de péremption actuelle du stock
-            $datePeremptionId = $stock->getDatePeremption() ? $stock->getDatePeremption()->getId() : null;
+                // Obtenez l'ID de la date de péremption actuelle du stock
+                $datePeremptionId = $stock->getDatePeremption() ? $stock->getDatePeremption()->getId() : null;
 
-            // Vérifiez si une nouvelle date de péremption est fournie
-            if ($datePeremption != null) {
-                if ($datePeremptionId == null) {
-                    // Créez une nouvelle DatePeremption si elle n'existe pas déjà
-                    $newDatePeremption = new DatePeremption();
-                    $newDatePeremption->setDate($datePeremption);
-                    $newDatePeremption->setDateCreation(new \DateTime());
-                    $this->entityManager->persist($newDatePeremption);
+                // Vérifiez si une nouvelle date de péremption est fournie
+                if ($datePeremption != null) {
+                    if ($datePeremptionId == null) {
+                        // Créez une nouvelle DatePeremption si elle n'existe pas déjà
+                        $newDatePeremption = new DatePeremption();
+                        $newDatePeremption->setDate($datePeremption);
+                        $newDatePeremption->setDateCreation(new \DateTime());
+                        $this->entityManager->persist($newDatePeremption);
+                    } else {
+                        // Si la date de péremption existe déjà, récupérez-la
+                        $newDatePeremption = $this->entityManager->getRepository(DatePeremption::class)->find($datePeremptionId);
+                        $newDatePeremption->setDate($datePeremption);
+                    }
+                }
+
+                $oldQttRestant = $stock->getQttRestant();
+
+                //si oldQtt est egale à oldQttRestant
+                if ($oldQtt == $oldQttRestant) {
+                    // Cas où la quantité ancienne est égale à la quantité restante
+                    $newQtt = $stock->getQtt();
+                    $stock->setQttRestant($newQtt);
+                } elseif ($oldQtt > $oldQttRestant) {
+                    $newQtt = $stock->getQtt();
+
+                    if($newQtt > $oldQtt) {
+                        $newQttRestant = $oldQttRestant + ($newQtt - $oldQtt);
+                    } elseif($newQtt < $oldQtt) {
+                        $newQttRestant = $oldQttRestant - ($oldQtt - $newQtt);
+                    }
+                    $stock->setQttRestant($newQttRestant);
+                }
+
+                // Calculez le nouveau stock restant après soustraction de l'ancienne quantité
+                if ($oldQtt <= $oldStockRestant) {
+                    $stockRestant = $oldStockRestant - $oldQtt;
+                    $newQtt = $stock->getQtt();
+                    $stockRestant = $stockRestant + $newQtt;
+
                 } else {
-                    // Si la date de péremption existe déjà, récupérez-la
-                    $newDatePeremption = $this->entityManager->getRepository(DatePeremption::class)->find($datePeremptionId);
-                    $newDatePeremption->setDate($datePeremption);
+                    $stocktoAdd = $oldQtt - $oldStockRestant;
+                    $stockRestant = $oldStockRestant + $stocktoAdd;
+
                 }
-            }
-
-            $oldQttRestant = $stock->getQttRestant();
-
-            //si oldQtt est egale à oldQttRestant
-            if ($oldQtt == $oldQttRestant) {
-                // Cas où la quantité ancienne est égale à la quantité restante
-                $newQtt = $stock->getQtt();
-                $stock->setQttRestant($newQtt);
-            } elseif ($oldQtt > $oldQttRestant) {
-                $newQtt = $stock->getQtt();
-
-                if($newQtt > $oldQtt) {
-                    $newQttRestant = $oldQttRestant + ($newQtt - $oldQtt);
-                } elseif($newQtt < $oldQtt) {
-                    $newQttRestant = $oldQttRestant - ($oldQtt - $newQtt);
-                }
-                $stock->setQttRestant($newQttRestant);
-
-
-            }
-
-            // Calculez le nouveau stock restant après soustraction de l'ancienne quantité
-            if ($oldQtt <= $oldStockRestant) {
-                $stockRestant = $oldStockRestant - $oldQtt;
-                $newQtt = $stock->getQtt();
-                $stockRestant = $stockRestant + $newQtt;
-
                 $produitCategorie->setStockRestant($stockRestant);
                 $this->entityManager->persist($produitCategorie);
 
@@ -232,21 +236,6 @@ class StockService
                 
                 // Persist l'état actuel de stock
                 $this->entityManager->persist($stock);
-
-            } else {
-                $stocktoAdd = $oldQtt - $oldStockRestant;
-                $stockRestant = $oldStockRestant + $stocktoAdd;
-
-                $produitCategorie->setStockRestant($stockRestant);
-                $this->entityManager->persist($produitCategorie);
-
-                if ($newDatePeremption) {
-                    $stock->setDatePeremption($newDatePeremption);
-                }
-                // Persist l'état actuel de stock
-                $this->entityManager->persist($stock);
-
-            }
             }
         } else {
             // Obtenez la quantité et le stock restant actuels
@@ -256,7 +245,6 @@ class StockService
 
             // Obtenez l'ID de la date de péremption actuelle du stock
             $datePeremptionId = $stock->getDatePeremption() ? $stock->getDatePeremption()->getId() : null;
-
             // Vérifiez si une nouvelle date de péremption est fournie
             if ($datePeremption != null) {
                 if ($datePeremptionId == null) {
@@ -289,7 +277,6 @@ class StockService
                 }
                 $stock->setQttRestant($newQttRestant);
 
-
             }
             // Calculez le nouveau stock restant après soustraction de l'ancienne quantité
             if ($oldQtt <= $oldStockRestant) {
@@ -297,31 +284,22 @@ class StockService
                 $newQtt = $stock->getQtt();
                 $stockRestant = $stockRestant + $newQtt;
 
-                $produitCategorie->setStockRestant($stockRestant);
-                $this->entityManager->persist($produitCategorie);
-
-                if ($newDatePeremption) {
-                    $stock->setDatePeremption($newDatePeremption);
-                }
-                
-                // Persist l'état actuel de stock
-                $this->entityManager->persist($stock);
-
             } else {
                 $stocktoAdd = $oldQtt - $oldStockRestant;
                 $stockRestant = $oldStockRestant + $stocktoAdd;
-
-                $produitCategorie->setStockRestant($stockRestant);
-                $this->entityManager->persist($produitCategorie);
-
-                if ($newDatePeremption) {
-                    $stock->setDatePeremption($newDatePeremption);
-                }
-                // Persist l'état actuel de stock
-                $this->entityManager->persist($stock);
-                
             }
+
+            $produitCategorie->setStockRestant($stockRestant);
+            $this->entityManager->persist($produitCategorie);
+
+            if ($newDatePeremption) {
+                $stock->setDatePeremption($newDatePeremption);
+            }            
+            // Persist l'état actuel de stock
+            $this->entityManager->persist($stock);
         }
+
+        $this->update();
 
         // Obtenir l'utilisateur connecté
         $user = $this->security->getUser();
@@ -333,8 +311,6 @@ class StockService
             'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
             'ID Application' => $produitCategorie->getApplication()->getId()
         ]);
-
-        $this->update();
         
         return $stock;
     }

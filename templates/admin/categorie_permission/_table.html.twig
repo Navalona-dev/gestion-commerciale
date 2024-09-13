@@ -45,6 +45,7 @@
                     if (anchorName) {
                         window.location.hash = anchorName;
                     }
+                    showTabCategoriePermission();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
@@ -66,6 +67,7 @@
                         $("#blocModalEmpty").empty();
                         $("#blocModalEmpty").append(response.html);
                         $('#modalUpdateCategoryPermission').modal('show');
+
                         if (anchorName) {
                             window.location.hash = anchorName;
                         }
