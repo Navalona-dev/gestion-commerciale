@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Transfert;
 use App\Service\AccesService;
 use App\Service\ApplicationManager;
 use App\Repository\TransfertRepository;
@@ -88,6 +89,24 @@ class TransfertController extends AbstractController
             $this->createNotFoundException('Exception' . $Exception->getMessage());
         }
 
+        return new JsonResponse($data);
+        
+    }
+
+    #[Route('/annule/{transfert}', name: '_annule')]
+    public function annule(Transfert $transfert): Response
+    {
+        $data = [];
+        $produitCategorie = $transfert->getProduitCategorie();
+        try {
+
+            $qtt = $transfert->getQtt();
+            
+            return new JsonResponse();
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
         return new JsonResponse($data);
         
     }

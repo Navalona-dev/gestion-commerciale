@@ -3,12 +3,13 @@
 namespace App\Entity;
 
 
+use App\Entity\Permission;
 use Doctrine\ORM\Mapping as ORM;
-use App\Exception\PropertyVideException;
 use App\EntityManager\EntityFactory;
-use App\Repository\CategoryofpermissionRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Exception\PropertyVideException;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use App\Repository\CategoryofpermissionRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CategoryofpermissionRepository::class)]
@@ -26,6 +27,12 @@ class Categoryofpermission
 
     #[ORM\Column(name: "description", type: "text")]
     private $description;
+
+    /**
+     * @var Collection<int, Facture>
+     */
+    #[ORM\OneToMany(targetEntity: Permission::class, mappedBy: 'categoryofpermission')]
+    private Collection $permissions;
 
     public function __construct() {
         $this->permissions = new ArrayCollection();
@@ -72,6 +79,36 @@ class Categoryofpermission
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+     /**
+     * @return Collection<int, Permission>
+     */
+    public function getPermissions(): Collection
+    {
+        return $this->permissions;
+    }
+
+    public function addPermission(Permission $permission): static
+    {
+        if (!$this->permissions->contains($permission)) {
+            $this->permissions->add($permission);
+            $permission->setCategorieofpermission($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduitCategory(Permission $permission): static
+    {
+        if ($this->permissions->removeElement($permission)) {
+            // set the owning side to null (unless already changed)
+            if ($permission->getCategorieofpermission() === $this) {
+                $permission->setCategorieofpermission(null);
+            }
+        }
 
         return $this;
     }

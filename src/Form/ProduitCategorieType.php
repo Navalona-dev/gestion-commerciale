@@ -50,7 +50,7 @@ class ProduitCategorieType extends AbstractType
                     'class' => 'form-control form-control-md mb-3',
                     'autocomplete' => 'off'
                 ],
-                'required' => false
+                'required' => true
             ])
             ->add('prixHt', TextType::class, [
                 'attr' => [

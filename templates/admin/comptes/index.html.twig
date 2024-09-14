@@ -186,6 +186,8 @@
         $('#tab-devis').css('display','none');
         $('#tab-commande').css('display','none');
         $('#tab-echeance').css('display','none');
+        $('#tab-produit-image').removeClass('active');
+        $('#tab-stock').removeClass('active');
      
     });
 
@@ -271,7 +273,7 @@ function newCompte(isNew = false, genre = 1) {
 
         // Réinitialiser les filtres
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            var dateSearch = parseDate(data[4].trim()); // La première colonne est la date
+            var dateSearch = parseDate(data[2].trim()); // La première colonne est la date
             var startDateDebut = dateDebut ? parseDate(dateDebut) : null;
             var endDateFin = dateFin ? parseDate(dateFin) : null;
 

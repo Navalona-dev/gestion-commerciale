@@ -128,7 +128,7 @@ class StockController extends AbstractController
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
         }*/
-       $oldQtt = $request->get('oldQtt');
+        $oldQtt = $request->get('oldQtt');
         $totalStock = $request->get('totalStock');
         $quantity = $request->get('quantity');
         $qttVendu = $request->get('qttVendu');

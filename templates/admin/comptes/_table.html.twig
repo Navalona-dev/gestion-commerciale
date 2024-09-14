@@ -2,11 +2,11 @@
         <tr id="thead_compte" class="text-nowrap">
             <th>Nom</th>
             <th>Adresse</th>
+            <th>Date de création</th>
             {% if genre == 1 %}
                 <th>Nommenclature facture</th>
                 <th>Délais de paiement</th>
             {% endif %}
-            <th>Date de création</th>
             <th>Action</th>
         </tr>
         {% elseif type == "tbody" %}
@@ -19,6 +19,7 @@
                 </a> 
             </td>
             <td> {{liste.adresse|slice(0,50)|raw}} </td>
+            <td> {{liste.dateCreation|date('d/m/Y')}} </td>
             {% if genre == 1 %}
             <td> {{liste.indiceFacture}} </td>
             <td> 
@@ -27,7 +28,6 @@
                 {% endif %}
             </td>
             {% endif %}
-            <td> {{liste.dateCreation|date('d/m/Y')}} </td>
             <td>
                 <a href="#" onclick="return openModalUpdatecompte({{liste.id}}, {{liste.genre}})" class="mx-1"><i class="bi bi-pencil-fill"></i></a>
                 <a href="#" onclick="return deleteCompte({{liste.id}}, {{liste.genre}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>

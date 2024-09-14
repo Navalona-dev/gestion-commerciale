@@ -810,7 +810,7 @@ function showTabCompte(genre = 1) {
                     scrollX: '100%',
                     pageLength: 10,
                     scrollCollapse: false,
-                    order: [[ 4, 'desc' ]]
+                    order: [[ 2, 'desc' ]]
                 });
             
                 hideSpinner();

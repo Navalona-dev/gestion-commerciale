@@ -2,8 +2,12 @@
 
 namespace App\Controller\Admin;
 
+use Exception;
 use App\Entity\Stock;
+use App\Entity\Categorie;
+use App\Entity\ProduitType;
 use App\Form\TransfertType;
+use App\Service\LogService;
 use Psr\Log\LoggerInterface;
 use App\Service\AccesService;
 use App\Entity\ProduitCategorie;
@@ -11,27 +15,27 @@ use App\Form\ProduitCategorieType;
 use App\Service\ApplicationManager;
 use App\Form\UpdatePriceProductType;
 use App\Repository\ProductRepository;
+use App\Repository\CategorieRepository;
 use App\Exception\PropertyVideException;
 use App\Form\UpdateProduitCategorieType;
 use App\Service\ProduitCategorieService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ApplicationRepository;
+use App\Repository\ProduitTypeRepository;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\ProduitCategorieRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Exception\UnsufficientPrivilegeException;
-use App\Service\LogService;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
-use Exception;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 #[Route('/admin/produit/categorie', name: 'produit_categories')]
 class ProduitCategorieController extends AbstractController
@@ -41,13 +45,19 @@ class ProduitCategorieController extends AbstractController
     private $application;
     private $logger;
     private $logService;
+    private $categorieRepository;
+    private $entityManager;
+    private $typeRepository;
 
     public function __construct(
         AccesService $AccesService, 
         ApplicationManager $applicationManager, 
         ProduitCategorieService $produitCategorieService,
         LoggerInterface $productLogger,
-        LogService $logService
+        LogService $logService,
+        CategorieRepository $categorieRepository,
+        EntityManagerInterface $entityManager,
+        ProduitTypeRepository $typeRepository
         )
     {
         $this->accesService = $AccesService;
@@ -55,6 +65,9 @@ class ProduitCategorieController extends AbstractController
         $this->application = $applicationManager->getApplicationActive();
         $this->logger = $productLogger;
         $this->logService = $logService;
+        $this->categorieRepository = $categorieRepository;
+        $this->entityManager = $entityManager;
+        $this->typeRepository = $typeRepository;
 
     }
     
@@ -124,6 +137,48 @@ class ProduitCategorieController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
+
+                    $formData = $form->getData();
+
+                    $categorieName = $formData->getCategorie();
+                    $typeName = $formData->getType();
+
+                    $categorie = null;
+                    $type = null;
+
+                    if($categorieName) {
+                        $categorie = $categorieName;
+                        $produitCategorie->setCategorie($categorie);
+                    } else {
+                        $categorie = $this->categorieRepository->findOneBy(['nom' => 'Autre']);
+                        if(!$categorie){
+                            $newCategorie = new Categorie();
+                            $newCategorie->setNom('Autre');
+                            $newCategorie->setDateCreation(new \DateTime());
+                            $newCategorie->setApplication($this->application);
+                            $this->entityManager->persist($newCategorie);
+                            $produitCategorie->setCategorie($newCategorie);
+                        } else {
+                            $produitCategorie->setCategorie($categorie);
+                        }
+                    }
+
+                    if($typeName) {
+                        $type = $typeName;
+                        $produitCategorie->setType($type);
+                    } else {
+                        $type = $this->typeRepository->findOneBy(['nom' => 'Autre']);
+                        if(!$type){
+                            $newType = new ProduitType();
+                            $newType->setNom('Autre');
+                            $newType->setDateCreation(new \DateTime());
+                            $newType->setApplication($this->application);
+                            $this->entityManager->persist($newType);
+                            $produitCategorie->setType($newType);
+                        } else {
+                            $produitCategorie->setType($type);
+                        }
+                    }
                     
                     $idFournisseur = $request->get("produit_categorie_compte");
                     $fournisseur = null;
@@ -144,6 +199,8 @@ class ProduitCategorieController extends AbstractController
                     $produitCategorie->setQtt($produitCategorie->getStockRestant());
                     $produitCategorie->setApplication($this->application);
                     $this->produitCategorieService->add($produitCategorie);
+
+                    $this->entityManager->flush();
 
                     $user = $this->getUser();
                     $data["produit"] = $produitCategorie->getNom();
@@ -618,7 +675,7 @@ class ProduitCategorieController extends AbstractController
 
                 // Mise à jour du stock restant de l'ancienne catégorie de produit
                 
-                $produitCategorieService->updateStockRestant($oldProduitCategorie, $quantity);
+                $produitCategorieService->updateStockRestant($oldProduitCategorie, $quantity, $this->application);
 
                 if ($request->isXmlHttpRequest()) {
 

@@ -132,13 +132,15 @@ class FactureEcheanceController extends AbstractController
             $solde = $facture->getSolde();
 
             foreach($factureEcheances as $factureEcheance) {
-                if($facture->getReglement() == null || $facture->getReglement() == 0) {
-                    $montantHt += $factureEcheance->getMontant();
-                } else {
-                    $montantHt = $montantHt + $factureEcheance->getMontant() + $facture->getAvance();
-                }
+                $montantHt += $factureEcheance->getMontant();
             }
 
+            if($facture->getAvance() != null || $facture->getAvance() > 0) {
+                $montantHt = $montantHt + $facture->getAvance();
+            } 
+
+            $montantManquant = $facture->getSolde() - $montantHt;
+            
             $error = false;
 
             if($montantHt != $solde) {
@@ -156,7 +158,8 @@ class FactureEcheanceController extends AbstractController
                'listes' => $factureEcheances,
                'facture' => $facture,
                'error' => $error,
-               'montantHt' => $montantHt
+               'montantHt' => $montantHt,
+               'montantManquant' => $montantManquant
             ]);
            
             return new JsonResponse($data);
@@ -355,12 +358,19 @@ class FactureEcheanceController extends AbstractController
             $newFactureEcheance = new FactureEcheance();
 
             $montantHt = 0;
+            $reste = 0;
 
             foreach($factureEcheances as $factureEcheance) {
                 $montantHt += $factureEcheance->getMontant();
             }
 
-            $reste = $facture->getSolde() - $montantHt;
+            if($facture->getAvance()) {
+                $reste = $facture->getSolde() - $montantHt - $facture->getAvance();
+
+            } else {
+                $reste = $facture->getSolde() - $montantHt;
+            }
+
 
             $form = $this->createForm(FactureEcheanceType::class, null);
             $form->handleRequest($request);
