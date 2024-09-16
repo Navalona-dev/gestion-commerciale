@@ -23,9 +23,11 @@ use App\Service\ProductService;
 use App\Service\CategorieService;
 use App\Service\ApplicationManager;
 use App\Repository\CompteRepository;
+use App\Repository\FactureRepository;
 use App\Exception\PropertyVideException;
 use App\Service\ProduitCategorieService;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\FactureEcheanceRepository;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,6 +54,8 @@ class AffaireController extends AbstractController
     private $productService;
     private $factureService;
     private $logger;
+    private $factureRepo;
+    private $factureEcheanceRepo;
 
 
     public function __construct(
@@ -61,6 +65,8 @@ class AffaireController extends AbstractController
         ProductService $productService, 
         FactureService $factureService,
         LoggerInterface $affaireLogger, 
+        FactureRepository $factureRepo,
+        FactureEcheanceRepository $factureEcheanceRepo
         
         )
     {
@@ -70,6 +76,8 @@ class AffaireController extends AbstractController
         $this->application = $applicationManager->getApplicationActive();
         $this->factureService = $factureService;
         $this->logger = $affaireLogger;
+        $this->factureRepo = $factureRepo;
+        $this->factureEcheanceRepo = $factureEcheanceRepo;
 
     }
 
@@ -852,12 +860,25 @@ class AffaireController extends AbstractController
 
         $factures = $this->factureService->getAllFacturesByAffaire($affaire->getId());
 
+        $factureEcheanceId = null;
+        foreach($factures as $facture) {
+            $factureEcheances = explode(',', $facture['factureEcheances']); 
+            $countFactureEcheances = count($factureEcheances); 
+        
+            if ($countFactureEcheances > 0) {
+                $factureEcheanceId = $factureEcheances[$countFactureEcheances - 1]; 
+            }
+        }
+        
+        $factureEcheance = $this->factureEcheanceRepo->findOneBy(['id' => $factureEcheanceId]);
+
         $data = [];
         try {
             
             $data["html"] = $this->renderView('admin/affaires/facture.html.twig', [
                 'affaire' => $affaire,
                 'factures' => $factures,
+                'factureEcheance' => $factureEcheance
             ]);
            
             return new JsonResponse($data);

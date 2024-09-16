@@ -399,6 +399,7 @@ class FactureService
         $data['produits'] = $products;
         $data['facture'] = $facture;
         $data['compte'] = $facture->getCompte();
+        $data['factureEcheances'] = null;
         
         $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
 
@@ -559,6 +560,7 @@ class FactureService
         $data['produits'] = $products;
         $data['facture'] = $facture;
         $data['compte'] = $facture->getCompte();
+        $data['factureEcheances'] = null;
         
         $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
         

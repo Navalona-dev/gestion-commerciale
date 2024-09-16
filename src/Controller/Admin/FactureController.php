@@ -14,6 +14,7 @@ use App\Repository\FactureRepository;
 use App\Exception\PropertyVideException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Repository\FactureEcheanceRepository;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,6 +38,9 @@ class FactureController extends AbstractController
     private $productService;
     private $factureService;
     private $logger;
+    private $factureRepo;
+    private $factureEcheanceRepo;
+
 
 
     public function __construct(
@@ -46,6 +50,8 @@ class FactureController extends AbstractController
         ProductService $productService, 
         FactureService $factureService,
         LoggerInterface $affaireLogger, 
+        FactureRepository $factureRepo,
+        FactureEcheanceRepository $factureEcheanceRepo
         
         )
     {
@@ -55,6 +61,9 @@ class FactureController extends AbstractController
         $this->application = $applicationManager->getApplicationActive();
         $this->factureService = $factureService;
         $this->logger = $affaireLogger;
+        $this->factureRepo = $factureRepo;
+        $this->factureEcheanceRepo = $factureEcheanceRepo;
+
 
     }
 
@@ -64,18 +73,46 @@ class FactureController extends AbstractController
 
         $data = [];
         try {
-            
             $factures = $factureService->getAllFactures();
+        
+            $factureEcheanceData = [];  // Tableau pour stocker les échéances par facture
+        
+            $factureId = [];
+            foreach($factures as $facture) {
+                $factureId[] = $facture['id'];
+            }
+        
+            $facts = $this->factureRepo->findBy(['id' => $factureId]);
+        
+            foreach($facts as $fact) {
+                $factureEcheances = $fact->getFactureEcheances(); 
+                
+                $countFactureEcheances = count($factureEcheances);
+        
+                if ($countFactureEcheances > 0) {
+                    $factureEcheanceId = $factureEcheances[$countFactureEcheances - 1]; 
+                    $factureEcheance = $this->factureEcheanceRepo->findOneBy(['id' => $factureEcheanceId]);
+        
+                    // Stocke l'échéance pour cette facture
+                    $factureEcheanceData[$fact->getId()] = $factureEcheance;
+                } else {
+                    // Si pas d'échéance, stocke null
+                    $factureEcheanceData[$fact->getId()] = null;
+                }
+            }
+        
             if ($factures == false) {
                 $factures = [];
             }
-           
+        
             $data["html"] = $this->renderView('admin/facture/index.html.twig', [
                 'listes' => $factures,
+                'factureEcheanceData' => $factureEcheanceData 
             ]);
-           
+        
             return new JsonResponse($data);
-        } catch (\Exception $Exception) {
+        } 
+        catch (\Exception $Exception) {
             $data["exception"] = $Exception->getMessage();
             $this->createNotFoundException('Exception' . $Exception->getMessage());
         }
