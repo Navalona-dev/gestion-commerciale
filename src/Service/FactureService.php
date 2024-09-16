@@ -390,6 +390,7 @@ class FactureService
         
         // Initialize Dompdf
         $options = new Options();
+        $options->set('isRemoteEnabled', true);
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isPhpEnabled', true);
         $pdf = new Dompdf($options);
@@ -551,6 +552,7 @@ class FactureService
         
         // Créer une instance de Dompdf
         $options = new Options();
+        $options->set('isRemoteEnabled', true);
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isPhpEnabled', true);
         $pdf = new Dompdf($options);
