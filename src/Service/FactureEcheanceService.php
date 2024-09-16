@@ -194,6 +194,7 @@ class FactureEcheanceService
 
             // Initialize Dompdf
             $options = new Options();
+            $options->set('isRemoteEnabled', true);
             $options->set('isHtml5ParserEnabled', true);
             $options->set('isPhpEnabled', true);
             $pdf = new Dompdf($options);
@@ -365,6 +366,7 @@ class FactureEcheanceService
 
          // Initialize Dompdf
          $options = new Options();
+         $options->set('isRemoteEnabled', true);
          $options->set('isHtml5ParserEnabled', true);
          $options->set('isPhpEnabled', true);
          $pdf = new Dompdf($options);
@@ -475,6 +477,7 @@ class FactureEcheanceService
 
          // Initialize Dompdf
          $options = new Options();
+         $options->set('isRemoteEnabled', true);
          $options->set('isHtml5ParserEnabled', true);
          $options->set('isPhpEnabled', true);
          $pdf = new Dompdf($options);
