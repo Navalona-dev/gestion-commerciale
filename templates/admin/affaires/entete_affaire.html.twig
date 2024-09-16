@@ -92,7 +92,7 @@
                                     <option value="{{key}}" {% if affaire.devisEvol is not null and affaire.devisEvol == key %} selected {% endif %}>{{statutDev}}</option>
                                     {% endfor %}
                                 </select>#}
-                                <input type="text" name="status-devis" id="status-devis" class="form-control form-control-sm" value="{{statutDevis[affaire.devisEvol]}}">
+                                <input type="text" name="status-devis" id="status-devis" class="form-control form-control-sm" value="{{statutDevis[affaire.devisEvol]}}" readonly>
                                 
                             </div>
                             {#<div class="col-md-4 col-12 status">
@@ -111,7 +111,7 @@
                                     <option value="{{key}}" {% if affaire.paiement is not null and affaire.paiement == key %} selected {% endif %}>{{statutPaie}}</option>
                                     {% endfor %}
                                 </select>#}
-                                <input type="text" name="status-paiement" id="status-paiement" class="form-control form-control-sm" value="{{statutPaiement[affaire.paiement]}}">
+                                <input type="text" name="status-paiement" id="status-paiement" class="form-control form-control-sm" value="{{statutPaiement[affaire.paiement]}}" readonly>
 
                             </div>
                         </div>

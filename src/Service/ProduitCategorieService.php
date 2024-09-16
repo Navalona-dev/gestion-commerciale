@@ -122,22 +122,19 @@ class ProduitCategorieService
                 }
             }
 
-            $fournisseur = null;
             if(isset($idFournisseur) && !empty($idFournisseur)) {
-                $fournisseur = $this->produitCategorieService->getFournisseurById($idFournisseur);
-                if ($fournisseur) {
+
+                $fournisseur = $this->getFournisseurById($idFournisseur);
+                if ($fournisseur != false && $fournisseur != null) {
                     $produitCategorie->addCompte($fournisseur);
                     $fournisseur->addProduitCategory($produitCategorie);
-                    $this->produitCategorieService->persist($fournisseur);
-                }
-            }
+                    $this->persist($fournisseur);
 
-            if ($fournisseur != false && $fournisseur != null) {
-                $reference = $fournisseur->getCode();
-
-                if($reference) {
-                    $produitCategorie->setReference($reference . '' . $produitCategorie->getReference());
-                }
+                    $codeFournisseur = $fournisseur->getCode();
+                    if($codeFournisseur) {
+                        $produitCategorie->setReference($codeFournisseur . '' . $produitCategorie->getReference());
+                    }
+                } 
             } else {
                 $produitCategorie->setReference($reference);
             }
