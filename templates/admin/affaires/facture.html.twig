@@ -99,6 +99,7 @@
                                         <th><input type="checkbox" class="custom-checkbox" name="" id=""></th>
                                         <th>Validation</th>
                                         <th>Actions</th>
+                                        <th>Facture finale</th>
                                         <th>Date</th>
                                         <th>Type</th>
                                         <th>N°</th>
@@ -126,25 +127,38 @@
                                             <a style="cursor: pointer;"><i class="bi bi-check text-primary fs-4"></i></a>
                                             {% endif %}
                                         </td>
-                                        <td class="d-flex align-items-center">
+                                        <td class="">
                                             <a href="#" class="text-primary fs-6"><i class="bi bi-pencil-square"></i></a>
                                             <a href="#" onclick="return deleteFacture({{liste.id}})" class="text-danger fs-6 mx-2"><i class="bi bi-trash-fill"></i></a>
                                             {% if liste.factureEcheances|length > 0 %}
                                             <a href="#tab-echeance" onclick="return showTabEcheance({{liste.id}})" class="text-warning fs-6"><i class="bi bi-calendar-date-fill"></i></a>
                                             {% endif %}
                                             {% set filePath = '' %}
-                                            {% if liste.statut == "regle" or liste.statut == "encours" %}
-                                                {% set filePath = 'uploads/factures/valide/' ~ liste.file %}
-                                            {% elseif liste.statut == "annule" %}
-                                                {% set filePath = 'uploads/factures/annule/' ~ liste.file %}
+                                            {% if liste.file is not null %}
+                                                {% if liste.statut == "regle" or liste.statut == "encours" %}
+                                                    {% set filePath = 'uploads/factures/valide/' ~ liste.file %}
+                                                {% elseif liste.statut == "annule" %}
+                                                    {% set filePath = 'uploads/factures/annule/' ~ liste.file %}
+                                                {% endif %}
+                                            
+                                                {% if file_exists(filePath)%}
+                                                    <a href="{{ asset(filePath) }}" target="_blank" class="text-danger fs-6 {% if liste.factureEcheances|length > 0 %} mx-2 {% endif %}">
+                                                        <i class="bi bi-file-pdf-fill"></i>
+                                                    </a>
+                                                {% endif %}
                                             {% endif %}
                                             
-                                            {% if file_exists(filePath) %}
-                                                <a href="{{ asset(filePath) }}" target="_blank" class="text-danger fs-6 {% if liste.factureEcheances|length > 0 %} mx-2 {% endif %}">
-                                                    <i class="bi bi-file-pdf-fill"></i>
-                                                </a>
+                                        </td>
+                                        <td>
+                                            {% set url = '' %}
+                                            {% if factureEcheance is not null %}
+                                                {% set url = 'uploads/factures/echeance/' ~ factureEcheance.file %}
+                                                {% if file_exists(url) and factureEcheance.status == "regle" %}
+                                                    <a href="{{ asset(url) }}" target="_blank" class="text-danger fs-6">
+                                                        <i class="bi bi-file-pdf-fill"></i>
+                                                    </a>
+                                                {% endif %}
                                             {% endif %}
-                                            
                                         </td>
                                         <td> {{liste.dateCreation|date('d-m-Y')}} </td>
                                         <td> {{liste.type}} </td>
@@ -163,7 +177,8 @@
                                     </tr>
                                     {% else %}
                                     <tr>
-                                        <td colspan="15">Aucune facture trouvé</td>
+                                        <td colspan="16">Aucune facture trouvé</td>
+                                        <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>

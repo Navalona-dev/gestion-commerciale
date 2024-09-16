@@ -203,6 +203,7 @@ class FactureEcheanceService
             $data['produits'] = $products;
             $data['facture'] = $facture;
             $data['compte'] = $facture->getCompte();
+            $data['factureEcheances'] = $factureEcheances;
             
             $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
 
@@ -245,6 +246,7 @@ class FactureEcheanceService
 
         $facture = $factureEcheance->getFacture();
         $affaire = $facture->getAffaire();
+        $products = $affaire->getProducts();
 
         if($reste == 0) {
             $facture->setEtat('regle');
@@ -372,8 +374,10 @@ class FactureEcheanceService
          $data['facture'] = $facture;
          $data['newFacture'] = $newFacture;
          $data['factureEcheance'] = $factureEcheance;
+         $data['factureEcheances'] = $facture->getFactureEcheances();
          $data['compte'] = $facture->getCompte();
          $data['montantPaye'] = $montantPaye;
+         $data['produits'] = $products;
          
          $html = $this->twig->render('admin/facture_echeance/facturePdf.html.twig', $data);
  
@@ -413,6 +417,7 @@ class FactureEcheanceService
 
         $facture = $factureEcheance->getFacture();
         $affaire = $facture->getAffaire();
+        $products = $affaire->getProducts();
 
         $date = new \DateTime();
 
@@ -479,7 +484,9 @@ class FactureEcheanceService
          $data['facture'] = $facture;
          $data['newFacture'] = $newFacture;
          $data['factureEcheance'] = $factureEcheance;
+         $data['factureEcheances'] = $facture->getFactureEcheances();
          $data['compte'] = $facture->getCompte();
+         $data['produits'] = $products;
          $data['montantPaye'] = $montantPaye;
          
          $html = $this->twig->render('admin/facture_echeance/facturePdf.html.twig', $data);

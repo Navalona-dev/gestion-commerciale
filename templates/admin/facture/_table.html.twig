@@ -4,6 +4,7 @@
             <th>Validation</th>
             <th>Actions</th>
             <th>PDF</th>
+            <th>facture finale</th>
             <th>Date</th>
             <th>Type</th>
             <th>N°</th>
@@ -43,15 +44,28 @@
                 </div>
             </td>
             {% set filePath = '' %}
-            {% if liste.statut == "regle" or liste.statut == "encours" %}
-                {% set filePath = 'uploads/factures/valide/' ~ liste.file %}
-            {% elseif liste.statut == "annule" %}
-                {% set filePath = 'uploads/factures/annule/' ~ liste.file %}
+            {% if liste.file is not null %}
+                {% if liste.statut == "regle" or liste.statut == "encours" %}
+                    {% set filePath = 'uploads/factures/valide/' ~ liste.file %}
+                {% elseif liste.statut == "annule" %}
+                    {% set filePath = 'uploads/factures/annule/' ~ liste.file %}
+                {% endif %}
             {% endif %}
 
             <td>
                 {% if file_exists(filePath) %}
                     <a href="{{filePath}}" target="_blank" class="text-danger fs-4"><i class="bi bi-file-pdf-fill"></i></a>
+                {% endif %}
+            </td>
+            <td>
+                {% set factureEcheance = factureEcheanceData[liste.id] %}
+                {% set url = '' %}
+                {% if factureEcheance is not null %}
+                    {% set url = 'uploads/factures/echeance/' ~ factureEcheance.file %}
+
+                    {% if file_exists(url) and factureEcheance.status == "regle" %}
+                        <a href="{{url}}" target="_blank" class="text-danger fs-4"><i class="bi bi-file-pdf-fill"></i></a>
+                    {% endif %}
                 {% endif %}
             </td>
             <td> {{liste.dateCreation|date('d/m/Y')}} </td>
