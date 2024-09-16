@@ -31,7 +31,9 @@ class ProduitCategorie
         'ml' => 'ML',
         'cc' => 'CC',
         'kg' => 'Kg',
-        'g' => 'G'
+        'g' => 'G',
+        'flc' => 'FLC',
+        'pcs' => 'PCS'
     ];
 
     const uniteVenteDetails = [
@@ -41,7 +43,9 @@ class ProduitCategorie
         'cc' => 'CC',
         'kg' => 'Kg',
         'g' => 'G',
-        'cp' => 'Comprimé'
+        'cp' => 'Comprimé',
+        'flc' => 'FLC',
+        'pcs' => 'PCS'
     ];
 
     #[ORM\Id]
