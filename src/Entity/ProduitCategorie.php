@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ProduitCategorieRepository::class)]
-#[UniqueEntity(fields: ['reference'], message: 'Ce reference produit est déjà dans notre base de données. Veuillez en choisir un autre.')]
 class ProduitCategorie
 {
     const presentationVente = [

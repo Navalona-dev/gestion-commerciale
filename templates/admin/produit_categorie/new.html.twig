@@ -50,6 +50,7 @@
                         <div class="col-md-4 col-12">
                             <div class="form-group mb-3">
                                 <label for="" class="mb-2">Référence</label>
+                                <span class="text-danger error">Cette référence existe déjà pour cette application</span>
                                 {{form_widget(form.reference)}}
                             </div>
                         </div>
@@ -201,7 +202,7 @@
 <script>
   
     $(document).ready(function () {
-        
+        $('.error').hide();
        $('#newProduitCategorie').on('submit', function (e) {
             e.preventDefault();
             let form = $(this);
@@ -217,21 +218,28 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    $('#modalNewProduitCategorie').modal('hide');
-                    var nextLink = $('#sidebar').find('li#produit-categorie').find('a');
-                    setTimeout(function () {
-                        toastr.options = {
-                            closeButton: true,
-                            progressBar: true,
-                            showMethod: 'slideDown',
-                            timeOut: 1000
-                        };
-                        toastr.success('Avec succèss', 'Enregistrement effectuée');
+                    if(response.status == "error") {
+                        $('.error').show()
+                        $('#modalNewProduitCategorie').modal('show');
 
-                        //$(".loadBody").css('display', 'none');
+                    } else {
+                        $('#modalNewProduitCategorie').modal('hide');
+                        var nextLink = $('#sidebar').find('li#produit-categorie').find('a');
+                        setTimeout(function () {
+                            toastr.options = {
+                                closeButton: true,
+                                progressBar: true,
+                                showMethod: 'slideDown',
+                                timeOut: 1000
+                            };
+                            toastr.success('Avec succèss', 'Enregistrement effectuée');
 
-                    }, 800);
-                    showTabProduitCategorie();
+                            //$(".loadBody").css('display', 'none');
+
+                        }, 800);
+                        showTabProduitCategorie();
+                    }
+                  
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
