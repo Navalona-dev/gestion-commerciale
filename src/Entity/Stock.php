@@ -28,7 +28,7 @@ class Stock
     private ?DatePeremption $datePeremption = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $qttRestant = null;
+    private ?float $qttRestant = null;
 
     public static function newStock($instance = null)
     {
@@ -92,12 +92,12 @@ class Stock
         return $this;
     }
 
-    public function getQttRestant(): ?string
+    public function getQttRestant(): ?float
     {
         return $this->qttRestant;
     }
 
-    public function setQttRestant(?string $qttRestant): static
+    public function setQttRestant(?float $qttRestant): static
     {
         $this->qttRestant = $qttRestant;
 

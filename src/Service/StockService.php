@@ -294,11 +294,14 @@ class StockService
 
             if ($newDatePeremption) {
                 $stock->setDatePeremption($newDatePeremption);
-            }            
+            } else {
+                $stock->setDatePeremption(null);
+            }           
             // Persist l'état actuel de stock
+            
             $this->entityManager->persist($stock);
         }
-
+        
         $this->update();
 
         // Obtenir l'utilisateur connecté
