@@ -43,7 +43,7 @@ class ProduitCategorie
         'cc' => 'CC',
         'kg' => 'Kg',
         'g' => 'G',
-        'cp' => 'Comprimé',
+        'cp' => 'Cp',
         'flc' => 'FLC',
         'pcs' => 'PCS'
     ];
