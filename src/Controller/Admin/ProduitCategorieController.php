@@ -603,11 +603,11 @@ class ProduitCategorieController extends AbstractController
                 $newApplication = $formData->getApplication();
                 $quantity = $formData->getQuantity();
 
-                $produits = $produitCategorieRepo->findBy(['application' => $newApplication]);
+                $produitCategories = $produitCategorieRepo->findBy(['application' => $newApplication]);
 
-                // Condition pour vérifier si $produitReference existe dans $produits
+                // Condition pour vérifier si $produitReference existe dans $produitCategories
                 $productReferenceExists = null;
-                foreach ($produits as $produit) {
+                foreach ($produitCategories as $produit) {
                     if ($produit->getReference() === $produitReference) {
                         $productReferenceExists = $produit;
                         break;

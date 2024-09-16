@@ -468,7 +468,8 @@ class ProduitCategorieService
             ->setPrixHt($oldProduitCategorie->getPrixHt())
             ->setDateCreation($date);
 
-        foreach ($oldProduitCategorie->getProductImages() as $productImage) {
+        
+            foreach ($oldProduitCategorie->getProductImages() as $productImage) {
             $productImage->setProduitCategorie($newProduitCategorie);
             $productImage->setDateCreation($date);
             $this->entityManager->persist($productImage);
@@ -526,9 +527,7 @@ class ProduitCategorieService
             }
         }
 
-        $newProduitCategorie->setStockRestant($newStockRestantNewProduitCategorie);
-
-       // dd($newStockRestantNewProduitCategorie, $newProduitCategorie->getStockRestant());
+        $newProduitCategorie->setStockRestant($newProduitCategorie->getStockRestant() + $newStockRestantNewProduitCategorie);
 
         $this->entityManager->persist($newProduitCategorie);
 
