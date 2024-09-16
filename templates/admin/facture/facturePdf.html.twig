@@ -14,7 +14,7 @@
 <body>
     {% set compte = facture.affaire.compte %}
     <div>
-        <img src="https://www.cvb-group.com/assets/images/logo-vsm.jpeg" alt="" class="logo">
+        <img src="{{ app.request.getSchemeAndHttpHost() ~ asset('assets/images/logo-vsm.jpeg') }}" alt="" class="logo">
     </div>
 
     <div style="margin-bottom: 20px;">
