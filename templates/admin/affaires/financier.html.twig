@@ -239,7 +239,12 @@
                                                             et {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})
                                                     {% else %}
                                                         {% if product.produitCategorie.volumeGros > 0 %}
-                                                        {{ product.qtt / product.produitCategorie.volumeGros }} {{product.produitCategorie.presentationGros}})
+                                                            {% if product.qtt >= product.produitCategorie.volumeGros %} 
+                                                                    {{ product.qtt / product.produitCategorie.volumeGros }} {{product.produitCategorie.presentationGros}})
+                                                            {% else %}
+                                                                {{product.qtt }} {{product.produitCategorie.presentationDetail}})
+                                                            {% endif %}
+                                                           
                                                         {% else %}
                                                               {{product.qtt }} {{product.produitCategorie.presentationDetail}})
                                                         {% endif %}
