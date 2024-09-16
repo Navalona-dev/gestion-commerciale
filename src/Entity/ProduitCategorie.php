@@ -30,8 +30,8 @@ class ProduitCategorie
         'l' => 'L',
         'ml' => 'ML',
         'cc' => 'CC',
-        'Kg' => 'Kg',
-        'G' => 'G'
+        'kg' => 'Kg',
+        'g' => 'G'
     ];
 
     const uniteVenteDetails = [
@@ -39,8 +39,8 @@ class ProduitCategorie
         'l' => 'L',
         'ml' => 'ML',
         'cc' => 'CC',
-        'Kg' => 'Kg',
-        'G' => 'G',
+        'kg' => 'Kg',
+        'g' => 'G',
         'cp' => 'Comprimé'
     ];
 
