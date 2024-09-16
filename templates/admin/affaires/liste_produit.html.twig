@@ -56,7 +56,7 @@
                             {% for liste in listes %}
                             <tr class="text-nowrap" data-filter="{{ liste.categorie }}">
                                 <td>
-                                    <a onclick="return addPanier(this, {{ affaire.id }});"
+                                    <a onclick="return addPanier(this, {{ affaire.id }}, {{liste.volumeGros}}, {{liste.volumeDetail}} );"
                                            class="panier" style="cursor: pointer;"><i class="bi bi-cart-plus-fill"></i>
                                         <span class="mx-1">Ajouter</span>
                                     </a>

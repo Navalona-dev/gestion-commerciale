@@ -90,8 +90,12 @@ class ProductController extends AbstractController
         //$prixHt = (null != $request->get('prixHt'))?$request->get('prixHt'): null;
 
         //$prixTTC = (null != $request->get('prixTTC'))?$request->get('prixTTC'): null;
+        $coef = $produitCategorie->getVolumeGros();
+        if ($typeVente == "detail") {
+            $coef = $produitCategorie->getVolumeDetail();
+        }
 
-        if($qtt > $produitCategorie->getStockRestant()) {
+        if($qtt > ($produitCategorie->getStockRestant() * $coef) ) {
             return new JsonResponse(['status' => 'error', 'message' => 'Le stock restant de ce produit est inférieur à la quantité que vous avez saisissez, veuillez changer la quantité à inférieur ou égale au stock restant'], Response::HTTP_OK);
         }
         

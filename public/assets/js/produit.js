@@ -1,4 +1,4 @@
-function addPanier(elt, idAffaire) {
+function addPanier(elt, idAffaire, volumeGros = null, volumeDetail = null) {
     ///alert("ici");
     //return false;
     $(".loadBody").css('display', 'block');
@@ -6,8 +6,8 @@ function addPanier(elt, idAffaire) {
     var idProduit = $(elt).parent('td').parent('tr').find("input[name='idProduit']").val();
 
     var qtt = $(elt).parent('td').parent('tr').find("input[name='qttProduit']").val();
-    
-    var typeVente =  $(elt).parent('td').parent('tr').find("select[name='typeVente']").val();
+    var typeVente = 'gros';
+    typeVente =  $(elt).parent('td').parent('tr').find("select[name='typeVente']").val();
     var qttRestant = $(elt).parent('td').parent('tr').find("input[name='qttRestant']").val();
 
     //var prixHt = $(elt).parent('td').parent('tr').find("input[name='prixHt']").val();
@@ -18,8 +18,19 @@ function addPanier(elt, idAffaire) {
         return false;
     }
 
+    var qttTotal =  1;
+    if (typeVente.length === 0) {
+        typeVente = 'gros';
+    }
+    if (typeVente == 'gros') {
+        qttTotal =  parseFloat(volumeGros);
+    } 
+    if (typeVente == 'detail') {
+        qttTotal =  parseFloat(volumeDetail);
+    } 
+    
     if (qttRestant != undefined && qttRestant != "") {
-        if (parseFloat(qtt) > parseFloat(qttRestant)) {
+        if (parseFloat(qtt) > (parseFloat(qttRestant) * parseFloat(qttTotal))) {
             $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');
             setTimeout(function () {
                 toastr.options = {
