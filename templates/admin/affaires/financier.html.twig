@@ -198,21 +198,31 @@
                                                     {% endif %}
                                                     {{product.qtt - ( (product.qtt) |round(0))}} {{product.produitCategorie.presentationDetail}})   
                                             {% else %}
-                                                {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} 
+                                                {% set coef = 1 %}
+                                                {% if product.produitCategorie.uniteVenteGros in ['l', 'ml', 'cc', 'PCS'] %}
+                                                {% set coef = product.produitCategorie.volumeGros %}
+                                                {% endif %}
+                                               
+                                                {{product.qtt }}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} 
                                                 (
                                                     {% if product.qtt >= product.produitCategorie.volumeGros %} 
                                                         {{(product.qtt) |round(0)}}  {{product.produitCategorie.presentationGros}} 
-                                                        {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
+                                                        {% if product.qtt * coef - product.produitCategorie.volumeGros != 0 %} 
                                                             et 
                                                         {% endif %} 
                                                     {% endif %} 
 
                                                     {% if product.qtt >= product.produitCategorie.volumeGros %} 
-                                                        {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
+                                                        {% if product.qtt * coef - product.produitCategorie.volumeGros != 0 %} 
                                                             {{product.qtt - ( (product.qtt) |round(0))}} {{product.produitCategorie.presentationDetail}} 
                                                         {% endif %} 
                                                     {% else %} 
-                                                        {{product.qtt}} {{product.produitCategorie.presentationDetail}}
+                                                         {{product.qtt}}
+                                                        {% if coef == 1 %}
+                                                        {{product.produitCategorie.presentationDetail}}
+                                                        {% else %}
+                                                        {{product.produitCategorie.presentationGros}}
+                                                        {% endif %}
                                                     {% endif %} 
                                                 )
                                             {% endif %}
@@ -237,13 +247,14 @@
                                                         
                                             {% else %}
                                                 {% set coef = 1 %}
-                                                {% if product.produitCategorie.uniteVenteGros in ['l', 'ml', 'cc'] %}
+                                                {% if product.produitCategorie.uniteVenteGros in ['l', 'ml', 'cc', 'PCS'] %}
                                                 {% set coef = product.produitCategorie.volumeGros %}
                                                 {% endif %}
+
                                                 {{product.qtt * coef }}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant * product.produitCategorie.volumeGros}} {{product.uniteVenteGros}} 
                                                 (
                                                     {% if product.qtt >= product.produitCategorie.volumeGros %} 
-                                                        {{(product.produitCategorie.volumeGros / product.qtt) |round(0)}} {{product.produitCategorie.presentationGros}} 
+                                                        {{(product.qtt / product.produitCategorie.volumeGros  ) |round(0)}} {{product.produitCategorie.presentationGros}} 
                                                         {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
                                                             et 
                                                         {% endif %} 
@@ -251,10 +262,15 @@
 
                                                 {% if product.qtt >= product.produitCategorie.volumeGros %} 
                                                     {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
-                                                        {{product.qtt - ( (product.produitCategorie.volumeGros / product.qtt) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} 
+                                                        {{product.qtt - ( (product.qtt  / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} 
                                                     {% endif %} 
                                                 {% else %} 
-                                                    {{product.qtt}} {{product.produitCategorie.presentationGros}}
+                                                 {{product.qtt}}
+                                                    {% if coef == 1 %}
+                                                    {{product.produitCategorie.presentationDetail}}
+                                                    {% else %}
+                                                    {{product.produitCategorie.presentationGros}}
+                                                    {% endif %}
                                                 {% endif %} 
                                             )
                                             {% endif %}

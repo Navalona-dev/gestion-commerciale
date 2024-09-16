@@ -43,7 +43,7 @@
         </td>#}
 
         <td class="text-center  align-items-center">
-             <a href="#" onclick="return editLigneProduct(this, {{ affaire.id }}, {{ product.id }});" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
+             <a href="#" onclick="return editLigneProduct(this, {{ affaire.id }}, {{ product.id }}, null, '{{product.typeVente}}', {{product.produitCategorie.volumeGros}}, {{product.produitCategorie.volumeDetail}});" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
              <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
             {# <a class="d-block" onclick="return addNewProduitV2(this, {{ affaire.id }}, {{ produit.id }}, {{ produit.position }});"  title="Enregistrer" > <img src="/images/Y.png" alt="yes" style="margin-bottom: 30px;"> </a> &nbsp;&nbsp;&nbsp;&nbsp;
             <button onclick="return deleteProduitAffaire(this,{{ produit.id }}, {{ affaire.id }});" style=" color: rgb(217, 83, 79); cursor: pointer;display: inline-block; background: transparent; border: none" class=""><span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></button> #}

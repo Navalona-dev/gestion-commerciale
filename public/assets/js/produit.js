@@ -109,7 +109,7 @@ function updateLigneProduct(elt, idProduit, idAffaire) {
     return false;
 }
 
-function editLigneProduct(elt, idAffaire, idProduit, position = null) {
+function editLigneProduct(elt, idAffaire, idProduit, position = null, typeVente = null, volumeGros = null, volumeDetail = null) {
     var anchorName = document.location.hash.substring(1);
 
     $("#qtt").css('border', '1px solid #e5e6e7');
@@ -123,7 +123,15 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null) {
     
     if (qttRestant != undefined && qttRestant != "") {
        
-        if (parseFloat(qtt) > parseFloat(qttRestant)) {
+        var qttTotal =  1;
+        if (typeVente == 'gros') {
+            qttTotal =  parseFloat(volumeGros);
+        } 
+        if (typeVente == 'detail') {
+            qttTotal =  parseFloat(volumeDetail);
+        } 
+        
+        if (parseFloat(qtt) > (parseFloat(qttRestant) * parseFloat(qttTotal))) {
            
             $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');
             setTimeout(function () {
