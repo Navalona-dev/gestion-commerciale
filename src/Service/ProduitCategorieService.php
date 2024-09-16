@@ -60,67 +60,148 @@ class ProduitCategorieService
         $this->security = $security;
     }
 
-    public function add($instance)
+    public function add($instance, $application = null, $idFournisseur = null, $formData = null)
     {
-        $produitCategorie = ProduitCategorie::newProduitCategorie($instance);
+        $produitCategorie = null;
+        
+        $error = false;
 
-        $date = new \DateTime();
+        $categorieName = $formData->getCategorie();
+        $typeName = $formData->getType();
+        $reference = $formData->getReference();
 
-        $produitCategorie->setApplication($instance->getApplication());
-        $produitCategorie->setDateCreation($date);
-        $produitCategorie->setDescription($instance->getDescription());
-        $produitCategorie->setReference($instance->getReference());
-        $produitCategorie->setPrixHt($instance->getPrixHt());
-        $produitCategorie->setTva($instance->getTva());
-        $produitCategorie->setQtt($instance->getQtt());
-        $produitCategorie->setStockRestant($instance->getStockRestant());
-        $produitCategorie->setStockMin(10);
-        $produitCategorie->setStockMax(50);
-        $produitCategorie->setUniteVenteGros($instance->getUniteVenteGros());
-        $produitCategorie->setUniteVenteDetail($instance->getUniteVenteDetail());
-        $produitCategorie->setPrixVenteGros($instance->getPrixVenteGros());
-        $produitCategorie->setPrixVenteDetail($instance->getPrixVenteDetail());
-        $produitCategorie->setPrixTTC($instance->getPrixTTC());
-        $produitCategorie->setPrixAchat($instance->getPrixAchat());
-        $produitCategorie->setCategorie($instance->getCategorie());
+        $categorie = null;
+        $type = null;
 
-        foreach($produitCategorie->getProductImages() as $productImage) {
-            $productImage->setProduitCategorie($produitCategorie);
-            $productImage->setDateCreation($date);
-            $this->entityManager->persist($productImage);
-        }
-
-        $stock = new Stock();
-
-        if($produitCategorie->getQtt()) {
-            $qtt = $produitCategorie->getQtt();
-        } else {
-            $qtt = 0;
-        }
-
-        $stock->setQtt($qtt);
-        $stock->setQttRestant($qtt);
-        $stock->setProduitCategorie($produitCategorie);
-        $stock->setDateCreation($date);
-
-        $this->entityManager->persist($stock);
-
-        $this->entityManager->persist($produitCategorie);
-
-        // Obtenir l'utilisateur connecté
-        $user = $this->security->getUser();
-
-        // Créer log
-        $this->logger->info('Produit catégorie ajouté', [
-            'Produit' => $produitCategorie->getNom(),
-            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
-            'ID Application' => $produitCategorie->getApplication()->getId()
+        // Vérifier si la référence existe déjà pour l'application
+        $existingProduitCategorie = $this->entityManager->getRepository(ProduitCategorie::class)
+        ->findOneBy([
+            'reference' => $reference,
+            'application' => $application,
         ]);
 
-        //$this->update();
-        unset($instance);
-        return $produitCategorie;
+        if ($existingProduitCategorie) {
+            $error = true;
+        } else {
+
+            $produitCategorie = ProduitCategorie::newProduitCategorie($instance);
+
+            $date = new \DateTime();
+
+            if($categorieName) {
+                $categorie = $categorieName;
+                $produitCategorie->setCategorie($categorie);
+            } else {
+                $categorie = $this->categorieRepo->findOneBy(['nom' => 'Autre']);
+                if(!$categorie){
+                    $newCategorie = new Categorie();
+                    $newCategorie->setNom('Autre');
+                    $newCategorie->setDateCreation(new \DateTime());
+                    $newCategorie->setApplication($this->application);
+                    $this->entityManager->persist($newCategorie);
+                    $produitCategorie->setCategorie($newCategorie);
+                } else {
+                    $produitCategorie->setCategorie($categorie);
+                }
+            }
+
+            if($typeName) {
+                $type = $typeName;
+                $produitCategorie->setType($type);
+            } else {
+                $type = $this->typeRepo->findOneBy(['nom' => 'Autre']);
+                if(!$type){
+                    $newType = new ProduitType();
+                    $newType->setNom('Autre');
+                    $newType->setDateCreation(new \DateTime());
+                    $newType->setApplication($this->application);
+                    $this->entityManager->persist($newType);
+                    $produitCategorie->setType($newType);
+                } else {
+                    $produitCategorie->setType($type);
+                }
+            }
+
+            $fournisseur = null;
+            if(isset($idFournisseur) && !empty($idFournisseur)) {
+                $fournisseur = $this->produitCategorieService->getFournisseurById($idFournisseur);
+                if ($fournisseur) {
+                    $produitCategorie->addCompte($fournisseur);
+                    $fournisseur->addProduitCategory($produitCategorie);
+                    $this->produitCategorieService->persist($fournisseur);
+                }
+            }
+
+            if ($fournisseur != false && $fournisseur != null) {
+                $reference = $fournisseur->getCode();
+
+                if($reference) {
+                    $produitCategorie->setReference($reference . '' . $produitCategorie->getReference());
+                }
+            } else {
+                $produitCategorie->setReference($reference);
+            }
+
+            $produitCategorie->setQtt($produitCategorie->getStockRestant());
+            $produitCategorie->setApplication($application);
+
+            $produitCategorie->setDateCreation($date);
+            $produitCategorie->setDescription($instance->getDescription());
+            $produitCategorie->setPrixHt($instance->getPrixHt());
+            $produitCategorie->setTva($instance->getTva());
+            $produitCategorie->setQtt($instance->getQtt());
+            $produitCategorie->setStockRestant($instance->getStockRestant());
+            $produitCategorie->setStockMin(10);
+            $produitCategorie->setStockMax(50);
+            $produitCategorie->setUniteVenteGros($instance->getUniteVenteGros());
+            $produitCategorie->setUniteVenteDetail($instance->getUniteVenteDetail());
+            $produitCategorie->setPrixVenteGros($instance->getPrixVenteGros());
+            $produitCategorie->setPrixVenteDetail($instance->getPrixVenteDetail());
+            $produitCategorie->setPrixTTC($instance->getPrixTTC());
+            $produitCategorie->setPrixAchat($instance->getPrixAchat());
+            $produitCategorie->setCategorie($instance->getCategorie());
+
+            foreach($produitCategorie->getProductImages() as $productImage) {
+                $productImage->setProduitCategorie($produitCategorie);
+                $productImage->setDateCreation($date);
+                $this->entityManager->persist($productImage);
+            }
+
+            $stock = new Stock();
+
+            if($produitCategorie->getQtt()) {
+                $qtt = $produitCategorie->getQtt();
+            } else {
+                $qtt = 0;
+            }
+
+            $stock->setQtt($qtt);
+            $stock->setQttRestant($qtt);
+            $stock->setProduitCategorie($produitCategorie);
+            $stock->setDateCreation($date);
+
+            $this->entityManager->persist($stock);
+
+            $this->entityManager->persist($produitCategorie);
+
+            // Obtenir l'utilisateur connecté
+            $user = $this->security->getUser();
+
+            // Créer log
+            $this->logger->info('Produit catégorie ajouté', [
+                'Produit' => $produitCategorie->getNom(),
+                'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                'ID Application' => $produitCategorie->getApplication()->getId()
+            ]);
+
+            
+            $this->update();
+
+            unset($instance);
+        }
+
+        return [$produitCategorie, $error];
     }
 
     public function persist($entity)

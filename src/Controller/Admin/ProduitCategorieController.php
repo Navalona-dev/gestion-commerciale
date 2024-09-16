@@ -130,7 +130,8 @@ class ProduitCategorieController extends AbstractController
        
         try {
             $produitCategorie = new ProduitCategorie();
-            $form = $this->createForm(ProduitCategorieType::class, $produitCategorie);
+            
+            $form = $this->createForm(ProduitCategorieType::class, $produitCategorie, []);
             $fournisseurs = $this->produitCategorieService->getAllFournisseur();
             
             $form->handleRequest($request);
@@ -139,95 +140,43 @@ class ProduitCategorieController extends AbstractController
                 if ($request->isXmlHttpRequest()) {
 
                     $formData = $form->getData();
-
-                    $categorieName = $formData->getCategorie();
-                    $typeName = $formData->getType();
-
-                    $categorie = null;
-                    $type = null;
-
-                    if($categorieName) {
-                        $categorie = $categorieName;
-                        $produitCategorie->setCategorie($categorie);
-                    } else {
-                        $categorie = $this->categorieRepository->findOneBy(['nom' => 'Autre']);
-                        if(!$categorie){
-                            $newCategorie = new Categorie();
-                            $newCategorie->setNom('Autre');
-                            $newCategorie->setDateCreation(new \DateTime());
-                            $newCategorie->setApplication($this->application);
-                            $this->entityManager->persist($newCategorie);
-                            $produitCategorie->setCategorie($newCategorie);
-                        } else {
-                            $produitCategorie->setCategorie($categorie);
-                        }
-                    }
-
-                    if($typeName) {
-                        $type = $typeName;
-                        $produitCategorie->setType($type);
-                    } else {
-                        $type = $this->typeRepository->findOneBy(['nom' => 'Autre']);
-                        if(!$type){
-                            $newType = new ProduitType();
-                            $newType->setNom('Autre');
-                            $newType->setDateCreation(new \DateTime());
-                            $newType->setApplication($this->application);
-                            $this->entityManager->persist($newType);
-                            $produitCategorie->setType($newType);
-                        } else {
-                            $produitCategorie->setType($type);
-                        }
-                    }
                     
                     $idFournisseur = $request->get("produit_categorie_compte");
-                    $fournisseur = null;
-                    if(isset($idFournisseur) && !empty($idFournisseur)) {
-                        $fournisseur = $this->produitCategorieService->getFournisseurById($idFournisseur);
-                        if ($fournisseur) {
-                            $produitCategorie->addCompte($fournisseur);
-                            $fournisseur->addProduitCategory($produitCategorie);
-                            $this->produitCategorieService->persist($fournisseur);
-                        }
+
+                    list($produitCategorie, $error) = $this->produitCategorieService->add($produitCategorie, $this->application, $idFournisseur, $formData);
+
+                    if($error == true) {
+                        return new JsonResponse(['status' => 'error'], Response::HTTP_OK);
+                    } else {
+                        $user = $this->getUser();
+                        $data["produit"] = $produitCategorie->getNom();
+                        $data["dateReception"] = (new \DateTime())->format("d-m-Y h:i:s");
+                        $data["dateTransfert"] = null;
+                        $data["dateSortie"] = null;
+                        $data["userDoAction"] = $user->getUserIdentifier();
+                        $data["source"] = $this->application->getEntreprise();
+                        $data["destination"] = $this->application->getEntreprise();
+                        $data["action"] = "Ajout";
+                        $data["type"] = "Ajout";
+                        $data["qtt"] = $produitCategorie->getQtt();
+                        $data["stockRestant"] = $produitCategorie->getStockRestant();
+                        $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
+                        $data["typeSource"] = "Point de vente";
+                        $data["typeDestination"] = "Point de vente";;
+                        $data["commande"] = null;
+                        $data["commandeId"] = null;
+                        $data["sourceId"] =  $this->application->getId();
+                        $data["destinationId"] = $this->application->getId();
+                        $this->logService->addLog($request, "reception", $this->application->getId(), $produitCategorie->getReference(), $data);
+
+                        return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                        $this->addFlash('success', 'Création produit categorie "' . $produitCategorie->getNom() . '" avec succès.');
+                        return $this->redirectToRoute('produit_categories_liste');
                     }
-                    $reference = null;
-                    if ($fournisseur != false && $fournisseur != null) {
-                        $reference = $fournisseur->getCode();
-                        $produitCategorie->setReference($reference.$produitCategorie->getReference());
-                    }
-                    
-                    $produitCategorie->setQtt($produitCategorie->getStockRestant());
-                    $produitCategorie->setApplication($this->application);
-                    $this->produitCategorieService->add($produitCategorie);
 
-                    $this->entityManager->flush();
-
-                    $user = $this->getUser();
-                    $data["produit"] = $produitCategorie->getNom();
-                    $data["dateReception"] = (new \DateTime())->format("d-m-Y h:i:s");
-                    $data["dateTransfert"] = null;
-                    $data["dateSortie"] = null;
-                    $data["userDoAction"] = $user->getUserIdentifier();
-                    $data["source"] = $this->application->getEntreprise();
-                    $data["destination"] = $this->application->getEntreprise();
-                    $data["action"] = "Ajout";
-                    $data["type"] = "Ajout";
-                    $data["qtt"] = $produitCategorie->getQtt();
-                    $data["stockRestant"] = $produitCategorie->getStockRestant();
-                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
-                    $data["typeSource"] = "Point de vente";
-                    $data["typeDestination"] = "Point de vente";;
-                    $data["commande"] = null;
-                    $data["commandeId"] = null;
-                    $data["sourceId"] =  $this->application->getId();
-                    $data["destinationId"] = $this->application->getId();
-                    $this->logService->addLog($request, "reception", $this->application->getId(), $produitCategorie->getReference(), $data);
-
-                    return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
         
-                $this->addFlash('success', 'Création produit categorie "' . $produitCategorie->getNom() . '" avec succès.');
-                return $this->redirectToRoute('produit_categories_liste');
+                
             } 
 
             $data['exception'] = "";
