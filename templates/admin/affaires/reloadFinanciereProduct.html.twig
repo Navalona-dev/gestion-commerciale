@@ -161,17 +161,23 @@
                                                 {{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteDetail}} 
                                         
                                                 (
-                                                    {% if ((product.qtt / product.produitCategorie.volumeGros) |round(0)) != 0 %} 
+                                                    {% if ((product.qtt / product.produitCategorie.volumeGros) |round(0)) != 0 and product.qtt > product.produitCategorie.volumeGros  %} 
                                                         {{ (product.qtt / product.produitCategorie.volumeGros) |round(0)}} 
                                                         {{product.produitCategorie.presentationGros}}  
-                                                            et 
+                                                            et {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})
+                                                    {% else %}
+                                                        {{product.qtt }} {{product.produitCategorie.presentationDetail}})
                                                     {% endif %}
-                                                        {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})   
                                             {% else %}
-                                                {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} 
+
+                                             {% set coef = 1 %}
+                                                {% if product.produitCategorie.uniteVenteGros in ['l', 'ml', 'cc'] %}
+                                                {% set coef = product.produitCategorie.volumeGros %}
+                                                {% endif %}
+                                                {{product.qtt * coef}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant * product.produitCategorie.volumeGros}} {{product.uniteVenteGros}} 
                                                 (
                                                     {% if product.qtt >= product.produitCategorie.volumeGros %} 
-                                                        {{(product.qtt / product.produitCategorie.volumeGros) |round(0)}}  {{product.produitCategorie.presentationGros}} 
+                                                        {{(product.produitCategorie.volumeGros / product.qtt) |round(0)}}  {{product.produitCategorie.presentationGros}} 
                                                         {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
                                                             et 
                                                         {% endif %} 
@@ -179,10 +185,10 @@
 
                                                 {% if product.qtt >= product.produitCategorie.volumeGros %} 
                                                     {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
-                                                        {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} 
+                                                        {{product.qtt - ( (product.produitCategorie.volumeGros / product.qtt) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} 
                                                     {% endif %} 
                                                 {% else %} 
-                                                    {{product.qtt}} {{product.produitCategorie.presentationDetail}}
+                                                    {{product.qtt}} {{product.produitCategorie.presentationGros}}
                                                 {% endif %} 
                                             )
                                             {% endif %}

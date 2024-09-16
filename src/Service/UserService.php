@@ -38,7 +38,7 @@ class UserService
             )
         );
 
-        $user->setIsActive(false);
+        //$user->setIsActive(false);
         $user->setRoles(['ROLE_ADMIN']);
         $user->setDateModification(new \DateTime());
         if (count($user->getApplications()) > 0) {
@@ -47,14 +47,14 @@ class UserService
                 $application->addUserAppActive($user);
             }
         }
-
+        
         if (count($user->getPrivileges()) > 0) {
             // Assignation privilege au utilisateur
             foreach ($user->getPrivileges() as $key => $privilege) {
                 $privilege->addUser($user);
             }
         }
-        
+     
         $this->entityManager->persist($user);
         return $user;
     }

@@ -70,31 +70,34 @@
                                     {% endif %}
                                 </td>
                                 <td> 
-                                    {{liste.nom}} / (1 {{liste.presentationGros}} de {{liste.volumeGros}} {{liste.uniteVenteGros}})
+                                    {{liste.nom}} / (1 {{liste.presentationGros}} {% if liste.volumeGros > 0 %} de {{liste.volumeGros}} {{liste.uniteVenteGros}} {% endif %})
                                 </td>
                                 {% set volumeGros = liste.volumeGros %}
                                 {% if liste.volumeGros == 0 %}
                                          {% set nombreProduitPresentation = ((liste.stockRestant) |round(0)) %}
                                          {% set qttProduitPresente = nombreProduitPresentation %}
                                 {% else %}
-                                         {% set nombreProduitPresentation = ((liste.stockRestant / volumeGros) |round(0)) %}
+                                         {% set nombreProduitPresentation = ((liste.stockRestant * volumeGros / volumeGros) |round(0)) %}
                                          {% set qttProduitPresente = nombreProduitPresentation * volumeGros  %}
                                 {% endif %}
                                
-                                
-                                {% set diffenceQttProduit = (liste.stockRestant - qttProduitPresente) %}
-                                {% if qttProduitPresente > liste.stockRestant and liste.volumeGros > 0 %}
-                                        {% set diffenceQttProduit = liste.volumeGros - (qttProduitPresente - liste.stockRestant) %}
+                               {% set diffenceQttProduit = 0 %}
+                               {% set showParenthese = 1 %}
+                               {% set ruptureGros = 0 %}
+                                {% if volumeGros > 0 %}
+                                    {% set diffenceQttProduit = (liste.stockRestant * volumeGros - qttProduitPresente) %}
+                                    {% if qttProduitPresente > liste.stockRestant * volumeGros and liste.volumeGros > 0 %}
+                                            {% set diffenceQttProduit = liste.volumeGros - (qttProduitPresente - liste.stockRestant) %}
+                                    {% endif %}
+                                    
+                                    
+                                    {% if liste.volumeGros > 0 and liste.stockRestant * volumeGros < liste.volumeGros %}
+                                            {% set showParenthese = 0 %}
+                                    {% endif %}
                                 {% endif %}
-                                {% set ruptureGros = 0 %}
-                                {% set showParenthese = 1 %}
-                                {% if liste.volumeGros > 0 and liste.stockRestant < liste.volumeGros %}
-                                         {% set showParenthese = 0 %}
-                                {% endif %}
-                               
-                                <td> 
+                                <td>
                                     <input type="hidden" name="qttRestant"
-                                           value="{{ liste.stockRestant }}"> {{liste.stockRestant}} {{liste.uniteVenteGros}} {% if showParenthese == 1 %} ( {% endif %} {% if qttProduitPresente > liste.stockRestant %}{% if (nombreProduitPresentation - 1) == 0 %} {% set ruptureGros = 1 %} {% else %} {{ nombreProduitPresentation - 1 }} {% endif %} {% else %}  {{ nombreProduitPresentation }} {% endif %} {% if ruptureGros == 0 %} {{liste.presentationGros}} {% endif %} {% if ruptureGros == 0 %} {% if diffenceQttProduit != 0 %} et {{ diffenceQttProduit }} {{liste.uniteVenteGros}}{% endif %}{% endif %} {% if showParenthese == 1 %} ) {% endif %}
+                                           value="{{ liste.stockRestant }}">{% if liste.volumeGros > 0 %} {{liste.stockRestant * liste.volumeGros}} {{liste.uniteVenteGros}} {% endif %} {% if showParenthese == 1 %} ( {% endif %} {% if qttProduitPresente > liste.stockRestant %}{% if (nombreProduitPresentation - 1) == 0 %} {% set ruptureGros = 1 %} {% else %} {{ nombreProduitPresentation }} {% endif %} {% else %}  {{ nombreProduitPresentation }} {% endif %} {% if ruptureGros == 0 %} {{liste.presentationGros}} {% endif %} {% if ruptureGros == 0 %} {% if diffenceQttProduit != 0 %} et {{ diffenceQttProduit }} {{liste.uniteVenteGros}}{% endif %}{% endif %} {% if showParenthese == 1 %} ) {% endif %}
                                 </td>
                                 <td> 
                                     <select name="typeVente" id="typeVente" class="form-control">
