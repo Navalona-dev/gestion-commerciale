@@ -45,6 +45,7 @@ class UserService
             $user->setAppActive($user->getApplications()[0]);
             foreach ($user->getApplications() as $key => $application) {
                 $application->addUserAppActive($user);
+                $this->entityManager->persist($application);
             }
         }
 
