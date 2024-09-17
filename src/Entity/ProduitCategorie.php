@@ -163,6 +163,9 @@ class ProduitCategorie
     #[ORM\Column(nullable: true)]
     private ?bool $isChangePrix = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $qttReserver = null;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
@@ -646,6 +649,18 @@ class ProduitCategorie
     public function setIsChangePrix(?bool $isChangePrix): static
     {
         $this->isChangePrix = $isChangePrix;
+
+        return $this;
+    }
+
+    public function getQttReserver(): ?float
+    {
+        return $this->qttReserver;
+    }
+
+    public function setQttReserver(?float $qttReserver): static
+    {
+        $this->qttReserver = $qttReserver;
 
         return $this;
     }

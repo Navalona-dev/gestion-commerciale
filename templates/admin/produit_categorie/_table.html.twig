@@ -42,9 +42,25 @@
                   </div>
                
             </td>
-            <td style="text-align: left !important;"> {{liste.nom}} </td>
+            <td style="text-align: left !important;"> 
+                {{liste.nom}} / (1 {{liste.presentationGros}} {% if liste.volumeGros > 0 %} de {{liste.volumeGros}} {{liste.uniteVenteGros}} {% endif %})
+            </td>
             <td> {{liste.reference}} </td>
-            <td> {{liste.stockRestant}} </td>
+            <td> 
+                {% if liste.volumeGros > 0 %}
+                    {{liste.volumeGros * liste.stockRestant}} {{liste.uniteVenteGros}}
+                {% endif %}
+                (
+                    {% set stockRestantFormatte = liste.stockRestant|number_format(1, '.', '') %}
+
+                    {% if stockRestantFormatte ends with '.0' %}
+                        {% set stockRestantFormatte = stockRestantFormatte|slice(0, -2) %}
+                    {% endif %}
+
+                    {{ stockRestantFormatte }}
+                    {{liste.presentationGros}}
+                )
+            </td>
             <td>
                 {% if liste.isChangePrix == 0 or liste.isChangePrix is null %}
                     Non

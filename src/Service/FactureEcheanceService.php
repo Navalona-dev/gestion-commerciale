@@ -90,7 +90,20 @@ class FactureEcheanceService
         foreach ($products as $key => $product) { 
             // Gestion stock
             $produitCategorie = $product->getProduitCategorie();
+            $stockRestant = $produitCategorie->getStockRestant();
+            $volumeGros = $produitCategorie->getVolumeGros();
             $qtt = $product->getQtt();
+
+            $qttReserver = $produitCategorie->getQttReserver();
+
+            $produitCategorie->setQttReserver($qtt / $volumeGros);
+
+            if($qttReserver != null) {
+                $qttReserver = $qttReserver + ($qtt / $volumeGros);
+                $produitCategorie->setQttReserver($qttReserver);
+            } 
+
+            $this->entityManager->persist($produitCategorie);
           
             $factureDetail = new FactureDetail();
             $prix = 0;
@@ -258,17 +271,37 @@ class FactureEcheanceService
             $this->persist($affaire);
 
             $products = $affaire->getProducts();
-
+            $sumQtt = 0;
             foreach($products as $key => $product) {
                  // Gestion de notification
                 $produitCategorie = $product->getProduitCategorie();
                 $stockMin = $produitCategorie->getStockMin();
                 $stockRestant = $produitCategorie->getStockRestant();
+                $volumeGros = $produitCategorie->getVolumeGros();
+                $stockEnKg = $stockRestant * $volumeGros; 
     
                 $qtt = $product->getQtt();
-                $stockRestant = $stockRestant - $qtt;
+                //$stockRestant = $stockRestant - $qtt;
+                $stockEnKgReste = $stockEnKg - $qtt; 
+                $stockRestant = $stockEnKgReste / $volumeGros; 
                 $produitCategorie->setStockRestant($stockRestant);
-                
+
+                $sumQtt += $qtt;
+                $qttReserver = $produitCategorie->getQttReserver();
+                $qttr = $sumQtt / $volumeGros;
+
+                $qttReserverString = (string)$qttReserver;
+
+                if (strpos($qttReserverString, '.') !== false) {
+                    // Compter le nombre de caractères après la virgule
+                    $countAfterDecimal = strlen(substr($qttReserverString, strpos($qttReserverString, '.') + 1));
+                    $qttr = number_format($qttr, $countAfterDecimal, '.', '');
+                } 
+
+                if($qttReserver != null) {
+                    $produitCategorie->setQttReserver($qttReserver - $qttr);
+                }
+
                 $this->persist($produitCategorie);
 
                 if ($stockRestant <= $stockMin) {

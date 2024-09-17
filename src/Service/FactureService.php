@@ -251,9 +251,13 @@ class FactureService
             // Gestion stock
             $produitCategorie = $product->getProduitCategorie();
             $stockRestant = $produitCategorie->getStockRestant();
+            $volumeGros = $produitCategorie->getVolumeGros();
+            $stockEnKg = $stockRestant * $volumeGros; 
+
             
-            $qtt = $product->getQtt();
-            $stockRestant = $stockRestant - $qtt;
+            $qtt = $product->getQtt(); 
+            $stockEnKgReste = $stockEnKg - $qtt; 
+            $stockRestant = $stockEnKgReste / $volumeGros; 
             $produitCategorie->setStockRestant($stockRestant);
             
             $this->entityManager->persist($produitCategorie);
@@ -448,8 +452,12 @@ class FactureService
             // Gestion du stock
             $produitCategorie = $product->getProduitCategorie();
             $stockRestant = $produitCategorie->getStockRestant();
-            $qtt = $product->getQtt();
-            $stockRestant += $qtt;
+            $volumeGros = $produitCategorie->getVolumeGros();
+            $stockEnKg = $volumeGros * $stockRestant; 
+
+            $qtt = $product->getQtt(); 
+            $stockEnKg += $qtt; 
+            $stockRestant = $stockEnKg / $volumeGros;
             $produitCategorie->setStockRestant($stockRestant);
         
             $this->entityManager->persist($produitCategorie);

@@ -42,6 +42,7 @@
                                 <th class="text-center text-nowrap">Ref</th>
                                 <th class="text-center text-nowrap">Intitulé/Détail</th>
                                 <th class="text-center text-nowrap">Stock restant</th>
+                                <th class="text-center text-nowrap">Qtt réserver</th>
                                 <th class="text-center text-nowrap">Type vente</th>
                                 <th class="text-center text-nowrap">Qtt</th>
                                 <th class="text-center text-nowrap">Vente gros</th>
@@ -96,8 +97,24 @@
                                     {% endif %}
                                 {% endif %}
                                 <td>
-                                    <input type="hidden" name="qttRestant"
-                                           value="{{ liste.stockRestant }}">{% if liste.volumeGros > 0 %} {{liste.stockRestant * liste.volumeGros}} {{liste.uniteVenteGros}} {% endif %} {% if showParenthese == 1 %} ( {% endif %} {% if qttProduitPresente > liste.stockRestant %}{% if (nombreProduitPresentation - 1) == 0 %} {% set ruptureGros = 1 %} {% else %} {{ nombreProduitPresentation }} {% endif %} {% else %}  {{ nombreProduitPresentation }} {% endif %} {% if ruptureGros == 0 %} {{liste.presentationGros}} {% endif %} {% if ruptureGros == 0 %} {% if diffenceQttProduit != 0 %} et {{ diffenceQttProduit }} {{liste.uniteVenteGros}}{% endif %}{% endif %} {% if showParenthese == 1 %} ) {% endif %}
+                                    {% set stockRestant = liste.stockRestant - liste.qttReserver %}
+                                    <input type="hidden" name="qttRestant" value="{{ stockRestant }}">
+                                    {% if liste.qttReserver %} 
+                                        {% if liste.volumeGros > 0 %} 
+                                            {{liste.stockRestant * liste.volumeGros}} {{liste.uniteVenteGros}} 
+                                        {% endif %} {% if showParenthese == 1 %} ( {% endif %} {% if qttProduitPresente > liste.stockRestant %}{% if (nombreProduitPresentation - 1) == 0 %} {% set ruptureGros = 1 %} {% else %} {{ nombreProduitPresentation - liste.qttReserver }} {% endif %} {% else %}  {{ nombreProduitPresentation - liste.qttReserver }} {% endif %} {% if ruptureGros == 0 %} {{liste.presentationGros}} {% endif %} {% if ruptureGros == 0 %} {% if diffenceQttProduit != 0 %} et {{ diffenceQttProduit }} {{liste.uniteVenteGros}}{% endif %}{% endif %} {% if showParenthese == 1 %} ) {% endif %}
+                                    {% else %}   
+                                        {% if liste.volumeGros > 0 %} 
+                                                {{liste.stockRestant * liste.volumeGros}} {{liste.uniteVenteGros}} 
+                                            {% endif %} {% if showParenthese == 1 %} ( {% endif %} {% if qttProduitPresente > liste.stockRestant %}{% if (nombreProduitPresentation - 1) == 0 %} {% set ruptureGros = 1 %} {% else %} {{ nombreProduitPresentation }} {% endif %} {% else %}  {{ nombreProduitPresentation }} {% endif %} {% if ruptureGros == 0 %} {{liste.presentationGros}} {% endif %} {% if ruptureGros == 0 %} {% if diffenceQttProduit != 0 %} et {{ diffenceQttProduit }} {{liste.uniteVenteGros}}{% endif %}{% endif %} {% if showParenthese == 1 %} ) {% endif %}
+                                {%  endif %}
+                                        </td>
+                                <td>
+                                    {% if liste.qttReserver is null or liste.qttReserver == 0 %}
+                                        0 {{liste.presentationGros}}
+                                    {% else %}
+                                    {{liste.qttReserver}} {{liste.presentationGros}}
+                                    {% endif %}
                                 </td>
                                 <td> 
                                     <select name="typeVente" id="typeVente" class="form-control">
