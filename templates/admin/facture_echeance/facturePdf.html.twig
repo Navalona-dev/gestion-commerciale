@@ -15,11 +15,7 @@
     {% set compte = facture.affaire.compte %}
 
     <div>
-<<<<<<< HEAD
-        <img src="{{ app.request.getSchemeAndHttpHost() ~ asset('assets/images/logo-vsm.jpeg') }}" alt="" class="logo" />
-=======
         <img src="https://www.cvb-group.com/assets/images/logo-vsm.jpeg" alt="" style="width: 300px; height: 150px;">
->>>>>>> develop
     </div>
 
     <div style="margin-bottom: 20px;">
@@ -106,11 +102,19 @@
                         {{ prix|number_format(2, ',', ' ') }} Ar
                     </td>
                     <td width="24%">
-                        {{ (produit.qtt * prix)|number_format(2, ',', ' ') }} Ar
+                        {% if produit.typeVente == "gros" %}
+                        {{ ((produit.qtt / produit.produitCategorie.volumeGros)  * prix)|number_format(2, ',', ' ') }} Ar
+                        {% else %}
+                            {{ (produit.qtt * prix)|number_format(2, ',', ' ') }} Ar
+                        {% endif %}
                     </td>
                 </tr>
-
-                {% set montantHt = montantHt + (produit.qtt * prix)  %}
+                   {% if produit.typeVente == "gros" %}
+                        {% set montantHt = montantHt + ((produit.qtt / produit.produitCategorie.volumeGros) * prix)  %}
+                   {% else %}
+                        {% set montantHt = montantHt + (produit.qtt * prix)  %}
+                   {% endif %}  
+                
 
             {% endfor %}
             </tbody>

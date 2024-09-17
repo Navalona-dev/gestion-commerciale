@@ -97,11 +97,19 @@
                         {{ prix|number_format(2, ',', ' ') }} Ar
                     </td>
                     <td width="24%">
-                        {{ (produit.qtt * prix)|number_format(2, ',', ' ') }} Ar
+                        {% if produit.typeVente == "gros" %}
+                        {{ ((produit.qtt / produit.produitCategorie.volumeGros)  * prix)|number_format(2, ',', ' ') }} Ar
+                        {% else %}
+                            {{ (produit.qtt * prix)|number_format(2, ',', ' ') }} Ar
+                        {% endif %}
                     </td>
                 </tr>
 
-                {% set montantHt = montantHt + (produit.qtt * prix)  %}
+                {% if produit.typeVente == "gros" %}
+                        {% set montantHt = montantHt + ((produit.qtt / produit.produitCategorie.volumeGros) * prix)  %}
+                   {% else %}
+                        {% set montantHt = montantHt + (produit.qtt * prix)  %}
+                   {% endif %}  
 
             {% endfor %}
             </tbody>
