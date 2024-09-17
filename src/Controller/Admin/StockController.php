@@ -97,7 +97,8 @@ class StockController extends AbstractController
             $data['exception'] = "";
             $data["html"] = $this->renderView('admin/stock/new.html.twig', [
                 'form' => $form->createView(),
-                'idProduit' => $produitCategorieId
+                'idProduit' => $produitCategorieId,
+                'produitCategorie' => $produitCategorie
             ]);
             
             return new JsonResponse($data);
@@ -168,6 +169,7 @@ class StockController extends AbstractController
                 'qttVendu' => $qttVendu,
                 'quantity' => $quantity,
                 'idProduit' => $idProduit,
+                'produitCategorie' => $produitCategorie,
                 'qttRestant' => ($produitCategorie->getStockRestant() != null ? $produitCategorie->getStockRestant() : 0)
             ]);
 

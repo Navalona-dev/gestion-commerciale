@@ -8,7 +8,7 @@
             <div class="modal-body">
 
                 <div class="alert alert-info">
-                    Stocks restant : {{produitCategorie.stockRestant}}
+                    Stocks restant : {{produitCategorie.stockRestant}} {{produitCategorie.presentationGros}}
                 </div>
                 
                 {{ form_start(form, {'attr': {'id': 'transfertProduitCategorie', 'action': path('produit_categories_transfert', {'produitCategorie': id}) }}) }}
@@ -21,7 +21,7 @@
                     </div>
                     
                     <div class="form-group mb-3">
-                        <label for="" class="mb-2">Quantité</label>
+                        <label for="" class="mb-2">Quantité à transférer ({{produitCategorie.presentationGros}})</label>
                         <span class="text-danger"> {{form_errors(form.quantity)}} </span>
                         {{form_widget(form.quantity)}}
                     </div>

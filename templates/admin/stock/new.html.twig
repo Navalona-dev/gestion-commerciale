@@ -10,7 +10,7 @@
                 
                 {{ form_start(form, {'attr': {'id': 'newStock', 'action': path('stocks_create') }}) }}
                     <div class="form-group mb-3">
-                        <label for="" class="mb-2">Quantité</label>
+                        <label for="" class="mb-2">Quantité(s) ( {{produitCategorie.presentationGros}} ) </label>
                         {{ form_widget(form.qtt) }}
                     </div> 
                     
