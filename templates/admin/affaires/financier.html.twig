@@ -283,7 +283,7 @@
                                         
                                        
                                     </td>
-                                    <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(0, '.', ' ')}}{% else %}{{product.prixVenteDetail|number_format(0, '.', ' ')}}{% endif %} Ar</td>
+                                    <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(0, '.', ' ') }}{% else %}{{product.prixVenteDetail|number_format(0, '.', ' ')}}{% endif %} Ar</td>
                                     <td>
                                         {% if affaire.paiement is null or (affaire.paiement != "paye" and affaire.paiement != "annule" and affaire.paiement != "enecheance") %}
                                             <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
@@ -294,7 +294,7 @@
                                     </td>
                                     {# {% set montantHt = montantHt + (product.qtt * product.puht) - product.remise %} #}
                                     {% if product.typeVente == "gros" %}
-                                    {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                                    {% set montantHt = montantHt + ((product.qtt / product.produitCategorie.volumeGros)  * product.prixVenteGros) %}
                                     {% else %}
                                         {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
                                     {% endif %}

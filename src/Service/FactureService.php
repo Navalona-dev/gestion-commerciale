@@ -266,7 +266,7 @@ class FactureService
             $uniteVenteGros = null;
 
             if ($product->getTypeVente() == "gros") {
-                $montantHt  = $montantHt + ($qtt * $product->getPrixVenteGros());
+                $montantHt  = $montantHt + (($qtt / $product->getProduitCategorie()->getVolumeGros())  * $product->getPrixVenteGros());
                 $prix = $product->getPrixVenteGros();
                 $uniteVenteGros = $product->getUniteVenteGros();
                 $prixVenteGros = $prix; 
