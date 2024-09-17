@@ -36,13 +36,13 @@
         </table>
     </div>
     <div style="margin-bottom: 30px;">
-        <p style="text-align: center; font-size: 30px;"> 
+        <p style="text-align: center; font-size: 25px;"> 
             <strong>
-                Facture / 
+                FACTURE / 
                 {% if facture.statut == "annule" %}
-                    FA-annulé-{{facture.numero}}
+                    FA-annulé/VSM/{{facture.numero}}-{{ facture.date|date('Y')|slice(-2) }}
                 {% elseif facture.statut == "regle" or facture.statut == "encours" %}
-                    FA-validé-{{facture.numero}}
+                    FA-validé/VSM/{{facture.numero}}-{{ facture.date|date('Y')|slice(-2) }}
                 {% endif %}
             </strong>
         </p>
@@ -130,31 +130,68 @@
         <p>
             <strong>Écheances : </strong>
             {% if factureEcheances|length > 0 %}
-                <br>
-                {% set status = constant('App\\Entity\\FactureEcheance::STATUS') %}
-                {% for factureEcheance in factureEcheances %}
-                    <strong>
-                        - {{factureEcheance.delaiPaiement}} jours / 
-                        {% if factureEcheance.reglement is not null or factureEcheance.reglement > 0 %}
-                                {{(factureEcheance.montant - factureEcheance.reglement)|number_format(2,',','')}} Ar 
-                            sur {{factureEcheance.montant|number_format(2,',','')}} Ar ({{factureEcheance.dateEcheance|date('d/m/Y')}}) ({{status[factureEcheance.status]}})
-                        {% else %}
-                            {{factureEcheance.montant|number_format(2,',','')}} Ar ({{factureEcheance.dateEcheance|date('d/m/Y')}}) ({{status[factureEcheance.status]}})
-                        {% endif %}
-                    </strong> <br>
-                {% endfor %}
+                {{factureEcheanceFirst.delaiPaiement}} jours
             {% else %}
                 pas d'écheance
             {% endif %}
         </p>
+        
 
     </div>
 
     <div style="margin-bottom: 20px;">
         <p style="border: 1px solid #000; padding: 10px 50px; width: 40%;">
-            TOTAL À PAYER <br><br>
+            {% if facture.affaire.paiement != "annule" %}
+                TOTAL À PAYER 
+            {% else %}
+                TOTAL À REMBOURSER
+            {% endif %}
+            <br><br>
             <span> {{montantHt|number_format(2,',','')}} Ar </span>
         </p>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        {% if factureEcheances|length > 0 %}
+            {% set status = constant('App\\Entity\\FactureEcheance::STATUS') %}
+            <table style="width: 100%;">
+                <thead>
+                    <tr style="background-color: #504f4f81; color: #fff; text-align: center;">
+                        <th>Delais de paiement</th>
+                        <th>Date d'écheance</th>
+                        <th>Montant à payer</th>
+                        <th>Avance</th>
+                        <th>Reste à payer</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for factureEcheance in factureEcheances %}
+                        <tr style="text-align: center;">
+                            <td>{{factureEcheance.delaiPaiement}} jours</td>
+                            <td>{{factureEcheance.dateEcheance|date('d/m/Y')}}</td>
+                            <td>
+                               {{factureEcheance.montant|number_format(2,',','')}} Ar 
+                            </td>
+                            <td>{{factureEcheance.reglement|number_format(2,',','')}} Ar </td>
+                            <td>
+                                {% if factureEcheance.status != "regle" %}
+                                    {% if factureEcheance.reglement is not null or factureEcheance.reglement > 0 %}
+                                        {{(factureEcheance.montant - factureEcheance.reglement)|number_format(2,',','')}} Ar 
+                                    {% else %}
+                                        {{factureEcheance.montant|number_format(2,',','')}} Ar 
+                                    {% endif %}
+                                {% else %}
+                                    0,00 Ar
+                                {% endif %}
+                            </td>
+                            <td>{{status[factureEcheance.status]}}</td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        {% endif %}
     </div>
 
     <div>

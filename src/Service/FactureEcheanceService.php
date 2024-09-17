@@ -212,12 +212,15 @@ class FactureEcheanceService
             $options->set('isPhpEnabled', true);
             $pdf = new Dompdf($options);
 
+            $factureEcheanceFirst = $factureEcheances[0];
+
             // Load HTML content
             $data = [];
             $data['produits'] = $products;
             $data['facture'] = $facture;
             $data['compte'] = $facture->getCompte();
             $data['factureEcheances'] = $factureEcheances;
+            $data['factureEcheanceFirst'] = $factureEcheanceFirst;
             
             $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
 

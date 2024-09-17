@@ -399,12 +399,19 @@ class FactureService
         $options->set('isPhpEnabled', true);
         $pdf = new Dompdf($options);
 
+        $factureEcheances = $facture->getFactureEcheances();
+        $factureEcheanceFirst = null;
+        if(count($factureEcheances) > 0) {
+            $factureEcheanceFirst = $factureEcheances[0];
+        }
+
         // Load HTML content
         $data = [];
         $data['produits'] = $products;
         $data['facture'] = $facture;
         $data['compte'] = $facture->getCompte();
         $data['factureEcheances'] = null;
+        $data['factureEcheanceFirst'] = $factureEcheanceFirst;
         
         $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
 
@@ -564,6 +571,9 @@ class FactureService
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isPhpEnabled', true);
         $pdf = new Dompdf($options);
+
+        $factureEcheances = $facture->getFactureEcheances();
+        $factureEcheanceFirst = $factureEcheances[0];
     
         // Définir le contenu du PDF
         $data = [];
@@ -571,6 +581,7 @@ class FactureService
         $data['facture'] = $facture;
         $data['compte'] = $facture->getCompte();
         $data['factureEcheances'] = null;
+        $data['factureEcheanceFirst'] = $factureEcheanceFirst;
         
         $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
         
