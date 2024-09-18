@@ -18,7 +18,7 @@
                 {% set montantHt = 0 %}
                 {% for product in produits %}
                     {% if product.typeVente == "gros" %}
-                    {% set montantHt = montantHt + ((product.qtt / product.produitCategorie.volumeGros)  * product.prixVenteGros) %}
+                    {% set montantHt = montantHt + ((product.qtt)  * product.prixVenteGros) %}
                     {% else %}
                         {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
                     {% endif %}

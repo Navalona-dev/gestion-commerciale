@@ -100,7 +100,7 @@ class FactureEcheanceService
             $uniteVenteGros = null;
 
             if ($product->getTypeVente() == "gros") {
-                $montantHt  = $montantHt + (($qtt / $product->getProduitCategorie()->getVolumeGros()) * $product->getPrixVenteGros());
+                $montantHt  = $montantHt + ($qtt * $product->getPrixVenteGros());
                 $prix = $product->getPrixVenteGros();
                 $uniteVenteGros = $product->getUniteVenteGros();
                 $prixVenteGros = $prix; 

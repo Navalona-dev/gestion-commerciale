@@ -23,14 +23,14 @@ function addPanier(elt, idAffaire, volumeGros = null, volumeDetail = null) {
         typeVente = 'gros';
     }
     if (typeVente == 'gros') {
-        qttTotal =  parseFloat(volumeGros);
+        qttTotal =  parseFloat(qttRestant);
     } 
     if (typeVente == 'detail') {
-        qttTotal =  parseFloat(volumeDetail);
+        qttTotal =  parseFloat(qttRestant) * parseFloat(volumeGros);
     } 
-    
+    console.log(typeVente, qtt, qttTotal,volumeGros, volumeDetail );
     if (qttRestant != undefined && qttRestant != "") {
-        if (parseFloat(qtt) > (parseFloat(qttRestant) * parseFloat(qttTotal))) {
+        if (parseFloat(qtt) > parseFloat(qttTotal)) {
             $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');
             setTimeout(function () {
                 toastr.options = {
@@ -136,13 +136,14 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null, typeVente 
        
         var qttTotal =  1;
         if (typeVente == 'gros') {
-            qttTotal =  parseFloat(volumeGros);
+            qttTotal =  parseFloat(qttRestant);
         } 
         if (typeVente == 'detail') {
-            qttTotal =  parseFloat(volumeDetail);
+            qttTotal =  parseFloat(qttRestant) * parseFloat(volumeDetail);
         } 
         
-        if (parseFloat(qtt) > (parseFloat(qttRestant) * parseFloat(qttTotal))) {
+        console.log(typeVente, qttTotal,volumeGros, volumeDetail );
+        if (parseFloat(qtt) > (parseFloat(qttTotal))) {
            
             $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');
             setTimeout(function () {

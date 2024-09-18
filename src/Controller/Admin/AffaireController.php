@@ -767,13 +767,13 @@ class AffaireController extends AbstractController
             $categories = $categorieService->getAllCategories();
             $products = $affaire->getProducts();
             $tabIdProduitCategorieInAffaires = [];
-            if (count($products) > 0) {
+            /*if (count($products) > 0) {
                 foreach ($products as $key => $product) {
                     if (!in_array($product->getProduitCategorie()->getId(), $tabIdProduitCategorieInAffaires)) {
                         array_push($tabIdProduitCategorieInAffaires,$product->getProduitCategorie()->getId());
                     }
                 }
-            }
+            }*/
             $produitCategories = $produitCategorieService->getAllProduitCategoriesByStockRestant($tabIdProduitCategorieInAffaires);
           
             $data["html"] = $this->renderView('admin/affaires/liste_produit.html.twig', [

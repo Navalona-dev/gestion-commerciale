@@ -90,9 +90,9 @@ class ProductController extends AbstractController
         //$prixHt = (null != $request->get('prixHt'))?$request->get('prixHt'): null;
 
         //$prixTTC = (null != $request->get('prixTTC'))?$request->get('prixTTC'): null;
-        $coef = $produitCategorie->getVolumeGros();
+        $coef = 1;
         if ($typeVente == "detail") {
-            $coef = $produitCategorie->getVolumeDetail();
+            $coef = $produitCategorie->getVolumeGros();
         }
 
         if($qtt > ($produitCategorie->getStockRestant() * $coef) ) {

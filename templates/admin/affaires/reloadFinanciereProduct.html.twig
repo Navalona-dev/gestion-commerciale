@@ -111,6 +111,7 @@
                                     <th class="text-center" style="width: 200px;">Intitulé</th>
                                     <th class="text-center">Qté</th>
                                     <th class="text-center">PU(HT)</th>
+                                    <th class="text-center">PT(HT)</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             
@@ -140,7 +141,7 @@
                                                 {% if product.produitCategorie.uniteVenteGros in ['l', 'ml', 'cc', 'PCS'] %}
                                                 {% set coef = product.produitCategorie.volumeGros %}
                                                 {% endif %}
-                                                {{product.qtt }}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteGros}} 
+                                                {{product.qtt }}&nbsp;{{product.produitCategorie.uniteVenteGros}} / {{product.produitCategorie.stockRestant}} {{product.produitCategorie.uniteVenteGros}} 
                                                 (
                                                     {% if product.qtt >= product.produitCategorie.volumeGros %} 
                                                         {{(product.qtt) |round(0)}}  {{product.produitCategorie.presentationGros}} 
@@ -167,10 +168,10 @@
                                         {% else %}
 
                                             {% if product.typeVente == "detail" %}
-                                                {{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant}} {{product.uniteVenteDetail}} 
+                                                {{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant * product.produitCategorie.volumeGros }} {{product.produitCategorie.uniteVenteGros}} 
                                         
                                                 (
-                                                    {% if ((product.qtt / product.produitCategorie.volumeGros) |round(0)) != 0 and product.qtt > product.produitCategorie.volumeGros  %} 
+                                                    {% if product.qtt != 0 and product.qtt >= product.produitCategorie.volumeGros  %} 
                                                         {{ (product.qtt / product.produitCategorie.volumeGros) |round(0)}} 
                                                         {{product.produitCategorie.presentationGros}}  
                                                             et {{product.qtt - ( (product.qtt / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})
@@ -186,33 +187,30 @@
                                                               {{product.qtt }} {{product.produitCategorie.presentationDetail}})
                                                         {% endif %}
                                                     {% endif %}
+                                                        
                                             {% else %}
-
-                                             {% set coef = 1 %}
+                                                {% set coef = 1 %}
                                                 {% if product.produitCategorie.uniteVenteGros in ['l', 'ml', 'cc', 'PCS'] %}
                                                 {% set coef = product.produitCategorie.volumeGros %}
                                                 {% endif %}
-                                                {{product.qtt * coef}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant * product.produitCategorie.volumeGros}} {{product.uniteVenteGros}} 
+
+                                                {{product.qtt * product.produitCategorie.volumeGros }}&nbsp;{{product.produitCategorie.uniteVenteGros}} / {{product.produitCategorie.stockRestant * product.produitCategorie.volumeGros}} {{product.produitCategorie.uniteVenteGros}} 
                                                 (
-                                                    {% if product.qtt >= product.produitCategorie.volumeGros %} 
-                                                        {{(product.qtt  / product.produitCategorie.volumeGros) |round(0)}}  {{product.produitCategorie.presentationGros}} 
+                                                    {# {% if product.qtt >= product.produitCategorie.volumeGros %} 
+                                                        {{(product.qtt / product.produitCategorie.volumeGros  ) |round(0)}} {{product.produitCategorie.presentationGros}} 
                                                         {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
                                                             et 
                                                         {% endif %} 
-                                                    {% endif %} 
+                                                    {% endif %}  #}
 
-                                                {% if product.qtt >= product.produitCategorie.volumeGros %} 
+                                                {# {% if product.qtt >= product.produitCategorie.volumeGros %} 
                                                     {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
                                                         {{product.qtt - ( (product.qtt  / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} 
                                                     {% endif %} 
-                                                {% else %} 
-                                                    {{product.qtt}}
-                                                    {% if coef == 1 %}
-                                                    {{product.produitCategorie.presentationDetail}}
-                                                    {% else %}
+                                                {% else %}  #}
+                                                 {{product.qtt}}
                                                     {{product.produitCategorie.presentationGros}}
-                                                    {% endif %}
-                                                {% endif %} 
+                                                {# {% endif %}  #}
                                             )
                                             {% endif %}
                                         {% endif %}
@@ -220,6 +218,7 @@
                                        
                                     </td>
                                     <td class="align-middle text-center"> {% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(2, ',', ' ')}}{% else %}{{product.prixVenteDetail|number_format(2, ',', ' ')}}{% endif %}</td>
+                                    <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros * product.qtt }}{% else %}{{product.prixVenteDetail * product.qtt}}{% endif %} Ar</td>
                                     <td>
                                         {% if affaire.paiement is null or (affaire.paiement != "paye" and affaire.paiement != "annule" and affaire.paiement != "enecheance") %}
                                         <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
