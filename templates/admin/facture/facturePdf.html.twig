@@ -83,9 +83,9 @@
                     <td width="12%">
                         {{ produit.qtt }}
                         {% if produit.typeVente == "gros" %}
-                            {{produit.uniteVenteGros}}
+                            {{produit.produitCategorie.presentationGros}}
                         {% elseif produit.typeVente == "detail" %}
-                            {{produit.uniteVenteDetail}}
+                            {{produit.produitCategorie.uniteVenteGros}}
                         {% endif %}
                     </td>
                     <td width="24%">
@@ -152,7 +152,12 @@
 
     <div style="margin-bottom: 20px;">
         <p style="border: 1px solid #000; padding: 10px 50px; width: 40%;">
-            TOTAL À PAYER <br><br>
+            {% if facture.affaire.paiement != "annule" %}
+                TOTAL À PAYER 
+            {% else %}
+                TOTAL À REMBOURSER 
+            {% endif %}
+            <br><br>
             <span> {{montantHt|number_format(2,',','')}} Ar </span>
         </p>
     </div>

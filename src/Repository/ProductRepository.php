@@ -75,4 +75,23 @@ class ProductRepository extends ServiceEntityRepository
         ;
     }
 
+    public function getQttByProduitAndTypeVente($paiement = null, $statut = null, $reference = null)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('p.qtt, p.typeVente')
+            ->join('p.affaires', 'a')
+            ->where('p.reference = :reference')
+            ->andWhere('a.paiement = :paiement')
+            ->andWhere('a.statut = :statut')
+            ->andWhere('a.application = :application_id')
+            ->setParameter('reference', $reference)
+            ->setParameter('paiement', $paiement)
+            ->setParameter('statut', $statut)
+            ->setParameter('application_id', $this->application->getId());
+
+        return $qb->getQuery()->getResult();
+    }
+
+
+
 }

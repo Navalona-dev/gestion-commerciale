@@ -177,6 +177,8 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null, typeVente 
             if (anchorName) {
                 window.location.hash = anchorName;
             }
+            financier(idAffaire);
+
         },
         error: function () {
             $(".loadBody").css('display', 'none');
@@ -213,6 +215,8 @@ function deleteProduitAffaire(elt, idProduit, idAffaire) {
                 if (anchorName) {
                     window.location.hash = anchorName;
                 }
+            financier(idAffaire);
+
             },
             error: function () {
                 $(".loadBody").css('display', 'none');

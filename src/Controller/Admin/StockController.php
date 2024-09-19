@@ -206,6 +206,8 @@ class StockController extends AbstractController
 
         $idProduit = $produitCategorie->getId();
 
+        $volumeGros = $produitCategorie->getVolumeGros();
+
         $data = [];
         
         try {
@@ -214,7 +216,26 @@ class StockController extends AbstractController
             if ($stocks == false) {
                 $stocks = [];
             }
-            $qttVendu = $productRepo->countByAffairePaye('paye', 'commande', $produitCategorie->getReference());
+
+            $products = $productRepo->getQttByProduitAndTypeVente('paye', 'commande', $produitCategorie->getReference());
+            
+            $totalQttVendu = 0;
+
+            // Calculer la quantité vendue pour chaque produit
+            foreach ($products as $product) {
+                $qtt = $product['qtt']; // Quantité du produit
+                $typeVente = $product['typeVente']; // Type de vente
+
+                // Appliquer la logique de calcul
+                if ($typeVente === 'gros') {
+                    $totalQttVendu += $qtt; // Vente en gros, on ajoute directement
+                } elseif ($typeVente === 'detail') {
+                    // Vente au détail, on divise par le volume de gros
+                    if ($volumeGros > 0) {
+                        $totalQttVendu += $qtt / $volumeGros;
+                    }
+                }
+            }
 
             //$allQtt = $stockService->getQuantiteVenduByReferenceProduit($produitCategorie->getReference());
             $data["html"] = $this->renderView('admin/stock/index.html.twig', [
@@ -222,7 +243,7 @@ class StockController extends AbstractController
                 'id' => $produitCategorie->getId(),
                 'produitCategory' => $produitCategorie,
                 //'qttVendu' => ($allQtt != false ? $allQtt['qttVendu'] : 0)
-                'qttVendu' => $qttVendu
+                'qttVendu' => $totalQttVendu
             ]);
 
             $data['idProduit'];

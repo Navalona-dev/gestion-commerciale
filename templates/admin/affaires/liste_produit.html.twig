@@ -42,6 +42,7 @@
                                 <th class="text-center text-nowrap">Ref</th>
                                 <th class="text-center text-nowrap">Intitulé/Détail</th>
                                 <th class="text-center text-nowrap">Stock restant</th>
+                                <th class="text-center text-nowrap">Qtt réserver</th>
                                 <th class="text-center text-nowrap">Type vente</th>
                                 <th class="text-center text-nowrap">Qtt</th>
                                 <th class="text-center text-nowrap">Vente gros</th>
@@ -96,18 +97,94 @@
                                     {% endif %}
                                 {% endif %}
                                 <td>
-                                    <input type="hidden" name="qttRestant"
-                                           value="{{ liste.stockRestant }}">{% if liste.volumeGros > 0 %} {{liste.stockRestant * liste.volumeGros}} {{liste.uniteVenteGros}} {% endif %} {% if showParenthese == 1 %} ( {% endif %} {% if qttProduitPresente > liste.stockRestant %}{% if (nombreProduitPresentation - 1) == 0 %} {% set ruptureGros = 1 %} {% else %} {{ nombreProduitPresentation }} {% endif %} {% else %}  {{ nombreProduitPresentation }} {% endif %} {% if ruptureGros == 0 %} {{liste.presentationGros}} {% endif %} {% if ruptureGros == 0 %} {% if diffenceQttProduit != 0 %} et {{ diffenceQttProduit }} {{liste.uniteVenteGros}}{% endif %}{% endif %} {% if showParenthese == 1 %} ) {% endif %}
+                                    <input type="hidden" name="qttRestant" value="{{ liste.stockRestant }}">
+                                    {% if liste.volumeGros > 0 %} 
+                                        {{liste.stockRestant * liste.volumeGros}} {{liste.uniteVenteGros}} 
+                                    {% endif %} 
+                                    {% if liste.qttReserver is not null %}
+                                        ({{liste.stockRestant - liste.qttReserver}} {{liste.presentationGros}})
+                                    {% else %}
+                                        ({{liste.stockRestant}} {{liste.presentationGros}})
+                                    {% endif %}
+
+                                    {#{% if showParenthese == 1 %} 
+                                        ( 
+                                    {% endif %} 
+                                    {% if qttProduitPresente > liste.stockRestant %}
+                                        {% if (nombreProduitPresentation - 1) == 0 %} 
+                                            {% set ruptureGros = 1 %} 
+                                        {% else %} 
+                                            {{ nombreProduitPresentation }} 
+                                        {% endif %} 
+                                    {% else %}  
+                                        {{ nombreProduitPresentation }} 
+                                    {% endif %} 
+                                    {% if ruptureGros == 0 %} 
+                                        {{liste.presentationGros}} 
+                                    {% endif %} 
+                                    {% if ruptureGros == 0 %} 
+                                        {% if diffenceQttProduit != 0 %} 
+                                            et {{ diffenceQttProduit }} {{liste.uniteVenteGros}}
+                                        {% endif %}
+                                    {% endif %} 
+                                    {% if showParenthese == 1 %} 
+                                        ) 
+                                    {% endif %}#}
+                                </td>
+                                <td>
+                                    {% if liste.qttReserver is null or liste .qttReserver == 0 %}
+                                        0 {{liste.presentationGros}}
+                                    {% else %}
+                                        {{liste.qttReserver}} {{liste.presentationGros}}
+                                    {% endif %}
                                 </td>
                                 <td> 
                                     <select name="typeVente" id="typeVente" class="form-control">
                                         <option value="">Type vente</option>
                                         <option value="gros">Gros</option>
-                                        <option value="detail">Détail</option>
+                                        {% if liste.prixVenteDetail is not null and liste.prixVenteDetail > 0 %}
+                                            <option value="detail">Détail</option>
+                                        {% endif %}
                                     </select>
                                  </td>
-                                 <td> 
-                                    <input type="text" value="{{ liste.qtt }}" name="qttProduit" class="form-control">
+                                 <td class="quantity"> 
+                                    <span class="volumeGros" data-volume="{{liste.volumeGros}}"></span>
+                                    <span class="presentationGros" data-presentation="{{liste.presentationGros}}"></span>
+                                    <span class="uniteVenteGros" data-unite="{{liste.uniteVenteGros}}"></span>
+                                    <input type="text" value="{{ liste.qtt }}" id="qttProduit" name="qttProduit" class="form-control" readonly>
+                                    <span class="unite"></span>
+                                    <input type="checkbox" name="other" id="other" class="other">
+                                    <label for="" class="label-other">Autre</label>
+                                    {% set units = {
+                                        'kg': [
+                                            {'name': 'hg', 'label': 'hg', 'divider': 10},
+                                            {'name': 'dag', 'label': 'dag', 'divider': 100},
+                                            {'name': 'g', 'label': 'g', 'divider': 1000},
+                                            {'name': 'cg', 'label': 'cg', 'divider': 10000},
+                                            {'name': 'mg', 'label': 'mg', 'divider': 100000}
+                                        ],
+                                        'l': [
+                                            {'name': 'dL', 'label': 'dL', 'divider': 10},
+                                            {'name': 'cL', 'label': 'cL', 'divider': 100},
+                                            {'name': 'mL', 'label': 'mL', 'divider': 1000},
+                                        ]
+                                    } %}
+                                    <p class="other-unite">
+                                        {% set current_units = units[liste.uniteVenteGros] %}
+                                        {% set name = '' %}
+                                        {% if current_units is defined %}
+                                            {% for unit in current_units %}
+                                                {% set name = unit.name %}
+                                                <span class="unite-name" data-name="{{unit.name}}"></span>
+                                                <input data-name="{{unit.name}}" type="radio" name="unite-{{ unit.name }}" id="unite-{{ unit.name }}" class="unite-check">
+                                                <label for="unite-{{ unit.name }}">{{ unit.label }}</label>
+                                                <span class="divider-{{unit.name}}" data-divider="{{ unit.divider }}"></span>
+                                            {% endfor %}
+                                            <br>
+                                            <input type="text" name="valeur-unite" class="form-control form-control-sm valeur-unite" placeholder="Entrez la valeur">
+                                        {% endif %}
+                                        
+                                    </p>
                                 </td>
                                 <td> 
                                     {% if liste.prixVenteGros is not null %}
@@ -122,10 +199,11 @@
                             </tr>
                             {% else %}
                                 <tr>
-                                    <td colspan="8">
+                                    <td colspan="9">
                                         Aucun enregistrement trouvé
                                         <a href="#tab-import-produit" onclick="return showTabImportProduit()">Importer produit</a>
                                     </td>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -149,6 +227,7 @@
         </div>
     </div>
 </div>
+
 <div id="affaire-id-reload" data-affaire="{{affaire.id}}"></div>
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 
@@ -194,3 +273,127 @@ function reloadTabFinancier()
     financier(affaireId);
 }
 </script>
+
+<script>
+   $(document).ready(function() {
+    $('.other').hide();
+    $('.label-other').hide();
+    $('.other-unite').hide();
+    // Écouter les événements de changement pour tous les éléments de typeVente    
+    $('select[name="typeVente"]').change(function() {
+        // Récupérer l'élément de vente sélectionné et le champ qttProduit correspondant
+        var typeVente = $(this).val();
+        var row = $(this).closest('tr');
+        var qttProduit = row.find('input[name="qttProduit"]');
+        var volumeGros = row.find('span.volumeGros').data('volume');
+        var qttTd = row.find('td.quantity');
+        var unite = row.find('span.unite');
+        var presentationGros = row.find('span.presentationGros').data('presentation');
+        var uniteVenteGros = row.find('span.uniteVenteGros').data('unite');
+        var inputOther = row.find('input.other');
+        var labelOther = row.find('label.label-other');
+        var otherUnite = row.find('p.other-unite');
+
+        // Toujours retirer les anciens événements associés à qttProduit
+        qttProduit.off('input');
+
+        // Vérifier si un type de vente a été sélectionné
+        if (typeVente !== "") {
+            // Retirer l'attribut readonly si un type de vente est sélectionné
+            qttProduit.removeAttr('readonly');
+        } else {
+            // Remettre l'attribut readonly si aucun type de vente n'est sélectionné
+            qttProduit.attr('readonly', true);
+        }
+
+        // Si le type de vente est "detail", récupérer la valeur du champ qttProduit
+        if (typeVente == "detail") {
+
+            unite.text(uniteVenteGros);
+            inputOther.show();
+            labelOther.show();
+            // Récupérer la valeur de l'input qttProduit
+            qttProduit.on('input', function() {
+                // Récupérer la valeur de l'input qttProduit pendant la saisie
+                var qttValeur = $(this).val();
+
+                if(qttValeur >= volumeGros) {
+                    qttProduit.css('background-color', '#fc8b8b');
+                    qttProduit.val("");
+                    var message = 'La quantité ' + qttValeur + ' pour le type de vente détail ne doit pas supérieur ou égale au volume de gros ' + volumeGros;
+                    //alert(message);
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 5000
+                        };
+                        toastr.error(message);
+
+                    }, 800);
+
+                } else {
+                    qttProduit.css('background-color', '#fff');
+                    inputOther.hide();
+                    labelOther.hide();
+                }
+            });
+
+            inputOther.change(function() {
+                if ($(this).is(':checked')) {
+                   otherUnite.show();
+
+                    var inputOtherUnite = otherUnite.find('.unite-check');
+                   
+                   inputOtherUnite.change(function() {
+                    var uniteName = $(this).data('name');
+                    var divider = otherUnite.find('.divider-' + uniteName).data('divider');
+                    var inputValueUnite = otherUnite.find('.valeur-unite');
+                    if($(this).is(':checked')) {
+                        $('.unite-check').not(this).prop('checked', false);
+
+                        inputValueUnite.on('input', function() {
+                            const valueUnite = $(this).val();
+                            const newQttProduit = valueUnite / divider;
+                            console.log(newQttProduit);
+
+                            // Utiliser .val() pour mettre à jour la valeur de l'input qttProduit
+                            qttProduit.val(newQttProduit);
+                        });
+                        
+                    }
+                })
+
+                } else {
+                   otherUnite.hide();
+                }
+
+            });
+
+        }else {
+            unite.text(presentationGros);
+            qttProduit.css('background-color', '#fff');
+        }
+    });
+
+    // Ajouter un événement au clic sur qttProduit pour afficher un message d'alerte si readonly est actif
+    $('input[name="qttProduit"]').click(function() {
+        if ($(this).attr('readonly')) {
+            setTimeout(function () {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 3000
+                };
+                toastr.error('Veuillez d\'abord sélectionner un type de vente avant d\'ajouter la quantité');
+
+            }, 800);
+            //alert('Veuillez d\'abord sélectionner un type de vente avant d\'ajouter la quantité');
+        }
+    });
+});
+
+</script>
+

@@ -242,22 +242,35 @@ class FactureService
         $facture->setDateCreation($date);
         $facture->setDate($date);
         $facture->setType("Facture");
+
+        $affaire->setPaiement('paye');
+        $affaire->setDatePaiement($date);
+        $affaire->setDevisEvol('gagne');
+        $affaire->setDateFacture($date);
+        $affaire->setStatut("commande");
+        $this->persist($affaire);
+
         $products = $affaire->getProducts();
         $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
         $montantHt = 0;
+        $tabQttRestant = [];
+        $produitCategorie = null;
+        $tabIdStock = [];
+        $sumQtt = 0;
 
         // Sortie du PDF sous forme de réponse HTTP
+        
         foreach ($products as $key => $product) { 
             // Gestion stock
             $produitCategorie = $product->getProduitCategorie();
             $stockRestant = $produitCategorie->getStockRestant();
+
+            $volumeGros = $produitCategorie->getVolumeGros();
+            $stockEnKg = $stockRestant * $volumeGros; 
             
-            $qtt = $product->getQtt();
-            $stockRestant = $stockRestant - $qtt;
-            $produitCategorie->setStockRestant($stockRestant);
-            
-            $this->entityManager->persist($produitCategorie);
-          
+            $qtt = $product->getQtt(); 
+            $stockEnKgReste = $stockEnKg - $qtt; 
+                                  
             $factureDetail = new FactureDetail();
             $prix = 0;
             $prixVenteGros = null;
@@ -270,12 +283,27 @@ class FactureService
                 $prix = $product->getPrixVenteGros();
                 $uniteVenteGros = $product->getUniteVenteGros();
                 $prixVenteGros = $prix; 
+                $stockRestant = $stockRestant - $qtt;
+
             } else {
                 $montantHt  = $montantHt + ($qtt * $product->getPrixVenteDetail());
                 $prix = $product->getPrixVenteDetail();
                 $uniteVenteDetail = $product->getUniteVenteDetail();
                 $prixVenteDetail = $prix;
+                $stockRestant = $stockEnKgReste / $volumeGros; 
             }
+
+             //gerer produit categorie
+             if($affaire->getPaiement() == "paye") {
+                if($product->getTypeVente() == "detail") {
+                    $qtt = $qtt / $volumeGros;
+                }
+                $sumQtt += $qtt;
+                
+            }
+
+            $produitCategorie->setStockRestant($stockRestant);
+            $this->entityManager->persist($produitCategorie);
 
             $factureDetail->setFacture($facture);
             $factureDetail->setReference($product->getReference());
@@ -308,28 +336,28 @@ class FactureService
             }
 
            // Récupération des stocks et tri par date de péremption (de la plus proche à la plus éloignée)
-            $stocks = $this->entityManager->getRepository(Stock::class)->findByProduitCategorieDatePerremptionIsNotNull($produitCategorie);
-
-            // Tri des stocks par date de péremption (de la plus proche à la plus éloignée)
-            usort($stocks, function($a, $b) {
-                $dateA = $a->getDatePeremption()->getDate();
-                $dateB = $b->getDatePeremption()->getDate();
-                
-                // Comparer les dates
-                return $dateA <=> $dateB;
-            });
-           
+           //$stocks = $this->entityManager->getRepository(Stock::class)->findByProduitCategorieDatePerremptionIsNotNull($produitCategorie);
+           $stocks = $this->entityManager->getRepository(Stock::class)->findByProductCategoryDatePeremption($produitCategorie);
+            //dd($stocks);
             // Réduction des quantités de stock en fonction de la date de péremption la plus proche
-            foreach ($stocks as $stk) {
+            foreach ($stocks as $keyS => $stk) {
+                $tabIdStock[] = $stk->getId();
                 $qttRestant = $stk->getQttRestant();
-                
+                $qttRestantEnKg = $qttRestant * $volumeGros; 
+
+                if ($product->getTypeVente() == "detail") {
+                    $qtt = $qtt / $volumeGros;
+                }
+
+                $newQttRestant = $qttRestant - $qtt; 
+
                 if ($qtt <= 0) {
                     break; // Si la quantité à réduire est déjà consommée, on sort de la boucle
                 }
                 
                 if ($qttRestant >= $qtt) {
                     // Réduit la quantité restante du stock actuel
-                    $stk->setQttRestant($qttRestant - $qtt);
+                    $stk->setQttRestant($newQttRestant);
                     $this->persist($stk);
                     $qtt = 0; // Toute la quantité a été réduite
                 } else {
@@ -338,6 +366,10 @@ class FactureService
                     $stk->setQttRestant(0); // Le stock actuel est épuisé
                     $this->persist($stk);
                 }
+                //if ($key == 1 && $keyS == 1) {
+                    //dd($product->getQtt(), $newQttRestant, $qtt, $stk->getQtt(), $stk);
+                //}
+                $tabQttRestant[] = $stk->getQttRestant();
             }
 
             //Log product
@@ -363,19 +395,35 @@ class FactureService
 
             $this->persist($factureDetail);
         }
-        
+
+        $qttReserver = $produitCategorie->getQttReserver();
+
+        $qttReserverString = (string)$qttReserver;
+
+        if (strpos($qttReserverString, '.') !== false) {
+            // Compter le nombre de caractères après la virgule
+            $countAfterDecimal = strlen(substr($qttReserverString, strpos($qttReserverString, '.') + 1));
+            $sumQtt = number_format($sumQtt, $countAfterDecimal, '.', '');
+        } 
+
+        if($qttReserver != null) {
+            $produitCategorie->setQttReserver($qttReserver - $sumQtt);
+        } else {
+            $produitCategorie->setQttReserver($qttReserver);
+        }
+
+        //var_dump($qttReserver, $sumQtt);
+        //dd($qttReserver, $sumQtt, $produitCategorie->getQttReserver());
+        $this->entityManager->persist($produitCategorie);
+        //dd($tabQttRestant);
+
         $facture->setFile($filename);
         $facture->setSolde($montantHt);
         $facture->setPrixHt($montantHt);    
         $facture->setReglement($montantHt);
         
         $this->persist($facture);
-        $affaire->setPaiement('paye');
-        $affaire->setDatePaiement($date);
-        $affaire->setDevisEvol('gagne');
-        $affaire->setDateFacture($date);
-        $affaire->setStatut("commande");
-        $this->persist($affaire);
+
         // Obtenir l'utilisateur connecté
         $user = $this->security->getUser();
 
@@ -443,95 +491,76 @@ class FactureService
         $facture->setStatut('annule');
         $products = $affaire->getProducts();
         $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
-    
+        $tabQttRestant = [];
+        $produitCategorie = null;
+
         foreach ($products as $key => $product) { 
-            // Gestion du stock
             $produitCategorie = $product->getProduitCategorie();
             $stockRestant = $produitCategorie->getStockRestant();
+            $volumeGros = $produitCategorie->getVolumeGros();
             $qtt = $product->getQtt();
+            
+            if($product->getTypeVente() == "detail") {
+                $qtt = $qtt / $volumeGros;
+            }
+            
             $stockRestant += $qtt;
             $produitCategorie->setStockRestant($stockRestant);
-        
             $this->entityManager->persist($produitCategorie);
-        
+            
             $datePeremptionProduct = $product->getDatePeremption();
-            if($datePeremptionProduct)
-            {
-                $datePeremptionProduct->format('d-m-Y');
+            
+            if($datePeremptionProduct) {
+                $datePeremptionProduct = $datePeremptionProduct->format('d-m-Y');
             }
-        
-            $stocks = $this->entityManager->getRepository(Stock::class)->findByProduitCategorieDatePerremption($produitCategorie);
-        
-            // Trier les stocks par date de péremption (de la plus proche à la plus éloignée)
-            usort($stocks, function($a, $b) {
-                $dateA = $a->getDatePeremption()->getDate();
-                $dateB = $b->getDatePeremption()->getDate();
-                return $dateA <=> $dateB;
-            });
-        
-            $remainingQtt = $product->getQtt(); 
-        
+            
+            $stocks = $this->entityManager->getRepository(Stock::class)->findByProduitCategorieAnulle($produitCategorie);
+            $remainingQtt = $qtt; 
             $firstStockProcessed = false;
-        
-            foreach ($stocks as $stock) {
+
+            foreach ($stocks as $keyS => $stock) {
                 $datePeremptionStock = $stock->getDatePeremption();
+                
                 if($datePeremptionStock) {
-                    $datePeremptionStock->getDate()->format('d-m-Y');
+                    $datePeremptionStock = $datePeremptionStock->getDate()->format('d-m-Y');
                 }
+
                 $qttStock = $stock->getQtt(); 
                 $qttRestant = $stock->getQttRestant(); 
-        
-                if ($datePeremptionProduct && $datePeremptionStock && !$firstStockProcessed && $datePeremptionProduct == $datePeremptionStock) {
-                    // Pour le premier stock qui correspond à la date de péremption
+
+                if ($datePeremptionProduct && $datePeremptionStock && !$firstStockProcessed && $datePeremptionProduct === $datePeremptionStock) {
                     if ($remainingQtt + $qttRestant > $qttStock) {
-                        $qttRestant = $qttStock; // Utiliser la quantité totale du stock
-                        $remainingQtt -= $qttStock; // Réduire la quantité restante
+                        $qttRestant = $qttStock;
+                        $remainingQtt -= ($qttStock - $qttRestant);
                     } else {
-                        $qttRestant += $remainingQtt; // Ajouter le reste de la quantité
-                        $remainingQtt = 0; // Toute la quantité a été réduite
+                        $qttRestant += $remainingQtt;
+                        $remainingQtt = 0;
                     }
                     $stock->setQttRestant($qttRestant);
                     $this->entityManager->persist($stock);
-        
                     $firstStockProcessed = true;
-        
-                    // Si toute la quantité est traitée, sortir de la boucle
-                    if ($remainingQtt <= 0) {
-                        break;
-                    }
                 } elseif ($remainingQtt > 0) {
-                    // Pour les stocks suivants ou si la date de péremption ne correspond pas
-                    $qttRestant += $remainingQtt; // Ajouter le reste de la quantité au stock suivant
-        
+                    $qttRestant += $remainingQtt; 
                     if ($qttRestant > $qttStock) {
-                        $qttRestant = $qttStock; // Ne pas dépasser la capacité du stock
-                        $remainingQtt -= $qttStock; // Réduire la quantité restante
+                        $remainingQtt -= ($qttStock - $qttRestant);
+                        $qttRestant = $qttStock;
                     } else {
-                        $remainingQtt = 0; // Toute la quantité a été réduite
-                    }
-                    $stock->setQttRestant($qttRestant);
-                    $this->entityManager->persist($stock);
-                } else {
-                    $qttRestant += $remainingQtt; // Ajouter le reste de la quantité au stock suivant
-        
-                    if ($qttRestant > $qttStock) {
-                        $qttRestant = $qttStock; // Ne pas dépasser la capacité du stock
-                        $remainingQtt -= $qttStock; // Réduire la quantité restante
-                    } else {
-                        $remainingQtt = 0; // Toute la quantité a été réduite
+                        $remainingQtt = 0;
                     }
                     $stock->setQttRestant($qttRestant);
                     $this->entityManager->persist($stock);
                 }
+
+                $tabQttRestant[] = $stock->getQttRestant();
             }
-        
-            // Si après la boucle, il reste encore des quantités à traiter,
-            // il peut être nécessaire de gérer cela en fonction de vos besoins
+
             if ($remainingQtt > 0) {
-                // Gérer les quantités restantes qui n'ont pas pu être stockées
-                // Par exemple, enregistrer un message d'erreur ou ajuster les stocks supplémentaires
+                // Traitez ici la quantité restante non allouée
             }
         }
+
+        //dd($tabQttRestant);
+
 
         $this->persist($facture);
         $affaire->setDateAnnule($date);
