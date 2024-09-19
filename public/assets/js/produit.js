@@ -134,15 +134,16 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null, typeVente 
     
     if (qttRestant != undefined && qttRestant != "") {
        
-        var qttTotal =  1;
+        var qttTotal =  1
+
         if (typeVente == 'gros') {
             qttTotal =  parseFloat(qttRestant);
         } 
         if (typeVente == 'detail') {
-            qttTotal =  parseFloat(qttRestant) * parseFloat(volumeDetail);
+            qttTotal =  parseFloat(qttRestant) * parseFloat(volumeGros);
         } 
-        
-        console.log(typeVente, qttTotal,volumeGros, volumeDetail );
+
+        //console.log(typeVente, qttRestant, qttTotal,volumeGros, volumeDetail );
         if (parseFloat(qtt) > (parseFloat(qttTotal))) {
            
             $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');
