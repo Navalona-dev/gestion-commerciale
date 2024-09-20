@@ -116,10 +116,17 @@ class Product
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $datePeremption = null;
 
+    /**
+     * @var Collection<int, DatePeremptionProduct>
+     */
+    #[ORM\OneToMany(targetEntity: DatePeremptionProduct::class, mappedBy: 'product')]
+    private Collection $datePeremptionProducts;
+
     public function __construct()
     {
         $this->affaires = new ArrayCollection();
         $this->factureDetails = new ArrayCollection();
+        $this->datePeremptionProducts = new ArrayCollection();
     }
 
     public static function newProduct($instance = null)
@@ -438,6 +445,36 @@ class Product
     public function setDatePeremption(?\DateTimeInterface $datePeremption): static
     {
         $this->datePeremption = $datePeremption;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DatePeremptionProduct>
+     */
+    public function getDatePeremptionProducts(): Collection
+    {
+        return $this->datePeremptionProducts;
+    }
+
+    public function addDatePeremptionProduct(DatePeremptionProduct $datePeremptionProduct): static
+    {
+        if (!$this->datePeremptionProducts->contains($datePeremptionProduct)) {
+            $this->datePeremptionProducts->add($datePeremptionProduct);
+            $datePeremptionProduct->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDatePeremptionProduct(DatePeremptionProduct $datePeremptionProduct): static
+    {
+        if ($this->datePeremptionProducts->removeElement($datePeremptionProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($datePeremptionProduct->getProduct() === $this) {
+                $datePeremptionProduct->setProduct(null);
+            }
+        }
 
         return $this;
     }

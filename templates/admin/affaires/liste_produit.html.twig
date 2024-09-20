@@ -102,9 +102,9 @@
                                         {{liste.stockRestant * liste.volumeGros}} {{liste.uniteVenteGros}} 
                                     {% endif %} 
                                     {% if liste.qttReserver is not null %}
-                                        ({{liste.stockRestant - liste.qttReserver}} {{liste.presentationGros}})
+                                        (<span class="stock-restant" data-stock="{{liste.stockRestant - liste.qttReserver}}">{{liste.stockRestant - liste.qttReserver}}</span> {{liste.presentationGros}})
                                     {% else %}
-                                        ({{liste.stockRestant}} {{liste.presentationGros}})
+                                        (<span class="stock-restant" data-stock="{{liste.stockRestant}}">{{liste.stockRestant}}</span> {{liste.presentationGros}})
                                     {% endif %}
 
                                     {#{% if showParenthese == 1 %} 
@@ -181,7 +181,7 @@
                                                 <span class="divider-{{unit.name}}" data-divider="{{ unit.divider }}"></span>
                                             {% endfor %}
                                             <br>
-                                            <input type="text" name="valeur-unite" class="form-control form-control-sm valeur-unite" placeholder="Entrez la valeur">
+                                            <input type="text" name="valeur-unite" class="form-control form-control-sm valeur-unite" placeholder="Entrez la valeur" readonly>
                                         {% endif %}
                                         
                                     </p>
@@ -293,6 +293,7 @@ function reloadTabFinancier()
         var inputOther = row.find('input.other');
         var labelOther = row.find('label.label-other');
         var otherUnite = row.find('p.other-unite');
+        var stockRestant = row.find('.stock-restant').data('stock');
 
         // Toujours retirer les anciens événements associés à qttProduit
         qttProduit.off('input');
@@ -308,7 +309,7 @@ function reloadTabFinancier()
 
         // Si le type de vente est "detail", récupérer la valeur du champ qttProduit
         if (typeVente == "detail") {
-
+            qttProduit.css('background-color', '#fff');
             unite.text(uniteVenteGros);
             inputOther.show();
             labelOther.show();
@@ -335,33 +336,71 @@ function reloadTabFinancier()
 
                 } else {
                     qttProduit.css('background-color', '#fff');
-                    inputOther.hide();
-                    labelOther.hide();
+                    inputOther.show();
+                    labelOther.show();
                 }
             });
 
             inputOther.change(function() {
+                var inputValueUnite = otherUnite.find('.valeur-unite');
+                inputValueUnite.click(function() {
+                    if($(this).attr('readonly')) {
+                        var message = 'Veuillez d\'abord choisir une unité';
+                        setTimeout(function () {
+                            toastr.options = {
+                                closeButton: true,
+                                progressBar: true,
+                                showMethod: 'slideDown',
+                                timeOut: 2000
+                            };
+                            toastr.error(message);
+
+                        }, 800);
+                    }
+                })
+
                 if ($(this).is(':checked')) {
                    otherUnite.show();
-
                     var inputOtherUnite = otherUnite.find('.unite-check');
                    
                    inputOtherUnite.change(function() {
                     var uniteName = $(this).data('name');
                     var divider = otherUnite.find('.divider-' + uniteName).data('divider');
-                    var inputValueUnite = otherUnite.find('.valeur-unite');
                     if($(this).is(':checked')) {
+                        inputValueUnite.removeAttr('readonly');
+
                         $('.unite-check').not(this).prop('checked', false);
 
                         inputValueUnite.on('input', function() {
                             const valueUnite = $(this).val();
                             const newQttProduit = valueUnite / divider;
-                            console.log(newQttProduit);
 
                             // Utiliser .val() pour mettre à jour la valeur de l'input qttProduit
-                            qttProduit.val(newQttProduit);
+                            if(newQttProduit >= volumeGros) {
+                                qttProduit.css('background-color', '#fc8b8b');
+                                qttProduit.val("");
+                                var message = 'La quantité ' + newQttProduit + ' pour le type de vente détail ne doit pas supérieur ou égale au volume de gros ' + volumeGros;
+                                
+                                setTimeout(function () {
+                                    toastr.options = {
+                                        closeButton: true,
+                                        progressBar: true,
+                                        showMethod: 'slideDown',
+                                        timeOut: 5000
+                                    };
+                                    toastr.error(message);
+
+                                }, 800);
+
+                            } else {
+                                qttProduit.css('background-color', '#fff');
+                                qttProduit.val(newQttProduit);
+                            }
+
                         });
                         
+                    } else {
+                        inputValueUnite.attr('readonly', true);
                     }
                 })
 
@@ -371,9 +410,32 @@ function reloadTabFinancier()
 
             });
 
-        }else {
+        }else if(typeVente == "gros") {
+            qttProduit.on('input', function() {
+                const qttProduitValue = $(this).val();
+
+                if(qttProduitValue > stockRestant) {
+                    qttProduit.css('background-color', '#fc8b8b');
+                    qttProduit.val("");
+                    var message = 'La quantité ' + qttProduitValue + ' ne doit pas supérieur ou égale au stock restant ' + stockRestant;
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 5000
+                        };
+                        toastr.error(message);
+
+                    }, 800);
+                } else {
+                    qttProduit.css('background-color', '#fff');
+                }
+            })
             unite.text(presentationGros);
             qttProduit.css('background-color', '#fff');
+            inputOther.hide();
+            labelOther.hide();
         }
     });
 
@@ -396,4 +458,6 @@ function reloadTabFinancier()
 });
 
 </script>
+
+
 
