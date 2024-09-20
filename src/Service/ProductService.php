@@ -117,6 +117,8 @@ class ProductService
             $qttReserver = $qttProduct;
         }
 
+        $qttReserver = number_format($qttReserver,2,'.','');
+
         $instance->setQttReserver($qttReserver);
 
         $this->entityManager->persist($instance);

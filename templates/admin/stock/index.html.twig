@@ -38,8 +38,7 @@
                 <h4 class="fw-bold quantity-title">Quantités</h4>
                 <p class="d-flex justify-content-center mt-3 quantity-count"> 
                   <span class="py-1 px-3">
-                    {{totalStock * produitCategory.volumeGros}} {{produitCategory.uniteVenteGros}}
-                    ({{totalStock}} {{produitCategory.presentationGros}})
+                    {{totalStock}} {{produitCategory.presentationGros}}
                   </span>  
                 </p>
               </div>
@@ -48,12 +47,17 @@
               <div class="card p-3 card-quantity shadow text-black-50">
                 <h4 class="fw-bold quantity-title">Quantités restant</h4>
                 <p class="d-flex justify-content-center mt-3 quantity-count"> <span class="py-1 px-3">
-                  {% if produitCategory.stockRestant %}
-                    {{produitCategory.stockRestant * produitCategory.volumeGros}} {{produitCategory.uniteVenteGros}}
-                    ({{produitCategory.stockRestant}} {{produitCategory.presentationGros}})
-                  {% else %}
-                  0
-                  {% endif %}
+
+                  {% set stockRestant = produitCategory.stockRestant|number_format(2,'.','') %}
+                  {% set volumeGros = produitCategory.volumeGros %}
+
+                  {% set sacs = (stockRestant|round(0, 'floor')) %}
+                  {% set decimalPart = stockRestant - sacs %}
+                  {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
+
+                  {{ sacs }} {{produitCategory.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+
+                  
                 </span> </p>
               </div>
             </div>
@@ -75,12 +79,15 @@
                 <h4 class="fw-bold quantity-title">Quantités vendu</h4>
                 <p class="d-flex justify-content-center mt-3 quantity-count"> 
                   <span class="py-1 px-3">
-                    {% if qttVendu == 0 %}
-                      0
-                    {% else %}
-                    {{qttVendu * produitCategory.volumeGros}} {{produitCategory.uniteVenteGros}}
-                    ({{qttVendu}} {{produitCategory.presentationGros}})
-                    {% endif %}
+
+                    {% set qttVendu = qttVendu|number_format(2,'.','') %}
+                    {% set volumeGros = produitCategory.volumeGros %}
+  
+                    {% set sacs = (qttVendu|round(0, 'floor')) %}
+                    {% set decimalPart = qttVendu - sacs %}
+                    {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
+  
+                    {{ sacs }} {{produitCategory.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
                   </span>
                 </p>
               </div>
@@ -92,11 +99,18 @@
                  <p class="d-flex justify-content-center mt-3 quantity-count"> 
                    <span class="py-1 px-3">
                      {% if produitCategory.qttReserver is null %}
-                       0
+                       0 {{produitCategory}} {{produitCategory.presentationGros}}
                      {% else %}
-                      {{produitCategory.qttReserver * produitCategory.volumeGros}} {{produitCategory.uniteVenteGros}}
-                      ({{produitCategory.qttReserver}} {{produitCategory.presentationGros}})
-                     {% endif %}
+
+                      {% set qttReserver = produitCategory.qttReserver|number_format(2,'.','') %}
+                      {% set volumeGros = produitCategory.volumeGros %}
+    
+                      {% set sacs = (qttReserver|round(0, 'floor')) %}
+                      {% set decimalPart = qttReserver - sacs %}
+                      {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
+    
+                      {{ sacs }} {{produitCategory.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+                    {% endif %}
                    </span>
                  </p>
                </div>

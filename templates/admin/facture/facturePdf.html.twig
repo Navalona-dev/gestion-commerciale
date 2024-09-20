@@ -130,19 +130,7 @@
         <p>
             <strong>Écheances : </strong>
             {% if factureEcheances|length > 0 %}
-                <br>
-                {% set status = constant('App\\Entity\\FactureEcheance::STATUS') %}
-                {% for factureEcheance in factureEcheances %}
-                    <strong>
-                        - {{factureEcheance.delaiPaiement}} jours / 
-                        {% if factureEcheance.reglement is not null or factureEcheance.reglement > 0 %}
-                                {{(factureEcheance.montant - factureEcheance.reglement)|number_format(2,',','')}} Ar 
-                            sur {{factureEcheance.montant|number_format(2,',','')}} Ar ({{factureEcheance.dateEcheance|date('d/m/Y')}}) ({{status[factureEcheance.status]}})
-                        {% else %}
-                            {{factureEcheance.montant|number_format(2,',','')}} Ar ({{factureEcheance.dateEcheance|date('d/m/Y')}}) ({{status[factureEcheance.status]}})
-                        {% endif %}
-                    </strong> <br>
-                {% endfor %}
+                {{factureEcheanceFirst.delaiPaiement}} jours
             {% else %}
                 pas d'écheance
             {% endif %}
@@ -160,6 +148,49 @@
             <br><br>
             <span> {{montantHt|number_format(2,',','')}} Ar </span>
         </p>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        {% if factureEcheances|length > 0 %}
+            {% set status = constant('App\\Entity\\FactureEcheance::STATUS') %}
+            <table style="width: 100%;">
+                <thead>
+                    <tr style="background-color: #504f4f81; color: #fff; text-align: center;">
+                        <th>Delais de paiement</th>
+                        <th>Date d'écheance</th>
+                        <th>Montant à payer</th>
+                        <th>Avance</th>
+                        <th>Reste à payer</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for factureEcheance in factureEcheances %}
+                        <tr style="text-align: center;">
+                            <td>{{factureEcheance.delaiPaiement}} jours</td>
+                            <td>{{factureEcheance.dateEcheance|date('d/m/Y')}}</td>
+                            <td>
+                               {{factureEcheance.montant|number_format(2,',','')}} Ar 
+                            </td>
+                            <td>{{factureEcheance.reglement|number_format(2,',','')}} Ar </td>
+                            <td>
+                                {% if factureEcheance.status != "regle" %}
+                                    {% if factureEcheance.reglement is not null or factureEcheance.reglement > 0 %}
+                                        {{(factureEcheance.montant - factureEcheance.reglement)|number_format(2,',','')}} Ar 
+                                    {% else %}
+                                        {{factureEcheance.montant|number_format(2,',','')}} Ar 
+                                    {% endif %}
+                                {% else %}
+                                    0,00 Ar
+                                {% endif %}
+                            </td>
+                            <td>{{status[factureEcheance.status]}}</td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        {% endif %}
     </div>
 
     <div>
