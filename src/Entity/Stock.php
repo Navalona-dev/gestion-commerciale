@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\StockRepository;
@@ -29,6 +31,17 @@ class Stock
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?float $qttRestant = null;
+
+    /**
+     * @var Collection<int, DatePeremptionProduct>
+     */
+    #[ORM\OneToMany(targetEntity: DatePeremptionProduct::class, mappedBy: 'stock')]
+    private Collection $datePeremptionProducts;
+
+    public function __construct()
+    {
+        $this->datePeremptionProducts = new ArrayCollection();
+    }
 
     public static function newStock($instance = null)
     {
@@ -100,6 +113,36 @@ class Stock
     public function setQttRestant(?float $qttRestant): static
     {
         $this->qttRestant = $qttRestant;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DatePeremptionProduct>
+     */
+    public function getDatePeremptionProducts(): Collection
+    {
+        return $this->datePeremptionProducts;
+    }
+
+    public function addDatePeremptionProduct(DatePeremptionProduct $datePeremptionProduct): static
+    {
+        if (!$this->datePeremptionProducts->contains($datePeremptionProduct)) {
+            $this->datePeremptionProducts->add($datePeremptionProduct);
+            $datePeremptionProduct->setStock($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDatePeremptionProduct(DatePeremptionProduct $datePeremptionProduct): static
+    {
+        if ($this->datePeremptionProducts->removeElement($datePeremptionProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($datePeremptionProduct->getStock() === $this) {
+                $datePeremptionProduct->setStock(null);
+            }
+        }
 
         return $this;
     }

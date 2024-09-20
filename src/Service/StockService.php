@@ -71,6 +71,13 @@ class StockService
             }
         }
 
+        $stockProduit = ($produitCategorie->getStockRestant() === null) ? 0 : $produitCategorie->getStockRestant();
+
+        $stockMax = $produitCategorie->getStockMax();
+
+        $newStock = null;
+        $stockRestant = null;
+
         if ($existingStock) {
             // Mettre à jour le stock existant
             $oldQtt = $existingStock->getQtt();
@@ -79,7 +86,7 @@ class StockService
             $existingStock->setQtt($oldQtt + $newQtt);
             $existingStock->setQttRestant($oldQttRestant + $newQtt);
             $newStock = $existingStock; 
-            $this->entityManager->persist($newStock);
+            $stockRestant = $stockProduit + $newQtt;
 
         } else {
             // Créer un nouveau stock
@@ -98,17 +105,13 @@ class StockService
                 $this->entityManager->persist($newDatePeremption);
                 $newStock->setDatePeremption($newDatePeremption);
             }
-            $this->entityManager->persist($newStock);
+            $stockRestant = $stockProduit + $newStock->getQtt();
+            
         }
 
-
-        $stockProduit = ($produitCategorie->getStockRestant() === null) ? 0 : $produitCategorie->getStockRestant();
-
-        $stockRestant = $stockProduit + $newStock->getQtt();
-        $stockMax = $produitCategorie->getStockMax();
+        $this->entityManager->persist($newStock);
 
         $produitCategorie->setStockRestant($stockRestant);
-
         $this->entityManager->persist($produitCategorie);
 
         if($stockRestant >= $stockMax) {

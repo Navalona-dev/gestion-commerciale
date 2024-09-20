@@ -103,7 +103,27 @@ class ProductService
         $product->addAffaire($affaire);
 
         $this->entityManager->persist($product);
-        $this->update();
+
+        $qttProduct = $product->getQtt();
+        $volumeGros = $instance->getVolumeGros();
+        if($product->getTypeVente() == "detail") {
+            $qttProduct = $qttProduct / $volumeGros;
+        }
+
+        $qttReserver = $instance->getQttReserver();
+        if($qttReserver != null) {
+            $qttReserver = $qttReserver + $qttProduct;
+        } else {
+            $qttReserver = $qttProduct;
+        }
+
+        $instance->setQttReserver($qttReserver);
+
+        $this->entityManager->persist($instance);
+
+        //dd($instance->getQttReserver());
+
+       $this->update();
         unset($instance);
         return $product;
     }

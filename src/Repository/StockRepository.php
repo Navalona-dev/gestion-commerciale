@@ -19,7 +19,7 @@ class StockRepository extends ServiceEntityRepository
     //    /**
     //     * @return Stock[] Returns an array of Stock objects
     //     */
-    public function findByProductCategory($produitCategorie): array
+    /*public function findByProductCategory($produitCategorie): array
     {
         return $this->createQueryBuilder('s')
             ->join('s.produitCategorie', 'pc')
@@ -27,8 +27,19 @@ class StockRepository extends ServiceEntityRepository
             ->setParameter('produit_categorie_id', $produitCategorie->getId())
             ->orderBy('s.datePeremption', 'ASC')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
+    }*/
+
+    public function findByProductCategory($produitCategorie)
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.produitCategorie', 'pc') 
+            ->leftJoin('s.datePeremption', 'd')
+            ->where('pc.id = :produit_categorie_id') 
+            ->orderBy('d.date', 'ASC') 
+            ->setParameter('produit_categorie_id', $produitCategorie->getId()) 
+            ->getQuery() 
+            ->getResult(); 
     }
 
 
@@ -68,6 +79,33 @@ class StockRepository extends ServiceEntityRepository
             ->where('pc.id = :produit_categorie_id') 
             ->andWhere('d.date IS NOT NULL')
             ->orderBy('d.date', 'ASC') 
+            ->setParameter('produit_categorie_id', $produitCategorie->getId()) 
+            ->getQuery() 
+            ->getResult(); 
+    }
+
+    public function findByProductCategoryDatePeremption($produitCategorie)
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.produitCategorie', 'pc') 
+            ->leftJoin('s.datePeremption', 'd') // Utiliser LEFT JOIN pour inclure les stocks sans date de péremption
+            ->where('pc.id = :produit_categorie_id') 
+            ->andWhere('s.qttRestant > 0') 
+            ->orderBy('CASE WHEN d.date IS NULL THEN 1 ELSE 0 END', 'ASC') // Priorise les dates non nulles
+            ->addOrderBy('d.date', 'ASC') // Puis trier par date de péremption
+            ->setParameter('produit_categorie_id', $produitCategorie->getId()) 
+            ->getQuery() 
+            ->getResult(); 
+    }
+
+    public function findByProduitCategorieAnulle($produitCategorie)
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.produitCategorie', 'pc') 
+            ->leftJoin('s.datePeremption', 'd') // Utiliser LEFT JOIN pour inclure les stocks sans date de péremption
+            ->where('pc.id = :produit_categorie_id') 
+            ->orderBy('CASE WHEN d.date IS NULL THEN 1 ELSE 0 END', 'ASC') // Priorise les dates non nulles
+            ->addOrderBy('d.date', 'ASC') // Puis trier par date de péremption
             ->setParameter('produit_categorie_id', $produitCategorie->getId()) 
             ->getQuery() 
             ->getResult(); 
