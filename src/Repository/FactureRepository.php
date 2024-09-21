@@ -66,7 +66,6 @@ class FactureRepository extends ServiceEntityRepository
                 ";
             $sql .= " GROUP BY f.id
                 ORDER BY f.dateCreation DESC";
-
             $query = $this->connection->prepare($sql);
         
             $query = $this->connection->executeQuery($sql);

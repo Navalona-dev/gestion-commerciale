@@ -124,14 +124,14 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null, typeVente 
     var anchorName = document.location.hash.substring(1);
 
     $("#qtt").css('border', '1px solid #e5e6e7');
-
+    
     var qtt = $("#qtt").val();
     var qttRestant = $("#qttRestant").val();
     if (qtt === "" || qtt < 0) {
         $("#qtt").css('border', '1px solid red');
         return false;
     }
-    
+
     if (qttRestant != undefined && qttRestant != "") {
        
         var qttTotal =  1
@@ -140,10 +140,10 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null, typeVente 
             qttTotal =  parseFloat(qttRestant);
         } 
         if (typeVente == 'detail') {
-            qttTotal =  parseFloat(qttRestant) * parseFloat(volumeGros);
+            qttTotal =  parseFloat(qttRestant) * parseFloat(volumeDetail);
         } 
 
-        //console.log(typeVente, qttRestant, qttTotal,volumeGros, volumeDetail );
+    
         if (parseFloat(qtt) > (parseFloat(qttTotal))) {
            
             $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');

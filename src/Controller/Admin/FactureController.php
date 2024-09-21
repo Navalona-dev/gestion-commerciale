@@ -74,36 +74,43 @@ class FactureController extends AbstractController
         $data = [];
         try {
             $factures = $factureService->getAllFactures();
-        
+           
             $factureEcheanceData = [];  // Tableau pour stocker les échéances par facture
         
             $factureId = [];
-            foreach($factures as $facture) {
-                $factureId[] = $facture['id'];
-            }
-        
-            $facts = $this->factureRepo->findBy(['id' => $factureId]);
-        
-            foreach($facts as $fact) {
-                $factureEcheances = $fact->getFactureEcheances(); 
-                
-                $countFactureEcheances = count($factureEcheances);
-        
-                if ($countFactureEcheances > 0) {
-                    $factureEcheanceId = $factureEcheances[$countFactureEcheances - 1]; 
-                    $factureEcheance = $this->factureEcheanceRepo->findOneBy(['id' => $factureEcheanceId]);
-        
-                    // Stocke l'échéance pour cette facture
-                    $factureEcheanceData[$fact->getId()] = $factureEcheance;
-                } else {
-                    // Si pas d'échéance, stocke null
-                    $factureEcheanceData[$fact->getId()] = null;
+            if ($factures != false) {
+                foreach($factures as $facture) {
+                    $factureId[] = $facture['id'];
                 }
-            }
-        
-            if ($factures == false) {
+
+                $facts = $this->factureRepo->findBy(['id' => $factureId]);
+                foreach($facts as $fact) {
+                    $factureEcheances = $fact->getFactureEcheances(); 
+                    
+                    $countFactureEcheances = count($factureEcheances);
+            
+                    if ($countFactureEcheances > 0) {
+                        $factureEcheanceId = $factureEcheances[$countFactureEcheances - 1]; 
+                        $factureEcheance = $this->factureEcheanceRepo->findOneBy(['id' => $factureEcheanceId]);
+            
+                        // Stocke l'échéance pour cette facture
+                        $factureEcheanceData[$fact->getId()] = $factureEcheance;
+                    } else {
+                        // Si pas d'échéance, stocke null
+                        $factureEcheanceData[$fact->getId()] = null;
+                    }
+                }
+            
+                if ($factures == false) {
+                    $factures = [];
+                }
+            } else {
                 $factures = [];
             }
+            
+        
+            
+            
         
             $data["html"] = $this->renderView('admin/facture/index.html.twig', [
                 'listes' => $factures,
@@ -374,7 +381,7 @@ class FactureController extends AbstractController
 
                 $numero = (null != $facture['numero']) ? $facture['numero'] : "";;
                 
-                $nomCompte .= (null != $facture['compte']) ? $facture['compte'] : "";
+                $nomCompte = (null != $facture['compte']) ? $facture['compte'] : "";
 
                 $nomAffaire = (null != $facture['nomAffaire']) ? $facture['nomAffaire'] : "";
 
