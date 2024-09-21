@@ -25,4 +25,16 @@ class ApplicationRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    public function findByApplication($applicationId): array
+    {
+        return $this->createQueryBuilder('a')
+            ->select('a.entreprise, a.id')
+            ->andWhere('a.isActive = :isActive')
+            ->andWhere('a.id != :currentAppId')
+            ->setParameter('isActive', true)
+            ->setParameter('currentAppId', $applicationId)
+            ->orderBy('a.entreprise', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

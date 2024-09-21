@@ -146,7 +146,6 @@ class ProduitCategorieService
             $produitCategorie->setDescription($instance->getDescription());
             $produitCategorie->setPrixHt($instance->getPrixHt());
             $produitCategorie->setTva($instance->getTva());
-            $produitCategorie->setQtt($instance->getQtt());
             $produitCategorie->setStockRestant($instance->getStockRestant());
             $produitCategorie->setStockMin(10);
             $produitCategorie->setStockMax(50);
@@ -156,7 +155,6 @@ class ProduitCategorieService
             $produitCategorie->setPrixVenteDetail($instance->getPrixVenteDetail());
             $produitCategorie->setPrixTTC($instance->getPrixTTC());
             $produitCategorie->setPrixAchat($instance->getPrixAchat());
-            $produitCategorie->setCategorie($instance->getCategorie());
 
             foreach($produitCategorie->getProductImages() as $productImage) {
                 $productImage->setProduitCategorie($produitCategorie);

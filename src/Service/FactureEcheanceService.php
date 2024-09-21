@@ -12,6 +12,7 @@ use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
 use App\Service\TCPDFService;
 use App\Entity\FactureEcheance;
+use App\Entity\ProduitCategorie;
 use App\Service\ApplicationManager;
 use App\Entity\DatePeremptionProduct;
 use App\Service\AuthorizationManager;
@@ -60,7 +61,7 @@ class FactureEcheanceService
         $this->logService = $logService;
     }
 
-    public function add($affaire = null, $request = null, $folder = null, $form = null, $montant = null, $totalPayer = null, $grandTotal = null)
+    public function add($affaire = null, $request = null, $folder = null, $form = null, $montant = null, $totalPayer = null, $grandTotal = null, $applicationRevendeur = null)
     {
         $facture = Facture::newFacture($affaire);
         $date = new \DateTime();
@@ -86,11 +87,14 @@ class FactureEcheanceService
         $products = $affaire->getProducts();
         $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
         $montantHt = 0;
+        $quantitesParCategorie = [];
+        $tabProduitCategorie = [];
 
         // Sortie du PDF sous forme de réponse HTTP
         foreach ($products as $key => $product) { 
             // Gestion stock
             $produitCategorie = $product->getProduitCategorie();
+            $volumeGros = $produitCategorie->getVolumeGros();
             $qtt = $product->getQtt();
           
             $factureDetail = new FactureDetail();
@@ -128,6 +132,25 @@ class FactureEcheanceService
 
             $facture->addFactureDetail($factureDetail);
 
+            //obtenir le produitcategorie et la quantité
+            if($product->getTypeVente() == "detail") {
+                $qtt = $qtt / $volumeGros;
+            }
+
+            $qtt = number_format($qtt,2,'.','');
+
+            $produitCategorieId = $produitCategorie->getId();
+            if (!isset($quantitesParCategorie[$produitCategorieId])) {
+                $quantitesParCategorie[$produitCategorieId] = 0; // Initialiser si pas encore présent
+            }
+            $quantitesParCategorie[$produitCategorieId] += $qtt; // Additionner la quantité
+
+            // Ajouter seulement si la produitCategorie n'est pas déjà dans le tableau
+            $produitCategorieId = $produitCategorie->getId();
+            if (!isset($tabProduitCategorie[$produitCategorieId])) {
+                $tabProduitCategorie[$produitCategorieId] = $produitCategorie;
+            }
+
             //Log product
             $data["produit"] = $produitCategorie->getNom();
             $data["dateReception"] = null;
@@ -150,6 +173,108 @@ class FactureEcheanceService
             $this->logService->addLog($request, "commande", $this->application->getId(), $produitCategorie->getReference(), $data);
 
             $this->persist($factureDetail);
+        }
+
+        if($applicationRevendeur != null) {
+            foreach($tabProduitCategorie as $keyProduct => $oldProduitCategorie) {
+                $reference = $oldProduitCategorie->getReference();
+
+                $existingProduitCategorie = $this->entityManager->getRepository(ProduitCategorie::class)
+                ->findOneBy([
+                    'reference' => $reference,
+                    'application' => $applicationRevendeur,
+                ]);
+
+                 // Obtenir la quantité totale pour la catégorie
+                 $produitCategorieId = $oldProduitCategorie->getId();
+                 $qttNewProduitCategorie = isset($quantitesParCategorie[$produitCategorieId]) ? $quantitesParCategorie[$produitCategorieId] : 0;
+                 $newProduitCategorie = null;
+                if ($existingProduitCategorie) {
+                    $oldQttProduitCategorie = $existingProduitCategorie->getQtt();
+                    $oldStockRestantProduitCategorie = $existingProduitCategorie->getStockRestant();
+                    if($oldStockRestantProduitCategorie != null) {
+                        $newProduitCategorie->setStockRestant($oldStockRestantProduitCategorie + $qttNewProduitCategorie);
+                    } else {
+                        $newProduitCategorie->setStockRestant($qttNewProduitCategorie);
+                    }
+
+                    if($oldQttProduitCategorie != null) {
+                        $newProduitCategorie->setQtt($oldQttProduitCategorie + $qttNewProduitCategorie);
+                    } else {
+                        $newProduitCategorie->setQtt($qttNewProduitCategorie);
+                    }
+                    $newProduitCategorie = $existingProduitCategorie;
+
+                } else {
+                    $newProduitCategorie = new ProduitCategorie();
+
+                    $date = new \DateTime();
+        
+                    $newProduitCategorie->setNom($oldProduitCategorie->getNom());
+
+                    $newProduitCategorie->setCategorie($oldProduitCategorie->getCategorie());
+                    
+                    $newProduitCategorie->setType($oldProduitCategorie->getType());
+        
+                    $newProduitCategorie->setReference($reference);
+
+                    $newProduitCategorie->setQtt($qttNewProduitCategorie);
+                    $newProduitCategorie->setStockRestant($qttNewProduitCategorie);
+
+                    $newProduitCategorie->setApplication($applicationRevendeur);
+        
+                    $newProduitCategorie->setDateCreation($date);
+                    $newProduitCategorie->setDescription($oldProduitCategorie->getDescription());
+                    $newProduitCategorie->setPrixHt($oldProduitCategorie->getPrixHt());
+                    $newProduitCategorie->setTva($oldProduitCategorie->getTva());
+                    $newProduitCategorie->setStockMin(10);
+                    $newProduitCategorie->setStockMax(50);
+                    $newProduitCategorie->setUniteVenteGros($oldProduitCategorie->getUniteVenteGros());
+                    $newProduitCategorie->setUniteVenteDetail($oldProduitCategorie->getUniteVenteDetail());
+                    $newProduitCategorie->setPrixVenteGros($oldProduitCategorie->getPrixVenteGros());
+                    $newProduitCategorie->setPrixVenteDetail($oldProduitCategorie->getPrixVenteDetail());
+                    $newProduitCategorie->setPrixTTC($oldProduitCategorie->getPrixTTC());
+                    $newProduitCategorie->setPrixAchat($oldProduitCategorie->getPrixAchat());
+                    $newProduitCategorie->setPresentationGros($oldProduitCategorie->getPresentationGros());
+                    $newProduitCategorie->setPresentationDetail($oldProduitCategorie->getPresentationDetail());
+                    $newProduitCategorie->setVolumeGros($oldProduitCategorie->getVolumeGros());
+                    $newProduitCategorie->setVolumeDetail($oldProduitCategorie->getVolumeDetail());
+        
+                    foreach($oldProduitCategorie->getProductImages() as $productImage) {
+                        $productImage->setProduitCategorie($newProduitCategorie);
+                        $productImage->setDateCreation($date);
+                        $this->entityManager->persist($productImage);
+                    }
+
+                    $this->entityManager->persist($newProduitCategorie);
+
+                    $newTabProduitCategorie[] = $newProduitCategorie;
+        
+                }
+
+               //gerer le stock
+
+                $stock = new Stock();
+
+                $stock->setQtt($qttNewProduitCategorie);
+                $stock->setQttRestant($qttNewProduitCategorie);
+                $stock->setProduitCategorie($newProduitCategorie);
+                $stock->setDateCreation($date);
+
+                $this->entityManager->persist($stock);
+
+                // Obtenir l'utilisateur connecté
+                $user = $this->security->getUser();
+        
+                // Créer log
+                $this->logger->info('Produit catégorie ajouté', [
+                    'Produit' => $newProduitCategorie->getNom(),
+                    'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                    'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                    'ID Application' => $newProduitCategorie->getApplication()->getId()
+                ]);
+
+            }
         }
         
         $facture->setFile($filename);

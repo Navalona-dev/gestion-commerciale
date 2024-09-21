@@ -101,7 +101,7 @@
                                     {% set formattedStockRestant = liste.stockRestant|number_format(2, '.', '') %}
                                    
                                     {% if liste.qttReserver is not null %}
-                                        <span class="stock-restant" data-stock="{{(liste.stockRestant - liste.qttReserver)|number_format(2,'.','')}}">
+                                        <span class="stock-restant" data-stock="{{liste.stockRestant - liste.qttReserver}}">
                                             
                                             {% if formattedStockRestant ends with '.00' %}
                                                 {{(liste.stockRestant - liste.qttReserver)|number_format(0, '.', '') }} 
@@ -119,7 +119,7 @@
                                             {% endif %}
                                         </span>
                                     {% else %}
-                                        <span class="stock-restant" data-stock="{{liste.stockRestant|number_format(2,'.','')}}">
+                                        <span class="stock-restant" data-stock="{{liste.stockRestant}}">
 
                                             {% if formattedStockRestant ends with '.00' %}
                                                 {{liste.stockRestant|number_format(0, '.', '') }} 

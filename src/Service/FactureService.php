@@ -9,17 +9,21 @@ use Twig\Environment;
 use App\Entity\Compte;
 use App\Entity\Affaire;
 use App\Entity\Facture;
+use App\Entity\Product;
 use App\Entity\Notification;
 use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
 use App\Service\TCPDFService;
+use App\Entity\DatePeremption;
 use Doctrine\ORM\EntityManager;
+use App\Entity\ProduitCategorie;
+//use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\ReglementFacture;
 use App\Entity\DatePeremptionProduct;
 use App\Service\AuthorizationManager;
-//use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\ApplicationRepository;
 use App\Exception\ActionInvalideException;
 use Symfony\Component\Security\Core\Security;
 use App\Repository\ReglementFactureRepository;
@@ -42,6 +46,7 @@ class FactureService
     private $security;
     private $reglementFactureRepository;
     private $logService;
+    private $applicationRepo;
 
     public function __construct(
         AuthorizationManager $authorization, 
@@ -53,7 +58,8 @@ class FactureService
         LoggerInterface $affaireLogger, 
         Security $security,
         ReglementFactureRepository  $reglementFactureRepository,
-        LogService $logService
+        LogService $logService,
+        ApplicationRepository $applicationRepo
         )
     {
         $this->tokenStorage = $TokenStorageInterface;
@@ -66,9 +72,10 @@ class FactureService
         $this->security = $security;
         $this->reglementFactureRepository = $reglementFactureRepository;
         $this->logService = $logService;
+        $this->applicationRepo = $applicationRepo;
     }
 
-    public function add($affaire = null, $folder = null, $request = null)
+    public function add($affaire = null, $folder = null, $request = null, $applicationRevendeur = null)
     {
         $facture = Facture::newFacture($affaire);
         $date = new \DateTime();
@@ -111,6 +118,9 @@ class FactureService
         $tabQtt = [];
         $tabQttReserver = [];
         $tabQttRestantProduitCategorie = [];
+        $tabProduitCategorie = [];
+        $quantitesParCategorie = [];
+        $datePeremptionProductArray = [];
 
         foreach ($products as $key => $product) { 
             // Gestion stock
@@ -229,6 +239,8 @@ class FactureService
                     $this->persist($stk);
                 }
 
+                $datePeremptionProductArray[] = $datePeremptionProduct;
+
                 $tabQttRestant[] = $stk->getQttRestant();
             }
  
@@ -248,7 +260,130 @@ class FactureService
             $tabQtt[] = $qttProduct; 
             $tabQttReserver[] = $produitCategorie->getQttReserver();
             $tabQttRestantProduitCategorie[] = number_format($produitCategorie->getStockRestant(),2,'.','');
+           
+             // Ajouter la quantité à la catégorie
+            $produitCategorieId = $produitCategorie->getId();
+            if (!isset($quantitesParCategorie[$produitCategorieId])) {
+                $quantitesParCategorie[$produitCategorieId] = 0; // Initialiser si pas encore présent
+            }
+            $quantitesParCategorie[$produitCategorieId] += $qttProduct; // Additionner la quantité
+
+
+            // Ajouter seulement si la produitCategorie n'est pas déjà dans le tableau
+            $produitCategorieId = $produitCategorie->getId();
+            if (!isset($tabProduitCategorie[$produitCategorieId])) {
+                $tabProduitCategorie[$produitCategorieId] = $produitCategorie;
+            }
+
         }
+
+        //dd($datePeremptionProductArray);
+        //créer un nouveau produit dans l'application choisi lors de commande
+        $newTabProduitCategorie = [];
+        $newTabStock = [];
+        //dd($applicationRevendeur);
+        if($applicationRevendeur != null) {
+            foreach($tabProduitCategorie as $keyProduct => $oldProduitCategorie) {
+                $reference = $oldProduitCategorie->getReference();
+
+                $existingProduitCategorie = $this->entityManager->getRepository(ProduitCategorie::class)
+                ->findOneBy([
+                    'reference' => $reference,
+                    'application' => $applicationRevendeur,
+                ]);
+
+                 // Obtenir la quantité totale pour la catégorie
+                 $produitCategorieId = $oldProduitCategorie->getId();
+                 $qttNewProduitCategorie = isset($quantitesParCategorie[$produitCategorieId]) ? $quantitesParCategorie[$produitCategorieId] : 0;
+                 $newProduitCategorie = null;
+                if ($existingProduitCategorie) {
+                    $oldQttProduitCategorie = $existingProduitCategorie->getQtt();
+                    $oldStockRestantProduitCategorie = $existingProduitCategorie->getStockRestant();
+                    if($oldStockRestantProduitCategorie != null) {
+                        $newProduitCategorie->setStockRestant($oldStockRestantProduitCategorie + $qttNewProduitCategorie);
+                    } else {
+                        $newProduitCategorie->setStockRestant($qttNewProduitCategorie);
+                    }
+
+                    if($oldQttProduitCategorie != null) {
+                        $newProduitCategorie->setQtt($oldQttProduitCategorie + $qttNewProduitCategorie);
+                    } else {
+                        $newProduitCategorie->setQtt($qttNewProduitCategorie);
+                    }
+                    $newProduitCategorie = $existingProduitCategorie;
+
+                } else {
+                    $newProduitCategorie = new ProduitCategorie();
+
+                    $date = new \DateTime();
+        
+                    $newProduitCategorie->setNom($oldProduitCategorie->getNom());
+
+                    $newProduitCategorie->setCategorie($oldProduitCategorie->getCategorie());
+                    
+                    $newProduitCategorie->setType($oldProduitCategorie->getType());
+        
+                    $newProduitCategorie->setReference($reference);
+
+                    $newProduitCategorie->setQtt($qttNewProduitCategorie);
+                    $newProduitCategorie->setStockRestant($qttNewProduitCategorie);
+
+                    $newProduitCategorie->setApplication($applicationRevendeur);
+        
+                    $newProduitCategorie->setDateCreation($date);
+                    $newProduitCategorie->setDescription($oldProduitCategorie->getDescription());
+                    $newProduitCategorie->setPrixHt($oldProduitCategorie->getPrixHt());
+                    $newProduitCategorie->setTva($oldProduitCategorie->getTva());
+                    $newProduitCategorie->setStockMin(10);
+                    $newProduitCategorie->setStockMax(50);
+                    $newProduitCategorie->setUniteVenteGros($oldProduitCategorie->getUniteVenteGros());
+                    $newProduitCategorie->setUniteVenteDetail($oldProduitCategorie->getUniteVenteDetail());
+                    $newProduitCategorie->setPrixVenteGros($oldProduitCategorie->getPrixVenteGros());
+                    $newProduitCategorie->setPrixVenteDetail($oldProduitCategorie->getPrixVenteDetail());
+                    $newProduitCategorie->setPrixTTC($oldProduitCategorie->getPrixTTC());
+                    $newProduitCategorie->setPrixAchat($oldProduitCategorie->getPrixAchat());
+                    $newProduitCategorie->setPresentationGros($oldProduitCategorie->getPresentationGros());
+                    $newProduitCategorie->setPresentationDetail($oldProduitCategorie->getPresentationDetail());
+                    $newProduitCategorie->setVolumeGros($oldProduitCategorie->getVolumeGros());
+                    $newProduitCategorie->setVolumeDetail($oldProduitCategorie->getVolumeDetail());
+        
+                    foreach($oldProduitCategorie->getProductImages() as $productImage) {
+                        $productImage->setProduitCategorie($newProduitCategorie);
+                        $productImage->setDateCreation($date);
+                        $this->entityManager->persist($productImage);
+                    }
+
+                    $this->entityManager->persist($newProduitCategorie);
+
+                    $newTabProduitCategorie[] = $newProduitCategorie;
+        
+                }
+
+               //gerer le stock
+
+                $stock = new Stock();
+
+                $stock->setQtt($qttNewProduitCategorie);
+                $stock->setQttRestant($qttNewProduitCategorie);
+                $stock->setProduitCategorie($newProduitCategorie);
+                $stock->setDateCreation($date);
+
+                $this->entityManager->persist($stock);
+
+                // Obtenir l'utilisateur connecté
+                $user = $this->security->getUser();
+        
+                // Créer log
+                $this->logger->info('Produit catégorie ajouté', [
+                    'Produit' => $newProduitCategorie->getNom(),
+                    'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                    'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                    'ID Application' => $newProduitCategorie->getApplication()->getId()
+                ]);
+
+            }
+        }
+        //dd(count($newTabStock));
 
         //dd($tabQtt, $tabQttReserver, $tabQttRestant, $tabQttRestantProduitCategorie);
 

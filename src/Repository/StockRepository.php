@@ -111,4 +111,17 @@ class StockRepository extends ServiceEntityRepository
             ->getResult(); 
     }
 
+    public function findOneByDatePeremption($produitCategorie, $date)
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.produitCategorie', 'pc')
+            ->join('s.datePeremption', 'dp') 
+            ->where('pc.id = :produit_categorie_id') 
+            ->andWhere('dp.date = :date') 
+            ->setParameter('produit_categorie_id', $produitCategorie->getId()) 
+            ->setParameter('date', $date) 
+            ->getQuery() 
+            ->getOneOrNullResult(); 
+    }
+
 }

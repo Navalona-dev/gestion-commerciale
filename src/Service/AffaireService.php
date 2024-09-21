@@ -45,7 +45,7 @@ class AffaireService
         $this->security = $security;
     }
 
-    public function add($instance, $statut, $compte = null)
+    public function add($instance, $statut, $compte = null, $application = null)
     {
         $affaire = Affaire::newAffaire($instance, $statut, $compte);
 
@@ -53,6 +53,9 @@ class AffaireService
         $affaire->setApplication($this->application);
         $affaire->setPrestation("Vente");
         $affaire->setNumero(null);
+        if($statut == "commande" && $application != null) {
+            $affaire->setApplicationRevendeur($application);
+        }
         
         /*foreach($affaire->getUtilisateur() as $utilisateur) {
             $utilisateur->addCompte($affaire);

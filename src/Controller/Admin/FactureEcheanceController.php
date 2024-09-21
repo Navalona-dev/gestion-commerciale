@@ -45,6 +45,7 @@ class FactureEcheanceController extends AbstractController
     public function new(Affaire $affaire, Request $request): Response
     {
         $request->getSession()->set('idAffaire', $affaire->getId());
+        $applicationRevendeur = $affaire->getApplicationRevendeur();
 
         $data = [];
 
@@ -75,7 +76,7 @@ class FactureEcheanceController extends AbstractController
                             return new JsonResponse(['status' => 'error', 'message' => 'Le dossier des échéances ne peut pas être créé.'], Response::HTTP_INTERNAL_SERVER_ERROR);
                         }
                     }
-                    list($pdfContent, $facture, $totalPayer) = $this->factureEcheanceService->add($affaire, $request, $documentFolder, $form, $montant, $totalPayer, $montantHt);
+                    list($pdfContent, $facture, $totalPayer) = $this->factureEcheanceService->add($affaire, $request, $documentFolder, $form, $montant, $totalPayer, $montantHt, $applicationRevendeur);
                 
                     // Utiliser le numéro de la facture pour le nom du fichier
                     $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";

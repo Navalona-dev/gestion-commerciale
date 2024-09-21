@@ -161,6 +161,10 @@ class Affaire
     #[ORM\OneToMany(targetEntity: Facture::class, mappedBy: 'affaire')]
     private Collection $factures;
 
+    #[ORM\ManyToOne]
+    private ?Application $applicationRevendeur = null;
+
+
     public function __construct()
     {
         $this->dateCreation = new \DateTime('now');
@@ -671,4 +675,18 @@ class Affaire
 
         return $this;
     }
+
+    public function getApplicationRevendeur(): ?Application
+    {
+        return $this->applicationRevendeur;
+    }
+
+    public function setApplicationRevendeur(?Application $applicationRevendeur): static
+    {
+        $this->applicationRevendeur = $applicationRevendeur;
+
+        return $this;
+    }
+
+  
 }

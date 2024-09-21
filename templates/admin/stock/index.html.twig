@@ -99,7 +99,7 @@
                  <p class="d-flex justify-content-center mt-3 quantity-count"> 
                    <span class="py-1 px-3">
                      {% if produitCategory.qttReserver is null %}
-                       0 {{produitCategory}} {{produitCategory.presentationGros}}
+                       0 {{produitCategory.qttReserver}} {{produitCategory.presentationGros}}
                      {% else %}
 
                       {% set qttReserver = produitCategory.qttReserver|number_format(2,'.','') %}
