@@ -27,6 +27,7 @@ use App\Repository\FactureRepository;
 use App\Exception\PropertyVideException;
 use App\Service\ProduitCategorieService;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\ApplicationRepository;
 use App\Repository\FactureEcheanceRepository;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,6 +57,7 @@ class AffaireController extends AbstractController
     private $logger;
     private $factureRepo;
     private $factureEcheanceRepo;
+    private $applicationRepo;
 
 
     public function __construct(
@@ -66,7 +68,8 @@ class AffaireController extends AbstractController
         FactureService $factureService,
         LoggerInterface $affaireLogger, 
         FactureRepository $factureRepo,
-        FactureEcheanceRepository $factureEcheanceRepo
+        FactureEcheanceRepository $factureEcheanceRepo,
+        ApplicationRepository $applicationRepo
         
         )
     {
@@ -78,6 +81,7 @@ class AffaireController extends AbstractController
         $this->logger = $affaireLogger;
         $this->factureRepo = $factureRepo;
         $this->factureEcheanceRepo = $factureEcheanceRepo;
+        $this->applicationRepo = $applicationRepo;
 
     }
 
@@ -384,6 +388,8 @@ class AffaireController extends AbstractController
             $statut = $request->get('statut');
 
             $affaire = new Affaire();
+
+            $applications = $this->applicationRepo->findByApplication($this->application->getId());
             
             $form = $this->createForm(AffaireType::class, $affaire);
 
@@ -392,7 +398,20 @@ class AffaireController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
                     // encode the plain password
-                    $this->affaireService->add($affaire, $statut, $compte);
+                    $application = null;
+                    
+                    if($statut == "commande") {
+                        $revendeur = $request->get('revendeur');
+                        $applicationRevendeurId = $request->get('application-commande');
+    
+                        if($revendeur == 'on') {
+                            //$request->getSession()->set('applicationRevendeurId', $applicationRevendeurId);
+                            $application = $this->applicationRepo->findOneBy(['id' => $applicationRevendeurId]);
+                        } 
+                    }
+
+                    $this->affaireService->add($affaire, $statut, $compte, $application);
+
                     $this->affaireService->update();
                    
                     $affaires = $this->affaireService->getAllAffaire($compte);
@@ -422,7 +441,8 @@ class AffaireController extends AbstractController
             $data["html"] = $this->renderView('admin/affaires/new_affaire.html.twig', [
                 'form' => $form->createView(),
                 'compte' => $compte,
-                'statut' => $statut
+                'statut' => $statut,
+                'applications' => $applications
             ]);
            
             return new JsonResponse($data);
@@ -893,17 +913,7 @@ class AffaireController extends AbstractController
     #[Route('/paiement/{affaire}', name: '_paiement')]
     public function payer(Affaire $affaire, Request $request): Response
     {
-        /*if (count($affaire->getProducts()) > 0) {
-            $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
-           
-            $pdf = $this->factureService->add($affaire, $documentFolder);
-           
-            return new Response($pdf->Output('test.pdf', 'I'), 200, [
-                'Content-Type' => 'application/pdf',
-            ]);
-    
-        }
-        return new JsonResponse([]);*/
+        $applicationRevendeur = $affaire->getApplicationRevendeur();
 
         if (count($affaire->getProducts()) > 0) {
             $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
@@ -913,7 +923,7 @@ class AffaireController extends AbstractController
                 mkdir($documentFolder, 0777, true); // 0777 pour les permissions, et `true` pour créer récursivement les sous-dossiers
             }
             
-            list($pdfContent, $facture) = $this->factureService->add($affaire, $documentFolder, $request);
+            list($pdfContent, $facture) = $this->factureService->add($affaire, $documentFolder, $request, $applicationRevendeur);
             
             $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
             $pdfPath = '/uploads/factures/valide/' . $filename;

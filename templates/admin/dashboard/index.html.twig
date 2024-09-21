@@ -161,7 +161,14 @@
                         <i class="bi bi-box"></i>
                     </div>
                     <div class="ps-3">
-                        <h6 id="stock-count"> {{countStock | default(0)}} </h6>
+                      {% set formattedCountStock = countStock|number_format(2, '.', '') %}
+                        <h6 id="stock-count"> 
+                          {% if formattedCountStock ends with '.00' %}
+                              {{ countStock|number_format(0, '.', '')| default(0) }} 
+                          {% else %}
+                            {{formattedCountStock| default(0)}}
+                          {% endif %}
+                        </h6>
                         {#<span class="text-success small pt-1 fw-bold" id="percentage-change">0%</span>
                         <span class="text-muted small pt-2 ps-1">variation</span>#}
                     </div>
@@ -207,7 +214,14 @@
                         <i class="bi bi-box"></i>
                     </div>
                     <div class="ps-3">
-                        <h6 id="stock-restant-count"> {{countStockRestant | default(0)}} </h6>
+                      {% set formattedCountStockRestant = countStockRestant|number_format(2, '.', '') %}
+                        <h6 id="stock-restant-count"> 
+                          {% if formattedCountStockRestant ends with '.00' %}
+                              {{ countStockRestant|number_format(0, '.', '')| default(0) }} 
+                          {% else %}
+                            {{formattedCountStockRestant| default(0)}}
+                          {% endif %}
+                        </h6>
                         {#<span class="text-success small pt-1 fw-bold" id="percentage-change">0%</span>
                         <span class="text-muted small pt-2 ps-1">variation</span>#}
                     </div>
@@ -263,14 +277,70 @@
       </div>
     
       <div id="stock-vendu-data" style="display: none;">
-        <span id="count-stock-vendu-today"> {{countStockVenduToday | default(0)}} </span>
-        <span id="count-stock-vendu-yesterday"> {{countStockVenduYesterday | default(0)}} </span>
-        <span id="count-stock-vendu-this-week"> {{countStockVenduThisWeek | default(0)}} </span>
-        <span id="count-stock-vendu-last-week"> {{countStockVenduLastWeek | default(0)}} </span>
-        <span id="count-stock-vendu-this-month"> {{countStockVenduThisMonth | default(0)}} </span>
-        <span id="count-stock-vendu-last-month"> {{countStockVenduLastMonth | default(0)}} </span>
-        <span id="count-stock-vendu-this-year"> {{countStockVenduThisYear | default(0)}} </span>
-        <span id="count-stock-vendu-last-year"> {{countStockVenduLastYear | default(0)}} </span>
+        <span id="count-stock-vendu-today"> 
+          {% set formattedCountStockVenduToday = countStockVenduToday|number_format(2, '.', '') %}
+          {% if formattedCountStockVenduToday ends with '.00' %}
+              {{ countStockVenduToday|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountStockVenduToday| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-stock-vendu-yesterday"> 
+          {% set formattedCountStockVenduYesterday = countStockVenduYesterday|number_format(2, '.', '') %}
+          {% if formattedCountStockVenduYesterday ends with '.00' %}
+              {{ countStockVenduYesterday|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountStockVenduYesterday| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-stock-vendu-this-week"> 
+          {% set formattedCountStockVenduThisWeek = countStockVenduThisWeek|number_format(2, '.', '') %}
+          {% if formattedCountStockVenduThisWeek ends with '.00' %}
+              {{ countStockVenduThisWeek|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountStockVenduThisWeek| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-stock-vendu-last-week"> 
+          {% set formattedCountStockVenduLastWeek = countStockVenduLastWeek|number_format(2, '.', '') %}
+          {% if formattedCountStockVenduLastWeek ends with '.00' %}
+              {{ countStockVenduLastWeek|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountStockVenduLastWeek| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-stock-vendu-this-month"> 
+          {% set formattedCountStockVenduThisMonth = countStockVenduThisMonth|number_format(2, '.', '') %}
+          {% if formattedCountStockVenduThisMonth ends with '.00' %}
+              {{ countStockVenduThisMonth|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountStockVenduThisMonth| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-stock-vendu-last-month"> 
+          {% set formattedCountStockVenduLastMonth = countStockVenduLastMonth|number_format(2, '.', '') %}
+          {% if formattedCountStockVenduLastMonth ends with '.00' %}
+              {{ countStockVenduLastMonth|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountStockVenduLastMonth| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-stock-vendu-this-year"> 
+          {% set formattedCountStockVenduThisYear = countStockVenduThisYear|number_format(2, '.', '') %}
+          {% if formattedCountStockVenduThisYear ends with '.00' %}
+              {{ countStockVenduThisYear|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountStockVenduThisYear| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-stock-vendu-last-year"> 
+          {% set formattedCountStockVenduLastYear = countStockVenduLastYear|number_format(2, '.', '') %}
+          {% if formattedCountStockVenduLastYear ends with '.00' %}
+              {{ countStockVenduLastYear|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountStockVenduLastYear| default(0)}}
+          {% endif %}
+        </span>
       </div>
 
       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
@@ -315,14 +385,70 @@
       </div>
 
       <div id="transfert-data" style="display: none;">
-        <span id="count-transfert-today"> {{countTransfertToday | default(0)}} </span>
-        <span id="count-transfert-yesterday"> {{countTransfertYesterday | default(0)}} </span>
-        <span id="count-transfert-this-week"> {{countTransfertThisWeek | default(0)}} </span>
-        <span id="count-transfert-last-week"> {{countTransfertLastWeek | default(0)}} </span>
-        <span id="count-transfert-this-month"> {{countTransfertThisMonth | default(0)}} </span>
-        <span id="count-transfert-last-month"> {{countTransfertLastMonth | default(0)}} </span>
-        <span id="count-transfert-this-year"> {{countTransfertThisYear | default(0)}} </span>
-        <span id="count-transfert-last-year"> {{countTransfertLastYear | default(0)}} </span>
+        <span id="count-transfert-today"> 
+          {% set formattedCountTransfertToday = countTransfertToday|number_format(2, '.', '') %}
+          {% if formattedCountTransfertToday ends with '.00' %}
+              {{ countTransfertToday|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountTransfertToday| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-transfert-yesterday"> 
+          {% set formattedCountTransfertYesterday = countTransfertYesterday|number_format(2, '.', '') %}
+          {% if formattedCountTransfertYesterday ends with '.00' %}
+              {{ countTransfertYesterday|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountTransfertYesterday| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-transfert-this-week"> 
+          {% set formattedCountTransfertThisWeek = countTransfertThisWeek|number_format(2, '.', '') %}
+          {% if formattedCountTransfertThisWeek ends with '.00' %}
+              {{ countTransfertThisWeek|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountTransfertThisWeek| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-transfert-last-week"> 
+          {% set formattedCountTransfertLastWeek = countTransfertLastWeek|number_format(2, '.', '') %}
+          {% if formattedCountTransfertLastWeek ends with '.00' %}
+              {{ countTransfertLastWeek|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountTransfertLastWeek| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-transfert-this-month"> 
+          {% set formattedCountTransfertThisMonth = countTransfertThisMonth|number_format(2, '.', '') %}
+          {% if formattedCountTransfertThisMonth ends with '.00' %}
+              {{ countTransfertThisMonth|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountTransfertThisMonth| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-transfert-last-month"> 
+          {% set formattedCountTransfertLastMonth = countTransfertLastMonth|number_format(2, '.', '') %}
+          {% if formattedCountTransfertLastMonth ends with '.00' %}
+              {{ countTransfertLastMonth|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountTransfertLastMonth| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-transfert-this-year"> 
+          {% set formattedCountTransfertThisYear = countTransfertThisYear|number_format(2, '.', '') %}
+          {% if formattedCountTransfertThisYear ends with '.00' %}
+              {{ countTransfertThisYear|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountTransfertThisYear| default(0)}}
+          {% endif %}
+        </span>
+        <span id="count-transfert-last-year"> 
+          {% set formattedCountTransfertLastYear = countTransfertLastYear|number_format(2, '.', '') %}
+          {% if formattedCountTransfertLastYear ends with '.00' %}
+              {{ countTransfertLastYear|number_format(0, '.', '')| default(0) }} 
+          {% else %}
+            {{formattedCountTransfertLastYear| default(0)}}
+          {% endif %}
+        </span>
       </div>
 
       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
@@ -517,7 +643,13 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {{product.qtt}} <br/>
+                      {{product.qtt}} 
+                      {% if product.typeVente == "detail" %}
+                        {{product.produitCategorie.uniteVenteGros}}
+                      {% elseif product.typeVente == "gros" %}
+                        {{product.produitCategorie.presentationGros}}{% if product.qtt > 1 %}s{% endif %}
+                      {% endif %}
+                      <br/>
                     {% endfor %}
                   </td>
                  

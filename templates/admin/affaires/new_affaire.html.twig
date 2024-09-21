@@ -9,14 +9,26 @@
                 
                 {{ form_start(form, {'attr': {'id': 'newAffaire', 'action': path('affaires_create', {'compte': compte.id}) }}) }}
                     <input type="hidden" name="statut" value="{{statut}}">
+                    {% if statut == "commande" %}
+                        <input type="checkbox" name="revendeur" id="revendeur" class="revendeur">
+                        <label for="">Revendeur</label>
+                    {% endif %}
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Nom <sup class="text-danger">*</sup></label>
                         <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.nom)}} </span>
                         {{ form_widget(form.nom) }}
                     </div>
-                    
-                    
-                    
+
+                    <div class="form-group mb-3 application">
+                        <label for="" class="mb-2">Point de vente</label>
+                        <select name="application-commande" id="application-commande" class="form-control form-control-md">
+                            <option value="" selected disabled>Selectionner un point de vente</option>
+                            {% for application in applications %}
+                                <option value="{{application.id}}">{{application.entreprise}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-sm px-3 mt-3" style="width: 100%;">
                             {% if statut == 'devis' %}
@@ -37,6 +49,18 @@
 <script>
   
     $(document).ready(function () {
+
+        $('.application').hide();
+        $('#revendeur').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('.application').show();
+                $('#application-commande').attr('required', true)
+            }else {
+                $('.application').hide();
+                $('#application-commande').removeAttr('required')
+
+            }
+        })
         
        $('#newAffaire').on('submit', function (e) {
             e.preventDefault();

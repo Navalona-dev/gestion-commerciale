@@ -9,17 +9,21 @@ use Twig\Environment;
 use App\Entity\Compte;
 use App\Entity\Affaire;
 use App\Entity\Facture;
+use App\Entity\Product;
 use App\Entity\Notification;
 use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
 use App\Service\TCPDFService;
+use App\Entity\DatePeremption;
 use Doctrine\ORM\EntityManager;
+use App\Entity\ProduitCategorie;
+//use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\ReglementFacture;
 use App\Entity\DatePeremptionProduct;
 use App\Service\AuthorizationManager;
-//use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\ApplicationRepository;
 use App\Exception\ActionInvalideException;
 use Symfony\Component\Security\Core\Security;
 use App\Repository\ReglementFactureRepository;
@@ -42,6 +46,7 @@ class FactureService
     private $security;
     private $reglementFactureRepository;
     private $logService;
+    private $applicationRepo;
 
     public function __construct(
         AuthorizationManager $authorization, 
@@ -53,7 +58,8 @@ class FactureService
         LoggerInterface $affaireLogger, 
         Security $security,
         ReglementFactureRepository  $reglementFactureRepository,
-        LogService $logService
+        LogService $logService,
+        ApplicationRepository $applicationRepo
         )
     {
         $this->tokenStorage = $TokenStorageInterface;
@@ -66,9 +72,10 @@ class FactureService
         $this->security = $security;
         $this->reglementFactureRepository = $reglementFactureRepository;
         $this->logService = $logService;
+        $this->applicationRepo = $applicationRepo;
     }
 
-    public function add($affaire = null, $folder = null, $request = null)
+    public function add($affaire = null, $folder = null, $request = null, $applicationRevendeur = null)
     {
         $facture = Facture::newFacture($affaire);
         $date = new \DateTime();
@@ -109,6 +116,11 @@ class FactureService
         $tabQttRetenue = [];
         $tabDatePeremption = [];
         $tabQtt = [];
+        $tabQttReserver = [];
+        $tabQttRestantProduitCategorie = [];
+        $tabProduitCategorie = [];
+        $quantitesParCategorie = [];
+        $datePeremptionProductArray = [];
 
         foreach ($products as $key => $product) { 
             // Gestion stock
@@ -147,7 +159,6 @@ class FactureService
                 if($product->getTypeVente() == "detail") {
                     $qtt = $qtt / $volumeGros;
                 }
-                $sumQtt += $qtt;
             }
 
             $produitCategorie->setStockRestant($stockRestant);
@@ -185,11 +196,8 @@ class FactureService
             $stocks = $this->entityManager->getRepository(Stock::class)->findByProductCategoryDatePeremption($produitCategorie);
             foreach ($stocks as $keyS => $stk) {
                 $qttRestant = $stk->getQttRestant();
-                $qttRestantEnKg = $qttRestant * $volumeGros; 
 
-                if ($product->getTypeVente() == "detail") {
-                    $qtt = $qtt / $volumeGros;
-                }
+                $qtt = number_format($qtt,2,'.','');
 
                 $newQttRestant = $qttRestant - $qtt; 
 
@@ -211,14 +219,9 @@ class FactureService
                     }
                     $datePeremptionProduct->setQttRetenue($qtt);
                     $this->persist($datePeremptionProduct);
-                    $tabDatePeremption[] = $datePeremptionProduct;
 
-                    //$tabQttRetenue[] = $qtt;
-                    //$tabDatePeremption[] = $stk->getDatePeremption();
                     $qtt = 0;
                 } else {
-                    //$tabQttRetenue[] = $qttRestant;
-                    //$tabDatePeremption[] = $stk->getDatePeremption();
 
                     $datePeremptionProduct = new DatePeremptionProduct();
                     $datePeremptionProduct->setProduct($product);
@@ -230,41 +233,159 @@ class FactureService
                     }
                     $datePeremptionProduct->setQttRetenue($qttRestant);
                     $this->persist($datePeremptionProduct);
-                    $tabDatePeremption[] = $datePeremptionProduct;
 
                     $qtt -= $qttRestant;
                     $stk->setQttRestant(0);
                     $this->persist($stk);
                 }
 
+                $datePeremptionProductArray[] = $datePeremptionProduct;
+
                 $tabQttRestant[] = $stk->getQttRestant();
-                $tabIdStock[] = $stk->getId();
-                $tabQtt[] = $qtt;
+            }
+ 
+            //gerer la qtt reserver
+            $qttReserver = $produitCategorie->getQttReserver();
+            $qttProduct = $product->getQtt();
+            if($product->getTypeVente() == "detail") {
+                $qttProduct = $qttProduct / $volumeGros;
+            }
+
+            $qttReserver = number_format($qttReserver,2,'.','');
+            $qttProduct = number_format($qttProduct,2,'.','');
+            
+            $produitCategorie->setQttReserver($qttReserver - $qttProduct);
+    
+            $this->entityManager->persist($produitCategorie);
+            $tabQtt[] = $qttProduct; 
+            $tabQttReserver[] = $produitCategorie->getQttReserver();
+            $tabQttRestantProduitCategorie[] = number_format($produitCategorie->getStockRestant(),2,'.','');
+           
+             // Ajouter la quantité à la catégorie
+            $produitCategorieId = $produitCategorie->getId();
+            if (!isset($quantitesParCategorie[$produitCategorieId])) {
+                $quantitesParCategorie[$produitCategorieId] = 0; // Initialiser si pas encore présent
+            }
+            $quantitesParCategorie[$produitCategorieId] += $qttProduct; // Additionner la quantité
+
+
+            // Ajouter seulement si la produitCategorie n'est pas déjà dans le tableau
+            $produitCategorieId = $produitCategorie->getId();
+            if (!isset($tabProduitCategorie[$produitCategorieId])) {
+                $tabProduitCategorie[$produitCategorieId] = $produitCategorie;
+            }
+
+        }
+
+        //dd($datePeremptionProductArray);
+        //créer un nouveau produit dans l'application choisi lors de commande
+        $newTabProduitCategorie = [];
+        $newTabStock = [];
+        //dd($applicationRevendeur);
+        if($applicationRevendeur != null) {
+            foreach($tabProduitCategorie as $keyProduct => $oldProduitCategorie) {
+                $reference = $oldProduitCategorie->getReference();
+
+                $existingProduitCategorie = $this->entityManager->getRepository(ProduitCategorie::class)
+                ->findOneBy([
+                    'reference' => $reference,
+                    'application' => $applicationRevendeur,
+                ]);
+
+                 // Obtenir la quantité totale pour la catégorie
+                 $produitCategorieId = $oldProduitCategorie->getId();
+                 $qttNewProduitCategorie = isset($quantitesParCategorie[$produitCategorieId]) ? $quantitesParCategorie[$produitCategorieId] : 0;
+                 $newProduitCategorie = null;
+                if ($existingProduitCategorie) {
+                    $oldQttProduitCategorie = $existingProduitCategorie->getQtt();
+                    $oldStockRestantProduitCategorie = $existingProduitCategorie->getStockRestant();
+                    if($oldStockRestantProduitCategorie != null) {
+                        $newProduitCategorie->setStockRestant($oldStockRestantProduitCategorie + $qttNewProduitCategorie);
+                    } else {
+                        $newProduitCategorie->setStockRestant($qttNewProduitCategorie);
+                    }
+
+                    if($oldQttProduitCategorie != null) {
+                        $newProduitCategorie->setQtt($oldQttProduitCategorie + $qttNewProduitCategorie);
+                    } else {
+                        $newProduitCategorie->setQtt($qttNewProduitCategorie);
+                    }
+                    $newProduitCategorie = $existingProduitCategorie;
+
+                } else {
+                    $newProduitCategorie = new ProduitCategorie();
+
+                    $date = new \DateTime();
+        
+                    $newProduitCategorie->setNom($oldProduitCategorie->getNom());
+
+                    $newProduitCategorie->setCategorie($oldProduitCategorie->getCategorie());
+                    
+                    $newProduitCategorie->setType($oldProduitCategorie->getType());
+        
+                    $newProduitCategorie->setReference($reference);
+
+                    $newProduitCategorie->setQtt($qttNewProduitCategorie);
+                    $newProduitCategorie->setStockRestant($qttNewProduitCategorie);
+
+                    $newProduitCategorie->setApplication($applicationRevendeur);
+        
+                    $newProduitCategorie->setDateCreation($date);
+                    $newProduitCategorie->setDescription($oldProduitCategorie->getDescription());
+                    $newProduitCategorie->setPrixHt($oldProduitCategorie->getPrixHt());
+                    $newProduitCategorie->setTva($oldProduitCategorie->getTva());
+                    $newProduitCategorie->setStockMin(10);
+                    $newProduitCategorie->setStockMax(50);
+                    $newProduitCategorie->setUniteVenteGros($oldProduitCategorie->getUniteVenteGros());
+                    $newProduitCategorie->setUniteVenteDetail($oldProduitCategorie->getUniteVenteDetail());
+                    $newProduitCategorie->setPrixVenteGros($oldProduitCategorie->getPrixVenteGros());
+                    $newProduitCategorie->setPrixVenteDetail($oldProduitCategorie->getPrixVenteDetail());
+                    $newProduitCategorie->setPrixTTC($oldProduitCategorie->getPrixTTC());
+                    $newProduitCategorie->setPrixAchat($oldProduitCategorie->getPrixAchat());
+                    $newProduitCategorie->setPresentationGros($oldProduitCategorie->getPresentationGros());
+                    $newProduitCategorie->setPresentationDetail($oldProduitCategorie->getPresentationDetail());
+                    $newProduitCategorie->setVolumeGros($oldProduitCategorie->getVolumeGros());
+                    $newProduitCategorie->setVolumeDetail($oldProduitCategorie->getVolumeDetail());
+        
+                    foreach($oldProduitCategorie->getProductImages() as $productImage) {
+                        $productImage->setProduitCategorie($newProduitCategorie);
+                        $productImage->setDateCreation($date);
+                        $this->entityManager->persist($productImage);
+                    }
+
+                    $this->entityManager->persist($newProduitCategorie);
+
+                    $newTabProduitCategorie[] = $newProduitCategorie;
+        
+                }
+
+               //gerer le stock
+
+                $stock = new Stock();
+
+                $stock->setQtt($qttNewProduitCategorie);
+                $stock->setQttRestant($qttNewProduitCategorie);
+                $stock->setProduitCategorie($newProduitCategorie);
+                $stock->setDateCreation($date);
+
+                $this->entityManager->persist($stock);
+
+                // Obtenir l'utilisateur connecté
+                $user = $this->security->getUser();
+        
+                // Créer log
+                $this->logger->info('Produit catégorie ajouté', [
+                    'Produit' => $newProduitCategorie->getNom(),
+                    'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                    'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                    'ID Application' => $newProduitCategorie->getApplication()->getId()
+                ]);
+
             }
         }
+        //dd(count($newTabStock));
 
-        //dd(count($tabDatePeremption), $tabDatePeremption);
-
-        $qttReserver = $produitCategorie->getQttReserver();
-
-        $qttReserverString = (string)$qttReserver;
-
-        if (strpos($qttReserverString, '.') !== false) {
-            // Compter le nombre de caractères après la virgule
-            $countAfterDecimal = strlen(substr($qttReserverString, strpos($qttReserverString, '.') + 1));
-            $sumQtt = number_format($sumQtt, $countAfterDecimal, '.', '');
-        } 
-
-        if($qttReserver != null) {
-            $produitCategorie->setQttReserver($qttReserver - $sumQtt);
-        } else {
-            $produitCategorie->setQttReserver($qttReserver);
-        }
-
-        //var_dump($qttReserver, $sumQtt);
-        //dd($qttReserver, $sumQtt, $produitCategorie->getQttReserver());
-        $this->entityManager->persist($produitCategorie);
-        //dd($tabQttRestant);
+        //dd($tabQtt, $tabQttReserver, $tabQttRestant, $tabQttRestantProduitCategorie);
 
         $facture->setFile($filename);
         $facture->setSolde($montantHt);
@@ -329,139 +450,6 @@ class FactureService
         return [$pdfContent, $facture]; // Retourner le contenu PDF et l'objet facture
     }
    
-    /*public function annuler($affaire = null, $folder = null)
-    {
-        $factures = $this->findByAffaire($affaire);
-        $facture = $factures[0];
-        $date = new \DateTime();
-        
-        $facture->setEtat('annule');
-        $facture->setValid(true);
-        $facture->setStatut('annule');
-        $products = $affaire->getProducts();
-        $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
-        $tabQttRestant = [];
-        $produitCategorie = null;
-
-        foreach ($products as $key => $product) { 
-            $produitCategorie = $product->getProduitCategorie();
-            $stockRestant = $produitCategorie->getStockRestant();
-            $volumeGros = $produitCategorie->getVolumeGros();
-            $qtt = $product->getQtt();
-            
-            if($product->getTypeVente() == "detail") {
-                $qtt = $qtt / $volumeGros;
-            }
-            
-            $stockRestant += $qtt;
-            $produitCategorie->setStockRestant($stockRestant);
-            $this->entityManager->persist($produitCategorie);
-            
-            $datePeremptionProduct = $product->getDatePeremption();
-            
-            if($datePeremptionProduct) {
-                $datePeremptionProduct = $datePeremptionProduct->format('d-m-Y');
-            }
-            
-            $stocks = $this->entityManager->getRepository(Stock::class)->findByProduitCategorieAnulle($produitCategorie);
-            $remainingQtt = $qtt; 
-            $firstStockProcessed = false;
-
-            foreach ($stocks as $keyS => $stock) {
-                $datePeremptionStock = $stock->getDatePeremption();
-                
-                if($datePeremptionStock) {
-                    $datePeremptionStock = $datePeremptionStock->getDate()->format('d-m-Y');
-                }
-
-                $qttStock = $stock->getQtt(); 
-                $qttRestant = $stock->getQttRestant(); 
-
-                if ($datePeremptionProduct && $datePeremptionStock && !$firstStockProcessed && $datePeremptionProduct === $datePeremptionStock) {
-                    if ($remainingQtt + $qttRestant > $qttStock) {
-                        $qttRestant = $qttStock;
-                        $remainingQtt -= ($qttStock - $qttRestant);
-                    } else {
-                        $qttRestant += $remainingQtt;
-                        $remainingQtt = 0;
-                    }
-                    $stock->setQttRestant($qttRestant);
-                    $this->entityManager->persist($stock);
-                    $firstStockProcessed = true;
-                } elseif ($remainingQtt > 0) {
-                    $qttRestant += $remainingQtt; 
-                    if ($qttRestant > $qttStock) {
-                        $remainingQtt -= ($qttStock - $qttRestant);
-                        $qttRestant = $qttStock;
-                    } else {
-                        $remainingQtt = 0;
-                    }
-                    $stock->setQttRestant($qttRestant);
-                    $this->entityManager->persist($stock);
-                }
-
-                $tabQttRestant[] = $stock->getQttRestant();
-            }
-
-            if ($remainingQtt > 0) {
-                // Traitez ici la quantité restante non allouée
-            }
-        }
-
-        //dd($tabQttRestant);
-
-
-        $this->persist($facture);
-        $affaire->setDateAnnule($date);
-        $affaire->setDevisEvol('perdu');
-        $affaire->setPaiement('annule');
-        $this->persist($affaire);
-        // Obtenir l'utilisateur connecté
-        $user = $this->security->getUser();
-
-        // Créer log
-        $this->logger->info('Facture annulé', [
-            'Commande' => $affaire->getNom(),
-            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
-            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
-            'ID Application' => $affaire->getApplication()->getId()
-        ]);
-        $this->update();
-        
-        // Créer une instance de Dompdf
-        $options = new Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isPhpEnabled', true);
-        $pdf = new Dompdf($options);
-    
-        // Définir le contenu du PDF
-        $data = [];
-        $data['produits'] = $products;
-        $data['facture'] = $facture;
-        $data['compte'] = $facture->getCompte();
-        $data['factureEcheances'] = null;
-        
-        $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
-        
-        // Charger le contenu HTML dans dompdf
-        $pdf->loadHtml($html);
-        
-        // (Optionnel) Configurer la taille du papier et l'orientation
-        $pdf->setPaper('A4', 'portrait');
-        
-        // Rendre le PDF
-        $pdf->render();
-        
-        // Obtenir le contenu PDF
-        $output = $pdf->output();
-        
-        // Vous pouvez choisir de sauvegarder le fichier sur le serveur si nécessaire
-        // file_put_contents($folder . $filename, $output);
-        
-        return [$output, $facture]; // Retourner le contenu PDF et l'objet facture
-    }*/
-
     public function annuler($affaire = null, $folder = null)
     {
         $factures = $this->findByAffaire($affaire);

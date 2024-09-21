@@ -12,7 +12,9 @@ use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
 use App\Service\TCPDFService;
 use App\Entity\FactureEcheance;
+use App\Entity\ProduitCategorie;
 use App\Service\ApplicationManager;
+use App\Entity\DatePeremptionProduct;
 use App\Service\AuthorizationManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
@@ -59,7 +61,7 @@ class FactureEcheanceService
         $this->logService = $logService;
     }
 
-    public function add($affaire = null, $request = null, $folder = null, $form = null, $montant = null, $totalPayer = null, $grandTotal = null)
+    public function add($affaire = null, $request = null, $folder = null, $form = null, $montant = null, $totalPayer = null, $grandTotal = null, $applicationRevendeur = null)
     {
         $facture = Facture::newFacture($affaire);
         $date = new \DateTime();
@@ -85,11 +87,14 @@ class FactureEcheanceService
         $products = $affaire->getProducts();
         $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
         $montantHt = 0;
+        $quantitesParCategorie = [];
+        $tabProduitCategorie = [];
 
         // Sortie du PDF sous forme de réponse HTTP
         foreach ($products as $key => $product) { 
             // Gestion stock
             $produitCategorie = $product->getProduitCategorie();
+            $volumeGros = $produitCategorie->getVolumeGros();
             $qtt = $product->getQtt();
           
             $factureDetail = new FactureDetail();
@@ -127,6 +132,25 @@ class FactureEcheanceService
 
             $facture->addFactureDetail($factureDetail);
 
+            //obtenir le produitcategorie et la quantité
+            if($product->getTypeVente() == "detail") {
+                $qtt = $qtt / $volumeGros;
+            }
+
+            $qtt = number_format($qtt,2,'.','');
+
+            $produitCategorieId = $produitCategorie->getId();
+            if (!isset($quantitesParCategorie[$produitCategorieId])) {
+                $quantitesParCategorie[$produitCategorieId] = 0; // Initialiser si pas encore présent
+            }
+            $quantitesParCategorie[$produitCategorieId] += $qtt; // Additionner la quantité
+
+            // Ajouter seulement si la produitCategorie n'est pas déjà dans le tableau
+            $produitCategorieId = $produitCategorie->getId();
+            if (!isset($tabProduitCategorie[$produitCategorieId])) {
+                $tabProduitCategorie[$produitCategorieId] = $produitCategorie;
+            }
+
             //Log product
             $data["produit"] = $produitCategorie->getNom();
             $data["dateReception"] = null;
@@ -149,6 +173,108 @@ class FactureEcheanceService
             $this->logService->addLog($request, "commande", $this->application->getId(), $produitCategorie->getReference(), $data);
 
             $this->persist($factureDetail);
+        }
+
+        if($applicationRevendeur != null) {
+            foreach($tabProduitCategorie as $keyProduct => $oldProduitCategorie) {
+                $reference = $oldProduitCategorie->getReference();
+
+                $existingProduitCategorie = $this->entityManager->getRepository(ProduitCategorie::class)
+                ->findOneBy([
+                    'reference' => $reference,
+                    'application' => $applicationRevendeur,
+                ]);
+
+                 // Obtenir la quantité totale pour la catégorie
+                 $produitCategorieId = $oldProduitCategorie->getId();
+                 $qttNewProduitCategorie = isset($quantitesParCategorie[$produitCategorieId]) ? $quantitesParCategorie[$produitCategorieId] : 0;
+                 $newProduitCategorie = null;
+                if ($existingProduitCategorie) {
+                    $oldQttProduitCategorie = $existingProduitCategorie->getQtt();
+                    $oldStockRestantProduitCategorie = $existingProduitCategorie->getStockRestant();
+                    if($oldStockRestantProduitCategorie != null) {
+                        $newProduitCategorie->setStockRestant($oldStockRestantProduitCategorie + $qttNewProduitCategorie);
+                    } else {
+                        $newProduitCategorie->setStockRestant($qttNewProduitCategorie);
+                    }
+
+                    if($oldQttProduitCategorie != null) {
+                        $newProduitCategorie->setQtt($oldQttProduitCategorie + $qttNewProduitCategorie);
+                    } else {
+                        $newProduitCategorie->setQtt($qttNewProduitCategorie);
+                    }
+                    $newProduitCategorie = $existingProduitCategorie;
+
+                } else {
+                    $newProduitCategorie = new ProduitCategorie();
+
+                    $date = new \DateTime();
+        
+                    $newProduitCategorie->setNom($oldProduitCategorie->getNom());
+
+                    $newProduitCategorie->setCategorie($oldProduitCategorie->getCategorie());
+                    
+                    $newProduitCategorie->setType($oldProduitCategorie->getType());
+        
+                    $newProduitCategorie->setReference($reference);
+
+                    $newProduitCategorie->setQtt($qttNewProduitCategorie);
+                    $newProduitCategorie->setStockRestant($qttNewProduitCategorie);
+
+                    $newProduitCategorie->setApplication($applicationRevendeur);
+        
+                    $newProduitCategorie->setDateCreation($date);
+                    $newProduitCategorie->setDescription($oldProduitCategorie->getDescription());
+                    $newProduitCategorie->setPrixHt($oldProduitCategorie->getPrixHt());
+                    $newProduitCategorie->setTva($oldProduitCategorie->getTva());
+                    $newProduitCategorie->setStockMin(10);
+                    $newProduitCategorie->setStockMax(50);
+                    $newProduitCategorie->setUniteVenteGros($oldProduitCategorie->getUniteVenteGros());
+                    $newProduitCategorie->setUniteVenteDetail($oldProduitCategorie->getUniteVenteDetail());
+                    $newProduitCategorie->setPrixVenteGros($oldProduitCategorie->getPrixVenteGros());
+                    $newProduitCategorie->setPrixVenteDetail($oldProduitCategorie->getPrixVenteDetail());
+                    $newProduitCategorie->setPrixTTC($oldProduitCategorie->getPrixTTC());
+                    $newProduitCategorie->setPrixAchat($oldProduitCategorie->getPrixAchat());
+                    $newProduitCategorie->setPresentationGros($oldProduitCategorie->getPresentationGros());
+                    $newProduitCategorie->setPresentationDetail($oldProduitCategorie->getPresentationDetail());
+                    $newProduitCategorie->setVolumeGros($oldProduitCategorie->getVolumeGros());
+                    $newProduitCategorie->setVolumeDetail($oldProduitCategorie->getVolumeDetail());
+        
+                    foreach($oldProduitCategorie->getProductImages() as $productImage) {
+                        $productImage->setProduitCategorie($newProduitCategorie);
+                        $productImage->setDateCreation($date);
+                        $this->entityManager->persist($productImage);
+                    }
+
+                    $this->entityManager->persist($newProduitCategorie);
+
+                    $newTabProduitCategorie[] = $newProduitCategorie;
+        
+                }
+
+               //gerer le stock
+
+                $stock = new Stock();
+
+                $stock->setQtt($qttNewProduitCategorie);
+                $stock->setQttRestant($qttNewProduitCategorie);
+                $stock->setProduitCategorie($newProduitCategorie);
+                $stock->setDateCreation($date);
+
+                $this->entityManager->persist($stock);
+
+                // Obtenir l'utilisateur connecté
+                $user = $this->security->getUser();
+        
+                // Créer log
+                $this->logger->info('Produit catégorie ajouté', [
+                    'Produit' => $newProduitCategorie->getNom(),
+                    'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                    'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                    'ID Application' => $newProduitCategorie->getApplication()->getId()
+                ]);
+
+            }
         }
         
         $facture->setFile($filename);
@@ -199,12 +325,16 @@ class FactureEcheanceService
             $options->set('isPhpEnabled', true);
             $pdf = new Dompdf($options);
 
+            $factureEcheanceFirst = $factureEcheances[0];
+
+
             // Load HTML content
             $data = [];
             $data['produits'] = $products;
             $data['facture'] = $facture;
             $data['compte'] = $facture->getCompte();
             $data['factureEcheances'] = $factureEcheances;
+            $data['factureEcheanceFirst'] = $factureEcheanceFirst;
             
             $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
 
@@ -258,19 +388,42 @@ class FactureEcheanceService
             $this->persist($affaire);
 
             $products = $affaire->getProducts();
+            $sumQtt = 0;
+            $stocks = null;
+            $tabQttRetenue = [];
+            $tabDatePeremption = [];
+            $tabQtt = [];
+            $tabQttReserver = [];
+            $tabQttRestantProduitCategorie = [];
 
             foreach($products as $key => $product) {
-                 // Gestion de notification
+               // Gestion stock
                 $produitCategorie = $product->getProduitCategorie();
-                $stockMin = $produitCategorie->getStockMin();
                 $stockRestant = $produitCategorie->getStockRestant();
-    
-                $qtt = $product->getQtt();
-                $stockRestant = $stockRestant - $qtt;
-                $produitCategorie->setStockRestant($stockRestant);
-                
-                $this->persist($produitCategorie);
+                $volumeGros = $produitCategorie->getVolumeGros();
+                $stockEnKg = $stockRestant * $volumeGros; 
+                $qtt = $product->getQtt(); 
+                $stockEnKgReste = $stockEnKg - $qtt; 
 
+                if ($product->getTypeVente() == "gros") {
+                    $stockRestant = $stockRestant - $qtt;
+    
+                } else {
+                    $stockRestant = $stockEnKgReste / $volumeGros; 
+                }
+
+                 // Gérer le produit catégorie
+                if($affaire->getPaiement() == "paye") {
+                    if($product->getTypeVente() == "detail") {
+                        $qtt = $qtt / $volumeGros;
+                    }
+                }
+
+                $produitCategorie->setStockRestant($stockRestant);
+                $this->entityManager->persist($produitCategorie);
+                
+                // Gestion des notifications
+                $stockMin = $produitCategorie->getStockMin();
                 if ($stockRestant <= $stockMin) {
                     $notification = new Notification();
                     $message = 'Le stock du produit ' . '<strong>' . $produitCategorie->getNom() . '</strong>' . ' est presque épuisé, veuillez ajouter un ou plusieurs!!';
@@ -281,40 +434,78 @@ class FactureEcheanceService
                                 ->setStockMin(true);
                     $this->persist($notification);
                 }
-    
-               // Récupération des stocks et tri par date de péremption (de la plus proche à la plus éloignée)
-                $stocks = $this->entityManager->getRepository(Stock::class)->findByProduitCategorieDatePerremptionIsNotNull($produitCategorie);
-    
-                // Tri des stocks par date de péremption (de la plus proche à la plus éloignée)
-                usort($stocks, function($a, $b) {
-                    $dateA = $a->getDatePeremption()->getDate();
-                    $dateB = $b->getDatePeremption()->getDate();
-                    
-                    // Comparer les dates
-                    return $dateA <=> $dateB;
-                });
-               
-                // Réduction des quantités de stock en fonction de la date de péremption la plus proche
-                foreach ($stocks as $stk) {
+
+                // Gestion des stocks par date de péremption
+                $stocks = $this->entityManager->getRepository(Stock::class)->findByProductCategoryDatePeremption($produitCategorie);
+                foreach ($stocks as $keyS => $stk) {
                     $qttRestant = $stk->getQttRestant();
-                    
+
+                    $qtt = number_format($qtt,2,'.','');
+
+                    $newQttRestant = $qttRestant - $qtt; 
+
                     if ($qtt <= 0) {
-                        break; // Si la quantité à réduire est déjà consommée, on sort de la boucle
+                        break;
                     }
-                    
+
                     if ($qttRestant >= $qtt) {
-                        // Réduit la quantité restante du stock actuel
-                        $stk->setQttRestant($qttRestant - $qtt);
+                        $stk->setQttRestant($newQttRestant);
                         $this->persist($stk);
-                        $qtt = 0; // Toute la quantité a été réduite
+                        
+                        $datePeremptionProduct = new DatePeremptionProduct();
+                        $datePeremptionProduct->setProduct($product);
+                        $datePeremptionProduct->setStock($stk);
+                        if($stk->getDatePeremption() == null) {
+                            $datePeremptionProduct->setDatePeremption(null);
+                        } else {
+                            $datePeremptionProduct->setDatePeremption($stk->getDatePeremption()->getDate());
+                        }
+                        $datePeremptionProduct->setQttRetenue($qtt);
+                        $this->persist($datePeremptionProduct);
+
+                        $qtt = 0;
                     } else {
-                        // Réduit la quantité restante du stock actuel et passe au suivant
+
+                        $datePeremptionProduct = new DatePeremptionProduct();
+                        $datePeremptionProduct->setProduct($product);
+                        $datePeremptionProduct->setStock($stk);
+                        if($stk->getDatePeremption() == null) {
+                            $datePeremptionProduct->setDatePeremption(null);
+                        } else {
+                            $datePeremptionProduct->setDatePeremption($stk->getDatePeremption()->getDate());
+                        }
+                        $datePeremptionProduct->setQttRetenue($qttRestant);
+                        $this->persist($datePeremptionProduct);
+
                         $qtt -= $qttRestant;
-                        $stk->setQttRestant(0); // Le stock actuel est épuisé
+                        $stk->setQttRestant(0);
                         $this->persist($stk);
                     }
+
+                    $tabQttRestant[] = $stk->getQttRestant();
                 }
+
+                //gerer la qtt reserver
+                $qttReserver = $produitCategorie->getQttReserver();
+                $qttProduct = $product->getQtt();
+                if($product->getTypeVente() == "detail") {
+                    $qttProduct = $qttProduct / $volumeGros;
+                }
+                $qttReserver = number_format($qttReserver,2,'.','');
+                $qttProduct = number_format($qttProduct,2,'.','');
+                
+                $produitCategorie->setQttReserver($qttReserver - $qttProduct);
+        
+                $this->entityManager->persist($produitCategorie);
+
+                $tabQtt[] = $qttProduct; 
+                $tabQttReserver[] = $produitCategorie->getQttReserver();
+                $tabQttRestantProduitCategorie[] = number_format($produitCategorie->getStockRestant(),2,'.','');
+
             }
+            //dd($tabQtt, $tabQttReserver, $tabQttRestant, $tabQttRestantProduitCategorie);
+
+           
         }
 
         $facture->setReglement($reglement);

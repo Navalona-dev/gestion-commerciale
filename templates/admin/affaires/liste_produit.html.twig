@@ -98,16 +98,51 @@
                                 {% endif %}
                                 <td>
                                     <input type="hidden" name="qttRestant" value="{{ liste.stockRestant }}">
-                                    {% if liste.volumeGros > 0 %} 
-                                        {{liste.stockRestant * liste.volumeGros}} {{liste.uniteVenteGros}} 
-                                    {% endif %} 
+                                    {% set formattedStockRestant = liste.stockRestant|number_format(2, '.', '') %}
+                                   
                                     {% if liste.qttReserver is not null %}
-                                        (<span class="stock-restant" data-stock="{{liste.stockRestant - liste.qttReserver}}">{{liste.stockRestant - liste.qttReserver}}</span> {{liste.presentationGros}})
+                                        <span class="stock-restant" data-stock="{{liste.stockRestant - liste.qttReserver}}">
+                                            
+                                            {% if formattedStockRestant ends with '.00' %}
+                                                {{(liste.stockRestant - liste.qttReserver)|number_format(0, '.', '') }} 
+                                                {{liste.presentationGros}}{% if (liste.stockRestant - liste.qttReserver)|number_format(0, '.', '') > 1 %}s{% endif %}
+                                            {% else %}
+                                                {% set stockRestant = (liste.stockRestant - liste.qttReserver)|number_format(2,'.','') %}
+                                                {% set volumeGros = liste.volumeGros %}
+
+                                                {% set sacs = (stockRestant|round(0, 'floor')) %}
+                                                {% set decimalPart = stockRestant - sacs %}
+                                                {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
+
+                                                {{ sacs }} {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+
+                                            {% endif %}
+                                        </span>
                                     {% else %}
-                                        (<span class="stock-restant" data-stock="{{liste.stockRestant}}">{{liste.stockRestant}}</span> {{liste.presentationGros}})
+                                        <span class="stock-restant" data-stock="{{liste.stockRestant}}">
+
+                                            {% if formattedStockRestant ends with '.00' %}
+                                                {{liste.stockRestant|number_format(0, '.', '') }} 
+                                                {{liste.presentationGros}}{% if liste.stockRestant|number_format(0, '.', '') > 1 %}s{% endif %}
+                                            {% else %}
+                                                {% set stockRestant = liste.stockRestant|number_format(2,'.','') %}
+                                                {% set volumeGros = liste.volumeGros %}
+
+                                                {% set sacs = (stockRestant|round(0, 'floor')) %}
+                                                {% set decimalPart = stockRestant - sacs %}
+                                                {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
+
+                                                {{ sacs }} {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+
+                                            {% endif %}
+                                        </span> 
                                     {% endif %}
 
-                                    {#{% if showParenthese == 1 %} 
+                                    {#
+                                        {% if liste.volumeGros > 0 %} 
+                                        {{liste.stockRestant * liste.volumeGros}} {{liste.uniteVenteGros}} 
+                                        {% endif %} 
+                                        {% if showParenthese == 1 %} 
                                         ( 
                                     {% endif %} 
                                     {% if qttProduitPresente > liste.stockRestant %}
@@ -132,10 +167,33 @@
                                     {% endif %}#}
                                 </td>
                                 <td>
+                                    {% set formattedQttReserver = liste.qttReserver|number_format(2, '.', '') %}
+
                                     {% if liste.qttReserver is null or liste .qttReserver == 0 %}
                                         0 {{liste.presentationGros}}
                                     {% else %}
-                                        {{liste.qttReserver}} {{liste.presentationGros}}
+
+                                        {% if formattedQttReserver ends with '.00' %}
+                                                {{liste.qttReserver|number_format(0, '.', '') }} 
+                                                {{liste.presentationGros}}{% if liste.qttReserver|number_format(0, '.', '') > 1 %}s{% endif %}
+                                            {% else %}
+                                                {% set qttReserver = liste.qttReserver|number_format(2,'.','') %}
+                                                {% set volumeGros = liste.volumeGros %}
+
+                                                {% set sacs = (qttReserver|round(0, 'floor')) %}
+                                                {% set decimalPart = qttReserver - sacs %}
+                                                {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
+                                                {% if (kg - kg|round(0, 'floor')) < 0.1 %}
+                                                    {% set kg = kg|round(0) %}
+                                                {% else %}
+                                                    {% set kg = kg|number_format(2, '.', ',') %}
+                                                {% endif %}
+                                                {% if sacs > 0 %}
+                                                    {{ sacs }} {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+                                                {% else %}
+                                                    {{ kg }} kg
+                                                {% endif %}
+                                            {% endif %}
                                     {% endif %}
                                 </td>
                                 <td> 

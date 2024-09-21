@@ -14,12 +14,38 @@
                 <a href="#" onclick="return deleteStock({{liste.id}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>
             </td>
             <td> 
-                {{liste.qtt * liste.produitCategorie.volumeGros}} {{liste.produitCategorie.uniteVenteGros}}
-                ({{liste.qtt}} {{liste.produitCategorie.presentationGros}} )
+                {% set formattedQtt = liste.qtt|number_format(2, '.', '') %}
+                {% if formattedQtt ends with '.00' %}
+                    {{ liste.qtt|number_format(0, '.', '') }} 
+                    {{liste.produitCategorie.presentationGros}}{% if liste.qtt|number_format(0, '.', '') > 1 %}s{% endif %}
+                {% else %}
+                    {% set qtt = liste.qtt|number_format(2,'.','') %}
+                    {% set volumeGros = liste.produitCategorie.volumeGros %}
+
+                    {% set sacs = (qtt|round(0, 'floor')) %}
+                    {% set decimalPart = qtt - sacs %}
+                    {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
+
+                    {{ sacs }} {{liste.produitCategorie.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+
+                {% endif %}
             </td>
             <td> 
-                {{liste.qttRestant * liste.produitCategorie.volumeGros}} {{liste.produitCategorie.uniteVenteGros}}
-                ({{liste.qttRestant}} {{liste.produitCategorie.presentationGros}} )
+                {% set formattedQttRestant = liste.qttRestant|number_format(2, '.', '') %}
+                {% if formattedQttRestant ends with '.00' %}
+                    {{ liste.qttRestant|number_format(0, '.', '') }} 
+                    {{liste.produitCategorie.presentationGros}}{% if liste.qttRestant|number_format(0, '.', '') > 1 %}s{% endif %}
+                {% else %}
+                    {% set qtt = liste.qttRestant|number_format(2,'.','') %}
+                    {% set volumeGros = liste.produitCategorie.volumeGros %}
+
+                    {% set sacs = (qtt|round(0, 'floor')) %}
+                    {% set decimalPart = qtt - sacs %}
+                    {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
+
+                    {{ sacs }} {{liste.produitCategorie.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+
+                {% endif %}
             </td>
             <td> {{liste.dateCreation|date('d-m-Y')}} </td>
             <td>

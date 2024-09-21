@@ -44,7 +44,24 @@
             </td>
             <td style="text-align: left !important;"> {{liste.nom}} </td>
             <td> {{liste.reference}} </td>
-            <td> {{liste.stockRestant}} </td>
+            <td>
+                {% set formattedStockRestant = liste.stockRestant|number_format(2, '.', '') %}
+                {% if formattedStockRestant ends with '.00' %}
+                    {{ liste.stockRestant|number_format(0, '.', '') }} 
+                    {{liste.presentationGros}}{% if liste.stockRestant|number_format(0, '.', '') > 1 %}s{% endif %}
+                {% else %}
+                    {% set stockRestant = liste.stockRestant|number_format(2,'.','') %}
+                    {% set volumeGros = liste.volumeGros %}
+
+                    {% set sacs = (stockRestant|round(0, 'floor')) %}
+                    {% set decimalPart = stockRestant - sacs %}
+                    {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
+
+                    {{ sacs }} {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+
+                {% endif %}
+
+            </td>
             <td>
                 {% if liste.isChangePrix == 0 or liste.isChangePrix is null %}
                     Non
