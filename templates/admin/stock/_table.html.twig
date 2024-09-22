@@ -42,8 +42,15 @@
                     {% set sacs = (qtt|round(0, 'floor')) %}
                     {% set decimalPart = qtt - sacs %}
                     {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
-
-                    {{ sacs }} {{liste.produitCategorie.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+                    {% if (kg - kg|round(0, 'floor')) < 0.1 %}
+                        {% set kg = kg|round(0) %}
+                    {% else %}
+                        {% set kg = kg|number_format(2, '.', ',') %}
+                    {% endif %}
+                    {{ sacs }} {{liste.produitCategorie.presentationGros}}{% if sacs > 1 %}s{% endif %} 
+                    {% if kg > 0 %}
+                        et {{ kg }} {{liste.produitCategorie.uniteVenteGros}}
+                      {% endif %}
 
                 {% endif %}
             </td>
