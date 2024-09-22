@@ -95,8 +95,9 @@ class FactureEcheanceService
             // Gestion stock
             $produitCategorie = $product->getProduitCategorie();
             $volumeGros = $produitCategorie->getVolumeGros();
+            $stockRestant = $produitCategorie->getStockRestant();
             $qtt = $product->getQtt();
-          
+        
             $factureDetail = new FactureDetail();
             $prix = 0;
             $prixVenteGros = null;
@@ -116,6 +117,15 @@ class FactureEcheanceService
                 $prixVenteDetail = $prix;
             }
 
+            if($product->getTypeVente() == "detail" && $volumeGros > 0) {
+                $qtt = $qtt / $volumeGros;
+            }
+
+            $stockRestant = $stockRestant - $qtt;
+
+            $produitCategorie->setStockRestant($stockRestant);
+            $this->entityManager->persist($produitCategorie);
+
             $factureDetail->setFacture($facture);
             $factureDetail->setReference($product->getReference());
             $factureDetail->setDetail($product->getProduitCategorie()->getNom());
@@ -133,10 +143,6 @@ class FactureEcheanceService
             $facture->addFactureDetail($factureDetail);
 
             //obtenir le produitcategorie et la quantité
-            if($product->getTypeVente() == "detail") {
-                $qtt = $qtt / $volumeGros;
-            }
-
             $qtt = number_format($qtt,2,'.','');
 
             $produitCategorieId = $produitCategorie->getId();
@@ -151,28 +157,116 @@ class FactureEcheanceService
                 $tabProduitCategorie[$produitCategorieId] = $produitCategorie;
             }
 
-            //Log product
-            $data["produit"] = $produitCategorie->getNom();
-            $data["dateReception"] = null;
-            $data["dateTransfert"] = null;
-            $data["dateSortie"] = (new \DateTime())->format("d-m-Y h:i:s");
-            $data["userDoAction"] = $user->getUserIdentifier();
-            $data["source"] = $this->application->getEntreprise();
-            $data["destination"] = $affaire->getCompte()->getNom();
-            $data["action"] = "Commande";
-            $data["type"] = "Commande";
-            $data["qtt"] = $qtt;
-            $data["stockRestant"] = $produitCategorie->getStockRestant();
-            $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
-            $data["typeSource"] = "Point de vente";
-            $data["typeDestination"] = "Client";
-            $data["commande"] = $affaire->getNom();
-            $data["commandeId"] = $affaire->getId().'-paye';
-            $data["sourceId"] =  $this->application->getId();
-            $data["destinationId"] = $affaire->getCompte()->getId();
-            $this->logService->addLog($request, "commande", $this->application->getId(), $produitCategorie->getReference(), $data);
+            // Gestion des notifications
+            $stockMin = $produitCategorie->getStockMin();
+            if ($stockRestant <= $stockMin) {
+                $notification = new Notification();
+                $message = 'Le stock du produit ' . '<strong>' . $produitCategorie->getNom() . '</strong>' . ' est presque épuisé, veuillez ajouter un ou plusieurs!!';
+                $notification->setMessage($message)
+                            ->setDateCreation(new \DateTime())
+                            ->setApplication($this->application)
+                            ->setProduitCategorie($produitCategorie)
+                            ->setStockMin(true);
+                $this->persist($notification);
+            }
+
+            $stocks = $this->entityManager->getRepository(Stock::class)->findByProductCategoryDatePeremption($produitCategorie);
+            foreach ($stocks as $keyS => $stk) {
+                $qttRestant = $stk->getQttRestant();
+
+                $qtt = number_format($qtt,2,'.','');
+
+                $newQttRestant = $qttRestant - $qtt; 
+
+                if ($qtt <= 0) {
+                    break;
+                }
+
+                if ($qttRestant >= $qtt) {
+                    $stk->setQttRestant($newQttRestant);
+                    $this->persist($stk);
+                    
+                    $datePeremptionProduct = new DatePeremptionProduct();
+                    $datePeremptionProduct->setProduct($product);
+                    $datePeremptionProduct->setStock($stk);
+                    if($stk->getDatePeremption() == null) {
+                        $datePeremptionProduct->setDatePeremption(null);
+                    } else {
+                        $datePeremptionProduct->setDatePeremption($stk->getDatePeremption()->getDate());
+                    }
+                    $datePeremptionProduct->setQttRetenue($qtt);
+                    $this->persist($datePeremptionProduct);
+
+                    $qtt = 0;
+                } else {
+
+                    $datePeremptionProduct = new DatePeremptionProduct();
+                    $datePeremptionProduct->setProduct($product);
+                    $datePeremptionProduct->setStock($stk);
+                    if($stk->getDatePeremption() == null) {
+                        $datePeremptionProduct->setDatePeremption(null);
+                    } else {
+                        $datePeremptionProduct->setDatePeremption($stk->getDatePeremption()->getDate());
+                    }
+                    $datePeremptionProduct->setQttRetenue($qttRestant);
+                    $this->persist($datePeremptionProduct);
+
+                    $qtt -= $qttRestant;
+                    $stk->setQttRestant(0);
+                    $this->persist($stk);
+                }
+
+            }
+
+             //gerer la qtt reserver
+             $qttReserver = $produitCategorie->getQttReserver();
+             $qttProduct = $product->getQtt();
+             if($product->getTypeVente() == "detail" && $volumeGros > 0) {
+                 $qttProduct = $qttProduct / $volumeGros;
+             }
+             $qttReserver = number_format($qttReserver,2,'.','');
+             $qttProduct = number_format($qttProduct,2,'.','');
+             
+             if($produitCategorie->getQttReserver()) {
+                 $produitCategorie->setQttReserver($qttReserver - $qttProduct);
+             }else {
+                 $produitCategorie->setQttReserver($qttProduct);
+             }
+
+
+            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            if($produitCategorie->getQttReserverCommander()) {
+                $produitCategorie->setQttReserverCommander($qttReserverCommander + $qttProduct);
+            } else {
+                $produitCategorie->setQttReserverCommander($qttProduct);
+            }
+
+
+            //dd($produitCategorie->getStockRestant(), $produitCategorie->getQttReserverCommander());
 
             $this->persist($factureDetail);
+               //Log product
+               $data["produit"] = $produitCategorie->getNom();
+               $data["dateReception"] = null;
+               $data["dateTransfert"] = null;
+               $data["dateSortie"] = (new \DateTime())->format("d-m-Y h:i:s");
+               $data["userDoAction"] = $user->getUserIdentifier();
+               $data["source"] = $this->application->getEntreprise();
+               $data["destination"] = $affaire->getCompte()->getNom();
+               $data["action"] = "Commande";
+               $data["type"] = "Commande";
+               $data["qtt"] = $produitCategorie->getQttReserverCommander() ." " . $produitCategorie->getPresentationGros();
+               //$data["stockRestant"] = ((!is_null($produitCategorie->getQttReserverCommander()) && $produitCategorie->getQttReserverCommander() > 0) ? $produitCategorie->getStockRestant() - $produitCategorie->getQttReserverCommander() : $produitCategorie->getStockRestant()) ;
+               $data["stockRestant"] = $produitCategorie->getStockRestant() . " " . $produitCategorie->getPresentationGros();
+               $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
+               $data["typeSource"] = "Point de vente";
+               $data["typeDestination"] = "Client";
+               $data["commande"] = $affaire->getNom();
+               $data["commandeId"] = $affaire->getId().'-echeance';
+               $data["sourceId"] =  $this->application->getId();
+               $data["destinationId"] = $affaire->getCompte()->getId();
+               $this->logService->addLog($request, "commande", $this->application->getId(), $produitCategorie->getReference(), $data);
+   
         }
 
         if($applicationRevendeur != null) {
@@ -276,7 +370,7 @@ class FactureEcheanceService
 
             }
         }
-        
+        //dd($montantHt);
         $facture->setFile($filename);
         $facture->setSolde($montantHt);
         $facture->setPrixHt($montantHt);   
@@ -398,7 +492,7 @@ class FactureEcheanceService
 
             foreach($products as $key => $product) {
                // Gestion stock
-                $produitCategorie = $product->getProduitCategorie();
+                /*$produitCategorie = $product->getProduitCategorie();
                 $stockRestant = $produitCategorie->getStockRestant();
                 $volumeGros = $produitCategorie->getVolumeGros();
                 $stockEnKg = $stockRestant * $volumeGros; 
@@ -495,13 +589,16 @@ class FactureEcheanceService
                 $qttProduct = number_format($qttProduct,2,'.','');
                 
                 $produitCategorie->setQttReserver($qttReserver - $qttProduct);
-        
+                
+                $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+                $produitCategorie->setQttReserverCommander($qttReserverCommander + $qttProduct);
+                
                 $this->entityManager->persist($produitCategorie);
 
                 $tabQtt[] = $qttProduct; 
                 $tabQttReserver[] = $produitCategorie->getQttReserver();
                 $tabQttRestantProduitCategorie[] = number_format($produitCategorie->getStockRestant(),2,'.','');
-
+                */
             }
             //dd($tabQtt, $tabQttReserver, $tabQttRestant, $tabQttRestantProduitCategorie);
 
@@ -555,6 +652,7 @@ class FactureEcheanceService
 
         $this->update();
 
+        
          // Initialize Dompdf
          $options = new Options();
          $options->set('isRemoteEnabled', true);

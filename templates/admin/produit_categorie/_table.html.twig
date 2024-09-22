@@ -56,8 +56,16 @@
                     {% set sacs = (stockRestant|round(0, 'floor')) %}
                     {% set decimalPart = stockRestant - sacs %}
                     {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
+                    {% if (kg - kg|round(0, 'floor')) < 0.1 %}
+                      {% set kg = kg|round(0) %}
+                    {% else %}
+                      {% set kg = kg|number_format(2, '.', ',') %}
+                    {% endif %}
 
-                    {{ sacs }} {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+                    {{ sacs }} {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} 
+                    {% if kg > 0 %}
+                    et {{ kg }}  {{liste.uniteVenteGros}}
+                    {% endif %}
 
                 {% endif %}
 

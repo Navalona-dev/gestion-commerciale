@@ -1,13 +1,9 @@
 <div class="affaire-produit card shadow p-4 mb-3 position-relative" id="entete-affaire">
-            <div class="filter position-absolute top-0 end-0 p-3">
+            <div class="filter position-absolute top-0 end-0 p-3 affaire-action">
                 <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    {# <li class="dropdown-header text-start">
-                        <h6>Filter</h6>
-                    </li> #}
                     <li><a class="dropdown-item" href="#" onclick="return updateAffaire({{affaire.id}})">Modifier</a></li>
                     <li><a class="dropdown-item" href="#" onclick="return deleteAffaire({{affaire.id}})">Supprimer</a></li>
-                    {# <li><a class="dropdown-item" href="#">Dupliquer</a></li> #}
                 </ul>
             </div>
             <div class="row">
@@ -72,15 +68,9 @@
                 <div class="col-md-4 col-12">
                     <div class="menu_produit">
                         <div class="menu-icon mb-3">
-                            <div class="form-group">
+                            <div class="form-group affaire-action">
                                 <a href="#" onclick="return updateAffaire({{affaire.id}})"><i class="bi bi-pencil-square edit"></i></a>
                                 <a href="#" onclick="return deleteAffaire({{affaire.id}})"><i class="bi bi-trash delete"></i></a>
-                                {#<a href="#"><i class="bi bi-skip-end-fill"></i></a>
-                                <a href="#"><i class="bi bi-bell-fill"></i></a>
-                                <a href="#"><i class="bi bi-calendar-fill"></i></a>
-                                <a href="#"><i class="bi bi-hourglass-split"></i></a>
-                                <a href="#"><i class="bi bi-send"></i></a>
-                                <a href="#"><i class="bi bi-star-fill"></i></a>#}
                             </div>
                         </div>
                         <div class="row">
@@ -119,3 +109,13 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            $(document).ready(function() {
+                var anchorName = document.location.hash.substring(1);
+                if(anchorName == "tab-financier-affaire" || anchorName == "tab-facture-affaire" || anchorName == "tab-info-affaire" || anchorName == "tab-echeance") {
+                    $('.affaire-action').hide();
+                }
+
+            });
+        </script>

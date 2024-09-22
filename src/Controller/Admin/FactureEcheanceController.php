@@ -101,8 +101,6 @@ class FactureEcheanceController extends AbstractController
                 
             }
 
-
-
             $data['exception'] = "";
             $data["html"] = $this->renderView('admin/facture_echeance/modal_new.html.twig', [
                 'facture' => $facture,

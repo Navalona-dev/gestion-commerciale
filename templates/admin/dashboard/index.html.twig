@@ -634,10 +634,10 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {% if product.typeVente == "gros" %}
-                      {{((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {% if product.typeVente == "detail" %}
+                        {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
                       {% else %}
-                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
                       {% endif %}
                     {% endfor %}
                   </td>
@@ -657,10 +657,10 @@
                     
                     {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                      {% if product.typeVente == "gros" %}
-                      {% set montantHt = montantHt + ((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros) %}
+                      {% if product.typeVente == "detail" %}
+                        {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
                       {% else %}
-                          {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
                       {% endif %}
                     {% endfor %}
                     {{montantHt|number_format(2, ',', '.')}} €
@@ -689,7 +689,7 @@
                   <td>
                     {% for product in item.order.products %}
                       {% if product.typeVente == "gros" %}
-                      {{((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
                       {% else %}
                       {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
                       {% endif %}
@@ -706,7 +706,7 @@
                     {% set montantHt = 0 %}
                     {% for product in item.order.products %}
                       {% if product.typeVente == "gros" %}
-                      {% set montantHt = montantHt + ((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros) %}
+                      {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
                       {% else %}
                           {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
                       {% endif %}
@@ -737,7 +737,7 @@
                   <td>
                     {% for product in item.order.products %}
                       {% if product.typeVente == "gros" %}
-                      {{((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                        {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
                       {% else %}
                       {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
                       {% endif %}
@@ -753,10 +753,10 @@
                     
                     {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                      {% if product.typeVente == "gros" %}
-                      {% set montantHt = montantHt + ((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros) %}
+                      {% if product.typeVente == "detail" %}
+                        {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
                       {% else %}
-                          {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
                       {% endif %}
                     {% endfor %}
                     {{montantHt|number_format(2, ',', '.')}} €
@@ -785,9 +785,9 @@
                   <td>
                     {% for product in item.order.products %}
                       {% if product.typeVente == "gros" %}
-                      {{((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                        {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
                       {% else %}
-                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                        {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
                       {% endif %}
                     {% endfor %}
                   </td>
@@ -802,7 +802,7 @@
                     {% set montantHt = 0 %}
                     {% for product in item.order.products %}
                       {% if product.typeVente == "gros" %}
-                      {% set montantHt = montantHt + ((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros) %}
+                      {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
                       {% else %}
                           {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
                       {% endif %}
@@ -832,10 +832,10 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {% if product.typeVente == "gros" %}
-                      {{((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {% if product.typeVente == "detail" %}
+                        {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
                       {% else %}
-                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
                       {% endif %}
                     {% endfor %}
                   </td>
@@ -849,10 +849,10 @@
                     
                     {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                      {% if product.typeVente == "gros" %}
-                      {% set montantHt = montantHt + ((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros) %}
+                      {% if product.typeVente == "detail" %}
+                        {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
                       {% else %}
-                          {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
                       {% endif %}
                     {% endfor %}
                     {{montantHt|number_format(2, ',', '.')}} €
@@ -880,10 +880,10 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {% if product.typeVente == "gros" %}
-                      {{((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {% if product.typeVente == "detail" %}
+                          {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
                       {% else %}
-                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
                       {% endif %}
                     {% endfor %}
                   </td>
@@ -897,10 +897,10 @@
                     
                     {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                      {% if product.typeVente == "gros" %}
-                      {% set montantHt = montantHt + ((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros) %}
-                      {% else %}
+                      {% if product.typeVente == "detail" %}
                           {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                      {% else %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
                       {% endif %}
                     {% endfor %}
                     {{montantHt|number_format(2, ',', '.')}} €
@@ -928,10 +928,10 @@
                   </td>
                   <td>
                     {% for product in item.order.products %}
-                      {% if product.typeVente == "gros" %}
-                      {{((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {% if product.typeVente == "detail" %}
+                          {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
                       {% else %}
-                      {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
                       {% endif %}
                     {% endfor %}
                   </td>
@@ -945,10 +945,10 @@
                     
                     {% set montantHt = 0 %}
                     {% for product in item.order.products %}
-                      {% if product.typeVente == "gros" %}
-                      {% set montantHt = montantHt + ((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros) %}
-                      {% else %}
+                      {% if product.typeVente == "detail" %}
                           {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                      {% else %}
+                          {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
                       {% endif %}
                     {% endfor %}
                     {{montantHt|number_format(2, ',', '.')}} €
@@ -977,7 +977,7 @@
                   <td>
                     {% for product in item.order.products %}
                       {% if product.typeVente == "gros" %}
-                      {{((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
+                      {{(product.qtt * product.prixVenteGros)|number_format(2, ',', '.')}} € <br/>
                       {% else %}
                       {{(product.qtt * product.prixVenteDetail)|number_format(2, ',', '.')}} € <br/>
                       {% endif %}
@@ -994,7 +994,7 @@
                     {% set montantHt = 0 %}
                     {% for product in item.order.products %}
                       {% if product.typeVente == "gros" %}
-                      {% set montantHt = montantHt + ((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros) %}
+                      {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
                       {% else %}
                           {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
                       {% endif %}

@@ -159,6 +159,9 @@ class ProduitCategorie
     #[ORM\Column(nullable: true)]
     private ?float $qttReserver = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $qttReserverCommander = null;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
@@ -654,6 +657,18 @@ class ProduitCategorie
     public function setQttReserver(?float $qttReserver): static
     {
         $this->qttReserver = $qttReserver;
+
+        return $this;
+    }
+
+    public function getQttReserverCommander(): ?float
+    {
+        return $this->qttReserverCommander;
+    }
+
+    public function setQttReserverCommander(?float $qttReserverCommander): static
+    {
+        $this->qttReserverCommander = $qttReserverCommander;
 
         return $this;
     }

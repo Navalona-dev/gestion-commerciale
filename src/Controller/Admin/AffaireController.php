@@ -964,7 +964,7 @@ class AffaireController extends AbstractController
                 }
             }
 
-            list($pdfContent, $facture) = $this->factureService->annuler($affaire, $documentFolder);
+            list($pdfContent, $facture) = $this->factureService->annuler($affaire, $documentFolder, $request);
             
             // Utiliser le numéro de la facture pour le nom du fichier
             //$filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";

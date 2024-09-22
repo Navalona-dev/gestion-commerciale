@@ -25,9 +25,13 @@ function addPanier(elt, idAffaire, volumeGros = null, volumeDetail = null) {
     if (typeVente == 'gros') {
         qttTotal =  parseFloat(qttRestant);
     } 
-    if (typeVente == 'detail') {
+    if (typeVente == 'detail' && volumeGros > 0) {
         qttTotal =  parseFloat(qttRestant) * parseFloat(volumeGros);
     } 
+    if (typeVente == 'detail' && volumeGros < 1) {
+        qttTotal =  parseFloat(qttRestant);
+    } 
+
     console.log(typeVente, qtt, qttTotal,volumeGros, volumeDetail );
     if (qttRestant != undefined && qttRestant != "") {
         if (parseFloat(qtt) > parseFloat(qttTotal)) {
@@ -139,11 +143,15 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null, typeVente 
         if (typeVente == 'gros') {
             qttTotal =  parseFloat(qttRestant);
         } 
-        if (typeVente == 'detail') {
-            qttTotal =  parseFloat(qttRestant) * parseFloat(volumeDetail);
+        if (typeVente == 'detail' && volumeGros > 0) {
+            qttTotal =  parseFloat(volumeGros);
         } 
+        if (typeVente == 'detail' && volumeGros < 1) {
+            qttTotal =  parseFloat(qttRestant);
+        }
 
-    
+        console.log(typeVente, qtt, qttTotal,volumeGros, volumeDetail );
+        //return false;
         if (parseFloat(qtt) > (parseFloat(qttTotal))) {
            
             $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');

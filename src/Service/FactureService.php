@@ -127,9 +127,7 @@ class FactureService
             $produitCategorie = $product->getProduitCategorie();
             $stockRestant = $produitCategorie->getStockRestant();
             $volumeGros = $produitCategorie->getVolumeGros();
-            $stockEnKg = $stockRestant * $volumeGros; 
             $qtt = $product->getQtt(); 
-            $stockEnKgReste = $stockEnKg - $qtt; 
 
             // Calcul du montant
             $factureDetail = new FactureDetail();
@@ -144,38 +142,34 @@ class FactureService
                 $prix = $product->getPrixVenteGros();
                 $uniteVenteGros = $product->getUniteVenteGros();
                 $prixVenteGros = $prix; 
-                $stockRestant = $stockRestant - $qtt;
 
-            } else {
+            } elseif($product->getTypeVente() == "detail") {
                 $montantHt  = $montantHt + ($qtt * $product->getPrixVenteDetail());
                 $prix = $product->getPrixVenteDetail();
                 $uniteVenteDetail = $product->getUniteVenteDetail();
                 $prixVenteDetail = $prix;
-                $stockRestant = $stockEnKgReste / $volumeGros; 
-            }
-
-            // Gérer le produit catégorie
-            if($affaire->getPaiement() == "paye") {
-                if($product->getTypeVente() == "detail") {
-                    $qtt = $qtt / $volumeGros;
+                if($volumeGros > 0) {
+                    $qtt = $qtt / $volumeGros; 
                 }
             }
+
+            $stockRestant = $stockRestant - $qtt;
 
             $produitCategorie->setStockRestant($stockRestant);
             $this->entityManager->persist($produitCategorie);
 
-            $factureDetail->setFacture($facture);
-            $factureDetail->setReference($product->getReference());
-            $factureDetail->setDetail($product->getProduitCategorie()->getNom());
-            $factureDetail->setQtt($qtt);
-            $factureDetail->setProduct($product);
-            $factureDetail->setPrixUnitaire($prix);
-            $factureDetail->setPrixTotal($montantHt);
-            $factureDetail->setDescription($product->getDescription());
-            $factureDetail->setUniteVenteDetail($uniteVenteDetail);
-            $factureDetail->setUniteVenteGros($uniteVenteGros);
-            $factureDetail->setPrixVenteDetail($prixVenteDetail);
-            $factureDetail->setPrixVenteGros($prixVenteGros);
+            $factureDetail->setFacture($facture)
+                          ->setReference($product->getReference())
+                          ->setDetail($product->getProduitCategorie()->getNom())
+                          ->setQtt($qtt)
+                          ->setProduct($product)
+                          ->setPrixUnitaire($prix)
+                          ->setPrixTotal($montantHt)
+                          ->setDescription($product->getDescription())
+                          ->setUniteVenteDetail($uniteVenteDetail)
+                          ->setUniteVenteGros($uniteVenteGros)
+                          ->setPrixVenteDetail($prixVenteDetail)
+                          ->setPrixVenteGros($prixVenteGros);
             $facture->addFactureDetail($factureDetail);
             $this->entityManager->persist($factureDetail);
 
@@ -247,15 +241,25 @@ class FactureService
             //gerer la qtt reserver
             $qttReserver = $produitCategorie->getQttReserver();
             $qttProduct = $product->getQtt();
-            if($product->getTypeVente() == "detail") {
+            if($product->getTypeVente() == "detail" && $volumeGros > 0) {
                 $qttProduct = $qttProduct / $volumeGros;
             }
 
             $qttReserver = number_format($qttReserver,2,'.','');
             $qttProduct = number_format($qttProduct,2,'.','');
             
-            $produitCategorie->setQttReserver($qttReserver - $qttProduct);
-    
+            if($produitCategorie->getQttReserver()) {
+                $produitCategorie->setQttReserver($qttReserver - $qttProduct);
+            } else {
+                $produitCategorie->setQttReserver($qttProduct);
+            }
+
+            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            if($produitCategorie->getQttReserverCommander()){
+                $produitCategorie->setQttReserverCommander($qttReserverCommander + $qttProduct);
+            }else {
+                $produitCategorie->setQttReserverCommander($qttProduct);
+            }
             $this->entityManager->persist($produitCategorie);
             $tabQtt[] = $qttProduct; 
             $tabQttReserver[] = $produitCategorie->getQttReserver();
@@ -275,7 +279,32 @@ class FactureService
                 $tabProduitCategorie[$produitCategorieId] = $produitCategorie;
             }
 
+            //Log product
+            $data["produit"] = $produitCategorie->getNom();
+            $data["dateReception"] = null;
+            $data["dateTransfert"] = null;
+            $data["dateSortie"] = (new \DateTime())->format("d-m-Y h:i:s");
+            $data["userDoAction"] = $user->getUserIdentifier();
+            $data["source"] = $this->application->getEntreprise();
+            $data["destination"] = $affaire->getCompte()->getNom();
+            $data["action"] = "Commande";
+            $data["type"] = "Commande";
+            //$data["qtt"] = $qttProduct;
+            //$data["stockRestant"] = ((!is_null($produitCategorie->getQttReserverCommander()) && $produitCategorie->getQttReserverCommander() > 0) ? $produitCategorie->getStockRestant() - $produitCategorie->getQttReserverCommander() : $produitCategorie->getStockRestant()) ;
+            $data["qtt"] = $produitCategorie->getQttReserverCommander() ." " . $produitCategorie->getPresentationGros();
+            $data["stockRestant"] = $produitCategorie->getStockRestant() . " " . $produitCategorie->getPresentationGros();
+            $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
+            $data["typeSource"] = "Point de vente";
+            $data["typeDestination"] = "Client";
+            $data["commande"] = $affaire->getNom();
+            $data["commandeId"] = $affaire->getId().'-paye';
+            $data["sourceId"] =  $this->application->getId();
+            $data["destinationId"] = $affaire->getCompte()->getId();
+            $this->logService->addLog($request, "commande", $this->application->getId(), $produitCategorie->getReference(), $data);
+
         }
+
+        //dd($montantHt);
 
         //dd($datePeremptionProductArray);
         //créer un nouveau produit dans l'application choisi lors de commande
@@ -406,6 +435,7 @@ class FactureService
         ]);
         $this->update();
         
+        
         // Initialize Dompdf
         $options = new Options();
         $options->set('isRemoteEnabled', true);
@@ -450,7 +480,7 @@ class FactureService
         return [$pdfContent, $facture]; // Retourner le contenu PDF et l'objet facture
     }
    
-    public function annuler($affaire = null, $folder = null)
+    public function annuler($affaire = null, $folder = null, $request = null)
     {
         $factures = $this->findByAffaire($affaire);
         $facture = $factures[0];
@@ -463,14 +493,15 @@ class FactureService
         $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
         $tabQttRestant = [];
         $produitCategorie = null;
-
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
         foreach ($products as $key => $product) { 
             $produitCategorie = $product->getProduitCategorie();
             $stockRestant = $produitCategorie->getStockRestant();
             $volumeGros = $produitCategorie->getVolumeGros();
             $qtt = $product->getQtt();
             
-            if($product->getTypeVente() == "detail") {
+            if($product->getTypeVente() == "detail" && $volumeGros > 0) {
                 $qtt = $qtt / $volumeGros;
             }
             
@@ -489,9 +520,39 @@ class FactureService
                 $this->entityManager->remove($datePeremptionProduct);
 
             }
+            
+            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            if (null != $qttReserverCommander && $qttReserverCommander > 0) {
+                $produitCategorie->setQttReserverCommander($qttReserverCommander - $qtt);
+            }
+            $this->persist($produitCategorie);
+
+             //Log product
+             $data["produit"] = $produitCategorie->getNom();
+             $data["dateReception"] = (new \DateTime())->format("d-m-Y h:i:s");
+             $data["dateTransfert"] = null;
+             $data["dateSortie"] = null;
+             $data["userDoAction"] = $user->getUserIdentifier();
+             $data["source"] = $this->application->getEntreprise();
+             $data["destination"] = $affaire->getCompte()->getNom();
+             $data["action"] = "Commande";
+             $data["type"] = "Commande";
+             //$data["qtt"] = $qtt;
+             $data["qtt"] = $produitCategorie->getQttReserverCommander() ." " . $produitCategorie->getPresentationGros();
+             $data["stockRestant"] = $produitCategorie->getStockRestant() . " " . $produitCategorie->getPresentationGros();
+             $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
+             $data["typeSource"] = "Point de vente";
+             $data["typeDestination"] = "Client";
+             $data["commande"] = $affaire->getNom();
+             $data["commandeId"] = $affaire->getId().'-annule';
+             $data["sourceId"] =  $this->application->getId();
+             $data["destinationId"] = $affaire->getCompte()->getId();
+             $this->logService->addLog($request, "commande", $this->application->getId(), $produitCategorie->getReference(), $data);
+ 
+
         }
         //dd($produitCategorie->getStockRestant());
-
+        
         $this->persist($facture);
         $affaire->setDateAnnule($date);
         $affaire->setDevisEvol('perdu');

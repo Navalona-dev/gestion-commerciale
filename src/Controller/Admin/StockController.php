@@ -64,8 +64,35 @@ class StockController extends AbstractController
                 if ($request->isXmlHttpRequest()) {
                    $formData = $form->getData();
                    $datePeremption = $formData->getDatePeremption()->getDate();
+                    
                     $stockService->add($stock, $produitCategorie, $datePeremption);
 
+                    // Format stock
+                    $formattedStock = number_format($produitCategorie->getStockRestant(),2,'.','');
+                    $tabFormatedStock = explode(".", $formattedStock);
+                    $stockRestant = round($produitCategorie->getStockRestant(), 2);
+                    $sousUnite = 0;
+                    if (count($tabFormatedStock) > 0) {
+                        if ($tabFormatedStock[1] == "00") {
+                            $stockRestant = number_format($produitCategorie->getStockRestant(),0,'.','');
+                        } else {
+                            $sacs = round($stockRestant, 0);
+                            $decimalPart = round(floatval($sacs) - floatval($stockRestant), 2);
+                          
+                            $decimalPart = floatval("0.".$tabFormatedStock[1]) + $decimalPart;
+                          
+                            $sousUnite = number_format($decimalPart * $produitCategorie->getVolumeGros(),2,'.','');
+                           
+                        }
+                    }
+
+                    $stockRestantStr = round($stockRestant, 0);
+                    if ($sousUnite != 0) {
+                        $stockRestantStr = $stockRestantStr." ".$produitCategorie->getPresentationGros()." et ".  $sousUnite." ". $produitCategorie->getUniteVenteGros();
+                    } else {
+                        $stockRestantStr = $stockRestantStr." ".$produitCategorie->getPresentationGros();
+                    }
+                    //// End format stock
                     $user = $this->getUser();
                     $data["produit"] = $produitCategorie->getNom();
                     $data["dateReception"] = (new \DateTime())->format("d-m-Y h:i:s");
@@ -76,8 +103,8 @@ class StockController extends AbstractController
                     $data["destination"] = $this->application->getEntreprise();
                     $data["action"] = "Ajout";
                     $data["type"] = "Ajout";
-                    $data["qtt"] = $produitCategorie->getQtt();
-                    $data["stockRestant"] = $produitCategorie->getStockRestant();
+                    $data["qtt"] = $stock->getQtt();
+                    $data["stockRestant"] = $stockRestantStr;
                     $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
                     $data["typeSource"] = "Point de vente";
                     $data["typeDestination"] = "Point de vente";;

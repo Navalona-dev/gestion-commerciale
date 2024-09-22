@@ -188,7 +188,7 @@
                                         {% if volumeGros == 0 %}
                                             
                                             {% if product.typeVente == "detail" %}
-                                                {{product.qtt}}&nbsp;{{product.uniteVenteDetail}} / {{product.produitCategorie.stockRestant|number_format(2,'.','')}} {{product.uniteVenteDetail}} 
+                                                {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant|number_format(2,'.','')}} {{product.uniteVenteDetail}} 
                                     
                                                 (
                                                     {% if ((product.qtt) |round(0)) != 0 %} 
@@ -205,24 +205,21 @@
                                                
                                                 {{product.qtt }}&nbsp;{{product.produitCategorie.uniteVenteGros}} / {{product.produitCategorie.stockRestant|number_format(2,'.','')}} {{product.produitCategorie.uniteVenteGros}} 
                                                 (
-                                                    {% if product.qtt >= product.produitCategorie.volumeGros %} 
+                                                    {% if product.produitCategorie.volumeGros > 0 and product.qtt >= product.produitCategorie.volumeGros %} 
                                                         {{(product.qtt) |round(0)}}  {{product.produitCategorie.presentationGros}} 
                                                         {% if product.qtt * coef - product.produitCategorie.volumeGros != 0 %} 
                                                             et 
                                                         {% endif %} 
                                                     {% endif %} 
 
-                                                    {% if product.qtt >= product.produitCategorie.volumeGros %} 
+                                                    {% if product.produitCategorie.volumeGros > 0 and product.qtt >= product.produitCategorie.volumeGros %} 
                                                         {% if product.qtt * coef - product.produitCategorie.volumeGros != 0 %} 
                                                             {{product.qtt - ( (product.qtt) |round(0))}} {{product.produitCategorie.presentationDetail}} 
                                                         {% endif %} 
                                                     {% else %} 
                                                          {{product.qtt}}
-                                                        {% if coef == 1 %}
-                                                        {{product.produitCategorie.presentationDetail}}
-                                                        {% else %}
                                                         {{product.produitCategorie.presentationGros}}
-                                                        {% endif %}
+                                                        
                                                     {% endif %} 
                                                 )
                                             {% endif %}
@@ -230,13 +227,11 @@
                                         {% else %}
 
                                             {% if product.typeVente == "detail" %}
-                                                {{product.qtt}}&nbsp;{{product.produitCategorie.uniteVenteDetail}} / {{product.produitCategorie.stockRestant|number_format(2,'.','') * product.produitCategorie.volumeGros }} {{product.produitCategorie.uniteVenteGros}} 
+                                                {{product.qtt}}&nbsp;{{product.produitCategorie.uniteVenteGros}} / {{product.produitCategorie.stockRestant|number_format(2,'.','') * product.produitCategorie.volumeGros }} {{product.produitCategorie.uniteVenteGros}} 
                                         
                                                 (
                                                     {% if product.qtt != 0 and product.qtt >= product.produitCategorie.volumeGros  %} 
-                                                        {{ (product.qtt) |round(0)}} 
-                                                        {{product.produitCategorie.presentationGros}}  
-                                                            et {{product.qtt - ( (product.qtt) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}})
+                                                       {{( (product.qtt / product.produitCategorie.volumeGros) |round(2))}} {{product.produitCategorie.presentationGros}})
                                                     {% else %}
                                                         {% if product.produitCategorie.volumeGros > 0 %}
                                                             {% if product.qtt >= product.produitCategorie.volumeGros %} 
@@ -368,9 +363,10 @@
     <div id="modalFactureEcheanceEmpty"></div>
    
   </section>
-<script src="{{ asset('assets/js/produit.js?version=1')}}"></script>
+<script src="{{ asset('assets/js/produit.js?version=1.2')}}"></script>
   <script>
     $(document).ready(function() {
+       
         $('#tab-compte_1').removeClass('active').empty();
         $('#tab-compte_2').removeClass('active').empty();
         $('#affaires_fournisseur').removeClass('active').empty();

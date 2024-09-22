@@ -222,6 +222,34 @@ class ImportProduitController extends AbstractController
                             //$produitCategorie->getStock()
                         }
 
+                        // Format stock
+                        $qtt = floatval($stockRestant);
+                    $formattedStock = number_format($qtt,2,'.','');
+                    $tabFormatedStock = explode(".", $formattedStock);
+                    $stockRestant = round($qtt, 2);
+                    $sousUnite = 0;
+                    if (count($tabFormatedStock) > 0) {
+                        if ($tabFormatedStock[1] == "00") {
+                            $stockRestant = number_format($qtt,0,'.','');
+                        } else {
+                            $sacs = round($qtt, 0);
+                            $decimalPart = round(floatval($sacs) - floatval($qtt), 2);
+                          
+                            $decimalPart = floatval("0.".$tabFormatedStock[1]) + $decimalPart;
+                          
+                            $sousUnite = number_format($decimalPart * $produitCategorie->getVolumeGros(),2,'.','');
+                           
+                        }
+                    }
+
+                    $stockRestantStr = round($stockRestant, 0);
+                    if ($sousUnite != 0) {
+                        $stockRestantStr = $stockRestantStr." ".$produitCategorie->getPresentationGros()." et ".  $sousUnite." ". $produitCategorie->getUniteVenteGros();
+                    } else {
+                        $stockRestantStr = $stockRestantStr." ".$produitCategorie->getPresentationGros();
+                    }
+                    //// End format stock
+                       
                         $user = $this->getUser();
                         $data["produit"] = $produitCategorie->getNom();
                         $data["dateReception"] = (new \DateTime())->format("d-m-Y h:i:s");
@@ -232,8 +260,8 @@ class ImportProduitController extends AbstractController
                         $data["destination"] = $this->application->getEntreprise();
                         $data["action"] = "Ajout";
                         $data["type"] = "Ajout";
-                        $data["qtt"] = $produitCategorie->getQtt();
-                        $data["stockRestant"] = $produitCategorie->getStockRestant();
+                        $data["qtt"] = $stockRestantStr;
+                        $data["stockRestant"] = $stockRestantStr;
                         $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
                         $data["typeSource"] = "Fichier";
                         $data["typeDestination"] = "Point de vente";;

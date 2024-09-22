@@ -168,7 +168,8 @@ class ProduitCategorieController extends AbstractController
                         $data["sourceId"] =  $this->application->getId();
                         $data["destinationId"] = $this->application->getId();
                         $this->logService->addLog($request, "reception", $this->application->getId(), $produitCategorie->getReference(), $data);
-
+                        
+                        
                         return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                         $this->addFlash('success', 'Création produit categorie "' . $produitCategorie->getNom() . '" avec succès.');
                         return $this->redirectToRoute('produit_categories_liste');

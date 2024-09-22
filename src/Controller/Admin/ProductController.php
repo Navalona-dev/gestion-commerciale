@@ -91,7 +91,7 @@ class ProductController extends AbstractController
 
         //$prixTTC = (null != $request->get('prixTTC'))?$request->get('prixTTC'): null;
         $coef = 1;
-        if ($typeVente == "detail") {
+        if ($typeVente == "detail" && $produitCategorie->getVolumeGros() > 0) {
             $coef = $produitCategorie->getVolumeGros();
         }
 
@@ -201,8 +201,9 @@ class ProductController extends AbstractController
         $affaire = $this->affaireService->find($idAffaire);
 
         $product = $this->productService->getProductById($idProduit);
+        
         if ($product) {
-            $product->setQtt($qtt);
+            $this->productService->setQttReserver($product,$qtt);
             $this->productService->persist($product);
             $this->productService->persist($product);
             $this->productService->update();
@@ -254,7 +255,9 @@ class ProductController extends AbstractController
 
         $product = $this->productService->getProductById($idProduit);
         if ($product) {
+            $qtt = $product->getQtt();
             $this->productService->remove($product, $affaire);
+            $this->productService->setQttReserver($product,$qtt, true);
             $this->productService->update();
         }
 

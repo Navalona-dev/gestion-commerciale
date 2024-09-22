@@ -75,15 +75,29 @@
                                 </td>
                                 {% set volumeGros = liste.volumeGros %}
                                 {% if liste.volumeGros == 0 %}
-                                         {% set nombreProduitPresentation = ((liste.stockRestant) |round(0)) %}
+                                         {% set resteQtt = 0 %}
+                                         {% if liste.qttReserver is not null and liste.qttReserver > 0 %}
+                                            {% set resteQtt = liste.stockRestant - resteQtt  %}
+                                         {% else %}
+                                            {% set resteQtt = liste.stockRestant %}
+                                         {% endif %}
+
+                                         {% set nombreProduitPresentation = ((resteQtt) |round(0)) %}
                                          {% set qttProduitPresente = nombreProduitPresentation %}
                                 {% else %}
-                                         {% set nombreProduitPresentation = ((liste.stockRestant * volumeGros / volumeGros) |round(0)) %}
+                                            {% set resteQtt = 0 %}
+                                            {% if liste.qttReserver is not null and liste.qttReserver > 0 %}
+                                                {% set resteQtt = liste.stockRestant - resteQtt  %}
+                                            {% else %}
+                                                {% set resteQtt = liste.stockRestant %}
+                                            {% endif %}
+
+                                         {% set nombreProduitPresentation = ((resteQtt) |round(0)) %}
                                          {% set qttProduitPresente = nombreProduitPresentation * volumeGros  %}
                                 {% endif %}
-                               
+                              
                                {% set diffenceQttProduit = 0 %}
-                               {% set showParenthese = 1 %}
+                               {%                                                                    set showParenthese = 1 %}
                                {% set ruptureGros = 0 %}
                                 {% if volumeGros > 0 %}
                                     {% set diffenceQttProduit = (liste.stockRestant * volumeGros - qttProduitPresente) %}
@@ -98,14 +112,16 @@
                                 {% endif %}
                                 <td>
                                     <input type="hidden" name="qttRestant" value="{{ liste.stockRestant }}">
-                                    {% set formattedStockRestant = liste.stockRestant|number_format(2, '.', '') %}
+                                {% set formattedStockRestant = liste.stockRestant|number_format(2, '.', '') %}
                                    
                                     {% if liste.qttReserver is not null %}
                                         <span class="stock-restant" data-stock="{{liste.stockRestant - liste.qttReserver}}">
                                             
                                             {% if formattedStockRestant ends with '.00' %}
                                                 {{(liste.stockRestant - liste.qttReserver)|number_format(0, '.', '') }} 
-                                                {{liste.presentationGros}}{% if (liste.stockRestant - liste.qttReserver)|number_format(0, '.', '') > 1 %}s{% endif %}
+                                                {% if liste.presentationGros is not null %}
+                                                    {{liste.presentationGros}}{% if (liste.stockRestant - liste.qttReserver)|number_format(0, '.', '') > 1 %}s{% endif %}
+                                                {% endif %}
                                             {% else %}
                                                 {% set stockRestant = (liste.stockRestant - liste.qttReserver)|number_format(2,'.','') %}
                                                 {% set volumeGros = liste.volumeGros %}
@@ -114,16 +130,21 @@
                                                 {% set decimalPart = stockRestant - sacs %}
                                                 {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
 
-                                                {{ sacs }} {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+                                                {{ sacs }} 
+                                                {% if liste.presentationGros is not null %}
+                                                    {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} {{liste.uniteVenteGros}}
+                                                {% endif %}
 
                                             {% endif %}
                                         </span>
                                     {% else %}
-                                        <span class="stock-restant" data-stock="{{liste.stockRestant}}">
+                                        <span class="stock-restant" data-stock="{{nombreProduitPresentation}}">
 
                                             {% if formattedStockRestant ends with '.00' %}
-                                                {{liste.stockRestant|number_format(0, '.', '') }} 
-                                                {{liste.presentationGros}}{% if liste.stockRestant|number_format(0, '.', '') > 1 %}s{% endif %}
+                                                {{liste.stockRestant|number_format(0, '.', '') }}
+                                                {% if liste.presentationGros is not null %}
+                                                    {{liste.presentationGros}}{% if liste.stockRestant|number_format(0, '.', '') > 1 %}s{% endif %}
+                                                {% endif %}
                                             {% else %}
                                                 {% set stockRestant = liste.stockRestant|number_format(2,'.','') %}
                                                 {% set volumeGros = liste.volumeGros %}
@@ -132,39 +153,15 @@
                                                 {% set decimalPart = stockRestant - sacs %}
                                                 {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
 
-                                                {{ sacs }} {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+                                                {{ sacs }} 
+                                                {% if liste.presentationGros is not null %}
+                                                    {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} {{liste.uniteVenteGros}}
+                                                {% endif %}
 
                                             {% endif %}
                                         </span> 
                                     {% endif %}
 
-                                    {#
-                                        {% if liste.volumeGros > 0 %} 
-                                        {{liste.stockRestant * liste.volumeGros}} {{liste.uniteVenteGros}} 
-                                        {% endif %} 
-                                        {% if showParenthese == 1 %} 
-                                        ( 
-                                    {% endif %} 
-                                    {% if qttProduitPresente > liste.stockRestant %}
-                                        {% if (nombreProduitPresentation - 1) == 0 %} 
-                                            {% set ruptureGros = 1 %} 
-                                        {% else %} 
-                                            {{ nombreProduitPresentation }} 
-                                        {% endif %} 
-                                    {% else %}  
-                                        {{ nombreProduitPresentation }} 
-                                    {% endif %} 
-                                    {% if ruptureGros == 0 %} 
-                                        {{liste.presentationGros}} 
-                                    {% endif %} 
-                                    {% if ruptureGros == 0 %} 
-                                        {% if diffenceQttProduit != 0 %} 
-                                            et {{ diffenceQttProduit }} {{liste.uniteVenteGros}}
-                                        {% endif %}
-                                    {% endif %} 
-                                    {% if showParenthese == 1 %} 
-                                        ) 
-                                    {% endif %}#}
                                 </td>
                                 <td>
                                     {% set formattedQttReserver = liste.qttReserver|number_format(2, '.', '') %}
@@ -175,7 +172,9 @@
 
                                         {% if formattedQttReserver ends with '.00' %}
                                                 {{liste.qttReserver|number_format(0, '.', '') }} 
-                                                {{liste.presentationGros}}{% if liste.qttReserver|number_format(0, '.', '') > 1 %}s{% endif %}
+                                                {% if liste.presentationGros is not null %}
+                                                    {{liste.presentationGros}}{% if liste.qttReserver|number_format(0, '.', '') > 1 %}s{% endif %}
+                                                {% endif %}
                                             {% else %}
                                                 {% set qttReserver = liste.qttReserver|number_format(2,'.','') %}
                                                 {% set volumeGros = liste.volumeGros %}
@@ -189,9 +188,12 @@
                                                     {% set kg = kg|number_format(2, '.', ',') %}
                                                 {% endif %}
                                                 {% if sacs > 0 %}
-                                                    {{ sacs }} {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+                                                        {{ sacs }} 
+                                                    {% if liste.presentationGros is not null %}
+                                                        {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} {{liste.uniteVenteGros}}
+                                                    {% endif %}
                                                 {% else %}
-                                                    {{ kg }} kg
+                                                    {{ kg }} {{liste.uniteVenteGros}}
                                                 {% endif %}
                                             {% endif %}
                                     {% endif %}
@@ -200,53 +202,89 @@
                                     <select name="typeVente" id="typeVente" class="form-control">
                                         <option value="">Type vente</option>
                                         <option value="gros">Gros</option>
-                                        {% if liste.prixVenteDetail is not null and liste.prixVenteDetail > 0 %}
+                                        {% if (liste.prixVenteDetail is not null and liste.prixVenteDetail > 0) and (liste.prixVenteGros != liste.prixVenteDetail)  %}
                                             <option value="detail">Détail</option>
                                         {% endif %}
                                     </select>
                                  </td>
+                                 {% set units = {
+                                    'kg': [
+                                        {'name': 'hg', 'label': 'hg', 'divider': 10},
+                                        {'name': 'dag', 'label': 'dag', 'divider': 100},
+                                        {'name': 'g', 'label': 'g', 'divider': 1000},
+                                        {'name': 'dg', 'label': 'dg', 'divider': 10000},
+                                        {'name': 'cg', 'label': 'cg', 'divider': 100000},
+                                        {'name': 'mg', 'label': 'mg', 'divider': 1000000}
+                                    ],
+                                    'l': [
+                                        {'name': 'dL', 'label': 'dL', 'divider': 10},
+                                        {'name': 'cL', 'label': 'cL', 'divider': 100},
+                                        {'name': 'mL', 'label': 'mL', 'divider': 1000},
+                                    ],
+                                    'L': [
+                                        {'name': 'dL', 'label': 'dL', 'divider': 10},
+                                        {'name': 'cL', 'label': 'cL', 'divider': 100},
+                                        {'name': 'mL', 'label': 'mL', 'divider': 1000},
+                                    ],
+                                    'PCS': [
+                                    ],
+                                    'CP': [
+                                    ],
+                                    'KG': [
+                                        {'name': 'hg', 'label': 'hg', 'divider': 10},
+                                        {'name': 'dag', 'label': 'dag', 'divider': 100},
+                                        {'name': 'g', 'label': 'g', 'divider': 1000},
+                                        {'name': 'dg', 'label': 'dg', 'divider': 10000},
+                                        {'name': 'cg', 'label': 'cg', 'divider': 100000},
+                                        {'name': 'mg', 'label': 'mg', 'divider': 1000000}
+                                    ],
+                                    'Kg': [
+                                        {'name': 'hg', 'label': 'hg', 'divider': 10},
+                                        {'name': 'dag', 'label': 'dag', 'divider': 100},
+                                        {'name': 'g', 'label': 'g', 'divider': 1000},
+                                        {'name': 'dg', 'label': 'dg', 'divider': 10000},
+                                        {'name': 'cg', 'label': 'cg', 'divider': 100000},
+                                        {'name': 'mg', 'label': 'mg', 'divider': 1000000}
+                                    ],
+                                    'FLC': [
+                                    ],
+                                } %}
                                  <td class="quantity"> 
                                     <span class="volumeGros" data-volume="{{liste.volumeGros}}"></span>
                                     <span class="presentationGros" data-presentation="{{liste.presentationGros}}"></span>
                                     <span class="uniteVenteGros" data-unite="{{liste.uniteVenteGros}}"></span>
                                     <input type="text" value="{{ liste.qtt }}" id="qttProduit" name="qttProduit" class="form-control" readonly>
                                     <span class="unite"></span>
+                                    {% if liste.uniteVenteGros is not null and units[liste.uniteVenteGros]|length > 0  %}
                                     <input type="checkbox" name="other" id="other" class="other">
                                     <label for="" class="label-other">Autre</label>
-                                    {% set units = {
-                                        'kg': [
-                                            {'name': 'hg', 'label': 'hg', 'divider': 10},
-                                            {'name': 'dag', 'label': 'dag', 'divider': 100},
-                                            {'name': 'g', 'label': 'g', 'divider': 1000},
-                                            {'name': 'cg', 'label': 'cg', 'divider': 10000},
-                                            {'name': 'mg', 'label': 'mg', 'divider': 100000}
-                                        ],
-                                        'l': [
-                                            {'name': 'dL', 'label': 'dL', 'divider': 10},
-                                            {'name': 'cL', 'label': 'cL', 'divider': 100},
-                                            {'name': 'mL', 'label': 'mL', 'divider': 1000},
-                                        ]
-                                    } %}
-                                    <p class="other-unite">
-                                        {% set current_units = units[liste.uniteVenteGros] %}
-                                        {% set name = '' %}
-                                        {% if current_units is defined %}
-                                            {% for unit in current_units %}
-                                                {% set name = unit.name %}
-                                                <span class="unite-name" data-name="{{unit.name}}"></span>
-                                                <input data-name="{{unit.name}}" type="radio" name="unite-{{ unit.name }}" id="unite-{{ unit.name }}" class="unite-check">
-                                                <label for="unite-{{ unit.name }}">{{ unit.label }}</label>
-                                                <span class="divider-{{unit.name}}" data-divider="{{ unit.divider }}"></span>
-                                            {% endfor %}
-                                            <br>
-                                            <input type="text" name="valeur-unite" class="form-control form-control-sm valeur-unite" placeholder="Entrez la valeur" readonly>
-                                        {% endif %}
-                                        
-                                    </p>
+                                    {% endif %}
+                                    
+                                    {% if liste.uniteVenteGros is not null %}
+
+                                        <p class="other-unite">
+                                            {% set current_units = units[liste.uniteVenteGros] %}
+                                            {% set name = '' %}
+                                            {% if current_units is defined %}
+                                                {% for unit in current_units %}
+                                                {% if unit is not null and  unit != "" %}
+                                                    {% set name = unit.name %}
+                                                    <span class="unite-name" data-name="{{unit.name}}"></span>
+                                                    <input data-name="{{unit.name}}" type="radio" name="unite-{{ unit.name }}" id="unite-{{ unit.name }}" class="unite-check">
+                                                    <label for="unite-{{ unit.name }}">{{ unit.label }}</label>
+                                                    <span class="divider-{{unit.name}}" data-divider="{{ unit.divider }}"></span>
+                                                {% endif %}
+                                                    {% endfor %}
+                                                <br>
+                                                <input type="text" name="valeur-unite" class="form-control form-control-sm valeur-unite" placeholder="Entrez la valeur" readonly>
+                                            {% endif %}
+                                            
+                                        </p>
+                                    {% endif %}
                                 </td>
                                 <td> 
                                     {% if liste.prixVenteGros is not null %}
-                                        {{liste.prixVenteGros}} Ar {% if liste.uniteVenteGros is not null %} / {{liste.uniteVenteGros}}  {% endif %}
+                                        {{liste.prixVenteGros}} Ar {% if liste.presentationGros is not null %} / {{liste.presentationGros}}  {% endif %}
                                     {% endif %}
                                 </td>
                                  <td> 
@@ -376,7 +414,7 @@ function reloadTabFinancier()
                 // Récupérer la valeur de l'input qttProduit pendant la saisie
                 var qttValeur = $(this).val();
 
-                if(qttValeur >= volumeGros) {
+                if(volumeGros > 0 && qttValeur >= volumeGros) {
                     qttProduit.css('background-color', '#fc8b8b');
                     qttProduit.val("");
                     var message = 'La quantité ' + qttValeur + ' pour le type de vente détail ne doit pas supérieur ou égale au volume de gros ' + volumeGros;
