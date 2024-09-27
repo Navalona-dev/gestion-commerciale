@@ -46,7 +46,7 @@
                       {% set kg = kg|number_format(2, '.', ',') %}
                   {% endif %}
 
-                  {{ sacs }} {{produitCategory.presentationGros}}{% if sacs > 1 %}s{% endif %} 
+                  {{ sacs }} {{produitCategory.presentationGros}}{% if sacs > 1 and produitCategory.presentationGros is not null and produitCategory.presentationGros != "pcs" %}s{% endif %} 
                   {% if kg > 0 %}
                   et {{ kg }} {{produitCategory.uniteVenteGros}}
                   {% endif %}
@@ -72,7 +72,7 @@
                       {% set kg = kg|number_format(2, '.', ',') %}
                   {% endif %}
 
-                  {{ sacs }} {{produitCategory.presentationGros}}{% if sacs > 1 %}s{% endif %} 
+                  {{ sacs }} {{produitCategory.presentationGros}}{% if sacs > 1 and produitCategory.presentationGros is not null and produitCategory.presentationGros != "pcs" %}s{% endif %} 
                   {% if kg > 0 %}
                   et {{ kg }} {{produitCategory.uniteVenteGros}}
                   {% endif %}
@@ -111,7 +111,7 @@
                         {% set kg = kg|number_format(2, '.', ',') %}
                     {% endif %}
   
-                    {{ sacs }} {{produitCategory.presentationGros}}{% if sacs > 1 %}s{% endif %} 
+                    {{ sacs }} {{produitCategory.presentationGros}}{% if sacs > 1 and produitCategory.presentationGros is not null and produitCategory.presentationGros != "pcs" %}s{% endif %} 
                     {% if kg > 0 %}
                       et {{ kg }} {{produitCategory.uniteVenteGros}}
                     {% endif %}

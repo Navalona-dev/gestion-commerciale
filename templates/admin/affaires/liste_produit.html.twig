@@ -112,11 +112,10 @@
                                 {% endif %}
                                 <td>
                                     <input type="hidden" name="qttRestant" value="{{ liste.stockRestant }}">
-                                {% set formattedStockRestant = liste.stockRestant|number_format(2, '.', '') %}
+                                    {% set formattedStockRestant = (liste.stockRestant - liste.qttReserver)|number_format(2, '.', '') %}
                                    
                                     {% if liste.qttReserver is not null %}
                                         <span class="stock-restant" data-stock="{{liste.stockRestant - liste.qttReserver}}">
-                                            
                                             {% if formattedStockRestant ends with '.00' %}
                                                 {{(liste.stockRestant - liste.qttReserver)|number_format(0, '.', '') }} 
                                                 {% if liste.presentationGros is not null %}
@@ -132,9 +131,8 @@
 
                                                 {{ sacs }} 
                                                 {% if liste.presentationGros is not null %}
-                                                    {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} {{liste.uniteVenteGros}}
+                                                    {{liste.presentationGros}}{% if sacs > 1 and liste.presentationGros != "pcs" %}s{% endif %} et {{ kg }} {{liste.uniteVenteGros}}
                                                 {% endif %}
-
                                             {% endif %}
                                         </span>
                                     {% else %}
@@ -143,7 +141,7 @@
                                             {% if formattedStockRestant ends with '.00' %}
                                                 {{liste.stockRestant|number_format(0, '.', '') }}
                                                 {% if liste.presentationGros is not null %}
-                                                    {{liste.presentationGros}}{% if liste.stockRestant|number_format(0, '.', '') > 1 %}s{% endif %}
+                                                    {{liste.presentationGros}}{% if liste.stockRestant|number_format(0, '.', '') > 1 and liste.presentationGros != "pcs" %}s{% endif %}
                                                 {% endif %}
                                             {% else %}
                                                 {% set stockRestant = liste.stockRestant|number_format(2,'.','') %}
@@ -155,7 +153,7 @@
 
                                                 {{ sacs }} 
                                                 {% if liste.presentationGros is not null %}
-                                                    {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} {{liste.uniteVenteGros}}
+                                                    {{liste.presentationGros}}{% if sacs > 1 and liste.presentationGros != "pcs" %}s{% endif %} et {{ kg }} {{liste.uniteVenteGros}}
                                                 {% endif %}
 
                                             {% endif %}
@@ -164,39 +162,39 @@
 
                                 </td>
                                 <td>
-                                    {% set formattedQttReserver = liste.qttReserver|number_format(2, '.', '') %}
+                                    {#{% set formattedQttReserver = liste.qttReserver|number_format(2, '.', '') %}
 
                                     {% if liste.qttReserver is null or liste .qttReserver == 0 %}
                                         0 {{liste.presentationGros}}
                                     {% else %}
-
                                         {% if formattedQttReserver ends with '.00' %}
-                                                {{liste.qttReserver|number_format(0, '.', '') }} 
+                                            {{liste.qttReserver|number_format(0, '.', '') }} 
+                                            {% if liste.presentationGros is not null %}
+                                                {{liste.presentationGros}}{% if liste.qttReserver|number_format(0, '.', '') > 1 %}s{% endif %}
+                                            {% endif %}
+                                        {% else %}
+                                            {% set qttReserver = formattedQttReserver %}
+                                            {% set volumeGros = liste.volumeGros %}
+
+                                            {% set sacs = (qttReserver|round(0, 'floor')) %}
+                                            {% set decimalPart = qttReserver - sacs %}
+                                            {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
+                                            {% if (kg - kg|round(0, 'floor')) < 0.1 %}
+                                                {% set kg = kg|round(0) %}
+                                            {% else %}
+                                                {% set kg = kg|number_format(2, '.', ',') %}
+                                            {% endif %}
+                                            {% if sacs > 0 %}
+                                                    {{ sacs }} 
                                                 {% if liste.presentationGros is not null %}
-                                                    {{liste.presentationGros}}{% if liste.qttReserver|number_format(0, '.', '') > 1 %}s{% endif %}
+                                                    {{liste.presentationGros}}{% if sacs > 1 and liste.presentationGros != "pcs" %}s{% endif %} et {{ kg }} {{liste.uniteVenteGros}}
                                                 {% endif %}
                                             {% else %}
-                                                {% set qttReserver = liste.qttReserver|number_format(2,'.','') %}
-                                                {% set volumeGros = liste.volumeGros %}
-
-                                                {% set sacs = (qttReserver|round(0, 'floor')) %}
-                                                {% set decimalPart = qttReserver - sacs %}
-                                                {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
-                                                {% if (kg - kg|round(0, 'floor')) < 0.1 %}
-                                                    {% set kg = kg|round(0) %}
-                                                {% else %}
-                                                    {% set kg = kg|number_format(2, '.', ',') %}
-                                                {% endif %}
-                                                {% if sacs > 0 %}
-                                                        {{ sacs }} 
-                                                    {% if liste.presentationGros is not null %}
-                                                        {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} {{liste.uniteVenteGros}}
-                                                    {% endif %}
-                                                {% else %}
-                                                    {{ kg }} {{liste.uniteVenteGros}}
-                                                {% endif %}
+                                                {{ kg }} {{liste.uniteVenteGros}}
                                             {% endif %}
-                                    {% endif %}
+                                        {% endif %}
+                                    {% endif %}#}
+                                    {{liste.qttReserver}} {{liste.presentationGros}}
                                 </td>
                                 <td> 
                                     <select name="typeVente" id="typeVente" class="form-control">
@@ -221,54 +219,21 @@
                                         {'name': 'cL', 'label': 'cL', 'divider': 100},
                                         {'name': 'mL', 'label': 'mL', 'divider': 1000},
                                     ],
-                                    'L': [
-                                        {'name': 'dL', 'label': 'dL', 'divider': 10},
-                                        {'name': 'cL', 'label': 'cL', 'divider': 100},
-                                        {'name': 'mL', 'label': 'mL', 'divider': 1000},
+                                    'pcs': [
                                     ],
-                                    'PCS': [
-                                    ],
-                                    'CP': [
-                                    ],
-                                    'KG': [
-                                        {'name': 'hg', 'label': 'hg', 'divider': 10},
-                                        {'name': 'dag', 'label': 'dag', 'divider': 100},
-                                        {'name': 'g', 'label': 'g', 'divider': 1000},
-                                        {'name': 'dg', 'label': 'dg', 'divider': 10000},
-                                        {'name': 'cg', 'label': 'cg', 'divider': 100000},
-                                        {'name': 'mg', 'label': 'mg', 'divider': 1000000}
-                                    ],
-                                    'Kg': [
-                                        {'name': 'hg', 'label': 'hg', 'divider': 10},
-                                        {'name': 'dag', 'label': 'dag', 'divider': 100},
-                                        {'name': 'g', 'label': 'g', 'divider': 1000},
-                                        {'name': 'dg', 'label': 'dg', 'divider': 10000},
-                                        {'name': 'cg', 'label': 'cg', 'divider': 100000},
-                                        {'name': 'mg', 'label': 'mg', 'divider': 1000000}
-                                    ],
-                                    'FLC': [
-                                        
-                                    ],
-                                    'ML': [
-                                        
-                                    ],
-                                    'Ml': [
-                                        
+                                    'unite': [
                                     ],
                                     'ml': [
                                         
                                     ],
-                                    'PLAQUETTE': [
+                                    'sachet': [
+                                        
                                     ],
-                                    'PLAQUETTEs': [
+                                    'cp': [
+                                        
                                     ],
-                                    'Plaquette': [
-                                    ],
-                                    'Plaquettes': [
-                                    ],
-                                    'plaquette': [
-                                    ],
-                                    'plaquettes': [
+                                    'g': [
+                                        
                                     ],
                                 } %}
                                  <td class="quantity"> 

@@ -17,7 +17,7 @@
                 {% set formattedQtt = liste.qtt|number_format(2, '.', '') %}
                 {% if formattedQtt ends with '.00' %}
                     {{ liste.qtt|number_format(0, '.', '') }} 
-                    {{liste.produitCategorie.presentationGros}}{% if liste.qtt|number_format(0, '.', '') > 1 %}s{% endif %}
+                    {{liste.produitCategorie.presentationGros}}{% if liste.qtt|number_format(0, '.', '') > 1 and liste.produitCategorie.presentationGros is not null and liste.produitCategorie.presentationGros != "pcs" %}s{% endif %}
                 {% else %}
                     {% set qtt = liste.qtt|number_format(2,'.','') %}
                     {% set volumeGros = liste.produitCategorie.volumeGros %}
@@ -30,7 +30,7 @@
                     {% else %}
                         {% set kg = kg|number_format(2, '.', ',') %}
                     {% endif %}
-                    {{ sacs }} {{liste.produitCategorie.presentationGros}}{% if sacs > 1 %}s{% endif %} 
+                    {{ sacs }} {{liste.produitCategorie.presentationGros}}{% if sacs > 1 and liste.produitCategorie.presentationGros is not null and liste.produitCategorie.presentationGros != "pcs" %}s{% endif %} 
                     {% if kg > 0 %}
                         et {{ kg }} {{liste.produitCategorie.uniteVenteGros}}
                       {% endif %}
@@ -41,7 +41,7 @@
                 {% set formattedQttRestant = liste.qttRestant|number_format(2, '.', '') %}
                 {% if formattedQttRestant ends with '.00' %}
                     {{ liste.qttRestant|number_format(0, '.', '') }} 
-                    {{liste.produitCategorie.presentationGros}}{% if liste.qttRestant|number_format(0, '.', '') > 1 %}s{% endif %}
+                    {{liste.produitCategorie.presentationGros}}{% if liste.qttRestant|number_format(0, '.', '') > 1 and liste.produitCategorie.presentationGros is not null and liste.produitCategorie.presentationGros != "pcs" %}s{% endif %}
                 {% else %}
                     {% set qtt = liste.qttRestant|number_format(2,'.','') %}
                     {% set volumeGros = liste.produitCategorie.volumeGros %}
@@ -54,7 +54,7 @@
                     {% else %}
                         {% set kg = kg|number_format(2, '.', ',') %}
                     {% endif %}
-                    {{ sacs }} {{liste.produitCategorie.presentationGros}}{% if sacs > 1 %}s{% endif %} 
+                    {{ sacs }} {{liste.produitCategorie.presentationGros}}{% if sacs > 1 and liste.produitCategorie.presentationGros is not null and liste.produitCategorie.presentationGros != "pcs" %}s{% endif %} 
                     {% if kg > 0 %}
                         et {{ kg }} {{liste.produitCategorie.uniteVenteGros}}
                       {% endif %}
