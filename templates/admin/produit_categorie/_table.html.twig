@@ -47,7 +47,8 @@
                 {% set formattedStockRestant = liste.stockRestant|number_format(2, '.', '') %}
                 {% if formattedStockRestant ends with '.00' %}
                     {{ liste.stockRestant|number_format(0, '.', '') }} 
-                    {{liste.presentationGros}}{% if liste.stockRestant|number_format(0, '.', '') > 1 %}s{% endif %}
+                    {% if liste.presentationGros != "" and liste.presentationGros is not null %}
+                        {{presentationVente[liste.presentationGros]}}{% endif %}{% if liste.stockRestant|number_format(0, '.', '') > 1 %}s{% endif %}
                 {% else %}
                     {% set stockRestant = liste.stockRestant|number_format(2,'.','') %}
                     {% set volumeGros = liste.volumeGros %}
@@ -61,7 +62,8 @@
                       {% set kg = kg|number_format(2, '.', ',') %}
                     {% endif %}
 
-                    {{ sacs }} {{liste.presentationGros}}{% if sacs > 1 %}s{% endif %} 
+                    {{ sacs }} {% if liste.presentationGros != "" and liste.presentationGros is not null %}
+                        {{presentationVente[liste.presentationGros]}}{% endif %}{% if sacs > 1 %}s{% endif %} 
                     {% if kg > 0 %}
                     et {{ kg }}  {{liste.uniteVenteGros}}
                     {% endif %}
