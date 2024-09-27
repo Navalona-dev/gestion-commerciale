@@ -27,18 +27,29 @@
       <div class="col-lg-12">
         {#{% include 'admin/tab/_nav_tab_produit.html.twig' %}#}
 
-        {% set totalStock = 0 %}
-        {% for liste in listes %}
-          {% set totalStock = totalStock + liste.qtt %}
-        {% endfor %}
-
           <div class="row mb-5">
             <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
               <div class="card p-3 card-quantity shadow text-black-50">
                 <h4 class="fw-bold quantity-title">Quantités</h4>
                 <p class="d-flex justify-content-center mt-3 quantity-count"> 
                   <span class="py-1 px-3">
-                    {{totalStock}} {{produitCategory.presentationGros}}
+                    {% set totalQtt = totalQtt|number_format(2,'.','') %}
+                  {% set volumeGros = produitCategory.volumeGros %}
+
+                  {% set sacs = (totalQtt|round(0, 'floor')) %}
+                  {% set decimalPart = totalQtt - sacs %}
+                  {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
+
+                  {% if (kg - kg|round(0, 'floor')) < 0.1 %}
+                      {% set kg = kg|round(0) %}
+                  {% else %}
+                      {% set kg = kg|number_format(2, '.', ',') %}
+                  {% endif %}
+
+                  {{ sacs }} {{produitCategory.presentationGros}}{% if sacs > 1 %}s{% endif %} 
+                  {% if kg > 0 %}
+                  et {{ kg }} {{produitCategory.uniteVenteGros}}
+                  {% endif %}
                   </span>  
                 </p>
               </div>
@@ -152,7 +163,7 @@
           <div class="card-body px-3 pb-3 px-lg-5 pb-lg-5">
             <table class="table table-striped" id="liste-table-stock" style="width: 100%;">
               <thead>
-                    {% include 'admin/stock/_table.html.twig' with { 'type': 'thead', 'totalStock': totalStock, 'quantity': quantity,'qttVendu': qttVendu  } %}
+                    {% include 'admin/stock/_table.html.twig' with { 'type': 'thead', 'totalQtt': totalQtt, 'quantity': quantity,'qttVendu': qttVendu  } %}
               </thead>
               <tbody>
                 {% if listes|length > 0 %}

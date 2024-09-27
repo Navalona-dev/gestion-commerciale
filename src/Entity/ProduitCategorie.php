@@ -17,7 +17,7 @@ class ProduitCategorie
         'sac' => 'Sac',
         'flacon' => 'Flacon',
         'granule' => 'Granule',
-        'sht' => 'SHT',
+        'pcs' => 'PCS',
         'pippette' => 'Pippette',
         'spray' => 'Spray',
         'bloc' => 'Bloc',
@@ -29,16 +29,22 @@ class ProduitCategorie
         'unite' => 'Unité',
         'l' => 'L',
         'kg' => 'Kg',
-        'flc' => 'FLC',
-        'pcs' => 'PCS'
+        'ml' => 'Ml',
+        'pcs' => 'PCS',
+        'sachet' => 'Sachet',
+        'cp' => 'CP',
+        'g' => 'g'
     ];
 
     const uniteVenteDetails = [
         'unite' => 'Unité',
         'l' => 'L',
         'kg' => 'Kg',
-        'flc' => 'FLC',
-        'pcs' => 'PCS'
+        'ml' => 'Ml',
+        'pcs' => 'PCS',
+        'sachet' => 'Sachet',
+        'cp' => 'Cp',
+        'g' => 'g'
     ];
 
     #[ORM\Id]

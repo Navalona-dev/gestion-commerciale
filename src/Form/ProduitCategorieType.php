@@ -70,9 +70,31 @@ class ProduitCategorieType extends AbstractType
             ->add('stockRestant', TextType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off',
+                    //'readonly' => true
+                ],
+                'required' => false,
+            ])
+
+            ->add('presentationDetail', ChoiceType::class, [
+                'choices' => array_flip(ProduitCategorie::presentationVente),
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3 chosen-select',
                     'autocomplete' => 'off'
                 ],
-                'required' => false
+                'required' => false,
+                'placeholder' => 'Selectionner une présentation'
+
+            ])
+            ->add('presentationGros', ChoiceType::class, [
+                'choices' => array_flip(ProduitCategorie::presentationVente),
+                'attr' => [
+                    'class' => 'form-control form-control-md mb-3 chosen-select',
+                    'autocomplete' => 'off'
+                ],
+                'required' => true,
+                'placeholder' => 'Selectionner une présentation'
+
             ])
             
             ->add('uniteVenteGros', ChoiceType::class, [
@@ -81,7 +103,8 @@ class ProduitCategorieType extends AbstractType
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3 chosen-select'
                 ],
-                'required' => false
+                'required' => true,
+                'placeholder' => 'Selectionner une unité'
             ])
             ->add('uniteVenteDetail', ChoiceType::class, [
                 'choices' => array_flip(ProduitCategorie::uniteVenteDetails),
@@ -89,7 +112,9 @@ class ProduitCategorieType extends AbstractType
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3 chosen-select'
                 ],
-                'required' => false
+                'required' => true,
+                'placeholder' => 'Selectionner une unité'
+
             ])
             ->add('prixVenteGros', TextType::class, [
                 'attr' => [
@@ -103,7 +128,7 @@ class ProduitCategorieType extends AbstractType
                     'class' => 'form-control form-control-md mb-3',
                     'autocomplete' => 'off'
                 ],
-                'required' => false
+                'required' => true
             ])
             ->add('volumeDetail', NumberType::class, [
                 'attr' => [
@@ -119,20 +144,7 @@ class ProduitCategorieType extends AbstractType
                 ],
                 'required' => false
             ])
-            ->add('presentationDetail', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control form-control-md mb-3',
-                    'autocomplete' => 'off'
-                ],
-                'required' => false
-            ])
-            ->add('presentationGros', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control form-control-md mb-3',
-                    'autocomplete' => 'off'
-                ],
-                'required' => false
-            ])
+            
             ->add('prixTTC', TextType::class, [
                 'attr' => [
                     'class' => 'form-control form-control-md mb-3',

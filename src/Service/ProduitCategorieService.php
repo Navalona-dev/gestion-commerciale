@@ -97,7 +97,7 @@ class ProduitCategorieService
                     $newCategorie = new Categorie();
                     $newCategorie->setNom('Autre');
                     $newCategorie->setDateCreation(new \DateTime());
-                    $newCategorie->setApplication($this->application);
+                    $newCategorie->setApplication($application);
                     $this->entityManager->persist($newCategorie);
                     $produitCategorie->setCategorie($newCategorie);
                 } else {
@@ -114,7 +114,7 @@ class ProduitCategorieService
                     $newType = new ProduitType();
                     $newType->setNom('Autre');
                     $newType->setDateCreation(new \DateTime());
-                    $newType->setApplication($this->application);
+                    $newType->setApplication($application);
                     $this->entityManager->persist($newType);
                     $produitCategorie->setType($newType);
                 } else {

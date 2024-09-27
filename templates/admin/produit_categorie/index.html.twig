@@ -36,10 +36,12 @@
                     {% include 'admin/produit_categorie/_table.html.twig' with { 'type': 'thead' } %}
               </thead>
               <tbody>
+              {% set presentationVente = constant('App\\Entity\\ProduitCategorie::presentationVente') %}
+
                 {% if listes|length > 0 %}
 
                   {% for liste in listes %}
-                      {% include 'admin/produit_categorie/_table.html.twig' with { 'type': 'tbody', 'liste': liste } %}
+                      {% include 'admin/produit_categorie/_table.html.twig' with { 'type': 'tbody', 'liste': liste, 'presentationVente': presentationVente } %}
                   {% endfor %}
                 
                 {% else %}

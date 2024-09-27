@@ -116,19 +116,25 @@ class UpdateProduitCategorieType extends AbstractType
                 ],
                 'required' => false
             ])
-            ->add('presentationDetail', TextType::class, [
+            ->add('presentationDetail', ChoiceType::class, [
+                'choices' => array_flip(ProduitCategorie::presentationVente),
                 'attr' => [
-                    'class' => 'form-control form-control-md mb-3',
+                    'class' => 'form-control form-control-md mb-3 chosen-select',
                     'autocomplete' => 'off'
                 ],
-                'required' => false
+                'required' => false,
+                'placeholder' => 'Selectionner une présentation'
+
             ])
-            ->add('presentationGros', TextType::class, [
+            ->add('presentationGros', ChoiceType::class, [
+                'choices' => array_flip(ProduitCategorie::presentationVente),
                 'attr' => [
-                    'class' => 'form-control form-control-md mb-3',
+                    'class' => 'form-control form-control-md mb-3 chosen-select',
                     'autocomplete' => 'off'
                 ],
-                'required' => false
+                'required' => true,
+                'placeholder' => 'Selectionner une présentation'
+
             ])
             ->add('prixTTC', TextType::class, [
                 'attr' => [

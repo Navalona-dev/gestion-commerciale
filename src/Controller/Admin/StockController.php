@@ -124,7 +124,8 @@ class StockController extends AbstractController
             $data['exception'] = "";
             $data["html"] = $this->renderView('admin/stock/new.html.twig', [
                 'form' => $form->createView(),
-                'idProduit' => $produitCategorieId
+                'idProduit' => $produitCategorieId,
+                'produitCategorie' => $produitCategorie
             ]);
             
             return new JsonResponse($data);
@@ -243,6 +244,15 @@ class StockController extends AbstractController
             if ($stocks == false) {
                 $stocks = [];
             }
+            $totalQtt = 0;
+            $tabQtt = [];
+            foreach($stocks as $stock) {
+                $qtt = $stock->getQtt();
+                $totalQtt += $qtt;
+                $tabQtt[] = $qtt;
+            }
+
+            //dd($tabQtt);
 
             $products = $productRepo->getQttByProduitAndTypeVente('paye', 'commande', $produitCategorie->getReference());
             
@@ -270,7 +280,8 @@ class StockController extends AbstractController
                 'id' => $produitCategorie->getId(),
                 'produitCategory' => $produitCategorie,
                 //'qttVendu' => ($allQtt != false ? $allQtt['qttVendu'] : 0)
-                'qttVendu' => $totalQttVendu
+                'qttVendu' => $totalQttVendu,
+                'totalQtt' => $totalQtt
             ]);
 
             $data['idProduit'];

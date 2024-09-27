@@ -10,7 +10,7 @@
         {% elseif type == "tbody" %}
         <tr id="tbody_stock" class="text-nowrap">
             <td>
-                <a href="#" onclick="return openModalUpdateStock({{liste.id}}, {{liste.qtt}}, {{totalStock}}, {{quantity}}, {{qttVendu}})" class="mx-1"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return openModalUpdateStock({{liste.id}}, {{liste.qtt}}, {{totalQtt}}, {{quantity}}, {{qttVendu}})" class="mx-1"><i class="bi bi-pencil-fill"></i></a>
                 <a href="#" onclick="return deleteStock({{liste.id}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>
             </td>
             <td> 
@@ -25,8 +25,15 @@
                     {% set sacs = (qtt|round(0, 'floor')) %}
                     {% set decimalPart = qtt - sacs %}
                     {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
-
-                    {{ sacs }} {{liste.produitCategorie.presentationGros}}{% if sacs > 1 %}s{% endif %} et {{ kg }} kg
+                    {% if (kg - kg|round(0, 'floor')) < 0.1 %}
+                        {% set kg = kg|round(0) %}
+                    {% else %}
+                        {% set kg = kg|number_format(2, '.', ',') %}
+                    {% endif %}
+                    {{ sacs }} {{liste.produitCategorie.presentationGros}}{% if sacs > 1 %}s{% endif %} 
+                    {% if kg > 0 %}
+                        et {{ kg }} {{liste.produitCategorie.uniteVenteGros}}
+                      {% endif %}
 
                 {% endif %}
             </td>
@@ -104,13 +111,13 @@
         }
     }
 
-    function openModalUpdateStock(id = null, oldQtt = null, totalStock = 0, quantity = 0, qttVendu = 0) {
+    function openModalUpdateStock(id = null, oldQtt = null, totalQtt = 0, quantity = 0, qttVendu = 0) {
         var anchorName = document.location.hash.substring(1);
         //qttVendu
         $.ajax({
                 url: '/admin/stock/edit/'+id,
                 type: 'POST',
-                data: {id: id, oldQtt: oldQtt,totalStock: totalStock, quantity: quantity, qttVendu: qttVendu},
+                data: {id: id, oldQtt: oldQtt,totalQtt: totalQtt, quantity: quantity, qttVendu: qttVendu},
                 success: function (response) {
                     if (response.html != "") {
                         $("#blocModalStockEmpty").empty();
