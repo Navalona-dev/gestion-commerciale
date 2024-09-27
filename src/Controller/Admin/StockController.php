@@ -193,6 +193,7 @@ class StockController extends AbstractController
                 'id' => $stock->getId(),
                 'oldQtt' => $stock->getQtt(),
                 'totalStock' => $totalStock,
+                'produitCategorie' => $produitCategorie,
                 'qttVendu' => $qttVendu,
                 'quantity' => $quantity,
                 'idProduit' => $idProduit,
@@ -254,7 +255,9 @@ class StockController extends AbstractController
 
             //dd($tabQtt);
 
-            $products = $productRepo->getQttByProduitAndTypeVente('paye', 'commande', $produitCategorie->getReference());
+            $paiement = ['paye', 'enecheance'];
+
+            $products = $productRepo->getQttByProduitAndTypeVente($paiement, 'commande', $produitCategorie->getReference());
             
             $totalQttVendu = 0;
 

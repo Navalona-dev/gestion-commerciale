@@ -44,32 +44,10 @@
             <td style="text-align: left !important;"> {{liste.nom}} </td>
             <td> {{liste.reference}} </td>
             <td>
-                {% set formattedStockRestant = liste.stockRestant|number_format(2, '.', '') %}
-                {% if formattedStockRestant ends with '.00' %}
-                    {{ liste.stockRestant|number_format(0, '.', '') }} 
-                    {% if liste.presentationGros != "" and liste.presentationGros is not null %}
-                        {{presentationVente[liste.presentationGros]}}{% endif %}{% if liste.stockRestant|number_format(0, '.', '') > 1 and liste.presentationGros is not null and liste.presentationGros != "pcs" %}s{% endif %}
-                {% else %}
-                    {% set stockRestant = liste.stockRestant|number_format(2,'.','') %}
-                    {% set volumeGros = liste.volumeGros %}
-
-                    {% set sacs = (stockRestant|round(0, 'floor')) %}
-                    {% set decimalPart = stockRestant - sacs %}
-                    {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
-                    {% if (kg - kg|round(0, 'floor')) < 0.1 %}
-                      {% set kg = kg|round(0) %}
-                    {% else %}
-                      {% set kg = kg|number_format(2, '.', ',') %}
-                    {% endif %}
-
-                    {{ sacs }} 
-                    {% if liste.presentationGros != "" and liste.presentationGros is not null %}
-                        {{presentationVente[liste.presentationGros]}}{% endif %}{% if sacs > 1 and liste.presentationGros is not null and liste.presentationGros != "pcs" %}s{% endif %} 
-                    {% if kg > 0 %}
-                    et {{ kg }}  {{liste.uniteVenteGros}}
-                    {% endif %}
-
-                {% endif %}
+                {% set sacs = liste.stockRestant|round(0, 'floor') %}
+                {% set decimal = liste.stockRestant - sacs %}
+                {% set unite = decimal * liste.volumeGros %}
+                {{sacs}} {{liste.presentationGros}} {% if unite > 0 %} et {{unite|number_format(2,'.','')}} {{liste.uniteVenteGros}} {% endif %}
 
             </td>
             <td>

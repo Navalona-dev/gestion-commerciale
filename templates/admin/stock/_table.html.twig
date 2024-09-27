@@ -14,52 +14,16 @@
                 <a href="#" onclick="return deleteStock({{liste.id}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>
             </td>
             <td> 
-                {% set formattedQtt = liste.qtt|number_format(2, '.', '') %}
-                {% if formattedQtt ends with '.00' %}
-                    {{ liste.qtt|number_format(0, '.', '') }} 
-                    {{liste.produitCategorie.presentationGros}}{% if liste.qtt|number_format(0, '.', '') > 1 and liste.produitCategorie.presentationGros is not null and liste.produitCategorie.presentationGros != "pcs" %}s{% endif %}
-                {% else %}
-                    {% set qtt = liste.qtt|number_format(2,'.','') %}
-                    {% set volumeGros = liste.produitCategorie.volumeGros %}
-
-                    {% set sacs = (qtt|round(0, 'floor')) %}
-                    {% set decimalPart = qtt - sacs %}
-                    {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
-                    {% if (kg - kg|round(0, 'floor')) < 0.1 %}
-                        {% set kg = kg|round(0) %}
-                    {% else %}
-                        {% set kg = kg|number_format(2, '.', ',') %}
-                    {% endif %}
-                    {{ sacs }} {{liste.produitCategorie.presentationGros}}{% if sacs > 1 and liste.produitCategorie.presentationGros is not null and liste.produitCategorie.presentationGros != "pcs" %}s{% endif %} 
-                    {% if kg > 0 %}
-                        et {{ kg }} {{liste.produitCategorie.uniteVenteGros}}
-                      {% endif %}
-
-                {% endif %}
+                {% set sacs = liste.qtt|round(0, 'floor') %}
+                {% set decimal = liste.qtt - sacs %}
+                {% set unite = decimal * liste.produitCategorie.volumeGros %}
+                {{sacs}} {{liste.produitCategorie.presentationGros}} {% if unite > 0 %} et {{unite|number_format(2,'.','')}} {{liste.produitCategorie.uniteVenteGros}} {% endif %}
             </td>
             <td> 
-                {% set formattedQttRestant = liste.qttRestant|number_format(2, '.', '') %}
-                {% if formattedQttRestant ends with '.00' %}
-                    {{ liste.qttRestant|number_format(0, '.', '') }} 
-                    {{liste.produitCategorie.presentationGros}}{% if liste.qttRestant|number_format(0, '.', '') > 1 and liste.produitCategorie.presentationGros is not null and liste.produitCategorie.presentationGros != "pcs" %}s{% endif %}
-                {% else %}
-                    {% set qtt = liste.qttRestant|number_format(2,'.','') %}
-                    {% set volumeGros = liste.produitCategorie.volumeGros %}
-
-                    {% set sacs = (qtt|round(0, 'floor')) %}
-                    {% set decimalPart = qtt - sacs %}
-                    {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
-                    {% if (kg - kg|round(0, 'floor')) < 0.1 %}
-                        {% set kg = kg|round(0) %}
-                    {% else %}
-                        {% set kg = kg|number_format(2, '.', ',') %}
-                    {% endif %}
-                    {{ sacs }} {{liste.produitCategorie.presentationGros}}{% if sacs > 1 and liste.produitCategorie.presentationGros is not null and liste.produitCategorie.presentationGros != "pcs" %}s{% endif %} 
-                    {% if kg > 0 %}
-                        et {{ kg }} {{liste.produitCategorie.uniteVenteGros}}
-                      {% endif %}
-
-                {% endif %}
+                {% set sacs = liste.qttRestant|round(0, 'floor') %}
+                {% set decimal = liste.qttRestant - sacs %}
+                {% set unite = decimal * liste.produitCategorie.volumeGros %}
+                {{sacs}} {{liste.produitCategorie.presentationGros}} {% if unite > 0 %} et {{unite|number_format(2,'.','')}} {{liste.produitCategorie.uniteVenteGros}} {% endif %}
             </td>
             <td> {{liste.dateCreation|date('d-m-Y')}} </td>
             <td>

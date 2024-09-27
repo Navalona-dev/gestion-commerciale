@@ -7,11 +7,23 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <span class="volume-gros" data-volume="{{produitCategorie.volumeGros}}"></span>
+                <span class="presentation-gros" data-presentation="{{produitCategorie.presentationGros}}"></span>
+                <span class="unite-gros" data-unite="{{produitCategorie.uniteVenteGros}}"></span>
+
                 {{ form_start(form, {'attr': {'id': 'updateStock', 'action': path('stocks_edit', {'stock': id}) }}) }}
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Quantité</label>
                         {{ form_widget(form.qtt) }}
+                        <span class="text-success text-qtt-stock"></span>
                     </div>  
+                    {% if produitCategorie.volumeGros > 1 %}
+                        <div class="form-group mb-3">
+                            <label for="" class="mb-2">Qtt en plus</label>
+                            <input type="text" name="qtt-plus-stock-update" id="qtt-plus-stock-update" class="form-control form-control-md" readonly>
+                            <span class="text-success text-qtt-plus"></span>
+                        </div>
+                    {% endif %}
                       <input type="hidden" name="oldQtt" value = "{{oldQtt}}" />
                       <div class="form-group mb-3">
                         <label for="" class="mb-2">Date de peremption</label>
@@ -97,4 +109,101 @@
             });
         });
     });
+</script>
+
+
+<script>
+    $(document).ready(function() {
+        var qttStock = $('#stock_qtt');
+        var volumeGros = $('.volume-gros').data('volume');
+        var presentationGros = $('.presentation-gros').data('presentation');
+        var uniteVenteGros = $('.unite-gros').data('unite');
+
+        $('#qtt-plus-stock-update').on('click', function() {
+            if(qttStock.val() === "") {
+                var message = 'Veuillez d\'abord compléter le champ quantité';
+                toastrNotification('error', message);
+            } else {
+                $(this).removeAttr('readonly');
+            }
+        })
+
+        $('#stock_qtt').on('input', function() {
+            var initialQttStock = parseFloat(qttStock.val());
+            // Enregistrer la valeur dans la session (si vous avez une fonction pour cela)
+            sessionStorage.setItem('initialQttStock', initialQttStock);
+        })
+
+        var typingTimer; // Timer variable
+        var doneTypingInterval = 500; // Délai de 500ms
+
+        $('#qtt-plus-stock-update').on('input', function() {
+            clearTimeout(typingTimer); // Effacer le timer précédent
+            var inputField = $(this);
+
+            typingTimer = setTimeout(function() {
+                // Convertir les valeurs en nombres
+                var qttPlusValue = parseFloat(inputField.val());
+                var volumeGrosValue = parseFloat(volumeGros);
+
+                // Si le champ de quantité est vide
+                if (inputField.val().trim() === "") {
+                    // Réinitialiser les affichages et le stock
+                    $('.text-qtt-plus').text('');
+                    $('.text-qtt-stock').text('');
+                    qttStock.val(sessionStorage.getItem('initialQttStock'));
+                    return;
+                } else {
+                    // Vérifier si qttPlusValue est inférieur à volumeGrosValue
+                    if (qttPlusValue >= volumeGrosValue) {
+                        inputField.css('background-color', '#fc8b8b');
+                        inputField.val("");
+                        var message = 'La quantité plus ne doit pas être supérieure ou égale au volume de gros' + volumeGrosValue;
+                        toastrNotification('error', message);
+                    } else {
+                        inputField.css('background-color', '#fff');
+
+                        // Calculer qttPlusFinal et arrondir à deux décimales
+                        var qttPlusFinal = parseFloat((qttPlusValue / volumeGrosValue));
+
+                        // Obtenir et convertir le stock restant
+                        var stockRestantValue = parseFloat(sessionStorage.getItem('initialQttStock')); // Défaut à 0 si la valeur est vide
+
+                        // Ajouter qttPlusFinal au stock restant
+                        var stockRestantValueFinale = parseFloat((stockRestantValue + qttPlusFinal));
+
+                        // Mettre à jour les textes
+                        var textQttPlus = qttPlusFinal + ' ' + presentationGros + '(' + qttPlusValue + uniteVenteGros + ')';
+                        $('.text-qtt-plus').text(textQttPlus);
+
+                        var stockRestantText = stockRestantValue + ' ' + presentationGros + ' et ' + qttPlusValue + ' ' + uniteVenteGros;
+                        $('.text-qtt-stock').text(stockRestantText);
+
+                        qttStock.val(stockRestantValueFinale);
+                    }
+                }
+
+                
+            }, doneTypingInterval); // Délai d'attente avant d'exécuter la fonction
+        });
+
+        // Optionnel : Vous pouvez également gérer le cas où l'utilisateur efface le champ
+        $('#qtt-plus-stock-update').on('keydown', function() {
+            clearTimeout(typingTimer); // Effacez le timer si l'utilisateur commence à taper
+        });
+
+        // Fonction Toastr notification pour éviter les répétitions de code
+        function toastrNotification(type, message) {
+            setTimeout(function () {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 2000
+                };
+                toastr[type](message);
+            }, 800);
+        }
+        
+    })
 </script>
