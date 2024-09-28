@@ -32,7 +32,6 @@ function addPanier(elt, idAffaire, volumeGros = null, volumeDetail = null) {
         qttTotal =  parseFloat(qttRestant);
     } 
 
-    console.log(typeVente, qtt, qttTotal,volumeGros, volumeDetail );
     if (qttRestant != undefined && qttRestant != "") {
         if (parseFloat(qtt) > parseFloat(qttTotal)) {
             $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');
@@ -104,13 +103,6 @@ function updateLigneProduct(elt, idProduit, idAffaire) {
         success: function (response) {
             $("#tr_produit_"+idProduit).replaceWith(response);
 
-            /*$("#financiereProductTab tbody").sortable({
-
-            }).disableSelection();
-
-            $("#financiereProductTab tbody").sortable("destroy");*/
-            
-
             $(".loadBody").css('display', 'none');
 
             if (anchorName) {
@@ -150,25 +142,32 @@ function editLigneProduct(elt, idAffaire, idProduit, position = null, typeVente 
             qttTotal =  parseFloat(qttRestant);
         }
 
-        console.log(typeVente, qtt, qttTotal,volumeGros, volumeDetail );
         //return false;
-        if (parseFloat(qtt) > (parseFloat(qttTotal))) {
-           
-            $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');
-            setTimeout(function () {
-                toastr.options = {
-                    closeButton: true,
-                    progressBar: true,
-                    showMethod: 'slideDown',
-                    timeOut: 3000
-                };
 
-                toastr.error("Votre qtt ne doit pas superieur au stock !!");
-
-            }, 800);
-            return false;
+        var message = '';
+        if(typeVente == 'detail' && parseFloat(qtt) >= parseFloat(qttTotal)) {
+            message = 'Votre qtt ne doit pas dépasser le volume de gros !!';
+        } else if(typeVente == 'gros' && parseFloat(qtt) > parseFloat(qttTotal)) {
+            message = 'Votre qtt ne doit pas dépasser le stock !!';
         }
+        
+            if ((typeVente == 'detail' && parseFloat(qtt) >= parseFloat(qttTotal)) || (typeVente == 'gros' && parseFloat(qtt) > parseFloat(qttTotal))) {
 
+                // Alerte si la condition est remplie
+                $(elt).parent('td').parent('tr').css('background-color', '#fc8b8b');
+                setTimeout(function () {
+                    toastr.options = {
+                        closeButton: true,
+                        progressBar: true,
+                        showMethod: 'slideDown',
+                        timeOut: 3000
+                    };
+
+                    toastr.error(message);
+
+                }, 800);
+                return false;
+            }
     }
    
     $(".loadBody").css('display', 'block');

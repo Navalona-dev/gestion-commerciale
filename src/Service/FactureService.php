@@ -191,8 +191,6 @@ class FactureService
             foreach ($stocks as $keyS => $stk) {
                 $qttRestant = $stk->getQttRestant();
 
-                $qtt = number_format($qtt,2,'.','');
-
                 $newQttRestant = $qttRestant - $qtt; 
 
                 if ($qtt <= 0) {
@@ -239,28 +237,33 @@ class FactureService
             }
  
             //gerer la qtt reserver
-            $qttReserver = $produitCategorie->getQttReserver();
             $qttProduct = $product->getQtt();
-            if($product->getTypeVente() == "detail" && $volumeGros > 0) {
+            $qttReserverGros = $produitCategorie->getQttReserverGros();
+            $qttReserverDetail = $produitCategorie->getQttReserverDetail();
+            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            if($product->getTypeVente() == "gros") {
+                if($produitCategorie->getQttReserverGros() != null) {
+                    $produitCategorie->setQttReserverGros($qttReserverGros - $qttProduct);
+                }
+            }
+
+            if($product->getTypeVente() == "detail") {
+                if($produitCategorie->getQttReserverDetail() != null) {
+                    $produitCategorie->setQttReserverDetail($qttReserverDetail - $qttProduct);
+                }
+
                 $qttProduct = $qttProduct / $volumeGros;
             }
 
-            $qttReserver = number_format($qttReserver,2,'.','');
-            $qttProduct = number_format($qttProduct,2,'.','');
-            
-            if($produitCategorie->getQttReserver()) {
-                $produitCategorie->setQttReserver($qttReserver - $qttProduct);
-            } else {
-                $produitCategorie->setQttReserver($qttProduct);
-            }
 
-            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
-            if($produitCategorie->getQttReserverCommander()){
+            if($produitCategorie->getQttReserverCommander() != null){
                 $produitCategorie->setQttReserverCommander($qttReserverCommander + $qttProduct);
             }else {
                 $produitCategorie->setQttReserverCommander($qttProduct);
             }
+
             $this->entityManager->persist($produitCategorie);
+
             $tabQtt[] = $qttProduct; 
             $tabQttReserver[] = $produitCategorie->getQttReserver();
             $tabQttRestantProduitCategorie[] = number_format($produitCategorie->getStockRestant(),2,'.','');
@@ -279,6 +282,33 @@ class FactureService
                 $tabProduitCategorie[$produitCategorieId] = $produitCategorie;
             }
 
+            //gerer le qtt reserver commander par sac et unité
+            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            $sacs = floor($qttReserverCommander);
+
+            // Unité (partie décimale)
+            $decimal = $qttReserverCommander - $sacs;
+            $unite = $decimal * $produitCategorie->getVolumeGros();
+            $messageUnite = '';
+            if($unite > 0) {
+                $unite = number_format($unite,2,'.','');
+                $messageUnite = ' et ' . $unite . ' ' . $produitCategorie->getUniteVenteGros();
+            }
+            $qttReserverCommanderFinal = $sacs . ' ' . $produitCategorie->getPresentationGros() . $messageUnite;
+
+            //gerer le stock restant par sac et unité
+            $stockRestant = $produitCategorie->getStockRestant();
+            $sacsStock = floor($stockRestant);
+
+            // Unité (partie décimale)
+            $decimalStock = $stockRestant - $sacsStock;
+            $uniteStock = $decimalStock * $produitCategorie->getVolumeGros();
+            if($uniteStock > 0) {
+                $uniteStock = number_format($uniteStock,2,'.','');
+                $messageUnite = ' et ' . $uniteStock . ' ' . $produitCategorie->getUniteVenteGros();
+            }
+            $stockRestantFinal = $sacsStock . ' ' . $produitCategorie->getPresentationGros() . $messageUnite;
+
             //Log product
             $data["produit"] = $produitCategorie->getNom();
             $data["dateReception"] = null;
@@ -289,10 +319,8 @@ class FactureService
             $data["destination"] = $affaire->getCompte()->getNom();
             $data["action"] = "Commande";
             $data["type"] = "Commande";
-            //$data["qtt"] = $qttProduct;
-            //$data["stockRestant"] = ((!is_null($produitCategorie->getQttReserverCommander()) && $produitCategorie->getQttReserverCommander() > 0) ? $produitCategorie->getStockRestant() - $produitCategorie->getQttReserverCommander() : $produitCategorie->getStockRestant()) ;
-            $data["qtt"] = $produitCategorie->getQttReserverCommander() ." " . $produitCategorie->getPresentationGros();
-            $data["stockRestant"] = $produitCategorie->getStockRestant() . " " . $produitCategorie->getPresentationGros();
+            $data["stockRestant"] = $stockRestantFinal;
+            $data["qtt"] = $qttReserverCommanderFinal;
             $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
             $data["typeSource"] = "Point de vente";
             $data["typeDestination"] = "Client";
@@ -304,7 +332,7 @@ class FactureService
 
         }
 
-        //dd($montantHt);
+        //dd($produitCategorie->getQttReserverGros(), $produitCategorie->getQttReserverDetail(), $qttReserverCommanderFinal, $stockRestant, $stockRestantFinal);
 
         //dd($datePeremptionProductArray);
         //créer un nouveau produit dans l'application choisi lors de commande
@@ -527,6 +555,33 @@ class FactureService
             }
             $this->persist($produitCategorie);
 
+            //gerer le qtt reserver commander par sac et unité
+            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            $sacs = floor($qttReserverCommander);
+
+            // Unité (partie décimale)
+            $decimal = $qttReserverCommander - $sacs;
+            $unite = $decimal * $produitCategorie->getVolumeGros();
+            $messageUnite = '';
+            if($unite > 0) {
+                $unite = number_format($unite,2,'.','');
+                $messageUnite = ' et ' . $unite . ' ' . $produitCategorie->getUniteVenteGros();
+            }
+            $qttReserverCommanderFinal = $sacs . ' ' . $produitCategorie->getPresentationGros() . $messageUnite;
+
+            //gerer le stock restant par sac et unité
+            $stockRestant = $produitCategorie->getStockRestant();
+            $sacsStock = floor($stockRestant);
+
+            // Unité (partie décimale)
+            $decimalStock = $stockRestant - $sacsStock;
+            $uniteStock = $decimalStock * $produitCategorie->getVolumeGros();
+            if($uniteStock > 0) {
+                $uniteStock = number_format($uniteStock,2,'.','');
+                $messageUnite = ' et ' . $uniteStock . ' ' . $produitCategorie->getUniteVenteGros();
+            }
+            $stockRestantFinal = $sacsStock . ' ' . $produitCategorie->getPresentationGros() . $messageUnite;
+
              //Log product
              $data["produit"] = $produitCategorie->getNom();
              $data["dateReception"] = (new \DateTime())->format("d-m-Y h:i:s");
@@ -537,9 +592,8 @@ class FactureService
              $data["destination"] = $affaire->getCompte()->getNom();
              $data["action"] = "Commande";
              $data["type"] = "Commande";
-             //$data["qtt"] = $qtt;
-             $data["qtt"] = $produitCategorie->getQttReserverCommander() ." " . $produitCategorie->getPresentationGros();
-             $data["stockRestant"] = $produitCategorie->getStockRestant() . " " . $produitCategorie->getPresentationGros();
+             $data["qtt"] = $qttReserverCommanderFinal;
+             $data["stockRestant"] = $stockRestantFinal;
              $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
              $data["typeSource"] = "Point de vente";
              $data["typeDestination"] = "Client";
@@ -551,7 +605,7 @@ class FactureService
  
 
         }
-        //dd($produitCategorie->getStockRestant());
+        //dd($produitCategorie->getStockRestant(), $qttReserverCommanderFinal, $stockRestantFinal);
         
         $this->persist($facture);
         $affaire->setDateAnnule($date);

@@ -113,88 +113,40 @@
                                 <td>
                                     <input type="hidden" name="qttRestant" value="{{ liste.stockRestant }}">
                                     {% set formattedStockRestant = (liste.stockRestant - liste.qttReserver)|number_format(2, '.', '') %}
-                                   
-                                    {% if liste.qttReserver is not null %}
+                                    {% set qttReserverDetail = liste.qttReserverDetail / liste.volumeGros %}
+
+                                    {% if liste.qttReserverGros is not null and liste.qttReserverDetail is not null %}
                                         <span class="stock-restant" data-stock="{{liste.stockRestant - liste.qttReserver}}">
-                                            {% if formattedStockRestant ends with '.00' %}
-                                                {{(liste.stockRestant - liste.qttReserver)|number_format(0, '.', '') }} 
-                                                {% if liste.presentationGros is not null %}
-                                                    {{liste.presentationGros}}{% if (liste.stockRestant - liste.qttReserver)|number_format(0, '.', '') > 1 %}s{% endif %}
-                                                {% endif %}
-                                            {% else %}
-                                                {% set stockRestant = (liste.stockRestant - liste.qttReserver)|number_format(2,'.','') %}
-                                                {% set volumeGros = liste.volumeGros %}
-
-                                                {% set sacs = (stockRestant|round(0, 'floor')) %}
-                                                {% set decimalPart = stockRestant - sacs %}
-                                                {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
-
-                                                {{ sacs }} 
-                                                {% if liste.presentationGros is not null %}
-                                                    {{liste.presentationGros}}{% if sacs > 1 and liste.presentationGros != "pcs" %}s{% endif %} et {{ kg }} {{liste.uniteVenteGros}}
-                                                {% endif %}
-                                            {% endif %}
+                                            {% set stockRestant = liste.stockRestant - liste.qttReserverGros - qttReserverDetail %} 
+                                            {% set sacs = stockRestant|round(0, 'floor') %}
+                                            {% set decimal = stockRestant - sacs %}
+                                            {% set unite = decimal * liste.volumeGros %}
+                                            {{sacs}} {{liste.presentationGros}} {% if unite > 0 %} et {{unite|number_format(2,'.','')}} {{liste.uniteVenteGros}} {% endif %}
                                         </span>
+                                            {% elseif liste.qttReserverGros is not null and (liste.qttReserverDetail is null or liste.qttReserverDetail == 0) %}
+                                                {{liste.stockRestant - liste.qttReserverGros}} {{liste.presentationGros}}
+                                            {% elseif liste.qttReserverDetail is not null and (liste.qttReserverGros is null or liste.qttReserverGros == 0) %}
+                                            {% set stockRestant = liste.stockRestant - liste.qttReserverGros - qttReserverDetail %} 
+                                            {% set sacs = stockRestant|round(0, 'floor') %}
+                                            {% set decimal = stockRestant - sacs %}
+                                            {% set unite = decimal * liste.volumeGros %}
+                                            {{sacs}} {{liste.presentationGros}} {% if unite > 0 %} et {{unite|number_format(2,'.','')}} {{liste.uniteVenteGros}} {% endif %}
                                     {% else %}
                                         <span class="stock-restant" data-stock="{{nombreProduitPresentation}}">
-
-                                            {% if formattedStockRestant ends with '.00' %}
-                                                {{liste.stockRestant|number_format(0, '.', '') }}
-                                                {% if liste.presentationGros is not null %}
-                                                    {{liste.presentationGros}}{% if liste.stockRestant|number_format(0, '.', '') > 1 and liste.presentationGros != "pcs" %}s{% endif %}
-                                                {% endif %}
-                                            {% else %}
-                                                {% set stockRestant = liste.stockRestant|number_format(2,'.','') %}
-                                                {% set volumeGros = liste.volumeGros %}
-
-                                                {% set sacs = (stockRestant|round(0, 'floor')) %}
-                                                {% set decimalPart = stockRestant - sacs %}
-                                                {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
-
-                                                {{ sacs }} 
-                                                {% if liste.presentationGros is not null %}
-                                                    {{liste.presentationGros}}{% if sacs > 1 and liste.presentationGros != "pcs" %}s{% endif %} et {{ kg }} {{liste.uniteVenteGros}}
-                                                {% endif %}
-
-                                            {% endif %}
+                                            {{liste.stockRestant}} {{liste.presentationGros}}
                                         </span> 
                                     {% endif %}
 
                                 </td>
                                 <td>
-                                    {#{% set formattedQttReserver = liste.qttReserver|number_format(2, '.', '') %}
-
-                                    {% if liste.qttReserver is null or liste .qttReserver == 0 %}
-                                        0 {{liste.presentationGros}}
-                                    {% else %}
-                                        {% if formattedQttReserver ends with '.00' %}
-                                            {{liste.qttReserver|number_format(0, '.', '') }} 
-                                            {% if liste.presentationGros is not null %}
-                                                {{liste.presentationGros}}{% if liste.qttReserver|number_format(0, '.', '') > 1 %}s{% endif %}
-                                            {% endif %}
-                                        {% else %}
-                                            {% set qttReserver = formattedQttReserver %}
-                                            {% set volumeGros = liste.volumeGros %}
-
-                                            {% set sacs = (qttReserver|round(0, 'floor')) %}
-                                            {% set decimalPart = qttReserver - sacs %}
-                                            {% set kg = (decimalPart * volumeGros)|number_format(2, '.', ',') %} 
-                                            {% if (kg - kg|round(0, 'floor')) < 0.1 %}
-                                                {% set kg = kg|round(0) %}
-                                            {% else %}
-                                                {% set kg = kg|number_format(2, '.', ',') %}
-                                            {% endif %}
-                                            {% if sacs > 0 %}
-                                                    {{ sacs }} 
-                                                {% if liste.presentationGros is not null %}
-                                                    {{liste.presentationGros}}{% if sacs > 1 and liste.presentationGros != "pcs" %}s{% endif %} et {{ kg }} {{liste.uniteVenteGros}}
-                                                {% endif %}
-                                            {% else %}
-                                                {{ kg }} {{liste.uniteVenteGros}}
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endif %}#}
-                                    {{liste.qttReserver}} {{liste.presentationGros}}
+                                    {% if liste.qttReserverGros is not null and liste.qttReserverDetail is not null %}
+                                        {{liste.qttReserverGros}} {{liste.presentationGros}} et {{liste.qttReserverDetail}} {{liste.uniteVenteGros}}
+                                    {% elseif liste.qttReserverGros is not null and (liste.qttReserverDetail is null or liste.qttReserverDetail == 0 ) %}
+                                        {{liste.qttReserverGros}} {{liste.presentationGros}}    
+                                    {% elseif liste.qttReserverDetail is not null and (liste.qttReserverGros is null or liste.qttReserverGros == 0 ) %}
+                                        {{liste.qttReserverDetail}} {{liste.uniteVenteGros}}    
+                                    {% endif %}
+                                    
                                 </td>
                                 <td> 
                                     <select name="typeVente" id="typeVente" class="form-control">

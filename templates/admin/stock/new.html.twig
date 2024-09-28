@@ -162,16 +162,16 @@ $(document).ready(function() {
                         inputField.css('background-color', '#fff');
 
                         // Calculer qttPlusFinal et arrondir à deux décimales
-                        var qttPlusFinal = parseFloat((qttPlusValue / volumeGrosValue).toFixed(2));
+                        var qttPlusFinal = parseFloat((qttPlusValue / volumeGrosValue));
 
                         // Obtenir et convertir le stock restant
                         var stockRestantValue = parseFloat(sessionStorage.getItem('initialQttStock')); // Défaut à 0 si la valeur est vide
 
                         // Ajouter qttPlusFinal au stock restant
-                        var stockRestantValueFinale = parseFloat((stockRestantValue + qttPlusFinal).toFixed(2));
+                        var stockRestantValueFinale = parseFloat((stockRestantValue + qttPlusFinal));
 
                         // Mettre à jour les textes
-                        var textQttPlus = qttPlusFinal.toFixed(2) + ' ' + presentationGros + '(' + qttPlusValue + uniteVenteGros + ')';
+                        var textQttPlus = qttPlusFinal + ' ' + presentationGros + '(' + qttPlusValue + uniteVenteGros + ')';
                         $('.text-qtt-plus').text(textQttPlus);
 
                         var stockRestantText = stockRestantValue + ' ' + presentationGros + ' et ' + qttPlusValue + ' ' + uniteVenteGros;

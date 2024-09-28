@@ -139,11 +139,9 @@ class FactureEcheanceService
             $factureDetail->setUniteVenteGros($uniteVenteGros);
             $factureDetail->setPrixVenteDetail($prixVenteDetail);
             $factureDetail->setPrixVenteGros($prixVenteGros);
-
             $facture->addFactureDetail($factureDetail);
 
-            //obtenir le produitcategorie et la quantité
-            $qtt = number_format($qtt,2,'.','');
+            $this->persist($factureDetail);
 
             $produitCategorieId = $produitCategorie->getId();
             if (!isset($quantitesParCategorie[$produitCategorieId])) {
@@ -174,7 +172,7 @@ class FactureEcheanceService
             foreach ($stocks as $keyS => $stk) {
                 $qttRestant = $stk->getQttRestant();
 
-                $qtt = number_format($qtt,2,'.','');
+                //$qtt = number_format($qtt,2,'.','');
 
                 $newQttRestant = $qttRestant - $qtt; 
 
@@ -218,56 +216,85 @@ class FactureEcheanceService
 
             }
 
-             //gerer la qtt reserver
-             $qttReserver = $produitCategorie->getQttReserver();
-             $qttProduct = $product->getQtt();
-             if($product->getTypeVente() == "detail" && $volumeGros > 0) {
-                 $qttProduct = $qttProduct / $volumeGros;
-             }
-             $qttReserver = number_format($qttReserver,2,'.','');
-             $qttProduct = number_format($qttProduct,2,'.','');
-             
-             if($produitCategorie->getQttReserver()) {
-                 $produitCategorie->setQttReserver($qttReserver - $qttProduct);
-             }else {
-                 $produitCategorie->setQttReserver($qttProduct);
-             }
-
-
+            //gerer la qtt reserver
+            $qttProduct = $product->getQtt();
+            $qttReserverGros = $produitCategorie->getQttReserverGros();
+            $qttReserverDetail = $produitCategorie->getQttReserverDetail();
             $qttReserverCommander = $produitCategorie->getQttReserverCommander();
-            if($produitCategorie->getQttReserverCommander()) {
-                $produitCategorie->setQttReserverCommander($qttReserverCommander + $qttProduct);
-            } else {
-                $produitCategorie->setQttReserverCommander($qttProduct);
+            if($product->getTypeVente() == "gros") {
+                if($produitCategorie->getQttReserverGros() != null) {
+                    $produitCategorie->setQttReserverGros($qttReserverGros - $qttProduct);
+                }
+            }
+
+            if($product->getTypeVente() == "detail") {
+                if($produitCategorie->getQttReserverDetail() != null) {
+                    $produitCategorie->setQttReserverDetail($qttReserverDetail - $qttProduct);
+                }
+
+                $qttProduct = $qttProduct / $volumeGros;
             }
 
 
-            //dd($produitCategorie->getStockRestant(), $produitCategorie->getQttReserverCommander());
+            if($produitCategorie->getQttReserverCommander() != null){
+                $produitCategorie->setQttReserverCommander($qttReserverCommander + $qttProduct);
+            }else {
+                $produitCategorie->setQttReserverCommander($qttProduct);
+            }
 
-            $this->persist($factureDetail);
-               //Log product
-               $data["produit"] = $produitCategorie->getNom();
-               $data["dateReception"] = null;
-               $data["dateTransfert"] = null;
-               $data["dateSortie"] = (new \DateTime())->format("d-m-Y h:i:s");
-               $data["userDoAction"] = $user->getUserIdentifier();
-               $data["source"] = $this->application->getEntreprise();
-               $data["destination"] = $affaire->getCompte()->getNom();
-               $data["action"] = "Commande";
-               $data["type"] = "Commande";
-               $data["qtt"] = $produitCategorie->getQttReserverCommander() ." " . $produitCategorie->getPresentationGros();
-               //$data["stockRestant"] = ((!is_null($produitCategorie->getQttReserverCommander()) && $produitCategorie->getQttReserverCommander() > 0) ? $produitCategorie->getStockRestant() - $produitCategorie->getQttReserverCommander() : $produitCategorie->getStockRestant()) ;
-               $data["stockRestant"] = $produitCategorie->getStockRestant() . " " . $produitCategorie->getPresentationGros();
-               $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
-               $data["typeSource"] = "Point de vente";
-               $data["typeDestination"] = "Client";
-               $data["commande"] = $affaire->getNom();
-               $data["commandeId"] = $affaire->getId().'-echeance';
-               $data["sourceId"] =  $this->application->getId();
-               $data["destinationId"] = $affaire->getCompte()->getId();
-               $this->logService->addLog($request, "commande", $this->application->getId(), $produitCategorie->getReference(), $data);
+            $this->entityManager->persist($produitCategorie);
+
+            //gerer le qtt reserver commander par sac et unité
+            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            $sacs = floor($qttReserverCommander);
+
+            // Unité (partie décimale)
+            $decimal = $qttReserverCommander - $sacs;
+            $unite = $decimal * $produitCategorie->getVolumeGros();
+            $messageUnite = '';
+            if($unite > 0) {
+                $unite = number_format($unite,2,'.','');
+                $messageUnite = ' et ' . $unite . ' ' . $produitCategorie->getUniteVenteGros();
+            }
+            $qttReserverCommanderFinal = $sacs . ' ' . $produitCategorie->getPresentationGros() . $messageUnite;
+
+            //gerer le stock restant par sac et unité
+            $stockRestant = $produitCategorie->getStockRestant();
+            $sacsStock = floor($stockRestant);
+
+            // Unité (partie décimale)
+            $decimalStock = $stockRestant - $sacsStock;
+            $uniteStock = $decimalStock * $produitCategorie->getVolumeGros();
+            if($uniteStock > 0) {
+                $uniteStock = number_format($uniteStock,2,'.','');
+                $messageUnite = ' et ' . $uniteStock . ' ' . $produitCategorie->getUniteVenteGros();
+            }
+            $stockRestantFinal = $sacsStock . ' ' . $produitCategorie->getPresentationGros() . $messageUnite;
+
+            //Log product
+            $data["produit"] = $produitCategorie->getNom();
+            $data["dateReception"] = null;
+            $data["dateTransfert"] = null;
+            $data["dateSortie"] = (new \DateTime())->format("d-m-Y h:i:s");
+            $data["userDoAction"] = $user->getUserIdentifier();
+            $data["source"] = $this->application->getEntreprise();
+            $data["destination"] = $affaire->getCompte()->getNom();
+            $data["action"] = "Commande";
+            $data["type"] = "Commande";
+            $data["qtt"] = $qttReserverCommanderFinal;
+            $data["stockRestant"] = $stockRestantFinal;
+            $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
+            $data["typeSource"] = "Point de vente";
+            $data["typeDestination"] = "Client";
+            $data["commande"] = $affaire->getNom();
+            $data["commandeId"] = $affaire->getId().'-echeance';
+            $data["sourceId"] =  $this->application->getId();
+            $data["destinationId"] = $affaire->getCompte()->getId();
+            $this->logService->addLog($request, "commande", $this->application->getId(), $produitCategorie->getReference(), $data);
    
         }
+
+        //dd($produitCategorie->getQttReserverGros(), $produitCategorie->getQttReserverDetail(), $produitCategorie->getStockRestant());
 
         if($applicationRevendeur != null) {
             foreach($tabProduitCategorie as $keyProduct => $oldProduitCategorie) {
@@ -490,119 +517,6 @@ class FactureEcheanceService
             $tabQttReserver = [];
             $tabQttRestantProduitCategorie = [];
 
-            foreach($products as $key => $product) {
-               // Gestion stock
-                /*$produitCategorie = $product->getProduitCategorie();
-                $stockRestant = $produitCategorie->getStockRestant();
-                $volumeGros = $produitCategorie->getVolumeGros();
-                $stockEnKg = $stockRestant * $volumeGros; 
-                $qtt = $product->getQtt(); 
-                $stockEnKgReste = $stockEnKg - $qtt; 
-
-                if ($product->getTypeVente() == "gros") {
-                    $stockRestant = $stockRestant - $qtt;
-    
-                } else {
-                    $stockRestant = $stockEnKgReste / $volumeGros; 
-                }
-
-                 // Gérer le produit catégorie
-                if($affaire->getPaiement() == "paye") {
-                    if($product->getTypeVente() == "detail") {
-                        $qtt = $qtt / $volumeGros;
-                    }
-                }
-
-                $produitCategorie->setStockRestant($stockRestant);
-                $this->entityManager->persist($produitCategorie);
-                
-                // Gestion des notifications
-                $stockMin = $produitCategorie->getStockMin();
-                if ($stockRestant <= $stockMin) {
-                    $notification = new Notification();
-                    $message = 'Le stock du produit ' . '<strong>' . $produitCategorie->getNom() . '</strong>' . ' est presque épuisé, veuillez ajouter un ou plusieurs!!';
-                    $notification->setMessage($message)
-                                ->setDateCreation(new \DateTime())
-                                ->setApplication($this->application)
-                                ->setProduitCategorie($produitCategorie)
-                                ->setStockMin(true);
-                    $this->persist($notification);
-                }
-
-                // Gestion des stocks par date de péremption
-                $stocks = $this->entityManager->getRepository(Stock::class)->findByProductCategoryDatePeremption($produitCategorie);
-                foreach ($stocks as $keyS => $stk) {
-                    $qttRestant = $stk->getQttRestant();
-
-                    $qtt = number_format($qtt,2,'.','');
-
-                    $newQttRestant = $qttRestant - $qtt; 
-
-                    if ($qtt <= 0) {
-                        break;
-                    }
-
-                    if ($qttRestant >= $qtt) {
-                        $stk->setQttRestant($newQttRestant);
-                        $this->persist($stk);
-                        
-                        $datePeremptionProduct = new DatePeremptionProduct();
-                        $datePeremptionProduct->setProduct($product);
-                        $datePeremptionProduct->setStock($stk);
-                        if($stk->getDatePeremption() == null) {
-                            $datePeremptionProduct->setDatePeremption(null);
-                        } else {
-                            $datePeremptionProduct->setDatePeremption($stk->getDatePeremption()->getDate());
-                        }
-                        $datePeremptionProduct->setQttRetenue($qtt);
-                        $this->persist($datePeremptionProduct);
-
-                        $qtt = 0;
-                    } else {
-
-                        $datePeremptionProduct = new DatePeremptionProduct();
-                        $datePeremptionProduct->setProduct($product);
-                        $datePeremptionProduct->setStock($stk);
-                        if($stk->getDatePeremption() == null) {
-                            $datePeremptionProduct->setDatePeremption(null);
-                        } else {
-                            $datePeremptionProduct->setDatePeremption($stk->getDatePeremption()->getDate());
-                        }
-                        $datePeremptionProduct->setQttRetenue($qttRestant);
-                        $this->persist($datePeremptionProduct);
-
-                        $qtt -= $qttRestant;
-                        $stk->setQttRestant(0);
-                        $this->persist($stk);
-                    }
-
-                    $tabQttRestant[] = $stk->getQttRestant();
-                }
-
-                //gerer la qtt reserver
-                $qttReserver = $produitCategorie->getQttReserver();
-                $qttProduct = $product->getQtt();
-                if($product->getTypeVente() == "detail") {
-                    $qttProduct = $qttProduct / $volumeGros;
-                }
-                $qttReserver = number_format($qttReserver,2,'.','');
-                $qttProduct = number_format($qttProduct,2,'.','');
-                
-                $produitCategorie->setQttReserver($qttReserver - $qttProduct);
-                
-                $qttReserverCommander = $produitCategorie->getQttReserverCommander();
-                $produitCategorie->setQttReserverCommander($qttReserverCommander + $qttProduct);
-                
-                $this->entityManager->persist($produitCategorie);
-
-                $tabQtt[] = $qttProduct; 
-                $tabQttReserver[] = $produitCategorie->getQttReserver();
-                $tabQttRestantProduitCategorie[] = number_format($produitCategorie->getStockRestant(),2,'.','');
-                */
-            }
-            //dd($tabQtt, $tabQttReserver, $tabQttRestant, $tabQttRestantProduitCategorie);
-
-           
         }
 
         $facture->setReglement($reglement);

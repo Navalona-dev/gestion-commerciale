@@ -179,7 +179,7 @@ class ImportProduitController extends AbstractController
                             $produitCategorie->setReference($dataProduct[4] ?? null);
                             $produitCategorie->setPresentationGros($dataProduct[5] ?? null);
                             $produitCategorie->setUniteVenteGros($dataProduct[6] ?? null);
-                            $produitCategorie->setVolumeGros(floatval($dataProduct[7]) ?? 0.0);
+                            $produitCategorie->setVolumeGros(floatval($dataProduct[7] ?? 1.0));
                             $produitCategorie->setPrixAchat(floatval($dataProduct[8] ?? 0.0));
                             
                             $produitCategorie->setPrixVenteGros(floatval($dataProduct[9] ?? 0.0));

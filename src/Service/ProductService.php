@@ -105,32 +105,36 @@ class ProductService
         $this->entityManager->persist($product);
 
         $qttProduct = $product->getQtt();
-        $volumeGros = $instance->getVolumeGros();
-        if($product->getTypeVente() == "detail" && $volumeGros > 0) {
-            $qttProduct = $qttProduct / $volumeGros;
-        }
 
-        $qttReserver = $instance->getQttReserver();
-        if($qttReserver != null) {
-            $qttReserver = $qttReserver + $qttProduct;
+        $qttReserverGros = $instance->getQttReserverGros();
+        $qttReserverDetail = $instance->getQttReserverDetail();
+
+        if($qttReserverGros != null) {
+            $qttReserverGros = $qttReserverGros + $qttProduct;
         } else {
-            $qttReserver = $qttProduct;
+            $qttReserverGros = $qttProduct;
         }
 
-        $qttReserver = number_format($qttReserver,2,'.','');
+        if($qttReserverDetail != null) {
+            $qttReserverDetail = $qttReserverDetail + $qttProduct;
+        } else {
+            $qttReserverDetail = $qttProduct;
+        }
 
-        $instance->setQttReserver($qttReserver);
+        if($product->getTypeVente() == "gros") {
+            $instance->setQttReserverGros($qttReserverGros);
+        }elseif($product->getTypeVente() == "detail") {
+            $instance->setQttReserverDetail($qttReserverDetail);
+        }
 
         $this->entityManager->persist($instance);
-
-        //dd($instance->getQttReserver());
 
        $this->update();
         unset($instance);
         return $product;
     }
 
-    public function setQttReserver($product, $qtt, $isDeleteQttReserver = false) 
+    /*public function setQttReserver($product, $qtt, $isDeleteQttReserver = false) 
     {
         $qttReserver = $product->getProduitCategorie()->getQttReserver();
         
@@ -181,7 +185,67 @@ class ProductService
             $this->persist($product->getProduitCategorie());
         }
         
+    }*/
+
+    public function setQttReserver($product, $qtt, $isDeleteQttReserver = false) 
+    {
+        $qttReserverGros = $product->getProduitCategorie()->getQttReserverGros();
+        $qttReserverDetail = $product->getProduitCategorie()->getQttReserverDetail();
+        
+        if (!$isDeleteQttReserver) {
+            $oldQtt = $product->getQtt();
+            $product->setQtt(floatval($qtt));
+           
+            if (null != $qtt && "" != $qtt) {
+                $qtt = floatval($qtt);
+            }
+
+            $difference = 0;
+            $isAddInReserve = false;
+            if ($qtt < $oldQtt) {
+                $difference = $oldQtt - $qtt;
+                $isAddInReserve = false;
+            }
+            if ($qtt > $oldQtt) {
+                $difference = $qtt - $oldQtt;
+                $isAddInReserve = true;
+            }
+
+            if ($qtt == $oldQtt) { 
+                $isAddInReserve = null;
+            }
+           
+         
+            if (!is_null($isAddInReserve)) {
+                if($product->getTypeVente() == "gros") {
+                    $product->getProduitCategorie()->setQttReserverGros($qttReserverGros - $difference);
+                    if ($isAddInReserve) {
+                        $product->getProduitCategorie()->setQttReserverGros($qttReserverGros + $difference);
+                    } 
+                } elseif($product->getTypeVente() == "detail") {
+                    $product->getProduitCategorie()->setQttReserverDetail($qttReserverDetail - $difference);
+                    if ($isAddInReserve) {
+                        $product->getProduitCategorie()->setQttReserverDetail($qttReserverDetail + $difference);
+                    } 
+                }
+                
+            } 
+
+            
+        } else {
+
+            if($product->getTypeVente() == "gros") {
+                $product->getProduitCategorie()->setQttReserverGros($qttReserverGros - $qtt);
+            }elseif($product->getTypeVente() == "detail") {
+                $product->getProduitCategorie()->setQttReserverDetail($qttReserverDetail - $qtt);
+            }
+        }
+
+        $this->persist($product->getProduitCategorie());
+        //dd($product->getProduitCategorie()->getQttReserverGros(), $product->getProduitCategorie()->getQttReserverDetail());
+        
     }
+
     public function persist($entity)
     {
         $this->entityManager->persist($entity);

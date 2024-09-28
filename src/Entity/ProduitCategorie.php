@@ -168,6 +168,12 @@ class ProduitCategorie
     #[ORM\Column(nullable: true)]
     private ?float $qttReserverCommander = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $qttReserverDetail = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $qttReserverGros = null;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
@@ -675,6 +681,30 @@ class ProduitCategorie
     public function setQttReserverCommander(?float $qttReserverCommander): static
     {
         $this->qttReserverCommander = $qttReserverCommander;
+
+        return $this;
+    }
+
+    public function getQttReserverDetail(): ?float
+    {
+        return $this->qttReserverDetail;
+    }
+
+    public function setQttReserverDetail(?float $qttReserverDetail): static
+    {
+        $this->qttReserverDetail = $qttReserverDetail;
+
+        return $this;
+    }
+
+    public function getQttReserverGros(): ?float
+    {
+        return $this->qttReserverGros;
+    }
+
+    public function setQttReserverGros(?float $qttReserverGros): static
+    {
+        $this->qttReserverGros = $qttReserverGros;
 
         return $this;
     }
