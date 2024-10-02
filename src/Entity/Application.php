@@ -14,6 +14,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity(repositoryClass: ApplicationRepository::class)]
+#[Vich\Uploadable]
 class Application
 {
     #[ORM\Id]
@@ -107,10 +108,10 @@ class Application
     private Collection $factures;
 
     #[ORM\Column(nullable: true)]
-    private ?int $nif = null;
+    private ?string $nif = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $stat = null;
+    private ?string $stat = null;
 
     public function __construct()
     {
@@ -492,24 +493,24 @@ class Application
         return $this;
     }
 
-    public function getNif(): ?int
+    public function getNif(): ?string
     {
         return $this->nif;
     }
 
-    public function setNif(?int $nif): static
+    public function setNif(?string $nif): static
     {
         $this->nif = $nif;
 
         return $this;
     }
 
-    public function getStat(): ?int
+    public function getStat(): ?string
     {
         return $this->stat;
     }
 
-    public function setStat(?int $stat): static
+    public function setStat(?string $stat): static
     {
         $this->stat = $stat;
 
@@ -531,10 +532,15 @@ class Application
     public function setLogoFile(File $logoFile )
     {
         $this->logoFile = $logoFile;
+
+        if ($logoFile) {
+            // Cela force le recalcul de la date de mise à jour
+            $this->updatedAt = new \DateTimeImmutable();
+        }
     }
 
 
-    public function getLogoFile()
+    public function getLogoFile(): ?File
     {
         return $this->logoFile;
     }

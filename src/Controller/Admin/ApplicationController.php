@@ -154,7 +154,16 @@ class ApplicationController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
-                    $this->applicationService->update();
+                    try {
+                        $entity = $form->getData();
+                        $this->applicationService->persist($application);
+                        $this->applicationService->update();
+                        //dd($application->getLogoFile(), $application->getLogoName());
+                    } catch (\Exception $e) {
+                        // Log l'erreur ou affichez-la
+                            dd($e->getMessage());
+                    }
+                   
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
                 //$this->addFlash('success', 'Modification application "' . $application->getTitle() . '" avec succès.');

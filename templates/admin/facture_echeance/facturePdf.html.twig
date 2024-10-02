@@ -44,9 +44,9 @@
             <strong>
                 Facture / 
                 {% if facture.statut == "annule" %}
-                    FA-annulé/VSM/{{facture.numero}}-{{ facture.date|date('y') }}
+                    FAC/VSM/{{facture.numero}}-{{ facture.date|date('y') }}
                 {% elseif facture.statut == "regle" or facture.statut == "encours" %}
-                    FA-validé/VSM/{{facture.numero}}-{{ facture.date|date('y') }}
+                    FAC/VSM/{{facture.numero}}-{{ facture.date|date('y') }}
                 {% endif %}
             </strong>
         </p>

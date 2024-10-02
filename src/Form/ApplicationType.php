@@ -15,6 +15,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Entity\Categoryofapplication;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class ApplicationType extends AbstractType
 {
@@ -68,6 +69,30 @@ class ApplicationType extends AbstractType
                     'class' => 'form-control form-control-md mb-3',
                     'autocomplete' => 'off'
                 ),
+            ])
+            ->add('nif', TextType::class, [
+                'required' => false,
+                'attr' => array(
+                    'readonly' => false,
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
+                ),
+            ])
+            ->add('stat', TextType::class, [
+                'required' => false,
+                'attr' => array(
+                    'readonly' => false,
+                    'class' => 'form-control form-control-md mb-3',
+                    'autocomplete' => 'off'
+                ),
+            ])
+            ->add('logoFile', VichImageType::class, [
+                'download_uri' => false,
+                'required' => false,
+                'download_label' => 'Voir',
+                'image_uri' => false,
+                'allow_delete' => false,
+                'asset_helper' => true,
             ])
             ->add('isActive', CheckboxType::class, [
                 'label'    => 'Activé',

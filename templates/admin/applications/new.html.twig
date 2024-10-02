@@ -52,10 +52,36 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group mb-3">
-                        <label for="" class="mb-2">Activé</label>
-                        {{ form_widget(form.isActive) }}
-                    </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Nif  </label>
+                                <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.nif)}} </span>
+                                {{ form_widget(form.nif) }}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Stat</label>
+                                {{ form_widget(form.stat) }}
+                            </div>
+                        </div>
+                   </div>
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Logo  </label>
+                                <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.logoFile)}} </span>
+                                {{ form_widget(form.logoFile) }}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <div class="form-group mb-3">
+                                <label for="" class="mb-2">Activé</label>
+                                {{ form_widget(form.isActive) }}
+                            </div>
+                        </div>
+                   </div>
                         
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Ajouter application</button>
@@ -75,7 +101,7 @@
        $('#newApplication').on('submit', function (e) {
             e.preventDefault();
             let form = $(this);
-          
+            
             // Create an FormData object
             let formData = new FormData(form[0]);
           formData.append('isNew', false);
