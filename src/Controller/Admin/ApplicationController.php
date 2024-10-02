@@ -155,7 +155,6 @@ class ApplicationController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($request->isXmlHttpRequest()) {
                     try {
-                        $entity = $form->getData();
                         $this->applicationService->persist($application);
                         $this->applicationService->update();
                         //dd($application->getLogoFile(), $application->getLogoName());
