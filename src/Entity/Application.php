@@ -9,6 +9,10 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Exception\InvalidTypeException;
 use App\Exception\PropertyVideException;
 
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Doctrine\DBAL\Types\Types;
+
 #[ORM\Entity(repositoryClass: ApplicationRepository::class)]
 class Application
 {
@@ -49,6 +53,16 @@ class Application
 
     #[ORM\Column(nullable: true)]
     private ?bool $isActive = null;
+
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $logoName = null;
+
+    #[Vich\UploadableField(mapping:"application_logo", fileNameProperty:"logoName")]
+    public ?File $logoFile = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $updatedAt = null;
 
     /**
      * @var Collection<int, Product>
@@ -91,6 +105,12 @@ class Application
      */
     #[ORM\OneToMany(targetEntity: Facture::class, mappedBy: 'application')]
     private Collection $factures;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $nif = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $stat = null;
 
     public function __construct()
     {
@@ -468,6 +488,65 @@ class Application
                 $facture->setApplication(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNif(): ?int
+    {
+        return $this->nif;
+    }
+
+    public function setNif(?int $nif): static
+    {
+        $this->nif = $nif;
+
+        return $this;
+    }
+
+    public function getStat(): ?int
+    {
+        return $this->stat;
+    }
+
+    public function setStat(?int $stat): static
+    {
+        $this->stat = $stat;
+
+        return $this;
+    }
+
+    public function getLogoName(): ?string
+    {
+        return $this->logoName;
+    }
+
+    public function setLogoName(?string $logoName): self
+    {
+        $this->logoName = $logoName;
+
+        return $this;
+    }
+
+    public function setLogoFile(File $logoFile )
+    {
+        $this->logoFile = $logoFile;
+    }
+
+
+    public function getLogoFile()
+    {
+        return $this->logoFile;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

@@ -4,8 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    AVATAR_BASEPATH: '/uploads/avatar'
+    AVATAR_BASEPATH: '/uploads/avatar' 
     app.path.product_image: /uploads/product
+    app.path.application_logo: /uploads/logo
 services:
     App\Twig\FileExistsExtension:
         tags: ['twig.extension']
