@@ -223,6 +223,81 @@ class ProduitCategorieController extends AbstractController
         return new JsonResponse($data);
     }
 
+    #[Route('/add/categorie', name: '_add_categorie')]
+    public function addCategorie(Request $request)
+    {
+        $data = []; 
+    
+        try {
+            // Récupérez le nom envoyé via la requête AJAX
+            $nom = $request->request->get('nom'); 
+    
+            // Créez une nouvelle instance de categorie
+            $categorie = new Categorie();
+            
+            // Si vous avez un setter pour le nom dans categorie$categorie, utilisez-le
+            $categorie->setNom($nom); 
+            $categorie->setApplication($this->application);
+            $categorie->setDateCreation(new \DateTime());
+    
+            $this->entityManager->persist($categorie);
+            $this->entityManager->flush();
+
+            $data['id'] = $categorie->getId();
+    
+            return new JsonResponse($data);
+        } catch (PropertyVideException $PropertyVideException) {
+            $data['exception'] = $PropertyVideException->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
+            return new JsonResponse(['error' => 'Ce nom de catégorie existe déjà.'], 400);
+        } catch (\Exception $Exception) {
+            $data['exception'] = $Exception->getMessage();
+            return new JsonResponse($data);
+        }
+        
+        return new JsonResponse($data);
+    }
+
+    #[Route('/add/type', name: '_add_type')]
+    public function addType(Request $request)
+    {
+        $data = []; 
+    
+        try {
+            // Récupérez le nom envoyé via la requête AJAX
+            $nom = $request->request->get('nom'); 
+    
+            // Créez une nouvelle instance de type
+            $type = new ProduitType();
+            
+            // Si vous avez un setter pour le nom dans type, utilisez-le
+            $type->setNom($nom); 
+            $type->setApplication($this->application);
+            $type->setDateCreation(new \DateTime());
+    
+            $this->entityManager->persist($type);
+            $this->entityManager->flush();
+
+            $data['id'] = $type->getId();
+    
+            return new JsonResponse($data);
+        } catch (PropertyVideException $PropertyVideException) {
+            $data['exception'] = $PropertyVideException->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
+            return new JsonResponse(['error' => 'Ce nom de catégorie existe déjà.'], 400);
+        } catch (\Exception $Exception) {
+            $data['exception'] = $Exception->getMessage();
+            return new JsonResponse($data);
+        }
+        
+        return new JsonResponse($data);
+    }
+    
+
     #[Route('/inventaire/{produitCategorie}', name: '_inventaire')]
     public function inventaire(Request $request, ProduitCategorie $produitCategorie)
     {

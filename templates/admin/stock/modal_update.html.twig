@@ -10,17 +10,32 @@
                 <span class="volume-gros" data-volume="{{produitCategorie.volumeGros}}"></span>
                 <span class="presentation-gros" data-presentation="{{produitCategorie.presentationGros}}"></span>
                 <span class="unite-gros" data-unite="{{produitCategorie.uniteVenteGros}}"></span>
-
                 {{ form_start(form, {'attr': {'id': 'updateStock', 'action': path('stocks_edit', {'stock': id}) }}) }}
                     <div class="form-group mb-3">
-                        <label for="" class="mb-2">Quantité</label>
-                        {{ form_widget(form.qtt) }}
+                        <label for="" class="mb-2">Quantité ({{qttFinal}}) </label>
+                        <div class="row">
+                            <div class="col-10">
+                                {{ form_widget(form.qtt) }}
+                            </div>
+                            <div class="col-2">
+                                ({{sacs}})
+                            </div>
+                        </div>
+                         
                         <span class="text-success text-qtt-stock"></span>
                     </div>  
                     {% if produitCategorie.volumeGros > 1 %}
                         <div class="form-group mb-3">
                             <label for="" class="mb-2">Qtt en plus</label>
-                            <input type="text" name="qtt-plus-stock-update" id="qtt-plus-stock-update" class="form-control form-control-md" readonly>
+                            <div class="row">
+                                <div class="col-10">
+                                    <input type="text" name="qtt-plus-stock-update" id="qtt-plus-stock-update" class="form-control form-control-md" readonly>
+                                </div>
+                                <div class="col-2">
+                                    ({{unite}})
+                                </div>
+                            </div>
+                             
                             <span class="text-success text-qtt-plus"></span>
                         </div>
                     {% endif %}

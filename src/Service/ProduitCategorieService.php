@@ -164,8 +164,8 @@ class ProduitCategorieService
 
             $stock = new Stock();
 
-            if($produitCategorie->getQtt()) {
-                $qtt = $produitCategorie->getQtt();
+            if($produitCategorie->getStockRestant()) {
+                $qtt = $produitCategorie->getStockRestant();
             } else {
                 $qtt = 0;
             }
