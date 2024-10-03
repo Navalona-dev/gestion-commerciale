@@ -19,12 +19,14 @@
 
         </a>
     </li>
+    {% if app_authorization.isUserGrantedPrivilege('super_admin') or app_authorization.isUserAllowedOnFeature('import_produit') %}
     <li class="nav-item">
         <a class="nav-link tab-import-produit" href="#tab-import-produit" onClick="return showTabImportProduit()">
             <span>Import</span>
             <i class="fs-2 bi bi-file-earmark-arrow-up" title="Import"></i>
         </a>
     </li>
+    {% endif %}
    
 </ul>
 

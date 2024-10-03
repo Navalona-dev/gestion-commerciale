@@ -42,8 +42,7 @@
             <i class="bi bi-search"></i>
           </a>
         </li>
-
-
+     
         <li class="nav-item dropdown pe-3">
           <a class="nav-link nav-profile d-flex align-items-center pe-0 dropdown-title" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-ui-checks-grid"></i>
@@ -55,8 +54,8 @@
             <div id="no-results" class="text-center" style="display:none;">Aucune application trouvée</div>
     
             <div class="row" id="app-list">
-              {% if applications %}
-                {% for application in applications %}
+              {% if applications and app.user.applications|length >0 %}
+                {% for application in app.user.applications %}
                   <div class="col-4  mb-3">
                       <a class="app-content" href="{{ path('applications_change_appli', {'id': application.id}) }}?uri={{ app.request.uri }}">
                         <div class="d-flex justify-content-center">
@@ -70,27 +69,19 @@
             </div>
           </ul>
         </li>
-
         <li class="nav-item dropdown pe-3">
           <a class="nav-link nav-profile d-flex align-items-center pe-0 dropdown-title" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-laptop"></i>
           </a>
           <ul class="p-4 dropdown-menu dropdown-menu-end dropdown-menu-arrow profile list-app custom-dropdown-width">
             <div class="row">
+              {% if app_authorization.isUserGrantedPrivilege('super_admin') %}
               <div class="col-4 mb-3">
                 <a href="#tab-application" onclick="return showTabApplication()" class="work-post-content">
                   <div class="d-flex justify-content-center">
                     <i class="bi bi-app icons"></i>
                   </div>
                   <p class="text-center"><small>Applications</small></p>
-                </a>
-              </div>
-              <div class="col-4 mb-3">
-                <a href="#tab-categorie" onclick="return showTabCategorie()" class="work-post-content">
-                  <div class="d-flex justify-content-center">
-                    <i class="bi bi-tags icons"></i>
-                  </div>
-                  <p class="text-center"><small>Catégories</small></p>
                 </a>
               </div>
               <div class="col-4 mb-3">
@@ -101,22 +92,7 @@
                   <p class="text-center"><small>Catégorie permission</small></p>
                 </a>
               </div>
-              <div class="col-4 mb-3">
-                <a href="#tab-compte_1" onclick="return showTabCompte(1)" class="work-post-content">
-                  <div class="d-flex justify-content-center">
-                    <i class="bi bi-people icons"></i>
-                  </div>
-                  <p class="text-center"><small>Clients</small></p>
-                </a>
-              </div>
-              <div class="col-4 mb-3">
-                <a href="#tab-compte_2" onclick="return showTabCompte(2)" class="work-post-content">
-                  <div class="d-flex justify-content-center">
-                    <i class="bi bi-people icons"></i>
-                  </div>
-                  <p class="text-center"><small>Fournisseurs</small></p>
-                </a>
-              </div>
+             
               <div class="col-4 mb-3">
                 <a class="work-post-content" href="#tab-import-produit" onclick="return showTabImportProduit()">
                   <div class="d-flex justify-content-center">
@@ -141,6 +117,41 @@
                   <p class="text-center"><small>Privilèges</small></p>
                 </a>
               </div>
+               <div class="col-4 mb-3">
+                <a href="#tab-utilisateur" onclick="return showTabUtilisateur()" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-person icons"></i>
+                  </div>
+                  <p class="text-center"><small>Utilisateurs</small></p>
+                </a>
+              </div>
+              {% endif %}
+
+               <div class="col-4 mb-3">
+                <a href="#tab-compte_1" onclick="return showTabCompte(1)" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-people icons"></i>
+                  </div>
+                  <p class="text-center"><small>Clients</small></p>
+                </a>
+              </div>
+              <div class="col-4 mb-3">
+                <a href="#tab-compte_2" onclick="return showTabCompte(2)" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-people icons"></i>
+                  </div>
+                  <p class="text-center"><small>Fournisseurs</small></p>
+                </a>
+              </div>
+
+              <div class="col-4 mb-3">
+                <a href="#tab-categorie" onclick="return showTabCategorie()" class="work-post-content">
+                  <div class="d-flex justify-content-center">
+                    <i class="bi bi-tags icons"></i>
+                  </div>
+                  <p class="text-center"><small>Catégories</small></p>
+                </a>
+              </div>
               <div class="col-4 mb-3">
                 <a href="#tab-produit-categorie" onclick="return showTabProduitCategorie()"  class="work-post-content">
                   <div class="d-flex justify-content-center">
@@ -149,14 +160,7 @@
                   <p class="text-center"><small>Produits</small></p>
                 </a>
               </div>
-              <div class="col-4 mb-3">
-                <a href="#tab-utilisateur" onclick="return showTabUtilisateur()" class="work-post-content">
-                  <div class="d-flex justify-content-center">
-                    <i class="bi bi-person icons"></i>
-                  </div>
-                  <p class="text-center"><small>Utilisateurs</small></p>
-                </a>
-              </div>
+             
               <div class="col-4 mb-3">
                 <a class="work-post-content" href="#tab-produit-type" onclick="return showTabProduitType()">
                   <div class="d-flex justify-content-center">

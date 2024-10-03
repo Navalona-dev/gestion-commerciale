@@ -2,6 +2,9 @@ twig:
     file_name_pattern: '*.twig'
     form_themes:
         - 'bootstrap_5_layout.html.twig'
+    globals:
+        locales: '%app.locales%'
+        app_authorization: '@App\Service\AuthorizationExtension'
 
 when@test:
     twig:
