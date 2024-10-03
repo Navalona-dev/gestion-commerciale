@@ -139,7 +139,7 @@ class ProduitCategorieService
                 $produitCategorie->setReference($reference);
             }
 
-            $produitCategorie->setQtt($produitCategorie->getStockRestant());
+            //$produitCategorie->setQtt($produitCategorie->getStockRestant());
             $produitCategorie->setApplication($application);
 
             $produitCategorie->setDateCreation($date);
