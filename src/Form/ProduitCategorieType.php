@@ -183,7 +183,8 @@ class ProduitCategorieType extends AbstractType
                     ->setParameter('application', $application)
                     ->orderBy('c.nom', 'ASC');
                 },
-                'required' => false
+                'required' => false,
+                'placeholder' => "Selectionner une catégorie"
             ])
             ->add('type', EntityType::class, [
                 'class' => ProduitType::class,
@@ -197,7 +198,9 @@ class ProduitCategorieType extends AbstractType
                     ->setParameter('application', $application)
                     ->orderBy('c.nom', 'ASC');
                 },
-                'required' => false
+                'required' => false,
+                'placeholder' => "Selectionner un type"
+
             ])
             ->add('productImages', CollectionType::class, [
                 'entry_type' => ProduitImageType::class,

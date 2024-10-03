@@ -179,6 +179,20 @@ class StockController extends AbstractController
         $produitCategorie = $stock->getProduitCategorie();
         $idProduit = $produitCategorie->getId();
 
+        //gerer le qtt  par sac et unité
+        $qtt = $stock->getQtt();
+        $sacs = floor($qtt);
+
+        // Unité (partie décimale)
+        $decimal = $qtt - $sacs;
+        $unite = $decimal * $produitCategorie->getVolumeGros();
+        $messageUnite = '';
+        if($unite > 0) {
+            $unite = number_format($unite,2,'.','');
+            $messageUnite = ' et ' . $unite . ' ' . $produitCategorie->getUniteVenteGros();
+        }
+        $qttFinal = $sacs . ' ' . $produitCategorie->getPresentationGros() . $messageUnite;
+
         $session->set('stock', $stock->getId());
         $data = [];
         try {
@@ -213,7 +227,10 @@ class StockController extends AbstractController
                 'qttVendu' => $qttVendu,
                 'quantity' => $quantity,
                 'idProduit' => $idProduit,
-                'qttRestant' => ($produitCategorie->getStockRestant() != null ? $produitCategorie->getStockRestant() : 0)
+                'qttRestant' => ($produitCategorie->getStockRestant() != null ? $produitCategorie->getStockRestant() : 0),
+                'qttFinal' => $qttFinal,
+                'sacs' => $sacs . $produitCategorie->getPresentationGros(),
+                'unite' => $unite . $produitCategorie->getUniteVenteGros()
             ]);
 
 
