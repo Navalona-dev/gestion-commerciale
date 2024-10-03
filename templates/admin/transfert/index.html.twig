@@ -30,6 +30,11 @@
             </button>
           </div>
           <div class="card-body px-3 pb-3 px-lg-5 pb-lg-5">
+            <span class="id-produit-annule" data-produit="{{produitCategory.id}}"></span>
+            <div class="alert alert-danger error">
+              Cette quantité a été déjà vendu, vous ne pouvez plus annuler le transfert
+            </div>
+
             <table class="table table-striped" id="liste-table-transfert" style="width: 100%;">
               <thead>
                     {% include 'admin/transfert/_table.html.twig' with { 'type': 'thead' } %}
@@ -114,7 +119,8 @@
         $('#tab-echeance').css('display','none');
         $('#tab-produit-image').removeClass('active');
         $('#tab-stock').removeClass('active');
-      
+        $('.error').hide();
+
     });
 
     function transfertProduit(id = null) {

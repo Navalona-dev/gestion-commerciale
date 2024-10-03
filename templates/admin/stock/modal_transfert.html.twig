@@ -1,8 +1,8 @@
-<div class="modal fade" id="modalTransfertProduitCategorie" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="modalTransfertStock" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content p-4">
             <div class="modal-header modal-header-center">
-                <h5 class="modal-title fw-bold" id="modalNewLabel">Transferer produit</h5>
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Transferer stock</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -13,9 +13,9 @@
                     Stocks restant : {{produitCategorie.stockRestant}} <br>
                     Quantité restant : {{stock.qttRestant}} <br>
                 </div>
-                <span class="id-produit" data-produit="{{produitCategorie.id}}"></span>
                 
-                {{ form_start(form, {'attr': {'id': 'transfertProduitCategorie', 'action': path('stocks_transfert', {'stock': id}) }}) }}
+                {{ form_start(form, {'attr': {'id': 'transfertStock', 'action': path('stocks_transfert', {'stock': stock.id}) }}) }}
+                    <span class="id-produit-categorie" data-produit="{{produitCategorie.id}}"></span>
                     
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Application</label>
@@ -47,48 +47,50 @@
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 <script>
 
-    $(document).ready(function () {
-        var idProduit = $('.id-produit').data('produit');
-        $('.error').hide();
+$(document).ready(function () {
+    $('.error').hide();
 
-       $('#transfertProduitCategorie').on('submit', function (e) {
-            e.preventDefault();
-            let form = $(this);
-            $.ajax({
-                url: form.attr('action'),
-                type: form.attr('method'),
-                data: form.serialize(),
-                success: function (response) {
-                    if (response && response.status === 'error') {
-                        $('#modalTransfertProduitCategorie').modal('show');
-                        $('.error').show();
-                    } else {
-                        $('#modalTransfertProduitCategorie').modal('hide');
-                        var nextLink = $('#sidebar').find('li#produit-categorie').find('a');
-                        //
-                        setTimeout(function () {
-                            toastr.options = {
-                                closeButton: true,
-                                progressBar: true,
-                                showMethod: 'slideDown',
-                                timeOut: 2000
-                            };
-                            toastr.success('Avec succèss', 'Transfert effectuée');
+    $('#transfertStock').on('submit', function (e) {
+        e.preventDefault();
 
-                            //$(".loadBody").css('display', 'none');
+        let form = $(this);
+        // Récupérer dynamiquement l'id du produit à chaque soumission du formulaire
+        const idProduit = $('.id-produit-categorie').data('produit');
 
-                        }, 800);
+        $.ajax({
+            url: form.attr('action'),
+            type: form.attr('method'),
+            data: form.serialize(),
+            success: function (response) {
+                if (response && response.status === 'error') {
+                    $('#modalTransfertStock').modal('show');
+                    $('.error').show();
+                } else {
+                    $('#modalTransfertStock').modal('hide');
+                    var nextLink = $('#sidebar').find('li#produit-categorie').find('a');
+                    //
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 2000
+                        };
+                        toastr.success('Avec succès', 'Transfert effectué');
+
+                        // Appeler la fonction avec l'ID du produit transféré
                         listStock(idProduit);
-                    }
-                   
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de transfert de produit.');
+
+                    }, 800);
                 }
-            });
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                alert('Erreur lors du transfert de produit.');
+            }
         });
     });
+});
 
 </script>
 
