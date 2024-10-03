@@ -456,6 +456,8 @@ class FactureEcheanceService
             $data['compte'] = $facture->getCompte();
             $data['factureEcheances'] = $factureEcheances;
             $data['factureEcheanceFirst'] = $factureEcheanceFirst;
+            $data['application'] = $this->application;
+            $data['user'] = $user;
             
             $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
 
@@ -583,6 +585,8 @@ class FactureEcheanceService
          $data['compte'] = $facture->getCompte();
          $data['montantPaye'] = $montantPaye;
          $data['produits'] = $products;
+         $data['application'] = $this->application;
+         $data['user'] = $user;
          
          $html = $this->twig->render('admin/facture_echeance/facturePdf.html.twig', $data);
  
@@ -694,6 +698,8 @@ class FactureEcheanceService
          $data['compte'] = $facture->getCompte();
          $data['produits'] = $products;
          $data['montantPaye'] = $montantPaye;
+         $data['application'] = $this->application;
+         $data['user'] = $user;
          
          $html = $this->twig->render('admin/facture_echeance/facturePdf.html.twig', $data);
  
