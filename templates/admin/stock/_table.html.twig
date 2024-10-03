@@ -10,8 +10,9 @@
         {% elseif type == "tbody" %}
         <tr id="tbody_stock" class="text-nowrap">
             <td>
-                <a href="#" onclick="return openModalUpdateStock({{liste.id}}, {{liste.qtt}}, {{totalQtt}}, {{quantity}}, {{qttVendu}})" class="mx-1"><i class="bi bi-pencil-fill"></i></a>
-                <a href="#" onclick="return deleteStock({{liste.id}})" class="mx-1"><i class="bi bi-trash text-danger"></i></a>
+                <a href="#" onclick="return openModalUpdateStock({{liste.id}}, {{liste.qtt}}, {{totalQtt}}, {{quantity}}, {{qttVendu}})" class="mx-1" title="Modifier"><i class="bi bi-pencil-fill"></i></a>
+                <a href="#" onclick="return deleteStock({{liste.id}})" class="mx-1" title="Supprimer"><i class="bi bi-trash text-danger"></i></a>
+                <a href="#" onclick="return transfertStock({{liste.id}})" title="Transferer"><i class="mx-2 bi bi-arrow-left-right"></i></a>
             </td>
             <td> 
                 {% set sacs = liste.qtt|round(0, 'floor') %}
@@ -101,6 +102,35 @@
                 }
             });
     }
+
+    function transfertStock(id = null) {
+    var anchorName = document.location.hash.substring(1);
+
+        $.ajax({
+                url: '/admin/stock/transfert/'+id,
+                type: 'POST',
+                data: {id: id},
+                success: function (response) {
+                    if (response.html != "") {
+                        $("#blocModalStockEmpty").empty();
+                        $("#blocModalStockEmpty").append(response.html);
+
+                        $('#modalTransfertStock').modal('show');
+
+                        if (anchorName) {
+                                window.location.hash = anchorName;
+                        }
+
+                    }
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de transfert de produit.');
+                }
+            });
+    }
+   
 
    
 </script>

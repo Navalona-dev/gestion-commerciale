@@ -62,7 +62,8 @@
                     {% set sacs = produitCategory.stockRestant|round(0, 'floor') %}
                     {% set decimal = produitCategory.stockRestant - sacs %}
                     {% set unite = decimal * produitCategory.volumeGros %}
-                    {{sacs}} {{produitCategory.presentationGros}} {% if unite > 0 %} et {{unite|number_format(2,'.','')}} {{produitCategory.uniteVenteGros}} {% endif %}
+                    {{sacs}} {{produitCategory.presentationGros}}{% if sacs > 1 and produitCategory.presentationGros is not null and produitCategory.presentationGros != "pcs" %}s{% endif %} 
+                    {% if unite > 0 %} et {{unite|number_format(2,'.','')}} {{produitCategory.uniteVenteGros}} {% endif %}
                   </span> 
                 </p>
               </div>
@@ -75,7 +76,13 @@
                   {% for transfert in produitCategory.transferts %}
                     {% set quantity = quantity + transfert.quantity %}
                   {% endfor %}
-                  <p class="d-flex justify-content-center mt-3 quantity-count"> <span class="py-1 px-3">{{quantity}}</span></p>
+                  <p class="d-flex justify-content-center mt-3 quantity-count"> <span class="py-1 px-3">
+                    {% set sacs = quantity|round(0, 'floor') %}
+                    {% set decimal = quantity - sacs %}
+                    {% set unite = decimal * produitCategory.volumeGros %}
+                    {{sacs}} {{produitCategory.presentationGros}}{% if sacs > 1 and produitCategory.presentationGros is not null and produitCategory.presentationGros != "pcs" %}s{% endif %} 
+                    {% if unite > 0 %} et {{unite}} {{produitCategory.uniteVenteGros}} {% endif %}
+                  </span></p>
                 </div>
               </a>
             </div>
@@ -88,7 +95,8 @@
                     {% set sacs = qttVendu|round(0, 'floor') %}
                     {% set decimal = qttVendu - sacs %}
                     {% set unite = decimal * produitCategory.volumeGros %}
-                    {{sacs}} {{produitCategory.presentationGros}} {% if unite > 0 %} et {{unite}} {{produitCategory.uniteVenteGros}} {% endif %}
+                    {{sacs}} {{produitCategory.presentationGros}}{% if sacs > 1 and produitCategory.presentationGros is not null and produitCategory.presentationGros != "pcs" %}s{% endif %} 
+                    {% if unite > 0 %} et {{unite}} {{produitCategory.uniteVenteGros}} {% endif %}
                   </span>
                 </p>
               </div>

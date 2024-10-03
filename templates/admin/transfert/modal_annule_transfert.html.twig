@@ -1,0 +1,67 @@
+<div class="modal fade" id="modalAnnuleTransfertStock" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content p-4">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Annulation transfert stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger error">
+                    Cette quantité a été déjà vendu, vous ne pouvez plus annuler le transfert
+                </div>
+                <span class="id-produit-annule" data-produit="{{produitCategorie.id}}"></span>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+<script>
+
+    $(document).ready(function () {
+        $('.error').hide();
+
+       $('#transfertStock').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+            const idProduit = $('.id-produit-annule').data('produit');
+
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: form.serialize(),
+                success: function (response) {
+                    if (response && response.status === 'error') {
+                        $('#modalAnnuleTransfertStock').modal('show');
+                        $('.error').show();
+                    } else {
+                        $('#modalAnnuleTransfertStock').modal('hide');
+                        var nextLink = $('#sidebar').find('li#produit-categorie').find('a');
+                        //
+                        setTimeout(function () {
+                            toastr.options = {
+                                closeButton: true,
+                                progressBar: true,
+                                showMethod: 'slideDown',
+                                timeOut: 2000
+                            };
+                            toastr.success('Avec succèss', 'annulation effectuée');
+
+                        }, 800);
+                        listStock(idProduit);
+                    }
+                   
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de transfert de produit.');
+                }
+            });
+        });
+    });
+
+</script>
+
+{% endblock %}

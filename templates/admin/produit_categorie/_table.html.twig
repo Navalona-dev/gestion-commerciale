@@ -4,6 +4,8 @@
             <th>Nom</th>
             <th>Référence</th>
             <th>Stock restant</th>
+            <th>Prix vente de gros</th>
+            <th>Prix vente détail</th>
             <th>Prix à changer?</th>
             {# 
             <th>PrixHt</th>
@@ -33,7 +35,7 @@
                         <li><a href="#" onclick="return deleteProduitCategorie({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-trash text-danger"></i>Supprimer</a></li>
                         <li><a href="#tab-stock" onclick="return listStock({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-box-seam"></i>Liste stock</a></li>
                         <li><a href="#tab-produit-image" onclick="return listImage({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-image"></i>Liste image</a></li>
-                        <li><a href="#" onclick="return transfertProduit({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-arrow-left-right"></i>Transferer</a></li>
+                        {#<li><a href="#" onclick="return transfertProduit({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-arrow-left-right"></i>Transferer</a></li>#}
                         <li><a href="#tab-quantite-vendu" onclick="return showTabQttVendu({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-cart"></i>Quantités vendu</a></li>
                         <li><a href="#tab-inventaire-produit" onclick="return showInventaire({{liste.id}})" class="dropdown-item"><i class="mx-2 bi bi-cart"></i>Inventaire</a></li>
                    
@@ -47,9 +49,12 @@
                 {% set sacs = liste.stockRestant|round(0, 'floor') %}
                 {% set decimal = liste.stockRestant - sacs %}
                 {% set unite = decimal * liste.volumeGros %}
-                {{sacs}} {{liste.presentationGros}} {% if unite > 0 %} et {{unite|number_format(2,'.','')}} {{liste.uniteVenteGros}} {% endif %}
+                {{sacs}} {{liste.presentationGros}}{% if sacs > 2 and liste.presentationGros is not null and liste.presentationGros != 'pcs' %}s{% endif %}
+                 {% if unite > 0 %} et {{unite|number_format(2,'.','')}} {{liste.uniteVenteGros}} {% endif %}
 
             </td>
+            <td> {{liste.prixVenteGros|number_format(0, ',', ' ') }} Ar </td>
+            <td> {{liste.prixVenteDetail|number_format(0, ',', ' ') }} Ar </td>
             <td>
                 {% if liste.isChangePrix == 0 or liste.isChangePrix is null %}
                     Non

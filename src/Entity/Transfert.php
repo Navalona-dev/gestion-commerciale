@@ -32,6 +32,12 @@ class Transfert
     #[ORM\JoinColumn(nullable: false)]
     private ?ProduitCategorie $produitCategorie = null;
 
+    #[ORM\ManyToOne(inversedBy: 'transferts')]
+    private ?Stock $stock = null;
+
+    #[ORM\ManyToOne]
+    private ?Stock $newStock = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -96,4 +102,29 @@ class Transfert
 
         return $this;
     }
+
+    public function getStock(): ?Stock
+    {
+        return $this->stock;
+    }
+
+    public function setStock(?Stock $stock): static
+    {
+        $this->stock = $stock;
+
+        return $this;
+    }
+
+    public function getNewStock(): ?Stock
+    {
+        return $this->newStock;
+    }
+
+    public function setNewStock(?Stock $newStock): static
+    {
+        $this->newStock = $newStock;
+
+        return $this;
+    }
+
 }

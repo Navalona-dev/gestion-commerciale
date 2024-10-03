@@ -38,9 +38,16 @@ class Stock
     #[ORM\OneToMany(targetEntity: DatePeremptionProduct::class, mappedBy: 'stock')]
     private Collection $datePeremptionProducts;
 
+    /**
+     * @var Collection<int, Transfert>
+     */
+    #[ORM\OneToMany(targetEntity: Transfert::class, mappedBy: 'stock')]
+    private Collection $transferts;
+
     public function __construct()
     {
         $this->datePeremptionProducts = new ArrayCollection();
+        $this->transferts = new ArrayCollection();
     }
 
     public static function newStock($instance = null)
@@ -146,4 +153,36 @@ class Stock
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Transfert>
+     */
+    public function getTransferts(): Collection
+    {
+        return $this->transferts;
+    }
+
+    public function addTransfert(Transfert $transfert): static
+    {
+        if (!$this->transferts->contains($transfert)) {
+            $this->transferts->add($transfert);
+            $transfert->setStock($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransfert(Transfert $transfert): static
+    {
+        if ($this->transferts->removeElement($transfert)) {
+            // set the owning side to null (unless already changed)
+            if ($transfert->getStock() === $this) {
+                $transfert->setStock(null);
+            }
+        }
+
+        return $this;
+    }
+
+   
 }

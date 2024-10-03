@@ -30,6 +30,7 @@ class TransfertType extends AbstractType
                 'attr' => [
                     'class' => 'form-control form-control-md chosen-select mb-3'
                 ],
+                'placeholder' => 'selectionner une application',
                 'choice_label' => 'entreprise',
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('a')
