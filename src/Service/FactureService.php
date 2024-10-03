@@ -477,6 +477,8 @@ class FactureService
         $data['facture'] = $facture;
         $data['compte'] = $facture->getCompte();
         $data['factureEcheances'] = null;
+        $data['application'] = $this->application;
+        $data['user'] = $user;
         
         $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
 
@@ -637,6 +639,8 @@ class FactureService
         $data['facture'] = $facture;
         $data['compte'] = $facture->getCompte();
         $data['factureEcheances'] = null;
+        $data['application'] = $this->application;
+        $data['user'] = $user;
         
         $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
         

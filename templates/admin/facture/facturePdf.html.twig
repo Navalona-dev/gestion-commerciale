@@ -11,7 +11,7 @@
 <body>
     {% set compte = facture.affaire.compte %}
     <div>
-        <img src="https://www.cvb-group.com/assets/images/logo-vsm.jpeg" alt="" style="width: 300px; height: 150px;">
+        <img src="{{ absolute_url(vich_uploader_asset(application, 'logoFile')) }}" alt="" style="width: 300px; height: 150px;">
     </div>
 
     <div style="margin-bottom: 20px;">
@@ -22,11 +22,11 @@
         <table class="table" style="width: 100%;">
             <tr>
                 <th style="width: 50%; border: 1px solid #000;">
-                    <p style="font-size: 15px;">VETOSTORE MADAGASCAR</p>
-                    <p style="font-size: 15px;">ANDREFANA AMBOHIJANAHARY</p>
-                    <p style="font-size: 15px;">NIF: 4 017 729 300</p>
-                    <p style="font-size: 15px;">STAT: 46101 11 2022 0 10244</p>
-                    <p style="font-size: 15px;">TEL <span style="margin-left: 100px;">038 55 151 34</span></p>
+                    <p style="font-size: 15px;"> {{application.entreprise}} </p>
+                    <p style="font-size: 15px;">{{application.adresse}}</p>
+                    <p style="font-size: 15px;">NIF: {{application.nif}}</p>
+                    <p style="font-size: 15px;">STAT: {{application.stat}}</p>
+                    <p style="font-size: 15px;">TEL <span style="margin-left: 100px;">{{application.telephone}}</span></p>
                 </th>
                 <th style="width: 50%; border: 1px solid #000;">
                     <p style="text-align: center; font-size: 15px; text-transform: uppercase;"> {{compte.nom}} </p>
@@ -194,8 +194,13 @@
     </div>
 
     <div>
-        <p><strong>Responsable</strong></p>
-        <p style="margin-left: 500px; margin-top: -5rem;"><strong>Client</strong></p>
+        <p>
+            <strong>Responsable</strong> <br><br>
+            <span>{{user.nom}}</span>
+        </p>
+        <p style="margin-left: 500px; margin-top: -5rem;">
+            <strong>Client</strong>
+        </p>
     </div>
     
 
