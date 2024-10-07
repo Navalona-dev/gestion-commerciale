@@ -354,6 +354,7 @@ class FactureService
                  $qttNewProduitCategorie = isset($quantitesParCategorie[$produitCategorieId]) ? $quantitesParCategorie[$produitCategorieId] : 0;
                  $newProduitCategorie = null;
                 if ($existingProduitCategorie) {
+                    $newProduitCategorie = $existingProduitCategorie;
                     $oldQttProduitCategorie = $existingProduitCategorie->getQtt();
                     $oldStockRestantProduitCategorie = $existingProduitCategorie->getStockRestant();
                     if($oldStockRestantProduitCategorie != null) {
@@ -367,7 +368,7 @@ class FactureService
                     } else {
                         $newProduitCategorie->setQtt($qttNewProduitCategorie);
                     }
-                    $newProduitCategorie = $existingProduitCategorie;
+                    
 
                 } else {
                     $newProduitCategorie = new ProduitCategorie();
