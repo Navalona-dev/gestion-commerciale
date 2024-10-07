@@ -88,6 +88,7 @@ class FactureService
         if (count($tabNumeroFacture) > 0) {
             $numeroFacture = $tabNumeroFacture[0] + 1;
         }
+        $numeroFacture = 75;
         $facture->setNumero($numeroFacture);    
         $facture->setApplication($this->application);
 
