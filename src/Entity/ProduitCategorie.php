@@ -34,7 +34,9 @@ class ProduitCategorie
         'sachet' => 'Sachet',
         'cp' => 'CP',
         'pipette' => 'Pipette',
-        'bloc' => 'Bloc'
+        'bloc' => 'Bloc',
+        'boite' => 'Boîte',
+        'flacon' => 'Flacon'
     ];
 
     const uniteVenteDetails = [
@@ -46,7 +48,9 @@ class ProduitCategorie
         'sachet' => 'Sachet',
         'cp' => 'CP',
         'pipette' => 'Pipette',
-        'bloc' => 'Bloc'
+        'bloc' => 'Bloc',
+        'boite' => 'Boîte',
+        'flacon' => 'Flacon'
     ];
 
     #[ORM\Id]
