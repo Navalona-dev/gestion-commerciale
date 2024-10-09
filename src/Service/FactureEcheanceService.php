@@ -557,6 +557,9 @@ class FactureEcheanceService
         $newFacture->setSolde($montant);
         $newFacture->setPrixHt($montant); 
         $newFacture->setEcheance(true);
+
+        $newFacture->setReglement($factureEcheance->getMontant());
+
         $this->persist($newFacture);  
 
         $formData = $form->getData();

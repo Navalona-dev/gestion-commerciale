@@ -294,13 +294,15 @@ class FactureController extends AbstractController
         $statutPaiement = $request->get('filter_status');
         $datePaieDu = $request->get('date_paiement_debut');
         $datePaieAu = $request->get('date_paiement_end');
-        
+     
         $tabStatut = ['Non payé'=> 'non',
             'Réglée'=> 'regle',
             'Annulée'=> 'annule',
             'En cours'=> 'encours',
-            'En écheance'=> 'enecheance'];
+            'En écheance'=> 'enecheance',
+        'A régler'=> 'a_regle'];
             $statutPaiement = $tabStatut[$statutPaiement];
+         
         $dateDu = $request->get('date_facture_debut');
         $dateAu = $request->get('date_facture_end');
 
@@ -347,7 +349,7 @@ class FactureController extends AbstractController
         $sheet->setCellValue('C1', 'N°');
         $sheet->setCellValue('D1', 'Client');
         $sheet->setCellValue('E1', 'Commande');
-        $sheet->setCellValue('F1', 'Prix HT.');
+        $sheet->setCellValue('F1', 'Reglement');
         $sheet->setCellValue('G1', 'Statut');
 
 
@@ -424,7 +426,7 @@ class FactureController extends AbstractController
                     $sheet->setCellValue('C' . $k, $numero);
                     $sheet->setCellValue('D' . $k, $nomCompte);
                     $sheet->setCellValue('E' . $k, $nomAffaire);
-                    $sheet->setCellValue('F' . $k, $facture['solde']);
+                    $sheet->setCellValue('F' . $k, $facture['reglement']);
                     $sheet->setCellValue('G' . $k, $facture['statut']);
                 //}
 
