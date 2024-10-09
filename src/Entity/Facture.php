@@ -45,7 +45,7 @@ class Facture
     private ?string $type = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $numero = null;
+    private ?string $numero = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $date = null;
@@ -119,6 +119,9 @@ class Facture
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avance = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateReglement = null;
+
     public function __construct()
     {
         $this->factureDetails = new ArrayCollection();
@@ -154,12 +157,12 @@ class Facture
         return $this;
     }
 
-    public function getNumero(): ?int
+    public function getNumero(): ?string
     {
         return $this->numero;
     }
 
-    public function setNumero(?int $numero): static
+    public function setNumero(?string $numero): static
     {
         $this->numero = $numero;
 
@@ -468,6 +471,18 @@ class Facture
     public function setAvance(?string $avance): static
     {
         $this->avance = $avance;
+
+        return $this;
+    }
+
+    public function getDateReglement(): ?\DateTimeInterface
+    {
+        return $this->dateReglement;
+    }
+
+    public function setDateReglement(?\DateTimeInterface $dateReglement): static
+    {
+        $this->dateReglement = $dateReglement;
 
         return $this;
     }

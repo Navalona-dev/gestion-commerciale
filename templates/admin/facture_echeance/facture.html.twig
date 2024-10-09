@@ -13,8 +13,8 @@
                 
                     <div class="alert alert-info mb-3">
                         <h6 class="text-center fw-bold">Révision facture</h6>
-                        <p><span class="fw-bold">Total montant à payer :</span> {{facture.solde|number_format(2,',','')}} Ar </p>
-                        <p><span class="fw-bold">Avance :</span> {{facture.reglement|number_format(2,',','')}} Ar </p>
+                        <p><span class="fw-bold">Total montant à payer :</span> {{facture.solde|number_format(0,',',' ')}} Ar </p>
+                        <p><span class="fw-bold">Avance :</span> {{facture.reglement|number_format(0,',',' ')}} Ar </p>
                         <p><span class="fw-bold">Date de premier paiement :</span> {{facture.dateCreation|date('d-m-Y')}} </p>
                     </div>
                     <div class="facture écheance alert alert-info">
@@ -25,12 +25,12 @@
                         <p><span class="fw-bold">Montant à payer : </span>
                             {% if factureEcheance.reglement is not null %}
                                 {% if factureEcheance.reglement > factureEcheance.montant %}
-                                    {{(factureEcheance.reglement - factureEcheance.montant)|number_format(2,',','')}} Ar
+                                    {{(factureEcheance.reglement - factureEcheance.montant)|number_format(0,',',' ')}} Ar
                                 {% elseif  factureEcheance.montant > factureEcheance.reglement %}
-                                    {{(factureEcheance.montant - factureEcheance.reglement)|number_format(2,',','')}} Ar
+                                    {{(factureEcheance.montant - factureEcheance.reglement)|number_format(0,',',' ')}} Ar
                                 {% endif %}
                             {% else %}
-                            {{factureEcheance.montant|number_format(2,',','')}} Ar
+                            {{factureEcheance.montant|number_format(0,',',' ')}} Ar
                             {% endif %}
                             
                         </p>
@@ -38,7 +38,7 @@
                         <p><span class="fw-bold">Date écheance : </span> {{factureEcheance.dateEcheance|date('d-m-Y')}} </p>
                     </div>
                     <div class="alert alert-warning">
-                        <p class="fw-bold">Reste à payer : {{reste|number_format(2,',','')}} Ar </p>
+                        <p class="fw-bold">Reste à payer : {{reste|number_format(0,',',' ')}} Ar </p>
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-sm w-100">Créer la facture</button>

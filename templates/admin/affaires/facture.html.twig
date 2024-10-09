@@ -166,8 +166,8 @@
                                         <td> {{liste.compte}} </td>
                                         <td> {{liste.affaire}} </td>
                                         <td> {{liste.prixTtc|number_format(2, ',', ',')}} Ar </td>
-                                        <td>{{liste.prixHt|number_format(2, ',', ' ')}} Ar</td>
-                                        <td> {{liste.reglement|number_format(2, ',', ' ')}} Ar </td>
+                                        <td>{{liste.prixHt|number_format(0, ',', ' ')}} Ar</td>
+                                        <td> {{liste.reglement|number_format(0, ',', ' ')}} Ar </td>
                                         {% set statutPaiement = constant('App\\Entity\\Facture::STATUT') %}
                                         <td> {{statutPaiement[liste.statut]}} </td>
                                         <td> {{liste.solde}} </td>
@@ -254,6 +254,8 @@
         $('#tab-echeance').css('display','none');
         $('#tab-produit-image').removeClass('active');
         $('#tab-stock').removeClass('active');
+        $('#tab-depot').css('display', 'none');
+
       });
 
      

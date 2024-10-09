@@ -18,17 +18,17 @@
                 <div class="reste-paye" data-reste="{{reste}}"></div>
                 {{ form_start(form, {'attr': {'id': 'createFactureEcheanceReporter', 'action': path('factures_echeance_facture_reporter', {'factureEcheance': factureEcheance.id}) }}) }}
                     <div class="alert alert-danger error">
-                        <p>L'avance ne doit pas supérieur au montant à payer {{factureEcheance.montant|number_format(2,',','')}} Ar </p>
+                        <p>L'avance ne doit pas supérieur au montant à payer {{factureEcheance.montant|number_format(0,',',' ')}} Ar </p>
                     </div>
                     <div class="alert alert-info mb-3">
                         <h6 class="text-center fw-bold">Révision facture</h6>
-                        <p><span class="fw-bold">Total montant à payer :</span> {{facture.solde|number_format(2,',','')}} Ar </p>
-                        <p><span class="fw-bold">Avance :</span> {{facture.reglement|number_format(2,',','')}} Ar </p>
+                        <p><span class="fw-bold">Total montant à payer :</span> {{facture.solde|number_format(0,',',' ')}} Ar </p>
+                        <p><span class="fw-bold">Avance :</span> {{facture.reglement|number_format(0,',',' ')}} Ar </p>
                         <p><span class="fw-bold">Date de premier paiement :</span> {{facture.dateCreation|date('d-m-Y')}} </p>
                     </div>
                     <div class="facture écheance alert alert-info">
                         <h6 class="text-center fw-bold">Révision facture écheance</h6>
-                        <p><span class="fw-bold">Montant à payer : </span>{{factureEcheance.montant|number_format(2,',','')}} Ar</p>
+                        <p><span class="fw-bold">Montant à payer : </span>{{factureEcheance.montant|number_format(0,',',' ')}} Ar</p>
                         <p><span class="fw-bold">Délais de paiement : </span>{{factureEcheance.delaiPaiement}} jours </p>
                         <p><span class="fw-bold">Date écheance : </span> {{factureEcheance.dateEcheance|date('d-m-Y')}} </p>
                     </div>

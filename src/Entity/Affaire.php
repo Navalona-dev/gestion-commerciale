@@ -33,7 +33,8 @@ class Affaire
         'paye' => 'Payé',
         'annule' => 'Annulé',
         'encours' => 'En cours',
-        'enecheance' => 'En écheance'
+        'enecheance' => 'En écheance',
+        'endepot' => 'En dépôt'
     ];
 
     const DEVIS = [
@@ -163,6 +164,9 @@ class Affaire
 
     #[ORM\ManyToOne]
     private ?Application $applicationRevendeur = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $depot = null;
 
 
     public function __construct()
@@ -684,6 +688,18 @@ class Affaire
     public function setApplicationRevendeur(?Application $applicationRevendeur): static
     {
         $this->applicationRevendeur = $applicationRevendeur;
+
+        return $this;
+    }
+
+    public function isDepot(): ?bool
+    {
+        return $this->depot;
+    }
+
+    public function setDepot(?bool $depot): static
+    {
+        $this->depot = $depot;
 
         return $this;
     }

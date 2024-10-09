@@ -7,14 +7,16 @@ use App\Entity\Compte;
 use App\Form\UserType;
 use App\Entity\Affaire;
 use App\Entity\Facture;
+use App\Entity\Product;
 use App\Form\CompteType;
 use App\Form\ProfilType;
 use App\Form\AffaireType;
 use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
 use App\Form\FicheCompteType;
-use App\Service\AccesService;
 
+use App\Service\AccesService;
+use App\Form\ProductDepotType;
 use App\Service\CompteService;
 use App\Form\AccesExtranetType;
 use App\Service\AffaireService;
@@ -23,6 +25,7 @@ use App\Service\ProductService;
 use App\Service\CategorieService;
 use App\Service\ApplicationManager;
 use App\Repository\CompteRepository;
+use App\Repository\AffaireRepository;
 use App\Repository\FactureRepository;
 use App\Exception\PropertyVideException;
 use App\Service\ProduitCategorieService;
@@ -58,6 +61,7 @@ class AffaireController extends AbstractController
     private $factureRepo;
     private $factureEcheanceRepo;
     private $applicationRepo;
+    private $affaireRepo;
 
 
     public function __construct(
@@ -69,7 +73,8 @@ class AffaireController extends AbstractController
         LoggerInterface $affaireLogger, 
         FactureRepository $factureRepo,
         FactureEcheanceRepository $factureEcheanceRepo,
-        ApplicationRepository $applicationRepo
+        ApplicationRepository $applicationRepo,
+        AffaireRepository $affaireRepo
         
         )
     {
@@ -82,6 +87,7 @@ class AffaireController extends AbstractController
         $this->factureRepo = $factureRepo;
         $this->factureEcheanceRepo = $factureEcheanceRepo;
         $this->applicationRepo = $applicationRepo;
+        $this->affaireRepo = $affaireRepo;
 
     }
 
@@ -399,9 +405,11 @@ class AffaireController extends AbstractController
                 if ($request->isXmlHttpRequest()) {
                     // encode the plain password
                     $application = null;
-                    
+                    $depot = null;
+
                     if($statut == "commande") {
                         $revendeur = $request->get('revendeur');
+                        $depot = $request->get('depot');
                         $applicationRevendeurId = $request->get('application-commande');
     
                         if($revendeur == 'on') {
@@ -410,7 +418,7 @@ class AffaireController extends AbstractController
                         } 
                     }
 
-                    $this->affaireService->add($affaire, $statut, $compte, $application);
+                    $this->affaireService->add($affaire, $statut, $compte, $application, $depot);
 
                     $this->affaireService->update();
                    
@@ -984,5 +992,117 @@ class AffaireController extends AbstractController
         }
         
         return new JsonResponse([]);
+    }
+
+    #[Route('/depot/{affaire}', name: '_depot')]
+    public function depot(Request $request, Affaire $affaire)
+    {
+        $request->getSession()->set('idAffaire', $affaire->getId());
+
+        $data = [];
+        try {
+
+                $data["html"] = $this->renderView('admin/affaires/depot.html.twig', [
+                    'affaire' => $affaire,
+                ]);
+
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/depot/add/{affaire}', name: '_depot_add')]
+    public function addDepot(Request $request, Affaire $affaire)
+    {
+
+        if (count($affaire->getProducts()) > 0) {
+            $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
+
+            // Vérifier si le dossier existe, sinon le créer avec les permissions appropriées
+            if (!is_dir($documentFolder)) {
+                mkdir($documentFolder, 0777, true); // 0777 pour les permissions, et `true` pour créer récursivement les sous-dossiers
+            }
+            
+            list($pdfContent, $facture) = $this->factureService->addDepot($affaire, $documentFolder, $request);
+            
+            $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
+            $pdfPath = '/uploads/factures/valide/' . $filename;
+            
+            // Sauvegarder le fichier PDF
+            file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
+            
+            return new JsonResponse([
+                'status' => 'success',
+                'pdfUrl' => $pdfPath,
+            ]);
+            
+        }
+        
+        return new JsonResponse([]);
+    }
+
+    #[Route('/depot/valid/{product}', name: '_depot_valid')]
+    public function productDepot(Request $request, Product $product)
+    {
+        $idAffaire = $request->getSession()->get('idAffaire');
+        $affaire = $this->affaireRepo->findOneBy(['id' => $idAffaire]);
+
+        $form = $this->createForm(ProductDepotType::class, null);
+        $data = [];
+        try {
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $formData = $form->getData();
+                $qttVendu = $formData['qttVendu'];
+                
+                if ($request->isXmlHttpRequest()) {
+                    
+                    $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
+
+                    // Vérifier si le dossier existe, sinon le créer avec les permissions appropriées
+                    if (!is_dir($documentFolder)) {
+                        mkdir($documentFolder, 0777, true); // 0777 pour les permissions, et `true` pour créer récursivement les sous-dossiers
+                    }
+                    
+                    list($pdfContent, $facture) = $this->factureService->validDepot($affaire, $documentFolder, $request, $product, $qttVendu);
+                    
+                    $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
+
+                    $pdfPath = '/uploads/factures/valide/' . $filename;
+                    
+                    // Sauvegarder le fichier PDF
+                    file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
+                    
+                    return new JsonResponse([
+                        'status' => 'success',
+                        'pdfUrl' => $pdfPath,
+                    ]);
+
+                }
+
+            }
+
+
+            $data['exception'] = "";
+            $data["html"] = $this->renderView('admin/affaires/modal_depot.html.twig', [
+                'form' => $form->createView(),
+                'product' => $product,
+                'affaire' => $affaire
+            ]);
+           
+            return new JsonResponse($data);
+
+        } catch (PropertyVideException $PropertyVideException) {
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        } 
+
+        return new JsonResponse($data);
     }
 }

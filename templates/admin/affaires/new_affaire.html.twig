@@ -10,8 +10,13 @@
                 {{ form_start(form, {'attr': {'id': 'newAffaire', 'action': path('affaires_create', {'compte': compte.id}) }}) }}
                     <input type="hidden" name="statut" value="{{statut}}">
                     {% if statut == "commande" %}
+                    <div class="form-group mb-4">
                         <input type="checkbox" name="revendeur" id="revendeur" class="revendeur">
                         <label for="">Revendeur</label>
+                        <input type="checkbox" name="depot" id="depot" class="depot" style="margin-left: 100px;">
+                        <label for="">Dépôt</label>
+                    </div>
+                        
                     {% endif %}
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Nom <sup class="text-danger">*</sup></label>

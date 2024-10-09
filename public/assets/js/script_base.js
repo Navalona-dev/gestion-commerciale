@@ -135,7 +135,75 @@ $(document).ready(function() {
         showTabEcheance(idFacture);
     }
 
+    if(anchorName === "tab-depot") {
+        showTabDepot(idAffaire);
+    }
+
 });
+
+function showTabDepot(id = null) {
+    showSpinner();
+    
+    $.ajax({
+            type: 'post',
+            url: '/admin/affaires/depot/'+id,
+            data: {
+            },
+            success: function (response) {
+              
+                $("#tab-depot").empty();
+                $("#tab-depot").append(response.html);
+                $("#tab-depot").addClass('active');
+                $('.sidebar-nav a[href="#tab-depot"]').removeClass('collapsed');
+                $('#tab-dashboard').removeClass('active').empty();
+                $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-produit-image"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+                $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
+
+                
+                $(".loadBody").css('display', 'none');
+                // Réinitialiser le DataTable avec un léger retard
+                setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#depot-table')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#depot-table').DataTable().clear().destroy();
+                    }
+                    $('#depot-table').DataTable({
+                        responsive: true,
+                        language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                    },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                    });
+                    hideSpinner();
+                }, 2000);
+
+            },
+            error: function () {
+                // $(".loadBody").css('display', 'none');
+                $(".chargementError").css('display', 'block');
+                hideSpinner();
+            }
+
+        });
+}
 
 function showTabEcheance(id = null) {
     showSpinner();

@@ -12,26 +12,44 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
-    const uniteVenteGros = [
+    const presentationVente = [
         'sac' => 'Sac',
         'flacon' => 'Flacon',
         'granule' => 'Granule',
-        'sht' => 'SHT',
+        'pcs' => 'PCS',
         'pippette' => 'Pippette',
         'spray' => 'Spray',
         'bloc' => 'Bloc',
-        'boite' => 'Boîte'
+        'boite' => 'Boîte',
+        'sachet' => 'Sachet'
+    ];
+
+    const uniteVenteGros = [
+        'unite' => 'Unité',
+        'l' => 'L',
+        'kg' => 'Kg',
+        'ml' => 'Ml',
+        'pcs' => 'PCS',
+        'sachet' => 'Sachet',
+        'cp' => 'CP',
+        'pipette' => 'Pipette',
+        'bloc' => 'Bloc',
+        'boite' => 'Boîte',
+        'flacon' => 'Flacon'
     ];
 
     const uniteVenteDetails = [
         'unite' => 'Unité',
         'l' => 'L',
-        'ml' => 'ML',
-        'cc' => 'CC',
-        'Kg' => 'Kg',
-        'G' => 'G',
+        'kg' => 'Kg',
+        'ml' => 'Ml',
+        'pcs' => 'PCS',
         'sachet' => 'Sachet',
-        'cp' => 'Comprimé'
+        'cp' => 'CP',
+        'pipette' => 'Pipette',
+        'bloc' => 'Bloc',
+        'boite' => 'Boîte',
+        'flacon' => 'Flacon'
     ];
     
     #[ORM\Id]
@@ -121,6 +139,18 @@ class Product
      */
     #[ORM\OneToMany(targetEntity: DatePeremptionProduct::class, mappedBy: 'product')]
     private Collection $datePeremptionProducts;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $qttRestant = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $qttVendu = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $dejaPaye = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $restePayer = null;
 
     public function __construct()
     {
@@ -475,6 +505,54 @@ class Product
                 $datePeremptionProduct->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getQttRestant(): ?float
+    {
+        return $this->qttRestant;
+    }
+
+    public function setQttRestant(?float $qttRestant): static
+    {
+        $this->qttRestant = $qttRestant;
+
+        return $this;
+    }
+
+    public function getQttVendu(): ?float
+    {
+        return $this->qttVendu;
+    }
+
+    public function setQttVendu(?float $qttVendu): static
+    {
+        $this->qttVendu = $qttVendu;
+
+        return $this;
+    }
+
+    public function getDejaPaye(): ?float
+    {
+        return $this->dejaPaye;
+    }
+
+    public function setDejaPaye(?float $dejaPaye): static
+    {
+        $this->dejaPaye = $dejaPaye;
+
+        return $this;
+    }
+
+    public function getRestePayer(): ?float
+    {
+        return $this->restePayer;
+    }
+
+    public function setRestePayer(?float $restePayer): static
+    {
+        $this->restePayer = $restePayer;
 
         return $this;
     }

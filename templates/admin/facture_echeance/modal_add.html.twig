@@ -12,14 +12,14 @@
 
                 </div>
                 <div class="alert alert-info">
-                    <p class="fw-bold">Total à payer : {{facture.solde|number_format(2,',','')}} Ar </p>
+                    <p class="fw-bold">Total à payer : {{facture.solde|number_format(0,',',' ')}} Ar </p>
                 </div>
                 <div class="alert alert-info">
                     <p class="fw-bold">Total à diviser : 
                         {% if reste == 0 %}
-                            {{montantFirst|number_format(2,',','')}} Ar 
+                            {{montantFirst|number_format(0,',',' ')}} Ar 
                         {% elseif reste > 0 %}
-                            {{reste|number_format(2,',','')}} Ar 
+                            {{reste|number_format(0,',',' ')}} Ar 
                         {% endif %}
                     </p>
                 </div>

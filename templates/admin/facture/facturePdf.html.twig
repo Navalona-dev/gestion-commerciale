@@ -18,6 +18,9 @@
 
     <div style="margin-bottom: 20px;">
         <p style="margin-left: 500px;">Date : <strong style="margin-left: 15px;">{{facture.date|date('d/m/Y')}}</strong></p>
+        {% if facture.dateReglement is not null %}
+            <p style="margin-left: 500px;">Date réglement : <strong style="margin-left: 15px;">{{facture.dateReglement|date('d/m/Y')}}</strong></p>
+        {% endif %}
     </div>
 
     <div style="margin-bottom: 30px;">
@@ -96,13 +99,13 @@
                         {% set prix = produit.prixVenteDetail %}
                         {% endif %}
                         
-                        {{ prix|number_format(2, ',', ' ') }} Ar
+                        {{ prix|number_format(0, ',', ' ') }} Ar
                     </td>
                     <td width="24%">
                         {% if produit.typeVente == "gros" %}
-                        {{ ((produit.qtt)  * prix)|number_format(2, ',', ' ') }} Ar
+                        {{ ((produit.qtt)  * prix)|number_format(0, ',', ' ') }} Ar
                         {% else %}
-                            {{ (produit.qtt * prix)|number_format(2, ',', ' ') }} Ar
+                            {{ (produit.qtt * prix)|number_format(0, ',', ' ') }} Ar
                         {% endif %}
                     </td>
                 </tr>
@@ -122,7 +125,7 @@
             <p>
                 <strong>Avances : </strong>
                 {% if facture.reglement is not null or facture.reglement > 0 %}
-                    {{facture.reglement|number_format(2,',','')}} Ar
+                    {{facture.reglement|number_format(0,',',' ')}} Ar
                 {% else %}
                     0,00 Ar
                 {% endif %}
@@ -148,7 +151,7 @@
                 TOTAL À REMBOURSER 
             {% endif %}
             <br><br>
-            <span> {{montantHt|number_format(2,',','')}} Ar </span>
+            <span> {{montantHt|number_format(0,',',' ')}} Ar </span>
         </p>
     </div>
 
@@ -172,15 +175,15 @@
                             <td>{{factureEcheance.delaiPaiement}} jours</td>
                             <td>{{factureEcheance.dateEcheance|date('d/m/Y')}}</td>
                             <td>
-                               {{factureEcheance.montant|number_format(2,',','')}} Ar 
+                               {{factureEcheance.montant|number_format(0,',',' ')}} Ar 
                             </td>
-                            <td>{{factureEcheance.reglement|number_format(2,',','')}} Ar </td>
+                            <td>{{factureEcheance.reglement|number_format(0,',',' ')}} Ar </td>
                             <td>
                                 {% if factureEcheance.status != "regle" %}
                                     {% if factureEcheance.reglement is not null or factureEcheance.reglement > 0 %}
-                                        {{(factureEcheance.montant - factureEcheance.reglement)|number_format(2,',','')}} Ar 
+                                        {{(factureEcheance.montant - factureEcheance.reglement)|number_format(0,',',' ')}} Ar 
                                     {% else %}
-                                        {{factureEcheance.montant|number_format(2,',','')}} Ar 
+                                        {{factureEcheance.montant|number_format(0,',',' ')}} Ar 
                                     {% endif %}
                                 {% else %}
                                     0,00 Ar

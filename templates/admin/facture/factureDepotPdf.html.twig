@@ -5,15 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
     <style>
-        .logo {
-            width: 100px;
-            height: 100px;
-        }
+     
     </style>
 </head>
 <body>
     {% set compte = facture.affaire.compte %}
-
     <div>
         {% if application.logoFile is not null %}
             <img src="{{ absolute_url(vich_uploader_asset(application, 'logoFile')) }}" alt="" style="width: 300px; height: 150px;">
@@ -23,7 +19,7 @@
     <div style="margin-bottom: 20px;">
         <p style="margin-left: 500px;">Date : <strong style="margin-left: 15px;">{{facture.date|date('d/m/Y')}}</strong></p>
     </div>
- 
+
     <div style="margin-bottom: 30px;">
         <table class="table" style="width: 100%;">
             <tr>
@@ -53,7 +49,6 @@
             </strong>
         </p>
     </div>
-
     <div style="margin-bottom: 30px;">
         <table width="100%">
             <thead>
@@ -65,20 +60,28 @@
                         Description
                     </th>
                     <th width="12%">
-                        QTT
+                        Qté commander
+                    </th>
+                    <th width="12%">
+                        Qté restant
+                    </th>
+                    <th width="12%">
+                        Qté vendu
                     </th>
                     <th width="24%">
-                        PU (Ariary)
+                        PU
                     </th>
                     <th width="24%">
-                        Montant TTC (Ariary)
+                        Déjà payer
+                    </th>
+                    <th width="24%">
+                        Reste à payer
                     </th>
                 </tr>
             </thead>
             <tbody>
                 {% set montantHt = 0 %}
      
-                {% for produit in produits %}
                 <tr style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
                     <td width="10%">
                         {{ produit.reference }}
@@ -95,6 +98,22 @@
                             {{produit.produitCategorie.uniteVenteGros}}
                         {% endif %}
                     </td>
+                    <td width="12%">
+                        {{ produit.qttRestant }}
+                        {% if produit.typeVente == "gros" %}
+                            {{produit.produitCategorie.presentationGros}}
+                        {% elseif produit.typeVente == "detail" %}
+                            {{produit.produitCategorie.uniteVenteGros}}
+                        {% endif %}
+                    </td>
+                    <td width="12%">
+                        {{ produit.qttVendu }}
+                        {% if produit.typeVente == "gros" %}
+                            {{produit.produitCategorie.presentationGros}}
+                        {% elseif produit.typeVente == "detail" %}
+                            {{produit.produitCategorie.uniteVenteGros}}
+                        {% endif %}
+                    </td>
                     <td width="24%">
                         {% set prix = produit.prixVenteGros %}
                         {% if produit.typeVente != "gros" %}
@@ -104,44 +123,21 @@
                         {{ prix|number_format(0, ',', ' ') }} Ar
                     </td>
                     <td width="24%">
-                        {% if produit.typeVente == "gros" %}
-                        {{ ((produit.qtt)  * prix)|number_format(0, ',', ' ') }} Ar
-                        {% else %}
-                            {{ (produit.qtt * prix)|number_format(0, ',', ' ') }} Ar
-                        {% endif %}
+                        {{ produit.dejaPaye|number_format(0, ',', ' ') }} Ar
+                    </td>
+                    <td width="24%">
+                        {{ produit.restePayer|number_format(0, ',', ' ') }} Ar
                     </td>
                 </tr>
-                   {% if produit.typeVente == "gros" %}
+
+                {% if produit.typeVente == "gros" %}
                         {% set montantHt = montantHt + ((produit.qtt) * prix)  %}
                    {% else %}
                         {% set montantHt = montantHt + (produit.qtt * prix)  %}
                    {% endif %}  
-                
 
-            {% endfor %}
             </tbody>
         </table>
-    </div>
-
-    <div style="margin-bottom: 20px;">
-        <p>
-            <strong>Déjà payer : </strong>
-            {% if facture.reglement is not null or facture.reglement > 0 %}
-                {{facture.reglement|number_format(0,',',' ')}} Ar
-            {% else %}
-                0,00 Ar
-            {% endif %}
-
-        </p>
-        <p>
-            <strong>Écheances : </strong>
-            {% if factureEcheances|length > 0 %}
-                {{factureEcheance.delaiPaiement}} jours
-            {% else %}
-                pas d'écheance
-            {% endif %}
-        </p>
-
     </div>
 
     <div style="margin-bottom: 20px;">
@@ -156,58 +152,16 @@
         </p>
     </div>
 
-    <div style="margin-bottom: 20px;">
-        {% if factureEcheances|length > 0 %}
-            {% set status = constant('App\\Entity\\FactureEcheance::STATUS') %}
-            <table style="width: 100%;">
-                <thead>
-                    <tr style="background-color: #504f4f81; color: #fff; text-align: center;">
-                        <th>Delais de paiement</th>
-                        <th>Date d'écheance</th>
-                        <th>Montant à payer</th>
-                        <th>Avance</th>
-                        <th>Reste à payer</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for factureEcheance in factureEcheances %}
-                        <tr style="text-align: center;">
-                            <td>{{factureEcheance.delaiPaiement}} jours</td>
-                            <td>{{factureEcheance.dateEcheance|date('d/m/Y')}}</td>
-                            <td>
-                               {{factureEcheance.montant|number_format(0,',',' ')}} Ar 
-                            </td>
-                            <td>{{factureEcheance.reglement|number_format(0,',',' ')}} Ar </td>
-                            <td>
-                                {% if factureEcheance.status != "regle" %}
-                                    {% if factureEcheance.reglement is not null or factureEcheance.reglement > 0 %}
-                                        {{(factureEcheance.montant - factureEcheance.reglement)|number_format(0,',',' ')}} Ar 
-                                    {% else %}
-                                        {{factureEcheance.montant|number_format(0,',',' ')}} Ar 
-                                    {% endif %}
-                                {% else %}
-                                    0,00 Ar
-                                {% endif %}
-                            </td>
-                            <td>{{status[factureEcheance.status]}}</td>
-                        </tr>
-                    {% endfor %}
-
-                </tbody>
-            </table>
-        {% endif %}
-    </div>
-
     <div>
         <p>
-            <strong>Responsable</strong><br><br>
+            <strong>Responsable</strong> <br><br>
             <span>{{user.nom}}</span>
         </p>
         <p style="margin-left: 500px; margin-top: -5rem;">
             <strong>Client</strong>
         </p>
     </div>
+    
 
 </body>
 </html>
