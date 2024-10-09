@@ -746,4 +746,504 @@ class FactureService
         return $facture;
         
     }
+
+    public function addDepot($affaire = null, $folder = null, $request = null)
+    {
+        $facture = Facture::newFacture($affaire);
+        $date = new \DateTime();
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        $numeroFacture = 1;
+        $tabNumeroFacture = $this->getLastValideFacture();
+        if (count($tabNumeroFacture) > 0) {
+            $numeroFacture = $tabNumeroFacture[0] + 1;
+        }
+        //$numeroFacture = 75;
+        $facture->setNumero($numeroFacture);    
+        $facture->setApplication($this->application);
+
+        $facture->setEtat('encours');
+        $facture->setValid(true);
+        $facture->setStatut('encours');
+        $facture->setDateCreation($date);
+        $facture->setDate($date);
+        $facture->setType("Facture");
+
+        $affaire->setPaiement('endepot');
+        $affaire->setDatePaiement($date);
+        $affaire->setDevisEvol('encours');
+        $affaire->setDateFacture($date);
+        $affaire->setStatut("commande");
+        $this->persist($affaire);
+
+        $products = $affaire->getProducts();
+        $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
+        $montantHt = 0;
+        $tabQttRestant = [];
+        $produitCategorie = null;
+        $tabIdStock = [];
+        $sumQtt = 0;
+        $stocks = null;
+        $tabQttRetenue = [];
+        $tabDatePeremption = [];
+        $tabQtt = [];
+        $tabQttReserver = [];
+        $tabQttRestantProduitCategorie = [];
+        $tabProduitCategorie = [];
+        $quantitesParCategorie = [];
+        $datePeremptionProductArray = [];
+
+        foreach ($products as $key => $product) { 
+            // Gestion stock
+            $produitCategorie = $product->getProduitCategorie();
+            $stockRestant = $produitCategorie->getStockRestant();
+            $volumeGros = $produitCategorie->getVolumeGros();
+            $qtt = $product->getQtt(); 
+
+            // Calcul du montant
+            $factureDetail = new FactureDetail();
+            $prix = 0;
+            $prixVenteGros = null;
+            $prixVenteDetail = null;
+            $uniteVenteDetail = null;
+            $uniteVenteGros = null;
+
+            if ($product->getTypeVente() == "gros") {
+                $montantHt  = $montantHt + (($qtt)  * $product->getPrixVenteGros());
+                $prix = $product->getPrixVenteGros();
+                $uniteVenteGros = $product->getUniteVenteGros();
+                $prixVenteGros = $prix; 
+
+            } elseif($product->getTypeVente() == "detail") {
+                $montantHt  = $montantHt + ($qtt * $product->getPrixVenteDetail());
+                $prix = $product->getPrixVenteDetail();
+                $uniteVenteDetail = $product->getUniteVenteDetail();
+                $prixVenteDetail = $prix;
+                if($volumeGros > 0) {
+                    $qtt = $qtt / $volumeGros; 
+                }
+            }
+
+            $stockRestant = $stockRestant - $qtt;
+
+            $produitCategorie->setStockRestant($stockRestant);
+            $this->entityManager->persist($produitCategorie);
+
+            $factureDetail->setFacture($facture)
+                          ->setReference($product->getReference())
+                          ->setDetail($product->getProduitCategorie()->getNom())
+                          ->setQtt($qtt)
+                          ->setProduct($product)
+                          ->setPrixUnitaire($prix)
+                          ->setPrixTotal($montantHt)
+                          ->setDescription($product->getDescription())
+                          ->setUniteVenteDetail($uniteVenteDetail)
+                          ->setUniteVenteGros($uniteVenteGros)
+                          ->setPrixVenteDetail($prixVenteDetail)
+                          ->setPrixVenteGros($prixVenteGros);
+            $facture->addFactureDetail($factureDetail);
+            $this->entityManager->persist($factureDetail);
+
+            // Gestion des notifications
+            $stockMin = $produitCategorie->getStockMin();
+            if ($stockRestant <= $stockMin) {
+                $notification = new Notification();
+                $message = 'Le stock du produit ' . '<strong>' . $produitCategorie->getNom() . '</strong>' . ' est presque épuisé, veuillez ajouter un ou plusieurs!!';
+                $notification->setMessage($message)
+                            ->setDateCreation(new \DateTime())
+                            ->setApplication($this->application)
+                            ->setProduitCategorie($produitCategorie)
+                            ->setStockMin(true);
+                $this->persist($notification);
+            }
+
+            // Gestion des stocks par date de péremption
+            $stocks = $this->entityManager->getRepository(Stock::class)->findByProductCategoryDatePeremption($produitCategorie);
+            foreach ($stocks as $keyS => $stk) {
+                $qttRestant = $stk->getQttRestant();
+
+                $newQttRestant = $qttRestant - $qtt; 
+
+                if ($qtt <= 0) {
+                    break;
+                }
+
+                if ($qttRestant >= $qtt) {
+                    $stk->setQttRestant($newQttRestant);
+                    $this->persist($stk);
+                    
+                    $datePeremptionProduct = new DatePeremptionProduct();
+                    $datePeremptionProduct->setProduct($product);
+                    $datePeremptionProduct->setStock($stk);
+                    if($stk->getDatePeremption() == null) {
+                        $datePeremptionProduct->setDatePeremption(null);
+                    } else {
+                        $datePeremptionProduct->setDatePeremption($stk->getDatePeremption()->getDate());
+                    }
+                    $datePeremptionProduct->setQttRetenue($qtt);
+                    $this->persist($datePeremptionProduct);
+
+                    $qtt = 0;
+                } else {
+
+                    $datePeremptionProduct = new DatePeremptionProduct();
+                    $datePeremptionProduct->setProduct($product);
+                    $datePeremptionProduct->setStock($stk);
+                    if($stk->getDatePeremption() == null) {
+                        $datePeremptionProduct->setDatePeremption(null);
+                    } else {
+                        $datePeremptionProduct->setDatePeremption($stk->getDatePeremption()->getDate());
+                    }
+                    $datePeremptionProduct->setQttRetenue($qttRestant);
+                    $this->persist($datePeremptionProduct);
+
+                    $qtt -= $qttRestant;
+                    $stk->setQttRestant(0);
+                    $this->persist($stk);
+                }
+
+                $datePeremptionProductArray[] = $datePeremptionProduct;
+
+                $tabQttRestant[] = $stk->getQttRestant();
+            }
+ 
+            //gerer la qtt reserver
+            $qttProduct = $product->getQtt();
+            $qttReserverGros = $produitCategorie->getQttReserverGros();
+            $qttReserverDetail = $produitCategorie->getQttReserverDetail();
+            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            if($product->getTypeVente() == "gros") {
+                if($produitCategorie->getQttReserverGros() != null) {
+                    $produitCategorie->setQttReserverGros($qttReserverGros - $qttProduct);
+                }
+            }
+
+            if($product->getTypeVente() == "detail") {
+                if($produitCategorie->getQttReserverDetail() != null) {
+                    $produitCategorie->setQttReserverDetail($qttReserverDetail - $qttProduct);
+                }
+
+                $qttProduct = $qttProduct / $volumeGros;
+            }
+
+
+            if($produitCategorie->getQttReserverCommander() != null){
+                $produitCategorie->setQttReserverCommander($qttReserverCommander + $qttProduct);
+            }else {
+                $produitCategorie->setQttReserverCommander($qttProduct);
+            }
+
+            $this->entityManager->persist($produitCategorie);
+
+            $tabQtt[] = $qttProduct; 
+            $tabQttReserver[] = $produitCategorie->getQttReserver();
+            $tabQttRestantProduitCategorie[] = number_format($produitCategorie->getStockRestant(),2,'.','');
+           
+             // Ajouter la quantité à la catégorie
+            $produitCategorieId = $produitCategorie->getId();
+            if (!isset($quantitesParCategorie[$produitCategorieId])) {
+                $quantitesParCategorie[$produitCategorieId] = 0; // Initialiser si pas encore présent
+            }
+            $quantitesParCategorie[$produitCategorieId] += $qttProduct; // Additionner la quantité
+
+
+            // Ajouter seulement si la produitCategorie n'est pas déjà dans le tableau
+            $produitCategorieId = $produitCategorie->getId();
+            if (!isset($tabProduitCategorie[$produitCategorieId])) {
+                $tabProduitCategorie[$produitCategorieId] = $produitCategorie;
+            }
+
+            //gerer le qtt reserver commander par sac et unité
+            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            $sacs = floor($qttReserverCommander);
+
+            // Unité (partie décimale)
+            $decimal = $qttReserverCommander - $sacs;
+            $unite = $decimal * $produitCategorie->getVolumeGros();
+            $messageUnite = '';
+            if($unite > 0) {
+                $unite = number_format($unite,2,'.','');
+                $messageUnite = ' et ' . $unite . ' ' . $produitCategorie->getUniteVenteGros();
+            }
+            $qttReserverCommanderFinal = $sacs . ' ' . $produitCategorie->getPresentationGros() . $messageUnite;
+
+            //gerer le stock restant par sac et unité
+            $stockRestant = $produitCategorie->getStockRestant();
+            $sacsStock = floor($stockRestant);
+
+            // Unité (partie décimale)
+            $decimalStock = $stockRestant - $sacsStock;
+            $uniteStock = $decimalStock * $produitCategorie->getVolumeGros();
+            if($uniteStock > 0) {
+                $uniteStock = number_format($uniteStock,2,'.','');
+                $messageUnite = ' et ' . $uniteStock . ' ' . $produitCategorie->getUniteVenteGros();
+            }
+            $stockRestantFinal = $sacsStock . ' ' . $produitCategorie->getPresentationGros() . $messageUnite;
+
+            //Log product
+            $data["produit"] = $produitCategorie->getNom();
+            $data["dateReception"] = null;
+            $data["dateTransfert"] = null;
+            $data["dateSortie"] = (new \DateTime())->format("d-m-Y h:i:s");
+            $data["userDoAction"] = $user->getUserIdentifier();
+            $data["source"] = $this->application->getEntreprise();
+            $data["destination"] = $affaire->getCompte()->getNom();
+            $data["action"] = "Commande";
+            $data["type"] = "Commande";
+            $data["stockRestant"] = $stockRestantFinal;
+            $data["qtt"] = $qttReserverCommanderFinal;
+            $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
+            $data["typeSource"] = "Point de vente";
+            $data["typeDestination"] = "Client";
+            $data["commande"] = $affaire->getNom();
+            $data["commandeId"] = $affaire->getId().'-paye';
+            $data["sourceId"] =  $this->application->getId();
+            $data["destinationId"] = $affaire->getCompte()->getId();
+            $this->logService->addLog($request, "commande", $this->application->getId(), $produitCategorie->getReference(), $data);
+
+        }
+
+        $facture->setFile($filename);
+        $facture->setSolde($montantHt);
+        $facture->setPrixHt($montantHt);    
+        //$facture->setReglement($montantHt);
+        
+        $this->persist($facture);
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Facture ajouté', [
+            'Commande' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
+        $this->update();
+        
+        
+        // Initialize Dompdf
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $pdf = new Dompdf($options);
+
+        // Load HTML content
+        $data = [];
+        $data['produits'] = $products;
+        $data['facture'] = $facture;
+        $data['compte'] = $facture->getCompte();
+        $data['factureEcheances'] = null;
+        $data['application'] = $this->application;
+        $data['user'] = $user;
+        
+        $html = $this->twig->render('admin/facture/facturePdf.html.twig', $data);
+
+        // Load HTML to Dompdf
+        $pdf->loadHtml($html);
+
+        // (Optional) Set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
+
+        // Render PDF
+        $pdf->render();
+
+        // Get PDF content
+        $pdfContent = $pdf->output();
+
+        // Save PDF to file
+        $fileName = $folder . $filename;
+        file_put_contents($fileName, $pdfContent);
+
+
+        // Créer le log
+        $this->logger->info('Commande payée', [
+            'Commande' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getUserIdentifier() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
+
+        return [$pdfContent, $facture]; // Retourner le contenu PDF et l'objet facture
+    }
+
+    public function validDepot($affaire = null, $folder = null, $request = null, $product = null, $qttVendu = null)
+    {   
+        $factures = $affaire->getFactures();
+        $factureParent = $factures[0];
+        $factureParentNumero = $factureParent->getNumero();
+
+        $facture = Facture::newFacture($affaire);
+        $date = new \DateTime();
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Vérifier combien de factures existent déjà pour la facture parent
+        $numeroBase = $factureParentNumero;
+        $suffixeMax = 0; // On initialise le suffixe
+
+        foreach ($factures as $existingFacture) {
+            // Si la facture a un numéro qui commence par la même base avec un tiret
+            if (strpos($existingFacture->getNumero(), $numeroBase . '-') === 0) {
+                // Récupérer le suffixe actuel
+                $parts = explode('-', $existingFacture->getNumero());
+                if (isset($parts[1])) {
+                    $suffixe = (int)$parts[1];
+                    if ($suffixe > $suffixeMax) {
+                        $suffixeMax = $suffixe; // Mettre à jour le suffixe maximum trouvé
+                    }
+                }
+            }
+        }
+
+        // Incrémenter le suffixe pour la nouvelle facture
+        $numeroSuffixe = $suffixeMax + 1;
+
+        // Créer le numéro de facture avec le format "12-1", "12-2", etc.
+        $numeroFacture = $numeroBase . '-' . $numeroSuffixe;
+
+        $facture->setNumero($numeroFacture);
+
+        $facture->setApplication($this->application);
+
+        $facture->setEtat('regle');
+        $facture->setValid(true);
+        $facture->setStatut('regle');
+        $facture->setDateCreation($date);
+        $facture->setDate($date);
+        $facture->setType("Facture");
+
+        $products = $affaire->getProducts();
+        $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
+       
+        $prix = 0;
+
+        //gerer le produit 
+        if($product->getTypeVente() == "detail") {
+            $prix = $product->getProduitCategorie()->getPrixVenteDetail();
+        } elseif($product->getTypeVente() == "gros") {
+            $prix = $product->getProduitCategorie()->getPrixVenteGros();
+        }
+
+        $montantHt = $product->getQtt() * $prix;
+        $sumQtt = 0;
+        $sumQttVendu = 0;
+
+        if($product->getQttVendu() != null) {
+            $product->setQttVendu($qttVendu + $product->getQttVendu());
+        } else {
+            $product->setQttVendu($qttVendu);
+        }
+
+        $qttCommander = $product->getQtt();
+        $product->setQttRestant($qttCommander - $product->getQttVendu());
+        $product->setDejaPaye($product->getQttVendu() * $prix);
+        $product->setRestePayer($montantHt - $product->getDejaPaye());
+
+        $this->entityManager->persist($product);
+
+        foreach($products as $produit) {
+            $qtt = $produit->getQtt();
+            $sumQtt += $qtt;
+            $qttVendus = $produit->getQttVendu();
+            $sumQttVendu += $qttVendus;
+        }
+
+        if($sumQtt == $sumQttVendu) {
+            $affaire->setPaiement('paye');
+            $affaire->setDevisEvol('gagne');
+            $factureParent->setStatut('regle');
+            $factureParent->setEtat('regle');
+            $factureParent->setDateReglement(new \DateTime());
+        }else {
+            $affaire->setPaiement('endepot');
+            $affaire->setDevisEvol('encours');
+        }
+
+        if($factureParent->getReglement() != null) {
+            $factureParent->setReglement($factureParent->getReglement() + ($qttVendu * $prix));
+        } else {
+            $factureParent->setReglement($qttVendu * $prix);
+        }
+
+        $this->entityManager->persist($factureParent);
+
+        $affaire->setDatePaiement($date);
+        $affaire->setDateFacture($date);
+        $affaire->setStatut("commande");
+        $this->persist($affaire);
+
+        $facture->setFile($filename);
+        $facture->setSolde($montantHt);
+        $facture->setPrixHt($montantHt);    
+        
+        $this->persist($facture);
+
+
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Facture ajouté', [
+            'Commande' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
+
+        $this->update();
+        
+        
+        // Initialize Dompdf
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $pdf = new Dompdf($options);
+
+        // Load HTML content
+        $data = [];
+        $data['produits'] = $products;
+        $data['facture'] = $facture;
+        $data['compte'] = $facture->getCompte();
+        $data['factureEcheances'] = null;
+        $data['application'] = $this->application;
+        $data['user'] = $user;
+        $data['produit'] = $product;
+        
+        $html = $this->twig->render('admin/facture/factureDepotPdf.html.twig', $data);
+
+        // Load HTML to Dompdf
+        $pdf->loadHtml($html);
+
+        // (Optional) Set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
+
+        // Render PDF
+        $pdf->render();
+
+        // Get PDF content
+        $pdfContent = $pdf->output();
+
+        // Save PDF to file
+        $fileName = $folder . $filename;
+        file_put_contents($fileName, $pdfContent);
+
+
+        // Créer le log
+        $this->logger->info('Commande payée', [
+            'Commande' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getUserIdentifier() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
+
+        return [$pdfContent, $facture]; // Retourner le contenu PDF et l'objet facture
+    }
 }

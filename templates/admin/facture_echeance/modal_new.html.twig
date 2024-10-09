@@ -23,7 +23,7 @@
                         {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
                     {% endif %}
                 {% endfor %}
-                <p class="fw-bold mb-4">Total à payer : {{ montantHt|number_format(2, ',', ' ') }} Ar</p>
+                <p class="fw-bold mb-4">Total à payer : {{ montantHt|number_format(0, ',', ' ') }} Ar</p>
                 <div class="alert alert-danger error">
 
                 </div>

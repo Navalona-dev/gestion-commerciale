@@ -12,7 +12,7 @@
 
                 </div>
                 <div class="alert alert-info">
-                    <p class="fw-bold">Total à payer : {{facture.solde|number_format(2,',','')}} Ar </p>
+                    <p class="fw-bold">Total à payer : {{facture.solde|number_format(0,',',' ')}} Ar </p>
                 </div>
                 {{ form_start(form, {'attr': {'id': 'updateFactureEcheance', 'action': path('factures_echeance_edit', {'factureEcheance': factureEcheance.id}) }}) }}
                     <div class="form-group mb-3">

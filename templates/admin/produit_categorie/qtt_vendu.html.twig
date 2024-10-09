@@ -80,7 +80,7 @@
                         {% else %}
                             {% set prixAchat = liste.prixVenteDetail %}
                         {% endif %}
-                        {{ prixAchat|number_format(2, ',', ' ') }} Ar
+                        {{ prixAchat|number_format(0, ',', ' ') }} Ar
 
                     </td>
                     <td>
@@ -90,7 +90,7 @@
                         {% else %}
                             {% set montantHt = montantHt + (liste.qtt * liste.prixVenteDetail) %}
                         {% endif %}
-                        {{ montantHt|number_format(2, ',', ' ') }} Ar
+                        {{ montantHt|number_format(0, ',', ' ') }} Ar
                     </td>
                 </tr>
                 {% else %}
@@ -159,6 +159,8 @@
         $('#tab-echeance').css('display','none');
         $('#tab-produit-image').removeClass('active');
         $('#tab-stock').removeClass('active');
+        $('#tab-depot').css('display', 'none');
+
    
     });
 

@@ -1,0 +1,195 @@
+
+<section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+         {# entete compte #}
+         {% include 'admin/affaires/entete_compte.html.twig' with { 'compte': affaire.compte } %}
+        {# entete affaire #}
+        {% include 'admin/affaires/entete_affaire.html.twig' with { 'affaire': affaire } %}
+        
+        <div class="affaire-recherche">
+            <div class="affaire-info card pt-5 pb-5 px-4">
+                {% if affaire.products|length > 0 %}  
+                    <div class="table-depot">
+                        <table class="table table-striped" id="depot-table">
+                            <thead>
+                                <tr class="text-nowrap">
+                                    <th>Actions</th>
+                                    <th>Réf</th>
+                                    <th>Produits</th>
+                                    <th>Qté</th>
+                                    <th>Prix</th>
+                                    <th>Qté restant</th>
+                                    <th>Qté vendu</th>
+                                    <th>Total à payer</th>
+                                    <th>Déjà payé</th>
+                                    <th>Reste à payer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for produit in affaire.products %}
+                                    <tr class="text-nowrap">
+                                        <td>
+                                            {% if produit.qttVendu != produit.qtt %}
+                                                <a href="#" onclick="return openModalDepot({{produit.id}})" title="Facturer" class="text-danger">
+                                                    <i class="bi bi-currency-dollar"></i>
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                        <td> {{produit.reference}} </td>
+                                        <td> {{produit.nom}} </td>
+                                        <td> 
+                                            {{produit.qtt}} {% if produit.typeVente == "gros" %} {{produit.produitCategorie.presentationGros}} {% else %} {{produit.produitCategorie.uniteVenteGros}} {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if produit.typeVente == "gros" %}
+                                                {{produit.produitCategorie.prixVenteGros|number_format(0, ',', ' ')}} Ar
+                                            {% else %}
+                                                {{produit.produitCategorie.prixVenteDetail|number_format(0, ',', ' ')}} Ar
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if produit.qttRestant is not null %}
+                                                {{produit.qttRestant}}
+                                                {% if produit.typeVente == "detail" %}
+                                                    {{produit.produitCategorie.uniteVenteGros}}
+                                                {% else %}
+                                                    {{produit.produitCategorie.presentationGros}}
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if produit.qttVendu is not null %}
+                                                {{produit.qttVendu}}
+                                                {% if produit.typeVente == "detail" %}
+                                                    {{produit.produitCategorie.uniteVenteGros}}
+                                                {% else %}
+                                                    {{produit.produitCategorie.presentationGros}}
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if produit.typeVente == "gros" %}
+                                                {{(produit.qtt * produit.produitCategorie.prixVenteGros)|number_format(0, ',', ' ')}} Ar
+                                            {% else %}
+                                                {{(produit.qtt * produit.produitCategorie.prixVenteDetail)|number_format(0, ',', ' ')}} Ar
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{produit.dejaPaye|number_format(0,',',' ')}} Ar
+                                        </td>
+                                        <td>
+                                            {{produit.restePayer|number_format(0,',',' ')}} Ar
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="10">Aucun enregistrement pour le moment</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        Cette commande n'a pas encore de produits ajouté, veuiller en ajouter en cliquant le menu financier ci-dessus
+                    </div>     
+                {% endif %}         
+            </div>
+        </div>
+      </div>
+    </div>
+    <div id="blocModalDepotEmpty">
+    </div>
+  </section>
+
+  <script>
+
+    $(document).ready(function() {
+        $('#tab-compte_1').removeClass('active').empty();
+        $('#tab-compte_2').removeClass('active').empty();
+        $('#affaires_fournisseur').removeClass('active').empty();
+        $('#affaires_client').removeClass('active').empty();
+        $('.tab-categorie').removeClass('active');
+        $('#tab-produit-categorie').removeClass('active');
+        $('.tab-produit-categorie').removeClass('active');
+        $('#tab-categorie').removeClass('active');
+        $('.tab-import-produit').css('display', 'none');
+        $('#tab-import-produit').css('display', 'none');
+        $('#tab-produit-date-peremption').removeClass('active').empty();
+        $('#tab-inventaire-produit').css('display','none');
+
+        $('.tab-user').removeClass('active');
+        $('#tab-utilisateur').removeClass('active');
+
+        $('.tab-permission').removeClass('active');
+        $('.tab-privilege').removeClass('active');
+        $('.tab-cat-permission').removeClass('active');
+        $('#tab-categorie-permission').removeClass('active');
+        
+        $('#tab-dashboard').removeClass('active');
+        $('#tab-profile').removeClass('active');
+        
+        $('#tab-permission').removeClass('active');
+        $('#tab-privilege').removeClass('active');
+        $('#tab-transfert-produit').css('display', 'none');
+        
+        
+        $('#tab-application').removeClass('active');
+        $('#tab-profile').removeClass('active');
+        $('#tab-produit-type').removeClass('active');
+        $('.tab-produit-type').removeClass('active');
+        $('#tab-import-produit').css('display', 'none');
+        $('#tab-facture').css('display', 'none');      
+        $('#tab-financier-affaire').removeClass('active').empty();
+        $('#tab-fiche-client').removeClass('active').empty();
+        $('#tab-info-affaire').removeClass('active');
+        $('#tab-depot').css('display', 'block');
+        $('#tab-facture-affaire').removeClass('active').empty();
+        $('#tab-nouveau-facture').css('display','none');
+        $('#tab-devis').css('display','none');
+        $('#tab-commande').css('display','none');
+        $('#tab-echeance').css('display','none');
+        $('#tab-produit-image').removeClass('active');
+        $('#tab-stock').css('active');
+
+      
+    });
+
+    function openModalDepot(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
+        $.ajax({
+                url: '/admin/affaires/depot/valid/'+id,
+                type: 'POST',
+                data: {id: id},
+                success: function (response) {
+                    if (response.html != "") {
+                        $("#blocModalDepotEmpty").empty();
+                        $("#blocModalDepotEmpty").append(response.html);
+
+                        $('#modalDepotAffaire').modal('show');
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
+
+                    }
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la facturation dépôt.');
+                }
+            });
+    }
+   
+</script>

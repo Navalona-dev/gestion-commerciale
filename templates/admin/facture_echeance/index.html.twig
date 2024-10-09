@@ -75,17 +75,17 @@
                                     </h3>
                                 </div>
                                 <div class="col-md-4 col-12">
-                                    <p class="bg-danger py-1 px-2 text-white">Total à payer :  <span>{{facture.solde|number_format(2,',','')}} Ar</span> </p>
-                                    <p class="bg-danger py-1 px-2 text-white">Déjà payer :  <span>{{facture.reglement|number_format(2,',','')}} Ar</span> </p>
+                                    <p class="bg-danger py-1 px-2 text-white">Total à payer :  <span>{{facture.solde|number_format(0,',',' ')}} Ar</span> </p>
+                                    <p class="bg-danger py-1 px-2 text-white">Déjà payer :  <span>{{facture.reglement|number_format(0,',',' ')}} Ar</span> </p>
                                 </div>
                             </div>
 
                             {% if error %}
                                 
                                 <div class="alert alert-danger">
-                                    Attention le montant total {{montantHt|number_format(2,',','')}} Ar d'écheance n'est pas égal au montant total à payer {{facture.solde|number_format(2,',','')}} Ar , 
+                                    Attention le montant total {{montantHt|number_format(0,',',' ')}} Ar d'écheance n'est pas égal au montant total à payer {{facture.solde|number_format(0,',',' ')}} Ar , 
                                     alors vous devez verifier le calcul avant de faire quoi que ce soit.
-                                    Il manque {{montantManquant|number_format(2,',','')}} Ar
+                                    Il manque {{montantManquant|number_format(0,',',' ')}} Ar
                                 </div>
                             {% endif %}
 
@@ -136,7 +136,7 @@
                                         </td>
                                         {% set status = constant('App\\Entity\\FactureEcheance::STATUS') %}
                                         <td> {{status[liste.status]}} </td>
-                                        <td> {{liste.montant|number_format(2,',','')}} Ar </td>
+                                        <td> {{liste.montant|number_format(0,',',' ')}} Ar </td>
                                         <td> {{liste.delaiPaiement}} jours </td>
                                         <td> {{liste.dateEcheance|date('d-m-Y')}} </td>
                                         <td> 
@@ -144,7 +144,7 @@
                                                 {{liste.dateReporter|date('d-m-Y')}}
                                             {% endif %}
                                          </td>
-                                        <td> {{liste.reglement|number_format(2,',','')}} Ar </td>
+                                        <td> {{liste.reglement|number_format(0,',',' ')}} Ar </td>
                                         <td>
                                             {% if liste.isReporter == 1 %} 
                                             Oui
@@ -234,7 +234,9 @@
             $('#tab-commande').css('display','none');
             $('#tab-echeance').css('display','block');
             $('#tab-produit-image').removeClass('active');
-        $('#tab-stock').removeClass('active');
+            $('#tab-stock').removeClass('active');
+            $('#tab-depot').css('display', 'none');
+
 
         });
         

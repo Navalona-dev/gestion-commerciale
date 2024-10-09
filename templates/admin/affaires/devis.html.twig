@@ -64,9 +64,9 @@
                     <td class="align-middle text-center">
                         {% for produit in liste.produits %}
                             {% if produit.typeVente == "gros" %}
-                                {{ produit.prixVenteGros|number_format(2, ',', ' ') }} Ar<br>
+                                {{ produit.prixVenteGros|number_format(0, ',', ' ') }} Ar<br>
                             {% else %}
-                                {{ produit.prixVenteDetail|number_format(2, ',', ' ') }} Ar<br>
+                                {{ produit.prixVenteDetail|number_format(0, ',', ' ') }} Ar<br>
                             {% endif %}
                         {% endfor %}
                     </td>
@@ -139,6 +139,8 @@
         $('#tab-echeance').css('display','none');
 $('#tab-produit-image').removeClass('active');
         $('#tab-stock').removeClass('active');
+        $('#tab-depot').css('display', 'none');
+
     });
 
   </script>

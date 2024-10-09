@@ -1,31 +1,51 @@
 <style>
    .icon-paye {
-    width: 44px;
-    height: 40px;
+    width: 50px;
+    height: 32px;
     background-color: #ffc107; 
     color: #000;
-    font-size: 24px; 
+    font-size: 16px; 
     border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid #ffc107 !important; 
     cursor: pointer;
-    margin-right: 15px;
+    margin-right: 8px;
 }
 
 .icon-echeance {
-    width: 44px;
-    height: 40px;
+    width: 50px;
+    height: 32px;
     background-color: #0d6efd; 
     color: #fff;
-    font-size: 24px; 
+    font-size: 16px; 
     border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid #0d6efd !important; 
     cursor: pointer;
+    margin-right: 8px;
+
+}
+
+.icon-depot {
+    width: 50px;
+    height: 32px;
+    background-color: #9e2d2d; 
+    color: #fff;
+    font-size: 16px; 
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #9e2d2d !important; 
+    cursor: pointer;
+}
+
+.icon-depot:hover {
+    color: #fff;
 }
 
 .icon-paye:hover {
@@ -142,7 +162,7 @@
                                     </div>
                                 </div>
                             {% else %}
-                                {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
+                                {% if affaire.paiement is not null and (affaire.paiement == "non" or affaire.paiement is null)  %}
                                 <div class="col-md-2 col-12">
                                     <div class="d-flex justify-content-end">
                                         {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
@@ -152,6 +172,11 @@
                                             <a href="#" title="Facture écheance" class="icon-echeance" onclick="return openModalFactureEcheance({{ affaire.id }})">
                                                 <i class="bi bi-calendar-heart-fill"></i>
                                             </a>
+                                            {% if affaire.depot == 1 %}
+                                                <a onclick="return depot({{affaire.id}})" style="cursor: pointer;" title="Dépôt" class="icon-depot">
+                                                    <i class="bi bi-box-seam"></i>
+                                                </a>
+                                            {% endif %}
                                         {% endif %}
 
                                     </div>
@@ -308,15 +333,18 @@
                                         </a>
                                    
                                     {% else %}
-                                        {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
+                                        {% if affaire.paiement is not null and (affaire.paiement == "non" or affaire.paiement is null)  %}
                                             {% if affaire.paiement != "enecheance" %}
                                                 <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
                                             {% endif %}
                                             {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
-                                            <a style="cursor: pointer;" onclick="return paiement({{affaire.id}})" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
+                                                <a style="cursor: pointer;" onclick="return paiement({{affaire.id}})" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
                                                 <a href="#" title="Facture écheance" class="text-success financier-icon" onclick="return openModalFactureEcheance({{affaire.id}})">
                                                     <i class="bi bi-calendar-heart-fill"></i>
                                                 </a>
+                                                {% if affaire.depot == 1 %}
+                                                    <a style="cursor: pointer;" title="Dépôt" onclick="return depot({{affaire.id}})" class="text-danger financier-icon"><i class="bi bi-box-seam"></i></a>
+                                                {% endif %}
                                             {% endif %}
                                             
                                         {% endif %}
@@ -343,7 +371,7 @@
                                             <p class="mt-4">Montant : </p>
                                         </div>
                                         <div class="col-md-6 col-12 align-middle d-flex justify-content-end">
-                                            <p class="mt-4">{{ montantHt|number_format(2, ',', ' ') }} Ar</p>
+                                            <p class="mt-4">{{ montantHt|number_format(0, ',', ' ') }} Ar</p>
                                         </div>
                                     </div>
                                    
@@ -412,6 +440,7 @@
         $('#tab-echeance').css('display','none');
         $('#tab-produit-image').removeClass('active');
         $('#tab-stock').removeClass('active');
+        $('#tab-depot').css('display', 'none');
       
       
     });
@@ -559,4 +588,42 @@
            
         }
     }
+
+    function depot(id = null) {
+        if (confirm('Voulez vous vraiment faire ce dépôt?')) {
+            setTimeout(function() {
+                $.ajax({
+                url: '/admin/affaires/depot/add/'+id,
+                type: 'POST',
+                data: {id: id},
+                success: function (response) {
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Dépôt fait');
+                        
+                        financier(id);
+
+                        if (response.pdfUrl) {
+                            window.open(response.pdfUrl, '_blank');
+                        }
+
+                    }, 800);
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de paiement.');
+                }
+            });
+        
+            }, 500);
+           
+        }
+    }
+
 </script>
