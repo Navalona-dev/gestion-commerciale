@@ -33,7 +33,8 @@ class Facture
         'a_regler' => 'A régler',
         'regle' => 'Réglée',
         'annule' => 'Annulée',
-        'encours' => 'En cours'
+        'encours' => 'En cours',
+        'enecheance' => 'En echeance'
     ];
 
     #[ORM\Id]
@@ -118,6 +119,9 @@ class Facture
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avance = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $echeanceNumero = null;
 
     public function __construct()
     {
@@ -468,6 +472,18 @@ class Facture
     public function setAvance(?string $avance): static
     {
         $this->avance = $avance;
+
+        return $this;
+    }
+
+    public function getEcheanceNumero(): ?int
+    {
+        return $this->echeanceNumero;
+    }
+
+    public function setEcheanceNumero(?int $echeanceNumero): static
+    {
+        $this->echeanceNumero = $echeanceNumero;
 
         return $this;
     }

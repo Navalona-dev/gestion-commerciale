@@ -75,6 +75,10 @@ class FactureEcheanceService
             $numeroFacture = $tabNumeroFacture[0] + 1;
         }
         //$numeroFacture = 75;
+
+        //$facture->setNumero($facture->getNumero());
+        //$facture->setEcheanceNumero(1);
+
         $facture->setNumero($numeroFacture);    
         $facture->setApplication($this->application);
 
@@ -312,6 +316,8 @@ class FactureEcheanceService
                  $newProduitCategorie = null;
                 if ($existingProduitCategorie) {
                     $oldQttProduitCategorie = $existingProduitCategorie->getQtt();
+                    $newProduitCategorie = $existingProduitCategorie;
+                    
                     $oldStockRestantProduitCategorie = $existingProduitCategorie->getStockRestant();
                     if($oldStockRestantProduitCategorie != null) {
                         $newProduitCategorie->setStockRestant($oldStockRestantProduitCategorie + $qttNewProduitCategorie);
@@ -412,17 +418,21 @@ class FactureEcheanceService
         $formDataEcheance = $form->get('factureEcheances')->getData();
         $factureEcheances = $formDataEcheance;
 
+        $numeroEch = 1;
         foreach($factureEcheances as $factureEcheance) {
 
             $factureEcheance->setStatus('encours');
             $factureEcheance->setDateCreation(new \DateTime());
             $factureEcheance->setFacture($facture);
+            //$factureEcheance->setNumero($numeroEch);
 
             $this->persist($factureEcheance);
 
             $montant += $factureEcheance->getMontant();
 
             $totalPayer = $montant + $reglement;
+
+            $numeroEch++;
 
         }
         
@@ -526,11 +536,13 @@ class FactureEcheanceService
 
         $newFacture = Facture::newFacture($affaire);
         $numeroFacture = 1;
-        $tabNumeroFacture = $this->getLastValideFacture();
+        $tabNumeroFacture = $this->getLastValideFactureEcheance($facture);
         if (count($tabNumeroFacture) > 0) {
             $numeroFacture = $tabNumeroFacture[0] + 1;
         }
-        $newFacture->setNumero($numeroFacture);    
+
+        $newFacture->setNumero($facture->getNumero());
+        $newFacture->setEcheanceNumero($numeroFacture);
         $newFacture->setApplication($this->application);
 
         $newFacture->setEtat('regle');
@@ -539,7 +551,7 @@ class FactureEcheanceService
         $newFacture->setDateCreation($date);
         $newFacture->setDate($date);
         $newFacture->setType("Facture");
-        $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $newFacture->getNumero() . ".pdf";
+        $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $newFacture->getNumero() . '-' . $newFacture->getEcheanceNumero() . ".pdf";
         
         $newFacture->setFile($filename);
         $newFacture->setSolde($montant);
@@ -550,6 +562,7 @@ class FactureEcheanceService
         $formData = $form->getData();
         $status = $formData->getStatus();
 
+        $factureEcheance->setNumero($numeroFacture);
         $factureEcheance->setStatus($status);
         $factureEcheance->setFile($filename);
         $this->persist($factureEcheance);
@@ -565,7 +578,7 @@ class FactureEcheanceService
         } elseif($factureEcheance->getReglement() == null ) {
             $montantPaye = $factureEcheance->getMontant();
         }
-
+        //dd($numeroFacture, $factureEcheance, $newFacture);
         $this->update();
 
         
@@ -587,6 +600,7 @@ class FactureEcheanceService
          $data['produits'] = $products;
          $data['application'] = $this->application;
          $data['user'] = $user;
+         $data['echeanceNumero'] = $numeroFacture;
          
          $html = $this->twig->render('admin/facture_echeance/facturePdf.html.twig', $data);
  
@@ -644,10 +658,11 @@ class FactureEcheanceService
         
         $newFacture = Facture::newFacture($affaire);
         $numeroFacture = 1;
-        $tabNumeroFacture = $this->getLastValideFacture();
+        $tabNumeroFacture = $this->getLastValideFactureEcheance($facture);
         if (count($tabNumeroFacture) > 0) {
             $numeroFacture = $tabNumeroFacture[0] + 1;
         }
+
         $newFacture->setNumero($numeroFacture);    
         $newFacture->setApplication($this->application);
 
@@ -828,6 +843,11 @@ class FactureEcheanceService
     public function getLastValideFacture()
     {
         return $this->entityManager->getRepository(Facture::class)->getLastValideFacture();
+    }
+
+    public function getLastValideFactureEcheance($facture = null)
+    {
+        return $this->entityManager->getRepository(FactureEcheance::class)->getLastValideFactureEcheance($facture);
     }
 
     public function remove($factureEcheance)

@@ -304,7 +304,7 @@ class ProduitCategorieController extends AbstractController
         $request->getSession()->set('produitCategorieId', $produitCategorie->getId());
         $data = [];
         try {
-            $logFilePath = $this->getParameter('kernel.project_dir') . '/public/uploads/historique/';
+            $logFilePath = $this->getParameter('kernel.project_dir') . '/public/uploads//APP_'.$this->application->getId().'/historique/';
             $prefix = 'log_'.$this->application->getId().'_'.$produitCategorie->getReference();
            
             $parsedLines = $this->logService->getContentLog($logFilePath, $prefix);
@@ -395,7 +395,7 @@ class ProduitCategorieController extends AbstractController
         }*/
         //$tabFactures = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, null, null, null, false, null, $statutPaiement, $datePaieDu, $datePaieAu);
        // dd($facturesAssoc);
-       $logFilePath = $this->getParameter('kernel.project_dir') . '/public/uploads/historique/';
+       $logFilePath = $this->getParameter('kernel.project_dir') . '/public/uploads/APP_'.$this->application->getId().'/historique/';
             $prefix = 'log_'.$this->application->getId().'_'.$produitCategorie->getReference();
            
             $parsedLines = $this->logService->getContentLog($logFilePath, $prefix);

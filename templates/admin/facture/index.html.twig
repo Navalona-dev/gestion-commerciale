@@ -87,8 +87,18 @@
                                         <input id="nom_compte" type="text" name="nom_compte" class="form-control form-control-sm" autocomplete="off" placeholder="Nom du client" />
                                         
                                     </div>
-                                    <div class="input-group">
+                                    {# <div class="input-group">
                                         {% set statutPaiement = constant('App\\Entity\\Affaire::PAIEMENT') %}
+                                        <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-check-circle-fill"></i></span>
+                                        <select name="filter_status" id="filter_status" class="mb-3 form-control form-control-md" style="border-left: none;">
+                                            <option value="" disabled selected><span class="mx-3">Statut</span></option>
+                                            {% for key,statutPaie in statutPaiement %}
+                                            <option value="{{statutPaie}}">{{statutPaie}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div> #}
+                                    <div class="input-group">
+                                        {% set statutPaiement = constant('App\\Entity\\FACTURE::ETAT') %}
                                         <span class="input-group-text" style="border-right: none; height: 38px;"><i class="bi bi-check-circle-fill"></i></span>
                                         <select name="filter_status" id="filter_status" class="mb-3 form-control form-control-md" style="border-left: none;">
                                             <option value="" disabled selected><span class="mx-3">Statut</span></option>
@@ -371,6 +381,17 @@
         return statusMap[selectedStatus] || '';
     }
 
+    function mapStatusFacture(selectedStatus) {
+        var statusMap = {
+            'Non payé': 'Non payé',
+            'Réglée': 'Réglée',
+            'Annulée': 'Annulée',
+            'En cours': 'En cours',
+            'En écheance': 'En écheance'
+        };
+        return statusMap[selectedStatus] || '';
+    }
+
     function searchFacture() {
         var anchorName = document.location.hash.substring(1);
 
@@ -384,7 +405,8 @@
             var dateFactureEnd = $('#date_facture_end').val() || '';
             var datePaiementEnd = $('#date_paiement_end').val() || '';
             var statut = $('#filter_status').val() ? $('#filter_status').val().trim() : '';
-            var mappedStatut = mapStatus(statut);
+            //var mappedStatut = mapStatus(statut);
+            var mappedStatut = mapStatusFacture(statut);
 
             // Réinitialiser les filtres
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
@@ -394,7 +416,7 @@
                 // Vérifier les correspondances
                 var clientMatch = (nomCompte === '' || data[8].toLowerCase().indexOf(nomCompte) !== -1);
                 var statusMatch = (statut === '' || mappedStatut === '' || data[12].trim() === mappedStatut);
-
+console.log('statusMatch', statusMatch, statut, mappedStatut, data[12].trim());
                 // Vérifier les dates
                 var dateFactureMatch = true;
                 if (dateFactureDebut) {

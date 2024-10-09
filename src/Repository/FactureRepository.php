@@ -142,8 +142,14 @@ class FactureRepository extends ServiceEntityRepository
             $parameterType['nom'] = ParameterType::STRING;
         }
         
-        if (null != $statutPaiement && $statutPaiement != "") {
+        /*if (null != $statutPaiement && $statutPaiement != "") {
             $conditions = self::conditionConcatener($conditions, "a.paiement = :statutPaiement");
+            $parameters['statutPaiement'] = $statutPaiement;
+            $parameterType['statutPaiement'] = ParameterType::STRING;
+        }*/
+
+        if (null != $statutPaiement && $statutPaiement != "") {
+            $conditions = self::conditionConcatener($conditions, "f.statut = :statutPaiement");
             $parameters['statutPaiement'] = $statutPaiement;
             $parameterType['statutPaiement'] = ParameterType::STRING;
         }
@@ -260,7 +266,7 @@ class FactureRepository extends ServiceEntityRepository
         }
 
         $rawSql = $select . ' ' . $joins . ' WHERE ' . $conditions . ' ' . ($sqlLimit ?? '');
-        
+        //dd($rawSql, $dateDu, $dateAu, $statutPaiement);
         $connection = $this->getEntityManager()->getConnection();
         try {
             if ($isCount) {

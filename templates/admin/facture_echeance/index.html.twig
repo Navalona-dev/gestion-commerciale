@@ -118,7 +118,7 @@
                                         </td>#}
                                         <td>
                                             {% if liste.status == "regle" %}
-                                                <a href="{{ asset('uploads/factures/echeance/' ~ liste.file) }}" target="_blank" class="text-danger" title="Voir facture"><i class="bi bi-file-earmark-pdf-fill"></i></a>
+                                                <a href="{{ asset('uploads/APP_' ~ application.id ~'/factures/echeance/' ~ liste.file) }}" target="_blank" class="text-danger" title="Voir facture"><i class="bi bi-file-earmark-pdf-fill"></i></a>
                                                 {% set dernierStatusRegle = true %}
                                             {% else %}
                                                 {% if not error %}

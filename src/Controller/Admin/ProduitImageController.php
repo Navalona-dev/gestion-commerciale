@@ -14,6 +14,7 @@ use App\Repository\ProduitCategorieRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Exception\UnsufficientPrivilegeException;
+use App\Service\ApplicationManager;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -26,10 +27,13 @@ class ProduitImageController extends AbstractController
 {
     private $accesService;
     private $produitImageService;
-    public function __construct(AccesService $AccesService, ProduitImageService $produitImageService)
+    private $application;
+
+    public function __construct(AccesService $AccesService, ProduitImageService $produitImageService, ApplicationManager $applicationManager)
     {
         $this->accesService = $AccesService;
         $this->produitImageService = $produitImageService;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
     #[Route('/new', name: '_create')]
@@ -154,6 +158,7 @@ class ProduitImageController extends AbstractController
                 'listes' => $stocks,
                 'id' => $produitCategorie->getId(),
                 'produitCategory' => $produitCategorie,
+                'application' => $this->application
             ]);
 
             return new JsonResponse($data);
@@ -187,6 +192,7 @@ class ProduitImageController extends AbstractController
                 'listes' => $produitImages,
                 'id' => $produitCategorie->getId(),
                 'produitCategory' => $produitCategorie,
+                'application' => $this->application
             ]);
 
             return new JsonResponse($data);

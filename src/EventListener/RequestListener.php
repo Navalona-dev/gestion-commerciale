@@ -95,7 +95,6 @@ class RequestListener implements EventSubscriberInterface
             }*/
 
             if ($user && null != $user && method_exists($user, "getEmail")) {
-
                 $uri = $event->getRequest()->getUri();
 
                 if (preg_match("/(_fragment|breves_rss|favicon.ico|flash-bag|from-ajax-type-head|columns%)/i", $uri)) {
@@ -199,6 +198,26 @@ class RequestListener implements EventSubscriberInterface
                     if ($applicationActive && !is_dir('./uploads/factures/valide/')) {
                         @mkdir('./uploads/factures/valide/', 0777, true);                        
                     }
+                    
+
+                    if ($applicationActive && !file_exists('./uploads/APP_'.$applicationActive->getId()."/avatar")) {
+                        @mkdir('./uploads/APP_'.$applicationActive->getId()."/avatar", 0777);                     
+                    }
+
+                    if ($applicationActive && !file_exists('./uploads/APP_'.$applicationActive->getId()."/historique")) {
+                        @mkdir('./uploads/APP_'.$applicationActive->getId()."/historique", 0777);                     
+                    }
+
+                    if ($applicationActive && !file_exists('./uploads/APP_'.$applicationActive->getId()."/product")) {
+                        @mkdir('./uploads/APP_'.$applicationActive->getId()."/product", 0777);                     
+                    }
+
+                    if ($applicationActive && !file_exists('./uploads/APP_'.$applicationActive->getId()."/factures/annule"))
+                        @mkdir('./uploads/APP_'.$applicationActive->getId()."/factures/annule", 0777);
+                    if ($applicationActive && !file_exists('./uploads/APP_'.$applicationActive->getId()."/factures/valide"))
+                    @mkdir('./uploads/APP_'.$applicationActive->getId()."/factures/valide", 0777);
+                    if ($applicationActive && !file_exists('./uploads/APP_'.$applicationActive->getId()."/factures/echeance"))
+                    @mkdir('./uploads/APP_'.$applicationActive->getId()."/factures/echeance", 0777);
 
                     
                 }

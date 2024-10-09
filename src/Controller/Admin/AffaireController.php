@@ -898,7 +898,8 @@ class AffaireController extends AbstractController
             $data["html"] = $this->renderView('admin/affaires/facture.html.twig', [
                 'affaire' => $affaire,
                 'factures' => $factures,
-                'factureEcheance' => $factureEcheance
+                'factureEcheance' => $factureEcheance,
+                'application' => $this->application
             ]);
            
             return new JsonResponse($data);
@@ -916,7 +917,7 @@ class AffaireController extends AbstractController
         $applicationRevendeur = $affaire->getApplicationRevendeur();
 
         if (count($affaire->getProducts()) > 0) {
-            $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
+            $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/APP_'.$this->application->getId().'/factures/valide/';
 
             // Vérifier si le dossier existe, sinon le créer avec les permissions appropriées
             if (!is_dir($documentFolder)) {
@@ -926,7 +927,7 @@ class AffaireController extends AbstractController
             list($pdfContent, $facture) = $this->factureService->add($affaire, $documentFolder, $request, $applicationRevendeur);
             
             $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
-            $pdfPath = '/uploads/factures/valide/' . $filename;
+            $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/valide/' . $filename;
             
             // Sauvegarder le fichier PDF
             file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
@@ -956,7 +957,7 @@ class AffaireController extends AbstractController
         return new JsonResponse([]);*/
        
         if (count($affaire->getProducts()) > 0) {
-            $documentFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/factures/annule/';
+            $documentFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/APP_'.$this->application->getId().'/factures/annule/';
            
             if (!is_dir($documentFolder)) {
                 if (!mkdir($documentFolder, 0775, true)) {
@@ -969,7 +970,7 @@ class AffaireController extends AbstractController
             // Utiliser le numéro de la facture pour le nom du fichier
             //$filename = "Facture(FA-Annuler-" . $facture->getNumero() . ").pdf";
             $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
-            $pdfPath = '/uploads/factures/annule/' . $filename;
+            $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/annule/' . $filename;
             file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
             
             // Retourner le PDF en réponse

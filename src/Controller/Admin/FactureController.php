@@ -114,7 +114,8 @@ class FactureController extends AbstractController
         
             $data["html"] = $this->renderView('admin/facture/index.html.twig', [
                 'listes' => $factures,
-                'factureEcheanceData' => $factureEcheanceData 
+                'factureEcheanceData' => $factureEcheanceData,
+                'application' => $this->application
             ]);
         
             return new JsonResponse($data);
@@ -242,7 +243,7 @@ class FactureController extends AbstractController
                 $data[$k][] = $textAction;
                 $baseUrl = $request->getScheme() . '://' . $request->getHttpHost();
                 $fileFacture = $compteArray['fichier'];
-                $file = ($fileFacture != "" && $fileFacture != null ? "$baseUrl/uploads/factures/valide/$fileFacture": '#');
+                $file = ($fileFacture != "" && $fileFacture != null ? "$baseUrl/uploads/APP_'.$this->application->getId().'/factures/valide/$fileFacture": '#');
                 if ($file != "#") {
                     $data[$k][] = "<a href=\"$file\" target=\"_blank\"><i class=\"bi bi-file-pdf-fill text-danger fs-4\"></i></a>";
                 } else {
@@ -294,6 +295,12 @@ class FactureController extends AbstractController
         $datePaieDu = $request->get('date_paiement_debut');
         $datePaieAu = $request->get('date_paiement_end');
         
+        $tabStatut = ['Non payé'=> 'non',
+            'Réglée'=> 'regle',
+            'Annulée'=> 'annule',
+            'En cours'=> 'encours',
+            'En écheance'=> 'enecheance'];
+            $statutPaiement = $tabStatut[$statutPaiement];
         $dateDu = $request->get('date_facture_debut');
         $dateAu = $request->get('date_facture_end');
 
@@ -320,12 +327,13 @@ class FactureController extends AbstractController
             $dateAuExplode = explode("/", $dateAu);
             $dateAu = new \DateTime($dateAuExplode[2] . "-" . $dateAuExplode[1] . "-" . $dateAuExplode[0]);
         }
+        
         $tabFactures = $factureService->searchFactureRawSql($genre, $nomCompte, $dateDu, $dateAu, null, null, null, null, false, null, $statutPaiement, $datePaieDu, $datePaieAu, $factureList);
        // dd($facturesAssoc);
         $typeFacture = $request->get('type');
         $typeFacture = "Facture";
         //$tabFactures = [];
-
+        //dd($_POST, $tabFactures);
         $tabChampPlus = [];
 
         

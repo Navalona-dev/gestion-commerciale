@@ -14,6 +14,7 @@ use App\Service\FactureEcheanceService;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\FactureEcheanceReporterType;
+use App\Service\ApplicationManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -27,18 +28,21 @@ class FactureEcheanceController extends AbstractController
     private $em;
     private $productService;
     private $factureRepository;
+    private $application;
 
     public function __construct(
         FactureEcheanceService $factureEcheanceService,
         EntityManagerInterface $em,
         ProductService $productService,
-        FactureRepository $factureRepository
+        FactureRepository $factureRepository,
+        ApplicationManager $applicationManager
     )
     {
         $this->factureEcheanceService = $factureEcheanceService;
         $this->em = $em;
         $this->productService = $productService;
         $this->factureRepository = $factureRepository;
+        $this->application = $applicationManager->getApplicationActive();
     }
 
     #[Route('/{affaire}', name: '_create')]
@@ -66,9 +70,9 @@ class FactureEcheanceController extends AbstractController
                 $montantHt = $request->request->get('montantHt');
 
                 if ($request->isXmlHttpRequest()) {
-                    $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
+                    $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/APP_'.$this->application->getId().'/factures/valide/';
                      // Chemin du dossier des échéances
-                    $echeanceFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/factures/echeance/';
+                    $echeanceFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/APP_'.$this->application->getId().'/factures/echeance/';
                     
                     // Vérifier si le dossier des échéances existe, sinon le créer
                     if (!is_dir($echeanceFolder)) {
@@ -80,7 +84,7 @@ class FactureEcheanceController extends AbstractController
                 
                     // Utiliser le numéro de la facture pour le nom du fichier
                     $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
-                    $pdfPath = '/uploads/factures/echeance/' . $filename;
+                    $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/echeance/' . $filename;
                     file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
                     // Retourner le PDF en réponse
 
@@ -158,7 +162,8 @@ class FactureEcheanceController extends AbstractController
                'facture' => $facture,
                'error' => $error,
                'montantHt' => $montantHt,
-               'montantManquant' => $montantManquant
+               'montantManquant' => $montantManquant,
+               'application' => $this->application
             ]);
            
             return new JsonResponse($data);
@@ -217,8 +222,8 @@ class FactureEcheanceController extends AbstractController
 
             if($form->isSubmitted() && $form->isValid()) {
 
-                $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/echeance/';
-                $echeanceFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/factures/echeance/';
+                $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/APP_'.$this->application->getId().'/factures/echeance/';
+                $echeanceFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/APP_'.$this->application->getId().'/factures/echeance/';
                     
                 // Vérifier si le dossier des échéances existe, sinon le créer
                 if (!is_dir($echeanceFolder)) {
@@ -230,8 +235,8 @@ class FactureEcheanceController extends AbstractController
                 
                 // Utiliser le numéro de la facture pour le nom du fichier
                 //$filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
-                $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $newFacture->getNumero() . ".pdf";
-                $pdfPath = '/uploads/factures/echeance/' . $filename;
+                $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $newFacture->getNumero(). '-' . $newFacture->getEcheanceNumero() . ".pdf";
+                $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/echeance/' . $filename;
                 file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
                 // Retourner le PDF en réponse
                 return new JsonResponse([
@@ -298,8 +303,8 @@ class FactureEcheanceController extends AbstractController
 
 
             if($form->isSubmitted() && $form->isValid()) {
-                $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/echeance/';
-                $echeanceFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/factures/echeance/';
+                $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/APP_'.$this->application->getId().'/factures/echeance/';
+                $echeanceFolder = $this->getParameter('kernel.project_dir') . '/public/uploads/APP_'.$this->application->getId().'/factures/echeance/';
                     
                 // Vérifier si le dossier des échéances existe, sinon le créer
                 if (!is_dir($echeanceFolder)) {
@@ -312,7 +317,7 @@ class FactureEcheanceController extends AbstractController
                 // Utiliser le numéro de la facture pour le nom du fichier
                 //$filename = "Facture(FA-" . $facture->getNumero() . ").pdf";
                 $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $newFacture->getNumero() . ".pdf";
-                $pdfPath = '/uploads/factures/echeance/' . $filename;
+                $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/echeance/' . $filename;
                 file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
                 if($reglementEcheance > $factureEcheance->getMontant()) {
                     return new JsonResponse([

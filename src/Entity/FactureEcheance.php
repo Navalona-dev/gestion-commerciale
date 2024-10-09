@@ -57,6 +57,9 @@ class FactureEcheance
     #[ORM\Column(nullable: true)]
     private ?bool $isReporter = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $numero = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -190,6 +193,18 @@ class FactureEcheance
     public function setReporter(?bool $isReporter): static
     {
         $this->isReporter = $isReporter;
+
+        return $this;
+    }
+
+    public function getNumero(): ?int
+    {
+        return $this->numero;
+    }
+
+    public function setNumero(?int $numero): static
+    {
+        $this->numero = $numero;
 
         return $this;
     }

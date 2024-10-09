@@ -18,7 +18,7 @@
                     <div class="card">
                         <div class="     profile-card pt-4 d-flex flex-column align-items-center">
                              {% if ((profil is not null) and (profil.image != "")) %}
-                            <img src="{{ app.request.getSchemeAndHttpHost() ~ asset('uploads/avatar/' ~ profil.image) }}" alt="Profile" class="rounded-circle img-responsive">
+                            <img src="{{ app.request.getSchemeAndHttpHost() ~ asset('uploads/APP_' ~ application.id ~'/avatar/' ~ profil.image) }}" alt="Profile" class="rounded-circle img-responsive">
                             {% endif %}
                             <h2>{{profil.prenom}} {{profil.nom}}</h2>
                            {# <h3>{{profil.fonction}}</h3> #}
@@ -82,7 +82,7 @@
                                     <div class="row mb-3">
                                         <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Photo</label>
                                         <div class="col-md-8 col-sm-4">
-                                            <img src="{{ app.request.getSchemeAndHttpHost() ~ asset('uploads/avatar/' ~ profil.image) }}" alt="Profile">
+                                            <img src="{{ app.request.getSchemeAndHttpHost() ~ asset('uploads/APP_' ~ application.id ~'/avatar/' ~ profil.image) }}" alt="Profile">
                                             {{ form_widget(form.imageFile) }}
                                             {{ form_errors(form.imageFile) }}
                                         </div>

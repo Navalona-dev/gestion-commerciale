@@ -46,9 +46,9 @@
             {% set filePath = '' %}
             {% if liste.file is not null %}
                 {% if liste.statut == "regle" or liste.statut == "encours" %}
-                    {% set filePath = 'uploads/factures/valide/' ~ liste.file %}
+                    {% set filePath = 'uploads/APP_' ~ application.id ~'/factures/valide/' ~ liste.file %}
                 {% elseif liste.statut == "annule" %}
-                    {% set filePath = 'uploads/factures/annule/' ~ liste.file %}
+                    {% set filePath = 'uploads/APP_' ~ application.id ~'/factures/annule/' ~ liste.file %}
                 {% endif %}
             {% endif %}
 
@@ -61,7 +61,7 @@
                 {% set factureEcheance = factureEcheanceData[liste.id] %}
                 {% set url = '' %}
                 {% if factureEcheance is not null %}
-                    {% set url = 'uploads/factures/echeance/' ~ factureEcheance.file %}
+                    {% set url = 'uploads/APP_' ~ application.id ~'/factures/echeance/' ~ factureEcheance.file %}
 
                     {% if file_exists(url) and factureEcheance.status == "regle" %}
                         <a href="{{url}}" target="_blank" class="text-danger fs-4"><i class="bi bi-file-pdf-fill"></i></a>

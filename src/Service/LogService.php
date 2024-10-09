@@ -16,9 +16,9 @@ class LogService
     {
         if (null != $nameAppli) {
             if (null != $fileId) {
-                $log = fopen("./uploads/historique/log_".$nameAppli."_".$fileId."_".date("Y-m-d").".txt", "a+");
+                $log = fopen("./uploads/APP_'.$nameAppli.'/historique/log_".$nameAppli."_".$fileId."_".date("Y-m-d").".txt", "a+");
             } else {
-                $log = fopen("./uploads/historique/log_".$nameAppli."_".date("Y-m-d").".txt", "a+");
+                $log = fopen("./uploads/APP_'.$nameAppli.'/historique/log_".$nameAppli."_".date("Y-m-d").".txt", "a+");
             }
             
         }else {

@@ -297,7 +297,7 @@ class UserController extends AbstractController
           
             if ($form->isSubmitted() && $form->isValid()) {
 
-                $directoryPublicCopy = $this->getParameter('kernel.project_dir'). '/public/uploads/avatar/';
+                $directoryPublicCopy = $this->getParameter('kernel.project_dir'). '/public/uploads/APP_'.$this->application->getId().'/avatar/';
                
                 if ($request->isXmlHttpRequest()) {
                    
@@ -345,7 +345,8 @@ class UserController extends AbstractController
                 'profil' => $user,
                 'form' => $form->createView(),
                 'formAcces' => $formAcces->createView(),
-                'utilisateurId' => $user->getId()
+                'utilisateurId' => $user->getId(),
+                'application' => $this->application
             ]);
     
             return new JsonResponse($data);
