@@ -514,6 +514,18 @@ class Product
 
         return $this;
     }
+        
+    public function getTypeReduction(): ?string
+    {
+        return $this->typeReduction;
+    }
+
+    public function setTypeReduction(?string $typeReduction): static
+    {
+        $this->typeReduction = $typeReduction;
+
+        return $this;
+    }
 
     public function getQttRestant(): ?float
     {
@@ -559,18 +571,6 @@ class Product
     public function setRestePayer(?float $restePayer): static
     {
         $this->restePayer = $restePayer;
-
-        return $this;
-    }
-    
-    public function getTypeReduction(): ?string
-    {
-        return $this->typeReduction;
-    }
-
-    public function setTypeReduction(?string $typeReduction): static
-    {
-        $this->typeReduction = $typeReduction;
 
         return $this;
     }

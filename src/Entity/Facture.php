@@ -122,6 +122,9 @@ class Facture
 
     #[ORM\Column(nullable: true)]
     private ?int $echeanceNumero = null;
+    
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateReglement = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateReglement = null;

@@ -13,7 +13,6 @@ use App\Form\ProfilType;
 use App\Form\AffaireType;
 use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
-use App\Entity\Product;
 use App\Form\FicheCompteType;
 
 use App\Service\AccesService;
@@ -38,7 +37,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Exception\UnsufficientPrivilegeException;
-use App\Repository\AffaireRepository;
 use App\Repository\ProductRepository;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
