@@ -113,8 +113,9 @@
                                 <td>
                                     <input type="hidden" name="qttRestant" value="{{ liste.stockRestant }}">
                                     {% set formattedStockRestant = (liste.stockRestant - liste.qttReserver)|number_format(2, '.', '') %}
-                                    {% set qttReserverDetail = liste.qttReserverDetail / liste.volumeGros %}
-
+                                        {% if liste.volumeGros > 0 %}
+                                        {% set qttReserverDetail = liste.qttReserverDetail / liste.volumeGros %}
+                                        {% endif %}
                                     {% if liste.qttReserverGros is not null and liste.qttReserverDetail is not null %}
                                         <span class="stock-restant" data-stock="{{liste.stockRestant - liste.qttReserver}}">
                                             {% set stockRestant = liste.stockRestant - liste.qttReserverGros - qttReserverDetail %} 
