@@ -56,7 +56,7 @@ class FactureRepository extends ServiceEntityRepository
 
     public function getAllFactures()
     {
-        $sql = "SELECT f.id, f.type, f.numero, f.prixHt, f.prixTtc, f.solde, f.statut, f.reglement, f.numeroCommande, f.etat,
+        $sql = "SELECT f.id, f.type, f.numero, f.prixHt, f.echeanceNumero, f.isEcheance, f.prixTtc, f.solde, f.statut, f.reglement, f.numeroCommande, f.etat,
                 f.file, f.dateCreation, f.isValid, f.remise, c.id as compteId, c.nom as compte, a.id as affaireId, a.nom as affaire, GROUP_CONCAT(DISTINCT fe.id) as factureEcheances
                 FROM `Facture` f 
                 LEFT JOIN `compte` c ON f.compte_id = c.id 

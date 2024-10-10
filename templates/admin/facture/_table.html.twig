@@ -70,7 +70,7 @@
             </td>
             <td> {{liste.dateCreation|date('d/m/Y')}} </td>
             <td> {{liste.type}} </td>
-            <td> {{liste.numero}} </td>
+            <td> {% if liste.isEcheance is not null and liste.isEcheance == true %} {{liste.numero}} Echéance n°{{liste.echeanceNumero}} {% else %} {{liste.numero}} {% endif %} </td>
             <td> <a href="{{path('affaires_liste_affaire_from_facture', {'compte': liste.compteId})}}" title="Pdf">
                             {{liste.compte}}
                         </a> </td>
