@@ -383,18 +383,16 @@ class StockController extends AbstractController
             $transferts = $produitCategorie->getTransferts();
             $stocks = $produitCategorie->getStocks();
     
-            foreach ($stocks as $stck) {
-                $qttStock = $stck->getQtt();
-                $totalQttStock += $qttStock;
+            foreach ($stocks as $stk) {
+                $totalQttStock += $stk->getQtt();
             }
-    
+            
             foreach ($transferts as $transfert) {
-                $qttTransfert = $transfert->getQuantity();
-                $totalQttTransfert += $qttTransfert;
+                $totalQttTransfert += $transfert->getQuantity();
             }
     
-            $totalQttStock = intVal($totalQttStock);
-            $totalQttTransfert = intVal($totalQttTransfert);
+            //$totalQttStock = intVal($totalQttStock);
+            //$totalQttTransfert = intVal($totalQttTransfert);
     
             if ($request->isXmlHttpRequest()) {
                 // Conditions de validation avant suppression

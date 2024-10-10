@@ -284,7 +284,8 @@ class FactureService
             }
 
             //gerer le qtt reserver commander par sac et unité
-            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            //$qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            $qttReserverCommander = $qttProduct;
             $sacs = floor($qttReserverCommander);
 
             // Unité (partie décimale)
@@ -560,7 +561,8 @@ class FactureService
             $this->persist($produitCategorie);
 
             //gerer le qtt reserver commander par sac et unité
-            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            //$qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            $qttReserverCommander = $qtt;
             $sacs = floor($qttReserverCommander);
 
             // Unité (partie décimale)
@@ -956,7 +958,8 @@ class FactureService
             }
 
             //gerer le qtt reserver commander par sac et unité
-            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            //$qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            $qttReserverCommander = $qttProduct;
             $sacs = floor($qttReserverCommander);
 
             // Unité (partie décimale)
