@@ -223,31 +223,25 @@ class ImportProduitController extends AbstractController
                         }
 
                         // Format stock
-                        $qtt = floatval($stockRestant);
-                    $formattedStock = number_format($qtt,2,'.','');
-                    $tabFormatedStock = explode(".", $formattedStock);
-                    $stockRestant = round($qtt, 2);
-                    $sousUnite = 0;
-                    if (count($tabFormatedStock) > 0) {
-                        if ($tabFormatedStock[1] == "00") {
-                            $stockRestant = number_format($qtt,0,'.','');
-                        } else {
-                            $sacs = round($qtt, 0);
-                            $decimalPart = round(floatval($sacs) - floatval($qtt), 2);
-                          
-                            $decimalPart = floatval("0.".$tabFormatedStock[1]) + $decimalPart;
-                          
-                            $sousUnite = number_format($decimalPart * $produitCategorie->getVolumeGros(),2,'.','');
-                           
-                        }
-                    }
+                            $qtt = floatval($stockRestant);
+                            $stockRestant = intval($qtt); // Conversion en entier pour la partie entière du stock
+                            $sousUnite = 0;
 
-                    $stockRestantStr = round($stockRestant, 0);
-                    if ($sousUnite != 0) {
-                        $stockRestantStr = $stockRestantStr." ".$produitCategorie->getPresentationGros()." et ".  $sousUnite." ". $produitCategorie->getUniteVenteGros();
-                    } else {
-                        $stockRestantStr = $stockRestantStr." ".$produitCategorie->getPresentationGros();
-                    }
+                            // Séparer la partie entière et décimale sans utiliser number_format
+                            $decimalPart = $qtt - $stockRestant; // Calculer la partie décimale
+
+                            if ($decimalPart > 0) {
+                                // Si la partie décimale est non nulle
+                                $sousUnite = $decimalPart * $produitCategorie->getVolumeGros(); // Calculer la sous-unité
+                            }
+
+                            // Préparation de la chaîne de résultat
+                            $stockRestantStr = $stockRestant . " " . $produitCategorie->getPresentationGros(); // Chaîne pour l'affichage de la partie entière
+
+                            if ($sousUnite > 0) {
+                                $stockRestantStr .= " et " . $sousUnite . " " . $produitCategorie->getUniteVenteGros(); // Ajout de la sous-unité si nécessaire
+                            }
+
                     //// End format stock
                        
                         $user = $this->getUser();
