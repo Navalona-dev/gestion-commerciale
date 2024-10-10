@@ -256,6 +256,8 @@ class StockController extends AbstractController
         return new JsonResponse($data);
     }
 
+    
+
     #[Route('/{produitCategorie}', name: '_liste')]
     public function index(
         Request $request, 
