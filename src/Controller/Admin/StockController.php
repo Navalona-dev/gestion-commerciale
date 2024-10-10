@@ -83,31 +83,31 @@ class StockController extends AbstractController
                     
                     $stockService->add($stock, $produitCategorie, $datePeremption);
 
-                    // Format stock
-                    $formattedStock = number_format($produitCategorie->getStockRestant(),2,'.','');
-                    $tabFormatedStock = explode(".", $formattedStock);
-                    $stockRestant = round($produitCategorie->getStockRestant(), 2);
+                  // Récupérer le stock restant
+                    $stockRestant = $produitCategorie->getStockRestant();
                     $sousUnite = 0;
-                    if (count($tabFormatedStock) > 0) {
-                        if ($tabFormatedStock[1] == "00") {
-                            $stockRestant = number_format($produitCategorie->getStockRestant(),0,'.','');
-                        } else {
-                            $sacs = round($stockRestant, 0);
-                            $decimalPart = round(floatval($sacs) - floatval($stockRestant), 2);
-                          
-                            $decimalPart = floatval("0.".$tabFormatedStock[1]) + $decimalPart;
-                          
-                            $sousUnite = number_format($decimalPart * $produitCategorie->getVolumeGros(),2,'.','');
-                           
+
+                    // Vérifiez si le stock restant est un entier ou contient des décimales
+                    if ($stockRestant == floor($stockRestant)) {
+                        // Si le stock est entier, on le prend tel quel
+                        $stockRestantStr = (string)$stockRestant; // Convertir en chaîne pour la concaténation
+                        $stockRestantStr .= " " . $produitCategorie->getPresentationGros();
+                    } else {
+                        // Calculer la partie entière et la partie décimale
+                        $sacs = floor($stockRestant); // Prendre la partie entière
+                        $decimalPart = $stockRestant - $sacs; // Calculer la partie décimale
+
+                        // Calculer les sous-unités
+                        $sousUnite = $decimalPart * $produitCategorie->getVolumeGros();
+                        
+                        // Créer la chaîne de stock restant
+                        $stockRestantStr = $sacs . " " . $produitCategorie->getPresentationGros();
+
+                        if ($sousUnite > 0) {
+                            $stockRestantStr .= " et " . $sousUnite . " " . $produitCategorie->getUniteVenteGros();
                         }
                     }
 
-                    $stockRestantStr = round($stockRestant, 0);
-                    if ($sousUnite != 0) {
-                        $stockRestantStr = $stockRestantStr." ".$produitCategorie->getPresentationGros()." et ".  $sousUnite." ". $produitCategorie->getUniteVenteGros();
-                    } else {
-                        $stockRestantStr = $stockRestantStr." ".$produitCategorie->getPresentationGros();
-                    }
                     //// End format stock
                     $user = $this->getUser();
                     $data["produit"] = $produitCategorie->getNom();
@@ -117,13 +117,13 @@ class StockController extends AbstractController
                     $data["userDoAction"] = $user->getUserIdentifier();
                     $data["source"] = $this->application->getEntreprise();
                     $data["destination"] = $this->application->getEntreprise();
-                    $data["action"] = "Ajout";
-                    $data["type"] = "Ajout";
-                    $data["qtt"] = $stock->getQtt();
+                    $data["action"] = "Ajout stock";
+                    $data["type"] = "Ajout stock";
+                    $data["qtt"] = $stock->getQtt() . ' ' . $produitCategorie->getPresentationGros();
                     $data["stockRestant"] = $stockRestantStr;
                     $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
                     $data["typeSource"] = "Point de vente";
-                    $data["typeDestination"] = "Point de vente";;
+                    $data["typeDestination"] = "Point de vente";
                     $data["commande"] = null;
                     $data["commandeId"] = null;
                     $data["sourceId"] =  $this->application->getId();
@@ -209,6 +209,54 @@ class StockController extends AbstractController
                     $qtt = $formData->getQtt();
 
                     $stockService->edit($stock, $produitCategorie, $oldQtt, $datePeremption, $qtt);
+                    
+                    $stockRestant = $produitCategorie->getStockRestant();
+                    $sousUnite = 0;
+
+                    // Vérifiez si le stock restant est un entier ou contient des décimales
+                    if ($stockRestant == floor($stockRestant)) {
+                        // Si le stock est entier, on le prend tel quel
+                        $stockRestantStr = (string)$stockRestant; // Convertir en chaîne pour la concaténation
+                        $stockRestantStr .= " " . $produitCategorie->getPresentationGros();
+                    } else {
+                        // Calculer la partie entière et la partie décimale
+                        $sacs = floor($stockRestant); // Prendre la partie entière
+                        $decimalPart = $stockRestant - $sacs; // Calculer la partie décimale
+
+                        // Calculer les sous-unités
+                        $sousUnite = $decimalPart * $produitCategorie->getVolumeGros();
+                        
+                        // Créer la chaîne de stock restant
+                        $stockRestantStr = $sacs . " " . $produitCategorie->getPresentationGros();
+
+                        if ($sousUnite > 0) {
+                            $stockRestantStr .= " et " . $sousUnite . " " . $produitCategorie->getUniteVenteGros();
+                        }
+                    }
+
+                    //// End format stock
+                    $user = $this->getUser();
+                    $data["produit"] = $produitCategorie->getNom();
+                    $data["dateReception"] = (new \DateTime())->format("d-m-Y h:i:s");
+                    $data["dateTransfert"] = null;
+                    $data["dateSortie"] = null;
+                    $data["userDoAction"] = $user->getUserIdentifier();
+                    $data["source"] = $this->application->getEntreprise();
+                    $data["destination"] = $this->application->getEntreprise();
+                    $data["action"] = "Modification stock";
+                    $data["type"] = "Modification stock";
+                    $data["qtt"] = $stock->getQtt() . ' ' . $produitCategorie->getPresentationGros();
+                    $data["stockRestant"] = $stockRestantStr;
+                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
+                    $data["typeSource"] = "Point de vente";
+                    $data["typeDestination"] = "Point de vente";
+                    $data["commande"] = null;
+                    $data["commandeId"] = null;
+                    $data["sourceId"] =  $this->application->getId();
+                    $data["destinationId"] = $this->application->getId();
+                    $this->logService->addLog($request, "reception", $this->application->getId(), $produitCategorie->getReference(), $data);
+
+
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
                 //$this->addFlash('success', 'Modification application "' . $stock->getTitle() . '" avec succès.');
@@ -256,7 +304,7 @@ class StockController extends AbstractController
         return new JsonResponse($data);
     }
 
-    
+
 
     #[Route('/{produitCategorie}', name: '_liste')]
     public function index(
@@ -405,10 +453,63 @@ class StockController extends AbstractController
                 } elseif ($totalQttStock - $stock->getQtt() <= $totalQttTransfert) {
                     return new JsonResponse(['status' => 'error', 'message' => 'La quantité totale en stock moins la quantité de stock à supprimer est inférieure ou égale à la quantité totale transférée.'], Response::HTTP_OK);
                 } else {
-                    // Suppression du stock
+                    
+
+                    //// End format stock
+                    $user = $this->getUser();
+                    $data["produit"] = $produitCategorie->getNom();
+                    $data["dateReception"] = (new \DateTime())->format("d-m-Y h:i:s");
+                    $data["dateTransfert"] = null;
+                    $data["dateSortie"] = null;
+                    $data["userDoAction"] = $user->getUserIdentifier();
+                    $data["source"] = $this->application->getEntreprise();
+                    $data["destination"] = $this->application->getEntreprise();
+                    $data["action"] = "Suppression stock";
+                    $data["type"] = "Suppression stock";
+                    $data["qtt"] = $stock->getQtt() . ' ' . $produitCategorie->getPresentationGros();
+                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
+                    $data["typeSource"] = "Point de vente";
+                    $data["typeDestination"] = "Point de vente";
+                    $data["commande"] = null;
+                    $data["commandeId"] = null;
+                    $data["sourceId"] =  $this->application->getId();
+                    $data["destinationId"] = $this->application->getId();
+
                     $stockService->remove($stock, $produitCategorie);
+
+                    // Suppression du stock
+                    $stockRestant = $produitCategorie->getStockRestant();
+                    $sousUnite = 0;
+
+                    // Vérifiez si le stock restant est un entier ou contient des décimales
+                    if ($stockRestant == floor($stockRestant)) {
+                        // Si le stock est entier, on le prend tel quel
+                        $stockRestantStr = (string)$stockRestant; // Convertir en chaîne pour la concaténation
+                        $stockRestantStr .= " " . $produitCategorie->getPresentationGros();
+                    } else {
+                        // Calculer la partie entière et la partie décimale
+                        $sacs = floor($stockRestant); // Prendre la partie entière
+                        $decimalPart = $stockRestant - $sacs; // Calculer la partie décimale
+
+                        // Calculer les sous-unités
+                        $sousUnite = $decimalPart * $produitCategorie->getVolumeGros();
+                        
+                        // Créer la chaîne de stock restant
+                        $stockRestantStr = $sacs . " " . $produitCategorie->getPresentationGros();
+
+                        if ($sousUnite > 0) {
+                            $stockRestantStr .= " et " . $sousUnite . " " . $produitCategorie->getUniteVenteGros();
+                        }
+                    }
+
+                    $data["stockRestant"] = $stockRestantStr;
+
+                    $this->logService->addLog($request, "reception", $this->application->getId(), $produitCategorie->getReference(), $data);
+
                     return new JsonResponse(['status' => 'success', 'idProduit' => $idProduit], Response::HTTP_OK);
                 }
+
+                
             }
     
         } catch (\Exception $e) {
@@ -504,11 +605,11 @@ class StockController extends AbstractController
                         $data["stockRestant"] = $stockRestantFinal;
                         $data["fournisseur"] = $oldProduitCategorie->getReference();
                         $data["typeSource"] = "Point de vente";
-                        $data["typeDestination"] = "Point de vente";;
+                        $data["typeDestination"] = "Point de vente";
                         $data["commande"] = null;
                         $data["commandeId"] = null;
                         $data["sourceId"] =  $this->application->getId();
-                        $data["destinationId"] = $newApplication->getId();;
+                        $data["destinationId"] = $newApplication->getId();
                         $this->logService->addLog($request, "transfert", $this->application->getId(), $oldProduitCategorie->getReference(), $data);
                     
                         $this->em->flush();
