@@ -34,7 +34,7 @@
                             <label for="" class="mb-2">Qtt en plus</label>
                             <div class="row">
                                 <div class="col-10">
-                                    <input type="text" name="qtt-plus-stock-update" id="qtt-plus-stock-update" class="form-control form-control-md" readonly>
+                                    <input type="text" name="qtt-plus-stock-update" id="qtt-plus-stock-update" class="form-control form-control-md" autocomplete="off" readonly>
                                 </div>
                                 <div class="col-2">
                                     ({{unite}})
@@ -76,7 +76,7 @@
 
         });
 
-        
+
 
        $('#updateStock').on('submit', function (e) {
             e.preventDefault();
