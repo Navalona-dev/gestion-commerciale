@@ -121,7 +121,7 @@ class StockController extends AbstractController
                     $data["type"] = "Ajout stock";
                     $data["qtt"] = $stock->getQtt() . ' ' . $produitCategorie->getPresentationGros();
                     $data["stockRestant"] = $stockRestantStr;
-                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
+                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
                     $data["typeSource"] = "Point de vente";
                     $data["typeDestination"] = "Point de vente";
                     $data["commande"] = null;
@@ -247,7 +247,7 @@ class StockController extends AbstractController
                     $data["type"] = "Modification stock";
                     $data["qtt"] = $stock->getQtt() . ' ' . $produitCategorie->getPresentationGros();
                     $data["stockRestant"] = $stockRestantStr;
-                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
+                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
                     $data["typeSource"] = "Point de vente";
                     $data["typeDestination"] = "Point de vente";
                     $data["commande"] = null;
@@ -304,7 +304,7 @@ class StockController extends AbstractController
         return new JsonResponse($data);
     }
 
-
+    
 
     #[Route('/{produitCategorie}', name: '_liste')]
     public function index(
@@ -467,7 +467,7 @@ class StockController extends AbstractController
                     $data["action"] = "Suppression stock";
                     $data["type"] = "Suppression stock";
                     $data["qtt"] = $stock->getQtt() . ' ' . $produitCategorie->getPresentationGros();
-                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
+                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
                     $data["typeSource"] = "Point de vente";
                     $data["typeDestination"] = "Point de vente";
                     $data["commande"] = null;
