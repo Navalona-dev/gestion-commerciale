@@ -7,6 +7,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <span class="qtt-vendu" data-qttvendu="{{qttVendu}}"></span>
+                <span class="qtt-restant" data-qttrestant="{{qttRestant}}"></span>
+                <span class="qtt" data-qtt="{{quantity}}"></span>
+                <span class="total-stock" data-totalstock="{{totalStock}}"></span>
+
                 <span class="volume-gros" data-volume="{{produitCategorie.volumeGros}}"></span>
                 <span class="presentation-gros" data-presentation="{{produitCategorie.presentationGros}}"></span>
                 <span class="unite-gros" data-unite="{{produitCategorie.uniteVenteGros}}"></span>
@@ -40,7 +45,7 @@
                         </div>
                     {% endif %}
                       <input type="hidden" name="oldQtt" value = "{{oldQtt}}" />
-                      <div class="form-group mb-3">
+                    <div class="form-group mb-3">
                         <label for="" class="mb-2">Date de peremption</label>
                         {{ form_widget(form.datePeremption) }}
                     </div>  
@@ -56,33 +61,29 @@
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 
 <script>
- 
- $(document).ready(function() {
-  var dateFormat = 'dd/mm/yyyy';
-  var dateNow = new Date();
-  dateNow.setDate(dateNow.getDate() + 1)
-
-  $('#stock_datePeremption_date').datepicker({
-      format: dateFormat,
-      todayHighlight: true,
-      //daysOfWeekDisabled: '0',
-      startDate: dateNow,
-      language: 'fr',
-      autoclose: true,
-
-  });
-
-});
 
     $(document).ready(function () {
+        var dateFormat = 'dd/mm/yyyy';
+        var dateNow = new Date();
+        dateNow.setDate(dateNow.getDate() + 1);
+
+        $('#stock_datePeremption #stock_datePeremption_date').datepicker({
+            format: dateFormat,
+            todayHighlight: true,
+            startDate: dateNow,
+            language: 'fr',
+            autoclose: true,
+
+        });
+
        $('#updateStock').on('submit', function (e) {
             e.preventDefault();
             var idProduit = $('#id-produit-update').data('produit');
             let form = $(this);
-            var totalStock = {{totalStock}};
-            var quantityTransferer = {{quantity}};
-            var qttRestant = {{qttRestant}};
-            var qttVendu = {{qttVendu}};
+            var totalStock = $('.total-stock').data('totalstock');
+            var quantityTransferer = $('.qtt').data('qtt');
+            var qttRestant = $('.qtt-restant').data('qttrestant');
+            var qttVendu = $('.qtt-vendu').data('qttvendu');
             var totalQttTraiter = qttRestant + quantityTransferer + qttVendu;
             var qttUpdated = $('#stock_qtt').val();
             var totalQtt = totalStock;
@@ -141,13 +142,13 @@
             } else {
                 $(this).removeAttr('readonly');
             }
-        })
+        });
 
         $('#stock_qtt').on('input', function() {
             var initialQttStock = parseFloat(qttStock.val());
             // Enregistrer la valeur dans la session (si vous avez une fonction pour cela)
             sessionStorage.setItem('initialQttStock', initialQttStock);
-        })
+        });
 
         var typingTimer; // Timer variable
         var doneTypingInterval = 500; // Délai de 500ms
