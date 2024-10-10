@@ -249,7 +249,8 @@ class FactureEcheanceService
             $this->entityManager->persist($produitCategorie);
 
             //gerer le qtt reserver commander par sac et unité
-            $qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            //$qttReserverCommander = $produitCategorie->getQttReserverCommander();
+            $qttReserverCommander = $qttProduct;
             $sacs = floor($qttReserverCommander);
 
             // Unité (partie décimale)
