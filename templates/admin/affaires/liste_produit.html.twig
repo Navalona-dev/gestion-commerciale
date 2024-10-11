@@ -134,7 +134,10 @@
                                             {{sacs}} {{liste.presentationGros}} {% if unite > 0 %} et {{unite|number_format(2,'.','')}} {{liste.uniteVenteGros}} {% endif %}
                                     {% else %}
                                         <span class="stock-restant" data-stock="{{nombreProduitPresentation}}">
-                                            {{liste.stockRestant}} {{liste.presentationGros}}
+                                            {% set sacs = stockRestant|round(0, 'floor') %}
+                                            {% set decimal = stockRestant - sacs %}
+                                            {% set unite = decimal * liste.volumeGros %}
+                                            {{sacs}} {{liste.presentationGros}} {% if unite > 0 %} et {{unite|number_format(2,'.','')}} {{liste.uniteVenteGros}} {% endif %}
                                         </span> 
                                     {% endif %}
 
