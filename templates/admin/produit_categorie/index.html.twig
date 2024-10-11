@@ -25,6 +25,7 @@
         <div class="card">
           
           <div class="d-flex justify-content-end mb-3 pt-2 px-2" title="Nouveau">
+            <a href="#" class="btn btn-danger mx-3" id="delete-selected"><i class="bi bi-trash"></i></a>
             <button class="btn btn-primary" onclick="return newProduitCategorie(true)">
                  <i class="bi bi-plus-circle ml-2"></i>
             </button>
@@ -117,6 +118,7 @@
         $('#tab-commande').css('display','none');
         $('#tab-echeance').css('display','none');
         $('#tab-depot').css('display', 'none');
+        $('#tab-comptabilite').css('display', 'none');
 
      
     });
@@ -137,4 +139,71 @@
                 }
             });
     }
+  </script>
+
+  <script>
+  $(document).ready(function() {
+    var anchorName = document.location.hash.substring(1);
+
+    $('#delete-selected').on('click', function() {
+        var selectedProducts = [];
+        
+        // Parcourir les lignes avec la classe 'bg-selection'
+        $('tr.bg-selection').each(function() {
+            var productId = $(this).data('productid'); 
+            selectedProducts.push(productId);
+        });
+
+        if (selectedProducts.length > 0) {
+          if (confirm('Voulez vous vraiment supprimer ces produits catégorie?')) {
+            // Envoyer les IDs des produits à supprimer via une requête AJAX
+            
+
+            $.ajax({
+                url: '/admin/produit/categorie/delete-selection', // URL de votre contrôleur Symfony
+                method: 'POST',
+                data: {
+                    productIds: selectedProducts.join(',') // Convertir en chaîne séparée par des virgules
+                },
+                success: function(response) {
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succès', 'Suppression effectuée');
+
+                        // Ici, vous pouvez restaurer l'anchorName
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
+
+                        showTabProduitCategorie(); // Mettre à jour la tabulation après la suppression
+
+                    }, 1000);
+                },
+                error: function(error) {
+                    alert('Erreur lors de la suppression des produits.');
+                }
+            });
+          }
+        } else {
+            setTimeout(function () {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 1000
+                };
+                toastr.error('Veuillez d\'abord sélectionner un ou plusieurs produits');
+                if (anchorName) {
+                    window.location.hash = anchorName;
+                }
+            }, 1500);
+        }
+    });
+});
+
   </script>
