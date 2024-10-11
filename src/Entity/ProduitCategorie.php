@@ -22,7 +22,8 @@ class ProduitCategorie
         'spray' => 'Spray',
         'bloc' => 'Bloc',
         'boite' => 'Boîte',
-        'sachet' => 'Sachet'
+        'sachet' => 'Sachet',
+        'cp' => 'CP'
     ];
 
     const uniteVenteGros = [
