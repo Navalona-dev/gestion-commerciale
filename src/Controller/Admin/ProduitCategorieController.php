@@ -161,7 +161,7 @@ class ProduitCategorieController extends AbstractController
                         $data["type"] = "Ajout";
                         $data["qtt"] = $produitCategorie->getStockRestant();
                         $data["stockRestant"] = $produitCategorie->getStockRestant();
-                        $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
+                        $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
                         $data["typeSource"] = "Point de vente";
                         $data["typeDestination"] = "Point de vente";;
                         $data["commande"] = null;
