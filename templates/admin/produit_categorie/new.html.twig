@@ -537,6 +537,80 @@
         });
     });
 
+
+    $(document).ready(function() {
+        const $chosenResults = $('#produit_categorie_comptes_chosen .chosen-results');
+        const $chosenDrop = $('#produit_categorie_comptes_chosen .chosen-drop');
+        const $selectElement = $('#produit_categorie_comptes'); // Corrigé l'élément $selectElement pour qu'il pointe vers le bon select
+
+        $('#produit_categorie_comptes_chosen .chosen-drop .chosen-search input').on('input', function() {
+            const inputValue = $(this).val().trim().toLowerCase();
+            let matchFound = false;
+
+            // Parcourir les options existantes pour vérifier s'il existe une correspondance partielle
+            $selectElement.find('option').each(function() {
+                const optionText = $(this).text().trim().toLowerCase();
+                if (optionText.startsWith(inputValue)) {
+                    matchFound = true;
+                    return false; // Si une correspondance est trouvée, on arrête la boucle
+                }
+            });
+
+            // Si l'input est vide, réinitialisez le résultat et supprimez le bouton "Créer"
+            if (inputValue === '') {
+                $chosenDrop.find('.btn-create-compte').remove(); // Supprimez le bouton "Créer"
+            } else {
+                // Si aucune correspondance n'a été trouvée, affichez le bouton "Créer"
+                if (!matchFound && !$chosenDrop.find('.btn-create-compte').length) {
+                    $chosenDrop.append(`<a href="#" id="btn-create-compte" class="btn-create-compte text-decoration-underline" style="margin-left:100px;">Créer</a>`);
+                } 
+                // Si une correspondance est trouvée, supprimez le bouton "Créer"
+                else if (matchFound) {
+                    $chosenDrop.find('.btn-create-compte').remove();
+                }
+            }
+
+            // Gérer le clic sur le bouton "Créer"
+            $(document).off('click', '#btn-create-compte').on('click', '#btn-create-compte', function(e) {
+                e.preventDefault(); // Empêche le comportement par défaut du lien
+                
+                const inputValue = $('#produit_categorie_comptes_chosen .chosen-drop .chosen-search input').val().trim();
+                
+                // Ajouter une nouvelle option à l'élément <select> si la valeur n'est pas vide
+                if (inputValue !== '') {
+                    // Envoyer une requête AJAX pour créer le type
+                    $.ajax({
+                        url: 'admin/produit/categorie/add/compte',
+                        type: 'POST',
+                        data: { nom: inputValue },
+                        success: function(response) {
+                            const typeId = response.id; // Récupérer l'ID du type créé
+                            
+                            if (typeId) {
+                                // Ajouter une nouvelle option à l'élément <select>
+                                $selectElement.append(`<option value="${typeId}" selected>${inputValue}</option>`);
+                                
+                                // Mettre à jour Chosen pour refléter les modifications
+                                $selectElement.trigger("chosen:updated");
+
+                                // Mettre à jour l'affichage de l'option choisie
+                                $('#produit_categorie_comptes_chosen .chosen-single span').text(inputValue);
+
+                                // Réinitialiser l'input et retirer les éléments non nécessaires
+                                $('#produit_categorie_comptes_chosen .chosen-drop .chosen-search input').val('');
+                                $chosenResults.find('.no-results').remove(); // Retirer le message "No results match"
+                                $chosenDrop.find('.btn-create-compte').remove(); // Supprimer le bouton "Créer"
+                            }
+                        },
+                        error: function() {
+                            alert('Erreur lors de l\'ajout du fournisseur.');
+                        }
+                    });
+                }
+            });
+        });
+    });
+
 </script>
 
 {% endblock %}
