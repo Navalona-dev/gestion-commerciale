@@ -296,6 +296,38 @@ class ProduitCategorieController extends AbstractController
         
         return new JsonResponse($data);
     }
+
+    #[Route('/delete-selection', name: '_delete_selection')]
+    public function deleteSelection(Request $request)
+    {
+        try {
+            if ($request->isXmlHttpRequest()) {
+                // Récupérer les IDs des produits depuis la requête AJAX
+                $productIds = $request->request->get('productIds');
+                if (is_string($productIds)) {
+                    $productIds = explode(',', $productIds); // Convertir en tableau à partir d'une chaîne
+                }
+
+                if (!empty($productIds)) {
+                    // Récupérer les objets ProduitCategorie en fonction des IDs
+                    $produitCategories = $this->entityManager->getRepository(ProduitCategorie::class)->findBy(['id' => $productIds]);
+
+                    if (count($produitCategories) > 0) {
+                        // Appel du service pour supprimer les produits
+                        $this->produitCategorieService->removeMultiple($produitCategories);
+
+                        return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
+                    } else {
+                        return new JsonResponse(['status' => 'error', 'message' => 'Aucun produit trouvé.'], Response::HTTP_OK);
+                    }
+                } else {
+                    return new JsonResponse(['status' => 'error', 'message' => 'Aucun produit sélectionné.'], Response::HTTP_BAD_REQUEST);
+                }
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(['status' => 'error', 'message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
     
 
     #[Route('/inventaire/{produitCategorie}', name: '_inventaire')]
