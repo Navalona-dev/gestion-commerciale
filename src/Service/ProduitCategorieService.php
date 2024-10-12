@@ -254,6 +254,88 @@ class ProduitCategorieService
         $this->update();
     }
 
+    public function removeMultiple(array $produitCategories)
+    {
+        foreach ($produitCategories as $produitCategorie) {
+            $stocks = $produitCategorie->getStocks();
+
+            foreach($stocks as $stock) {
+                if ($stock->getDatePeremption() != null) {
+                    $this->entityManager->remove($stock->getDatePeremption());
+                } 
+                $this->entityManager->remove($stock);
+            }
+
+            $images = $produitCategorie->getProductImages();
+
+            foreach($images as $image) {
+                $this->entityManager->remove($image);
+            }
+
+            $transferts = $produitCategorie->getTransferts();
+
+            foreach($transferts as $transfert) {
+                $this->entityManager->remove($transfert);
+            }
+
+            $notifications = $produitCategorie->getNotifications();
+
+            foreach($notifications as $notification) {
+                $this->entityManager->remove($notification);
+            }
+
+            $products = $produitCategorie->getProduits();
+            foreach($products as $product) {
+                $affaires = $product->getAffaires();
+                foreach($affaires as $affaire) {
+                    $factures = $affaire->getFactures();
+                    foreach($factures as $facture) {
+                        $factureDetails = $facture->getFactureDetails();
+                        foreach($factureDetails as $factureDetail) {
+                            $this->entityManager->remove($factureDetail);
+                        }
+                        $methodePaiements = $facture->getMethodePaiements();
+                        foreach($methodePaiements as $methodePaiement) {
+                            $this->entityManager->remove($methodePaiement);
+                        }
+                        $factureEcheances = $facture->getFactureEcheances();
+                        foreach($factureEcheances as $factureEcheance) {
+                            $this->entityManager->remove($factureEcheance);
+                        }
+                        $this->entityManager->remove($facture);
+                    }
+                    $this->entityManager->remove($affaire);
+
+                }
+
+                $dateperemptions = $product->getDatePeremptionProducts();
+                foreach($dateperemptions as $dateperemption) {
+                    $this->entityManager->remove($dateperemption);
+
+                }
+
+                $this->entityManager->remove($product);
+            }
+
+            $this->entityManager->remove($produitCategorie);
+        
+            // Obtenir l'utilisateur connecté
+            $user = $this->security->getUser();
+
+            // Créer log
+            $this->logger->info('Produit catégorie supprimé', [
+                'Produit' => $produitCategorie->getNom(),
+                'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+                'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+                'ID Application' => $produitCategorie->getApplication()->getId()
+            ]);
+
+        }
+
+        $this->update();  
+    }
+
+
     public function getAllProduitCategories($affairesProduct = [])
     {
         $produitCategories = $this->entityManager->getRepository(ProduitCategorie::class)->getProduits($affairesProduct);
