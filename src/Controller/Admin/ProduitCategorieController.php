@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use Exception;
 use App\Entity\Stock;
+use App\Entity\Compte;
 use App\Entity\Categorie;
 use App\Entity\ProduitType;
 use App\Form\TransfertType;
@@ -281,6 +282,44 @@ class ProduitCategorieController extends AbstractController
             $this->entityManager->flush();
 
             $data['id'] = $type->getId();
+    
+            return new JsonResponse($data);
+        } catch (PropertyVideException $PropertyVideException) {
+            $data['exception'] = $PropertyVideException->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+        } catch (UniqueConstraintViolationException $UniqueConstraintViolationException) {
+            return new JsonResponse(['error' => 'Ce nom de catégorie existe déjà.'], 400);
+        } catch (\Exception $Exception) {
+            $data['exception'] = $Exception->getMessage();
+            return new JsonResponse($data);
+        }
+        
+        return new JsonResponse($data);
+    }
+
+    #[Route('/add/compte', name: '_add_compte')]
+    public function addCompte(Request $request)
+    {
+        $data = []; 
+    
+        try {
+            // Récupérez le nom envoyé via la requête AJAX
+            $nom = $request->request->get('nom'); 
+    
+            // Créez une nouvelle instance de type
+            $compte = new Compte();
+            
+            // Si vous avez un setter pour le nom dans compte, utilisez-le
+            $compte->setNom($nom); 
+            $compte->setApplication($this->application);
+            $compte->setGenre(2);
+            $compte->setDateCreation(new \DateTime());
+    
+            $this->entityManager->persist($compte);
+            $this->entityManager->flush();
+
+            $data['id'] = $compte->getId();
     
             return new JsonResponse($data);
         } catch (PropertyVideException $PropertyVideException) {
