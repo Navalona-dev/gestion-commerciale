@@ -139,13 +139,13 @@ class FactureService
             $uniteVenteGros = null;
 
             if ($product->getTypeVente() == "gros") {
-                $montantHt  = $montantHt + (($qtt)  * $product->getPrixVenteGros());
+                $montantHt  = ($montantHt + (($qtt)  * $product->getPrixVenteGros())) - $product->getRemise();
                 $prix = $product->getPrixVenteGros();
                 $uniteVenteGros = $product->getUniteVenteGros();
                 $prixVenteGros = $prix; 
 
             } elseif($product->getTypeVente() == "detail") {
-                $montantHt  = $montantHt + ($qtt * $product->getPrixVenteDetail());
+                $montantHt  = ($montantHt + ($qtt * $product->getPrixVenteDetail())) - $product->getRemise();
                 $prix = $product->getPrixVenteDetail();
                 $uniteVenteDetail = $product->getUniteVenteDetail();
                 $prixVenteDetail = $prix;
@@ -813,13 +813,13 @@ class FactureService
             $uniteVenteGros = null;
 
             if ($product->getTypeVente() == "gros") {
-                $montantHt  = $montantHt + (($qtt)  * $product->getPrixVenteGros());
+                $montantHt  = ($montantHt + (($qtt)  * $product->getPrixVenteGros())) - $product->getRemise();
                 $prix = $product->getPrixVenteGros();
                 $uniteVenteGros = $product->getUniteVenteGros();
                 $prixVenteGros = $prix; 
 
             } elseif($product->getTypeVente() == "detail") {
-                $montantHt  = $montantHt + ($qtt * $product->getPrixVenteDetail());
+                $montantHt  = ($montantHt + ($qtt * $product->getPrixVenteDetail())) - $product->getRemise();
                 $prix = $product->getPrixVenteDetail();
                 $uniteVenteDetail = $product->getUniteVenteDetail();
                 $prixVenteDetail = $prix;

@@ -5,6 +5,12 @@
          <td class="align-middle text-center">{{product.nom}}</td>
          <td class="align-middle text-center"><input type="hidden" id="qttRestant" name="qttRestant" value="{{ qttRestant  }}"><input type="hidden" name="idProduit" value="{{ product.id  }}"><input type="text" id="qtt" name="qtt" class="form-control" value="{{ product.qtt  }}"></td>
           <td class="align-middle text-center">{{product.prixVenteGros}}</td>
+          <td class="align-middle text-center">
+            &nbsp;
+                {% if product.remise is not null %} {{product.remise}} {% endif %}
+        </td> 
+            <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros * product.qtt - product.remise }}{% else %}{{product.prixVenteDetail * product.qtt - product.remise}}{% endif %} Ar</td>
+                                  
         {# <td>
             <input type="text" name="reference" class="form-control" value="{{ produit.reference  }}">
         </td>

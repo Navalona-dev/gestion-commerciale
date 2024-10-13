@@ -112,6 +112,7 @@
                                     <th class="text-center" style="width: 200px;">Intitulé</th>
                                     <th class="text-center">Qté</th>
                                     <th class="text-center">PU(HT)</th>
+                                    <th class="text-center">Remise</th>
                                     <th class="text-center">PT(HT)</th>
                                     <th class="text-center">Action</th>
                                 </tr>
@@ -119,6 +120,8 @@
                             </thead>
                             <tbody>
                                  {% for product in produits %}
+                                    {% set remise = 0 %}
+                                    {% if product.remise %} {% set remise = product.remise %} {% endif %}
                                 <tr id="tr_produit_{{ product.id }}" data-id="{{ product.id }}"
                                             data-id-affaire="{{ affaire.id }}">
                                     <td class="align-middle text-center">{{product.reference}} ({{product.typeVente}})</td>
@@ -215,7 +218,11 @@
                                        
                                     </td>
                                     <td class="align-middle text-center"> {% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(2, ',', ' ')}}{% else %}{{product.prixVenteDetail|number_format(2, ',', ' ')}}{% endif %}</td>
-                                    <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros * product.qtt }}{% else %}{{product.prixVenteDetail * product.qtt}}{% endif %} Ar</td>
+                                    <td class="align-middle text-center remise_{{ product.id }}"><a style="color: red;"
+                                                                                               href="#"
+                                                                                               onclick="return addRemiseProduit({{ product.id }}, '{{ app.request.uri }}');">{% if product.remise %}{{ product.remise }} {% else %}--{% endif %}</a>
+                                    </td>
+                                    <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros * product.qtt  - product.remise }}{% else %}{{product.prixVenteDetail * product.qtt - product.remise }}{% endif %} Ar</td>
                                     <td>
                                         {% if affaire.paiement is null or (affaire.paiement != "paye" and affaire.paiement != "annule" and affaire.paiement != "enecheance") %}
                                         <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
@@ -224,12 +231,13 @@
                                     </td>
                                    {% if product.typeVente == "gros" %}
                                         {% if product.produitCategorie.volumeGros > 0 %}
-                                            {% set montantHt = montantHt + ((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros) %}
+                                            {% set montantHt = (montantHt + (product.qtt * product.prixVenteGros)) - product.remise %}
+                                            {# {% set montantHt = (montantHt + ((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros)) - product.remise %} #}
                                         {% else %}
-                                            {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
+                                            {% set montantHt = (montantHt + (product.qtt * product.prixVenteGros)) - product.remise %}
                                         {%endif %}
                                     {% else %}
-                                        {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                                        {% set montantHt = (montantHt + (product.qtt * product.prixVenteDetail)) - product.remise %}
                                     {% endif %}
                                    
                                 </tr>

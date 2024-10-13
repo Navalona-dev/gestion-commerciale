@@ -34,6 +34,10 @@ class Product
         'cp' => 'Comprimé'
     ];
     
+    const TYPE_REDUCTION = [
+        'remise' => 'Remise commerciale'
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -121,6 +125,9 @@ class Product
      */
     #[ORM\OneToMany(targetEntity: DatePeremptionProduct::class, mappedBy: 'product')]
     private Collection $datePeremptionProducts;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $typeReduction = null;
 
     public function __construct()
     {
@@ -475,6 +482,18 @@ class Product
                 $datePeremptionProduct->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTypeReduction(): ?string
+    {
+        return $this->typeReduction;
+    }
+
+    public function setTypeReduction(?string $typeReduction): static
+    {
+        $this->typeReduction = $typeReduction;
 
         return $this;
     }

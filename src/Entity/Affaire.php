@@ -164,6 +164,9 @@ class Affaire
     #[ORM\ManyToOne]
     private ?Application $applicationRevendeur = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $remiseProduit = null;
+
 
     public function __construct()
     {
@@ -684,6 +687,18 @@ class Affaire
     public function setApplicationRevendeur(?Application $applicationRevendeur): static
     {
         $this->applicationRevendeur = $applicationRevendeur;
+
+        return $this;
+    }
+
+    public function getRemiseProduit(): ?float
+    {
+        return $this->remiseProduit;
+    }
+
+    public function setRemiseProduit(?float $remiseProduit): static
+    {
+        $this->remiseProduit = $remiseProduit;
 
         return $this;
     }

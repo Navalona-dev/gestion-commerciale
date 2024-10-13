@@ -86,9 +86,9 @@
                     <td>
                         {% set montantHt = 0 %}
                         {% if liste.typeVente == "gros" %}
-                            {% set montantHt = montantHt + (liste.qtt * liste.prixVenteGros) %}
+                            {% set montantHt = (montantHt + (liste.qtt * liste.prixVenteGros)) - liste.remise %}
                         {% else %}
-                            {% set montantHt = montantHt + (liste.qtt * liste.prixVenteDetail) %}
+                            {% set montantHt = (montantHt + (liste.qtt * liste.prixVenteDetail)) - liste.remise %}
                         {% endif %}
                         {{ montantHt|number_format(2, ',', ' ') }} Ar
                     </td>
