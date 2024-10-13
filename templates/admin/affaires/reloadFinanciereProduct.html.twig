@@ -61,6 +61,16 @@
     margin-left: 15px;
     border:none !important;
 }
+.btn-remise {
+    padding: 6px 8px;
+    border-radius: 100%;
+    background-color: #7a1820;
+    color: #fff;
+}
+
+.btn-remise:hover {
+    color: #fff;
+}
 
 .icon-depot {
     width: 50px;
@@ -239,7 +249,7 @@
                                     <td class="align-middle text-center"> {% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(2, ',', ' ')}}{% else %}{{product.prixVenteDetail|number_format(2, ',', ' ')}}{% endif %}</td>
                                     <td class="align-middle text-center remise_{{ product.id }}"><a style="color: red;"
                                                                                                href="#"
-                                                                                               onclick="return addRemiseProduit({{ product.id }}, '{{ app.request.uri }}');">{% if product.remise %}{{ product.remise }} {% else %}--{% endif %}</a>
+                                                                                               onclick="return addRemiseProduit({{ product.id }}, '{{ app.request.uri }}');">{% if product.remise %} <span class="text-danger">{{ product.remise }}</span> {% else %}<i class="bi bi-percent btn-remise"></i>{% endif %}</a>
                                     </td>
                                     <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros * product.qtt  - product.remise }}{% else %}{{product.prixVenteDetail * product.qtt - product.remise }}{% endif %} Ar</td>
                                     <td>
