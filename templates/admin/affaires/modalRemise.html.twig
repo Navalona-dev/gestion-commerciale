@@ -10,6 +10,7 @@
                             <span>Remise produit:</span> <br>
                             <span style="color: #1ab394; font-size: 16px !important;">{{ produit.nom|raw }}</span>
                             <input name="idProduit" value="{{ produit.id }}" type="hidden">
+                            <input name="idAffaire" value="{{ idAffaire }}" type="hidden">
                         {% else %}
                             <span>Remise pour l'affaire :</span> <br>
                             <span style="color: #1ab394;">{{ affaire.nom|raw }}</span>
@@ -104,16 +105,19 @@
             </form>
 
             {% if montantRemise %}
-                <form style="position: absolute;bottom: 15px;right: 10%;" name="deleteRemise" action="{{ path('delete_add_remise_product_ajax') }}" method="post" onsubmit="return confirm('Voulez-vous vraisment supprimer cette remise?')" >
+                <form style="position: absolute;bottom: 15px;right: 10%;" id="deleteRemise" name="deleteRemise" action="{{ path('affaires_delete_add_remise_product_ajax') }}" method="post">
 
                     <input type="hidden" name="type" value="{{ type }}">
                     <input type="hidden" value="{{ uri }}" name="uri">
                     {% if type == "produit" %}
                         <input name="idProduit" value="{{ produit.id }}" type="hidden">
+                        <input name="idAffaire" value="{{ idAffaire }}" type="hidden">
+                        <input type="hidden" name="montantRemiseFinale" id="montantRemiseFinale" value="{{ montantRemise }}">
                     {% else %}
                         <input name="idAffaire" value="{{ affaire.id }}" type="hidden">
+                        <input type="hidden" name="montantRemiseFinale" id="montantRemiseFinale" value="{{ montantRemise }}">
                     {% endif %}
-                    <button type="submit"  class="btn btn-danger">Supprimer</button>
+                    <button type="submit" onclick="return deleteRemiseProduitAffaire('{{ type }}', '{{idAffaire}}');"  class="btn btn-danger">Supprimer</button>
 
                 </form>
             {% endif %}

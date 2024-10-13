@@ -315,7 +315,7 @@
                                     </td>
                                     <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(0, '.', ' ') }}{% else %}{{product.prixVenteDetail|number_format(0, '.', ' ')}}{% endif %} Ar</td>
                                     <td class="align-middle text-center remise_{{ product.id }}">
-                                        <a class="" href="#" onclick="return addRemiseProduit({{ product.id }}, '{{ app.request.uri }}');">{% if product.remise %} <span class="text-danger">{{ product.remise }}</span> {% else %} <i class="bi bi-percent btn-remise"></i> {% endif %}</a>
+                                        <a class="" href="#" onclick="return addRemiseProduit({{ product.id }}, '{{ app.request.uri }}', {{affaire.id}});">{% if product.remise %} <span class="text-danger">{{ product.remise }}</span> {% else %} <i class="bi bi-percent btn-remise"></i> {% endif %}</a>
                                     </td>
                                     <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros * product.qtt - product.remise }}{% else %}{{product.prixVenteDetail * product.qtt - product.remise}}{% endif %} Ar</td>
                                     <td>
