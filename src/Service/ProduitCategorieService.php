@@ -79,7 +79,7 @@ class ProduitCategorieService
             'reference' => $reference,
             'application' => $application,
         ]);
-
+       
         if ($existingProduitCategorie) {
             $error = true;
         } else {
@@ -87,7 +87,7 @@ class ProduitCategorieService
             $produitCategorie = ProduitCategorie::newProduitCategorie($instance);
 
             $date = new \DateTime();
-
+            
             if($categorieName) {
                 $categorie = $categorieName;
                 $produitCategorie->setCategorie($categorie);
@@ -104,7 +104,7 @@ class ProduitCategorieService
                     $produitCategorie->setCategorie($categorie);
                 }
             }
-
+            
             if($typeName) {
                 $type = $typeName;
                 $produitCategorie->setType($type);
@@ -121,7 +121,7 @@ class ProduitCategorieService
                     $produitCategorie->setType($type);
                 }
             }
-
+           
             if(isset($idFournisseur) && !empty($idFournisseur)) {
 
                 $fournisseur = $this->getFournisseurById($idFournisseur);
@@ -132,7 +132,7 @@ class ProduitCategorieService
 
                     $codeFournisseur = $fournisseur->getCode();
                     if($codeFournisseur) {
-                        $produitCategorie->setReference($codeFournisseur . '' . $produitCategorie->getReference());
+                        //$produitCategorie->setReference($codeFournisseur . '' . $produitCategorie->getReference());
                     }
                 } 
             } else {
