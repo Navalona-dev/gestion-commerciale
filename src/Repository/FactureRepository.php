@@ -57,7 +57,7 @@ class FactureRepository extends ServiceEntityRepository
     public function getAllFactures()
     {
         $sql = "SELECT f.id, f.type, f.numero, f.prixHt, f.echeanceNumero, f.isEcheance, f.prixTtc, f.solde, f.statut, f.reglement, f.numeroCommande, f.etat,
-                f.file, f.dateCreation, f.isValid, f.remise, c.id as compteId, c.nom as compte, a.id as affaireId, a.nom as affaire, GROUP_CONCAT(DISTINCT fe.id) as factureEcheances
+                f.file, f.dateCreation, f.isValid, f.remise,f.isDepot, f.depotNumero, c.id as compteId, c.nom as compte, a.id as affaireId, a.nom as affaire, GROUP_CONCAT(DISTINCT fe.id) as factureEcheances
                 FROM `Facture` f 
                 LEFT JOIN `compte` c ON f.compte_id = c.id 
                 LEFT JOIN `affaire` a ON f.affaire_id = a.id 
@@ -77,7 +77,7 @@ class FactureRepository extends ServiceEntityRepository
     public function getAllFacturesByAffaire($affaireId = null)
     {
         $sql = "SELECT f.id, f.type, f.numero, f.prixHt, f.prixTtc, f.solde, f.statut, f.reglement, f.numeroCommande, f.etat,
-                f.file, f.dateCreation, f.isValid, f.remise, c.nom as compte, a.nom as affaire, 
+                f.file, f.dateCreation, f.isValid, f.remise, f.depotNumero, f.echeanceNumero, f.isDepot, f.isEcheance, c.nom as compte, a.nom as affaire, 
                 GROUP_CONCAT(DISTINCT fe.id) as factureEcheances
                 FROM `Facture` f 
                 LEFT JOIN `compte` c ON f.compte_id = c.id 
@@ -293,5 +293,30 @@ class FactureRepository extends ServiceEntityRepository
         }
 
         return $condition;
+    }
+
+    public function selectFactureToday($statut)
+    {
+        $today = new \DateTime();
+        $today->setTime(0, 0, 0);
+        $tomorrow = clone $today;
+        $tomorrow->modify('+1 day');
+
+        $qb = $this->createQueryBuilder('f')
+                    ->select('f.id, f.dateCreation, f.solde, f.isEcheance, f.echeanceNumero, f.numero, f.isDepot, f.depotNumero, f.date, a.nom as affaireNom, m.id as methodePaiements')
+                    ->leftJoin('f.affaire', 'a')
+                    ->leftJoin('f.methodePaiements', 'm')
+                    ->where('f.dateCreation >= :today')
+                    ->andWhere('f.dateCreation < :tomorrow')
+                    ->andWhere('f.application = :application_id')
+                    ->andWhere('f.statut = :statut')
+                    ->setParameter('today', $today)
+                    ->setParameter('tomorrow', $tomorrow)
+                    ->setParameter('application_id', $this->application->getId())
+                    ->setParameter('statut', $statut)
+                    //->getQuery()->getSql();
+                    ->getQuery()
+                    ->getResult();
+               return $qb;
     }
 }

@@ -81,80 +81,80 @@
             </thead>
             <tbody>
                 {% set montantHt = 0 %}
+                {% set dejaPaye = 0 %}
+                {% set restePaye = 0 %}
 
-                <tr style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
-                    <td width="10%">
-                        {{ produit.reference }}
-                    </td>
-                    <td width="30%">
-                        {{ produit.nom }}
+                {% for produit in produits %}
+                    <tr style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
+                        <td width="10%">
+                            {{ produit.reference }}
+                        </td>
+                        <td width="30%">
+                            {{ produit.nom }}
 
-                    </td>
-                    <td width="12%">
-                        {{ produit.qtt }}
-                        {% if produit.typeVente == "gros" %}
-                            {{produit.produitCategorie.presentationGros}}
-                        {% elseif produit.typeVente == "detail" %}
-                            {{produit.produitCategorie.uniteVenteGros}}
-                        {% endif %}
-                    </td>
-                    <td width="12%">
-                        {{ produit.qttRestant }}
-                        {% if produit.typeVente == "gros" %}
-                            {{produit.produitCategorie.presentationGros}}
-                        {% elseif produit.typeVente == "detail" %}
-                            {{produit.produitCategorie.uniteVenteGros}}
-                        {% endif %}
-                    </td>
-                    <td width="12%">
-                        {{ produit.qttVendu }}
-                        {% if produit.typeVente == "gros" %}
-                            {{produit.produitCategorie.presentationGros}}
-                        {% elseif produit.typeVente == "detail" %}
-                            {{produit.produitCategorie.uniteVenteGros}}
-                        {% endif %}
-                    </td>
-                    <td width="24%">
-                        {% set prix = produit.prixVenteGros %}
-                        {% if produit.typeVente != "gros" %}
-                        {% set prix = produit.prixVenteDetail %}
-                        {% endif %}
-                        
-                        {{ prix|number_format(0, ',', ' ') }} Ar
-                    </td>
-                    <td width="24%">
-                        {{ produit.dejaPaye|number_format(0, ',', ' ') }} Ar
-                    </td>
-                    <td width="24%">
-                        {{ produit.restePayer|number_format(0, ',', ' ') }} Ar
-                    </td>
-                </tr>
+                        </td>
+                        <td width="12%">
+                            {{ produit.qtt }}
+                            {% if produit.typeVente == "gros" %}
+                                {{produit.produitCategorie.presentationGros}}
+                            {% elseif produit.typeVente == "detail" %}
+                                {{produit.produitCategorie.uniteVenteGros}}
+                            {% endif %}
+                        </td>
+                        <td width="12%">
+                            {{ produit.qttRestant }}
+                            {% if produit.typeVente == "gros" %}
+                                {{produit.produitCategorie.presentationGros}}
+                            {% elseif produit.typeVente == "detail" %}
+                                {{produit.produitCategorie.uniteVenteGros}}
+                            {% endif %}
+                        </td>
+                        <td width="12%">
+                            {{ produit.qttVendu }}
+                            {% if produit.typeVente == "gros" %}
+                                {{produit.produitCategorie.presentationGros}}
+                            {% elseif produit.typeVente == "detail" %}
+                                {{produit.produitCategorie.uniteVenteGros}}
+                            {% endif %}
+                        </td>
+                        <td width="24%">
+                            {% set prix = produit.prixVenteGros %}
+                            {% if produit.typeVente != "gros" %}
+                            {% set prix = produit.prixVenteDetail %}
+                            {% endif %}
+                            
+                            {{ prix|number_format(0, ',', ' ') }} Ar
+                        </td>
+                        <td width="24%">
+                            {{ produit.dejaPaye|number_format(0, ',', ' ') }} Ar
+                        </td>
+                        <td width="24%">
+                            {{ produit.restePayer|number_format(0, ',', ' ') }} Ar
+                        </td>
+                    </tr>
+                    {% if produit.typeVente == "gros" %}
+                        {% set montantHt = montantHt + ((produit.qtt) * prix)  %}
+                    {% else %}
+                        {% set montantHt = montantHt + (produit.qtt * prix)  %}
+                    {% endif %}  
+                    {% set dejaPaye = dejaPaye + produit.dejaPaye %}
+                    {% set restePaye = restePaye + produit.restePayer %}
+                {% endfor %}
 
             </tbody>
         </table>
     </div>
 
     <div style="margin-bottom: 20px;">
-        {% set dejaPaye = 0 %}
-        {% set restePaye = 0 %}
-        {% for produit in produits %}
-            {% if produit.typeVente == "gros" %}
-                {% set montantHt = montantHt + ((produit.qtt) * prix)  %}
-            {% else %}
-                {% set montantHt = montantHt + (produit.qtt * prix)  %}
-            {% endif %}  
-            {% set dejaPaye = dejaPaye + produit.dejaPaye %}
-            {% set restePaye = restePaye + produit.restePayer %}
-        {% endfor %}
-
         <p style="border: 1px solid #000; padding: 10px 50px; width: 40%;">
             {% if facture.affaire.paiement != "annule" %}
-                TOTAL À PAYER 
+                TOTAL À PAYER : 
             {% else %}
-                TOTAL À REMBOURSER 
+                TOTAL À REMBOURSER : 
             {% endif %}
             <span> {{montantHt|number_format(0,',',' ')}} Ar </span>
         </p>
+
         <p style="border: 1px solid #000; padding: 10px 50px; width: 40%;"></p>
                 DÉJÀ PAYER : 
             <span> {{dejaPaye|number_format(0,',',' ')}} Ar </span>

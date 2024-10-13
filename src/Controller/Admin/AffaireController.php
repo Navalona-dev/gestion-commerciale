@@ -62,6 +62,7 @@ class AffaireController extends AbstractController
     private $factureEcheanceRepo;
     private $applicationRepo;
     private $affaireRepo;
+    private $em;
 
 
     public function __construct(
@@ -74,7 +75,8 @@ class AffaireController extends AbstractController
         FactureRepository $factureRepo,
         FactureEcheanceRepository $factureEcheanceRepo,
         ApplicationRepository $applicationRepo,
-        AffaireRepository $affaireRepo
+        AffaireRepository $affaireRepo,
+        EntityManagerInterface $em
         
         )
     {
@@ -88,6 +90,7 @@ class AffaireController extends AbstractController
         $this->factureEcheanceRepo = $factureEcheanceRepo;
         $this->applicationRepo = $applicationRepo;
         $this->affaireRepo = $affaireRepo;
+        $this->em = $em;
 
     }
 
@@ -187,6 +190,72 @@ class AffaireController extends AbstractController
             $data["html"] = "";
             $this->createNotFoundException('Exception' . $Exception->getMessage());
         }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/depot/valid/multiple', name: '_depot_valid_multiple')]
+    public function productDepotMultiple(Request $request)
+    {
+        $idAffaire = $request->getSession()->get('idAffaire');
+        $affaire = $this->affaireRepo->findOneBy(['id' => $idAffaire]);
+        $products = $affaire->getProducts();
+
+        $data = [];
+        try {
+
+            if ($request->isXmlHttpRequest()) {
+
+                $productIds = $request->request->get('productIds');
+                if (is_string($productIds)) {
+                    $productIds = explode(',', $productIds); // Convertir en tableau à partir d'une chaîne
+                }
+
+                $qttVendus = $request->request->get('qttVendus');
+                if (is_string($qttVendus)) {
+                    $qttVendus = explode(',', $qttVendus); // Convertir en tableau à partir d'une chaîne
+                }
+
+                if (!empty($productIds)) {
+                    // Récupérer les objets ProduitCategorie en fonction des IDs
+                    $productsSelectionner = $this->em->getRepository(Product::class)->findBy(['id' => $productIds]);
+                
+                    $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/APP_'.$this->application->getId().'/factures/valide/';
+
+                    // Vérifier si le dossier existe, sinon le créer avec les permissions appropriées
+                    if (!is_dir($documentFolder)) {
+                        mkdir($documentFolder, 0777, true); // 0777 pour les permissions, et `true` pour créer récursivement les sous-dossiers
+                    }
+                
+                    list($pdfContent, $facture) = $this->factureService->validDepotMultiple($affaire, $documentFolder, $request, $qttVendus, $productsSelectionner);
+                    
+                    $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
+
+                    $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/valide/' . $filename;
+                    
+                    // Sauvegarder le fichier PDF
+                    file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
+                    
+                    return new JsonResponse([
+                        'status' => 'success',
+                        'pdfUrl' => $pdfPath,
+                    ]);
+                }
+
+            }
+
+
+            $data['exception'] = "";
+            $data["html"] = $this->renderView('admin/affaires/modal_depot_multiple.html.twig', [
+                'affaire' => $affaire,
+                'products' => $products
+            ]);
+           
+            return new JsonResponse($data);
+
+        } catch (PropertyVideException $PropertyVideException) {
+            throw $this->createNotFoundException('Exception' . $PropertyVideException->getMessage());
+        } 
+
         return new JsonResponse($data);
     }
 
@@ -1021,7 +1090,7 @@ class AffaireController extends AbstractController
     {
 
         if (count($affaire->getProducts()) > 0) {
-            $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
+            $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/APP_'.$this->application->getId().'/factures/valide/';
 
             // Vérifier si le dossier existe, sinon le créer avec les permissions appropriées
             if (!is_dir($documentFolder)) {
@@ -1031,7 +1100,7 @@ class AffaireController extends AbstractController
             list($pdfContent, $facture) = $this->factureService->addDepot($affaire, $documentFolder, $request);
             
             $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
-            $pdfPath = '/uploads/factures/valide/' . $filename;
+            $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/valide/' . $filename;
             
             // Sauvegarder le fichier PDF
             file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
@@ -1065,7 +1134,7 @@ class AffaireController extends AbstractController
                 
                 if ($request->isXmlHttpRequest()) {
                     
-                    $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/factures/valide/';
+                    $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/APP_'.$this->application->getId().'/factures/valide/';
 
                     // Vérifier si le dossier existe, sinon le créer avec les permissions appropriées
                     if (!is_dir($documentFolder)) {
@@ -1076,7 +1145,7 @@ class AffaireController extends AbstractController
                     
                     $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
 
-                    $pdfPath = '/uploads/factures/valide/' . $filename;
+                    $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/valide/' . $filename;
                     
                     // Sauvegarder le fichier PDF
                     file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
@@ -1106,4 +1175,6 @@ class AffaireController extends AbstractController
 
         return new JsonResponse($data);
     }
+
+    
 }

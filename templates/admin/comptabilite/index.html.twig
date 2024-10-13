@@ -1,0 +1,298 @@
+<style>
+  .dataTables_scroll {
+    margin-top: 50px !important;
+    margin-bottom: 30px !important;
+  }
+  td, tr {
+    border-bottom: none !important;
+  }
+ 
+</style>
+
+<div class="pagetitle">
+    <h1>Comptabilité </h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
+        <li class="breadcrumb-item active">Liste</li>
+      </ol>
+    </nav>
+  </div>
+<section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+
+        <div class="card">
+        
+          <div class="card-body px-3 px-lg-4 py-lg-5 py-5">
+            <div class="row">
+                <div class="col-md-6 col-12" style="border-right: solid 2px #5e1212;">
+                    <div class="affaire">
+                        <h4 class="fw-bold mb-3">Commandes</h4>
+                        <hr>
+                        <div class="content">
+                          {% if facturesToday|length > 0 %}
+                            <div class="row">
+                              {% for facture in facturesToday %}
+                                <div class="col-md-6 col-12">
+                                  <div class="card shadow p-3">
+                                    <h6 class="fw-bold "> {{facture.affaireNom}} </h6>
+                                    <p class="">
+                                      {% if facture.isEcheance is not null and facture.isEcheance == true %}
+                                      FAC/VSM/{{facture.numero}}-E{{facture.echeanceNumero}}-{{ facture.date|date('y')}}
+                                      {% elseif facture.isDepot is not null and facture.isDepot == true %}
+                                        FAC/VSM/{{facture.numero}}-D{{facture.depotNumero}}-{{ facture.date|date('y')}}
+                                      {% else %}
+                                        FAC/VSM/{{facture.numero}}-{{ facture.date|date('y')}}
+                                      {% endif %}
+                                    </p>
+                                    <p class="">
+                                      Solde : {{facture.solde|number_format(0,',',' ')}} Ar
+                                    </p>
+                                    <p class="">
+                                      <a href="#" onclick="return detailMethodePaiement({{facture.id}})" class="bg-warning text-black" style="padding: 7px 9px; border-radius: 100%;"><i class="bi bi-ticket-detailed-fill"></i></a>
+                                      {% if facture.methodePaiements|length < 1 %}
+                                        <a href="#" onclick="return newMethodePaiement({{facture.id}})" class="bg-primary text-white mx-3" style="padding: 7px 9px; border-radius: 100%;"><i class="bi bi-plus-circle-fill"></i></a>
+                                      {% endif %}
+                                    </p>
+                                  </div>
+                                </div>
+                              {% endfor %}
+                            </div>
+                          {% else %}
+                            <div class="alert alert-warning">
+                              Aucune facture réglée pour aujourd'hui
+                            </div>
+                          {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-12">
+                  <div class="depense">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h4 class="fw-bold mb-0">Dépenses</h4>
+                      <a href="#" onclick="return newDepense()" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle-fill"></i></a>
+                    </div>
+                    <hr>
+                    <div class="content">
+                      {% if depensesToday|length > 0 %}
+                      {% set grandTotal = 0 %}
+                        {% for depense in depensesToday %}
+                          {% set grandTotal = grandTotal + depense.total %}
+                          <div class="row alert alert-info" style="margin-left: 1px;">
+                              <div class="col-md-4 col-12">
+                                <p><i class="bi bi-dot fs-4"></i> {{depense.designation}} </p>
+                              </div>
+                              <div class="col-md-2 col-12">
+                                <p>x {{depense.nombre}} </p>
+                              </div>
+                              <div class="col-md-2 col-12">
+                                <p> {{depense.prix|number_format(0,',',' ')}} Ar </p>
+                              </div>
+                              <div class="col-md-2 col-12">
+                                <p> {{depense.total|number_format(0,',',' ')}} Ar </p>
+                              </div>
+                              <div class="col-md-2 col-12">
+                                <a href="#" onclick="return updateDepense({{depense.id}})" class="text-primary"><i class="bi bi-pencil-square"></i></a>
+                                <a href="#" onclick=" return deleteDepense({{depense.id}})" class="text-danger"><i class="bi bi-trash-fill"></i></a>
+                              </div>
+                          </div>
+                        {% endfor %}
+                        <div class="alert alert-warning">
+                          Grand total : {{grandTotal|number_format(0,',',' ')}} Ariary
+                        </div>
+
+                      {% else %}
+                        <div class="alert alert-warning">
+                          Aucun depense pour aujourd'hui
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                   
+                    
+                </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div id="blocModalComptabiliteEmpty"></div>
+  </section>
+
+  <script>
+    //datatable
+    
+    $(document).ready(function() {
+        $('#tab-historique-produit').removeClass('active').empty();
+        $('#tab-historique-affaire').removeClass('active').empty();
+        $('#tab-produit-date-peremption').removeClass('active').empty();
+        $('#tab-inventaire-produit').css('display','none');
+
+        $('#tab-fiche-fournisseur').removeClass('active').empty();
+        $('#tab-quantite-vendu').removeClass('active').empty();
+        $('#tab-notification').removeClass('active').empty();
+        $('.tab-user').removeClass('active');
+        $('.tab-permission').removeClass('active');
+        $('.tab-privilege').removeClass('active');
+        $('.tab-cat-permission').removeClass('active');
+        $('#tab-dashboard').removeClass('active');
+        $('#tab-profile').removeClass('active');
+        $('#tab-utilisateur').removeClass('active');
+        $('#tab-permission').removeClass('active');
+        $('#tab-privilege').removeClass('active');
+        $('#tab-categorie-permission').removeClass('active');
+        $('#tab-application').removeClass('active');
+        $('.tab-categorie').removeClass('active');
+        $('#tab-produit-categorie').removeClass('active');
+        $('.tab-produit-categorie').removeClass('active');
+        $('#tab-categorie').removeClass('active');  
+         $('#tab-compte_1').removeClass('active');
+        $('#tab-compte_2').removeClass('active');
+        $('#tab-produit-type').removeClass('active');
+        $('.tab-import-produit').css('display', 'none');
+        $('#tab-import-produit').css('display', 'none');
+        $('#tab-transfert-produit').css('display', 'none');
+        $('#affaires_client').removeClass('active').empty();
+        $('#affaires_fournisseur').removeClass('active').empty();
+        $('#tab-info-affaire').removeClass('active').empty();
+        $('#tab-financier-affaire').removeClass('active').empty();
+        $('#tab-fiche-client').removeClass('active').empty();
+        $('#tab-facture').css('display', 'none');
+        $('#tab-facture-affaire').css('display', 'none');     
+        $('#tab-nouveau-facture').css('display','none');
+        $('#tab-devis').css('display','none');
+        $('#tab-commande').css('display','none');
+        $('#tab-echeance').css('display','none');
+        $('#tab-produit-image').removeClass('active');
+        $('#tab-stock').removeClass('active');
+        $('#tab-depot').css('display', 'none');
+        $('#tab-comptabilite').css('display', 'block');
+
+
+
+    });
+
+    function newDepense() {
+      var anchorName = document.location.hash.substring(1);
+            $.ajax({
+                url: '/admin/depense/new',
+                type: 'POST',
+                //data: {isNew: isNew},
+                success: function (response) {
+                    $("#blocModalComptabiliteEmpty").empty();
+                    $("#blocModalComptabiliteEmpty").append(response.html);
+                    $('#modalNewDepense').modal('show');
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors l\'ajout de depense.');
+                }
+            });
+    }
+
+    function updateDepense(id = null) {
+      var anchorName = document.location.hash.substring(1);
+            $.ajax({
+                url: '/admin/depense/edit/'+id,
+                type: 'POST',
+                //data: {isNew: isNew},
+                success: function (response) {
+                    $("#blocModalComptabiliteEmpty").empty();
+                    $("#blocModalComptabiliteEmpty").append(response.html);
+                    $('#modalUpdateDepense').modal('show');
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de mise à jour de depense.');
+                }
+            });
+    }
+    
+
+    function deleteDepense(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
+        if (confirm('Voulez vous vraiment supprimer ce depense?')) {
+            $.ajax({
+                url: '/admin/depense/delete/'+id,
+                type: 'POST',
+                //data: {depense: id},
+                success: function (response) {
+                    var nextLink = $('#sidebar').find('li#depense').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Suppression effectuée');
+
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
+                        showTabComptabilite();
+
+                    }, 800);
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la suppression de depense.');
+                }
+            });
+        }
+    }
+
+    function detailMethodePaiement(id = null) {
+      var anchorName = document.location.hash.substring(1);
+            $.ajax({
+                url: '/admin/comptabilite/detail/paiement/'+id,
+                type: 'GET',
+                //data: {isNew: isNew},
+                success: function (response) {
+                    $("#blocModalComptabiliteEmpty").empty();
+                    $("#blocModalComptabiliteEmpty").append(response.html);
+                    $('#modalDetailPaiement').modal('show');
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'affichage de détail de paiement.');
+                }
+            });
+    }
+    
+    function newMethodePaiement(id = null) {
+      var anchorName = document.location.hash.substring(1);
+            $.ajax({
+                url: '/admin/comptabilite/nouveau/methode/paiement/'+id,
+                type: 'GET',
+                //data: {isNew: isNew},
+                success: function (response) {
+                    $("#blocModalComptabiliteEmpty").empty();
+                    $("#blocModalComptabiliteEmpty").append(response.html);
+                    $('#modalNewMethodePaiement').modal('show');
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de methode de paiement.');
+                }
+            });
+    }
+    
+  </script>

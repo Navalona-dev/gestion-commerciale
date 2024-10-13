@@ -26,7 +26,8 @@ class Facture
         'presenter' => 'Présenter',
         'reglePartiel' => 'Rglt. partiel',
         'annule' => 'Annulée',
-        'encours' => 'En cours'
+        'encours' => 'En cours',
+        'termine' => 'Terminée'
     ];
 
     const ETAT = [
@@ -34,7 +35,8 @@ class Facture
         'regle' => 'Réglée',
         'annule' => 'Annulée',
         'encours' => 'En cours',
-        'enecheance' => 'En echeance'
+        'enecheance' => 'En echeance',
+        'termine' => 'Terminée'
     ];
 
     #[ORM\Id]
@@ -46,7 +48,7 @@ class Facture
     private ?string $type = null;
 
     #[ORM\Column(nullable: true)]
-    private ?string $numero = null;
+    private ?int $numero = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $date = null;
@@ -126,11 +128,24 @@ class Facture
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateReglement = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $depotNumero = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isDepot = null;
+
+    /**
+     * @var Collection<int, MethodePaiement>
+     */
+    #[ORM\OneToMany(targetEntity: MethodePaiement::class, mappedBy: 'facture')]
+    private Collection $methodePaiements;
+
     public function __construct()
     {
         $this->factureDetails = new ArrayCollection();
         $this->reglementFactures = new ArrayCollection();
         $this->factureEcheances = new ArrayCollection();
+        $this->methodePaiements = new ArrayCollection();
     }
 
     public static function newFacture($affaire = null)
@@ -161,12 +176,12 @@ class Facture
         return $this;
     }
 
-    public function getNumero(): ?string
+    public function getNumero(): ?int
     {
         return $this->numero;
     }
 
-    public function setNumero(?string $numero): static
+    public function setNumero(?int $numero): static
     {
         $this->numero = $numero;
 
@@ -499,6 +514,60 @@ class Facture
     public function setDateReglement(?\DateTimeInterface $dateReglement): static
     {
         $this->dateReglement = $dateReglement;
+
+        return $this;
+    }
+
+    public function getDepotNumero(): ?int
+    {
+        return $this->depotNumero;
+    }
+
+    public function setDepotNumero(?int $depotNumero): static
+    {
+        $this->depotNumero = $depotNumero;
+
+        return $this;
+    }
+
+    public function isDepot(): ?bool
+    {
+        return $this->isDepot;
+    }
+
+    public function setDepot(?bool $isDepot): static
+    {
+        $this->isDepot = $isDepot;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MethodePaiement>
+     */
+    public function getMethodePaiements(): Collection
+    {
+        return $this->methodePaiements;
+    }
+
+    public function addMethodePaiement(MethodePaiement $methodePaiement): static
+    {
+        if (!$this->methodePaiements->contains($methodePaiement)) {
+            $this->methodePaiements->add($methodePaiement);
+            $methodePaiement->setFacture($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMethodePaiement(MethodePaiement $methodePaiement): static
+    {
+        if ($this->methodePaiements->removeElement($methodePaiement)) {
+            // set the owning side to null (unless already changed)
+            if ($methodePaiement->getFacture() === $this) {
+                $methodePaiement->setFacture(null);
+            }
+        }
 
         return $this;
     }

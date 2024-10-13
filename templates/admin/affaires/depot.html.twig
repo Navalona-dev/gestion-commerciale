@@ -7,8 +7,13 @@
         {# entete affaire #}
         {% include 'admin/affaires/entete_affaire.html.twig' with { 'affaire': affaire } %}
         
-        <div class="affaire-recherche">
-            <div class="affaire-info card pt-5 pb-5 px-4">
+        <div class="affaire-recherche card">
+            <div class="d-flex justify-content-end mb-3 pt-2 px-2" title="Nouveau">
+                <a href="#" onclick="return openModalDepotMultiple()" class="btn btn-danger btn-sm">
+                    <i class="bi bi-currency-dollar"></i>
+                </a>
+              </div>
+            <div class="affaire-info pt-3 pb-5 px-4">
                 {% if affaire.products|length > 0 %}  
                     <div class="table-depot">
                         <table class="table table-striped" id="depot-table">
@@ -161,6 +166,8 @@
         $('#tab-echeance').css('display','none');
         $('#tab-produit-image').removeClass('active');
         $('#tab-stock').css('active');
+        $('#tab-comptabilite').css('display', 'none');
+
 
       
     });
@@ -178,6 +185,34 @@
                         $("#blocModalDepotEmpty").append(response.html);
 
                         $('#modalDepotAffaire').modal('show');
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
+
+                    }
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la facturation dépôt.');
+                }
+            });
+    }
+   
+
+    function openModalDepotMultiple() {
+        var anchorName = document.location.hash.substring(1);
+
+        $.ajax({
+                url: '/admin/affaires/depot/valid/multiple',
+                type: 'POST',
+                //data: {id: id},
+                success: function (response) {
+                    if (response.html != "") {
+                        $("#blocModalDepotEmpty").empty();
+                        $("#blocModalDepotEmpty").append(response.html);
+
+                        $('#modalDepotMultipleAffaire').modal('show');
                         if (anchorName) {
                             window.location.hash = anchorName;
                         }
