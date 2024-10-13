@@ -13,6 +13,7 @@ use App\Form\ProfilType;
 use App\Form\AffaireType;
 use Psr\Log\LoggerInterface;
 use App\Entity\FactureDetail;
+use App\Entity\Product;
 use App\Form\FicheCompteType;
 
 use App\Service\AccesService;
@@ -37,6 +38,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Exception\UnsufficientPrivilegeException;
+use App\Repository\AffaireRepository;
+use App\Repository\ProductRepository;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpClient\Exception\ServerException;
@@ -1106,4 +1109,288 @@ class AffaireController extends AbstractController
 
         return new JsonResponse($data);
     }
+     /**
+     * @param Request $request
+     * @param ProduitRepository $produitRepository
+     * @param AffaireRepository $affaireRepository
+     * @Route("/financiere/addRemise/ajax", name="add_remise_product_ajax", methods={"POST"})
+     * @return Response
+     */
+    public function addRemise(
+        Request               $request,
+        ProductRepository     $productRepository,
+        AffaireRepository     $affaireRepository
+    )
+    {
+        $idProduit = $request->get('idProduit');
+
+        $idAffaire = $request->get('idAffaire');
+
+        $type = $request->get('type');
+
+        $isFrais = $request->get('isFrais');
+
+        $option = $request->get('option');
+
+        $uri = $request->get('uri');
+
+        $produit = [];
+
+        $affaire = [];
+
+        $montantRemise = "";
+
+        $montantPourcent = "";
+
+        switch ($type) {
+            case "produit":
+                $produit = $productRepository->find($idProduit);
+
+                $montantRemise = $produit->getRemise();
+
+                //$montantTotal = $produit->getPuHt()*$produit->getQtt() - $montantRemise;
+                $montantTotal = $produit->getPrixVenteDetail() * $produit->getQtt();
+                if ($produit->getTypeVente() == "gros") {
+                    $montantTotal = $produit->getPrixVenteGros() * $produit->getQtt();
+                }
+                
+                $montantPourcent = $produit->getRemisePourcent();
+
+                break;
+
+            case "affaire":
+                $affaire = $affaireRepository->find($idAffaire);
+
+                $montantRemise = $affaire->getRemise();
+
+                //$montantTotal = $affaire->getCa() - $affaire->getRemiseProduit() - $montantRemise;
+
+                $produits = $affaire->getProducts();
+
+                
+                $applicationId = $this->application->getId();
+
+                $produits = $produits->filter(function ($item) use ($applicationId) {
+                    return $item->getApplication()->getId() == $applicationId;
+                });
+
+                $montantTotal = 0;
+
+                foreach ($produits as $unProduit) {
+                    if ($unProduit->getTypeReduction()) {
+                        if ($unProduit->getTypeReduction() == "remise" && null == $isFrais) {
+                            $montantTotal = $montantTotal + $unProduit->getPuHt() * $unProduit->getQtt() - $unProduit->getRemise();
+                        }
+                    } else
+                        $montantTotal = $montantTotal + $unProduit->getPuHt() * $unProduit->getQtt() - $unProduit->getRemise();
+                }
+
+                //$montantTotal = $affaire->getCa() + $montantRemise;
+
+                $montantPourcent = $affaire->getRemisePourcent();
+
+                break;
+        }
+
+        //$tvaVentes = ($type == "affaire") ? $comptableRepository->findBy(['typeCompte' => 'tva_vente', 'application' => $this->application], ['tva' => 'ASC']) : "";
+
+        //$template = (null != $option) ? "modalRetenue.html.twig" : "modalRemise.html.twig";
+
+        /*if (null != $isFrais && $isFrais == "true") {
+            $template = "modalFraisTechnique.html.twig";
+        }*/
+
+        return $this->render('admin/affaires/modalRemise.html.twig', [
+            'produit' => $produit,
+            'affaire' => $affaire,
+            'type' => $type,
+            'montantTotal' => $montantTotal,
+            'uri' => $uri,
+            'montantRemise' => $montantRemise,
+            'montantPourcent' => $montantPourcent,
+            'tvaVentes' => [],
+            'option' => $option,
+            'isFrais' => $isFrais
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param ProduitRepository $produitRepository
+     * @param AffaireRepository $affaireRepository
+     * @Route("/financiere/valideAddRemise/ajax", name="_valide_add_remise_product_ajax", methods={"POST"})
+     * @return Response
+     */
+    public function valideAddRemise(
+        Request                       $request,
+        ProductRepository             $productRepository,
+        AffaireRepository             $affaireRepository,
+        ProductService                $productService,
+        ApplicationRepository         $applicationRepository,
+        ApplicationManager            $applicationManager
+    )
+    {
+        $idProduit = $request->get('idProduit');
+
+        $idAffaire = $request->get('idAffaire');
+
+        $applicationCurrentInSession = $this->application;
+
+        $type = $request->get('type');
+
+        $montantRemise = $request->get('montantRemise');
+
+        $montantRemiseFinale = $request->get('montantRemiseFinale');
+     
+        $typeRemise = $request->get('typeremise');
+
+        $uri = $request->get('uri');
+
+        $typeReduction = $request->get('typeReduction');
+
+        $produit = [];
+
+        $affaire = [];
+
+        switch ($type) {
+            case "produit":
+                $produit = $productRepository->find($idProduit);
+                
+                $produit->setRemise($montantRemiseFinale);
+
+                $affaires = $produit->getAffaires();
+
+                $affaire = $affaires[0];
+
+                $remiseAffaire = $affaire->getRemiseProduit();
+
+                if (null != $remiseAffaire) {
+                } else {
+                    $remiseAffaire = 0;
+                }
+
+                $remiseProduit = $montantRemiseFinale + $remiseAffaire;
+
+                $affaire->setRemiseProduit($montantRemiseFinale);
+
+                if ($typeRemise == "1") {
+                    $produit->setRemisePourcent($request->get('montantRemise'));
+                } else {
+                    $produit->setRemisePourcent(null);
+                }
+
+                if (is_null($produit->getApplication())) {
+                    $produit->setApplication($this->application);
+                }
+
+                $productService->persist($produit);
+
+                $productService->persist($affaire);
+
+                $montantRemiseFinale = 0;
+
+                break;
+
+            case "affaire":
+                $affaire = $affaireRepository->find($idAffaire);
+
+                $montantRemise = $affaire->getRemise();
+
+
+                /*$affaire->setRemise($montantRemiseFinale);
+
+                if ($typeRemise == "1") {
+                    $affaire->setRemisePourcent($request->get('montantRemise'));
+                } else {
+                    $affaire->setRemisePourcent(null);
+                }
+
+                $entityManager->persist($affaire);*/
+
+                $tva = $request->get('tva');
+
+                $titreRemise = (null != $request->get('titreRemise')) ? $request->get('titreRemise') : "Remise globale";
+
+                $idProduit = $request->get('id');
+
+                if (null != $idProduit) {
+                    $produit = $productRepository->find($idProduit);
+                } else {
+                    $produit = new Product();
+                    $produit->addAffaire($affaire);
+                }
+
+                if ($montantRemiseFinale < 0) {
+                    $montantRemiseFinale = $montantRemiseFinale * -1;
+                }
+
+                //$affaire->setRemise($montantRemise + $montantRemiseFinale);
+                if ($typeReduction == "frais") {
+                    $montantRemiseFinale = $montantRemiseFinale * -1;
+                }
+
+                $produit->setNom($titreRemise)
+                    ->setQtt(1)
+                    ->setPuHt($montantRemiseFinale * -1)
+                    ->setTva($tva);
+
+                if (is_null($produit->getApplication())) {
+                    $produit->setApplication($this->application);
+                }
+
+                if ($typeRemise == "1") {
+                    $produit->setRemisePourcent($request->get('montantRemise'));
+                } else {
+                    $produit->setRemisePourcent(null);
+                }
+
+                $typeReduction = (null != $request->get('typeReduction')) ? $request->get('typeReduction') : "remise";
+
+                $produit->setTypeReduction($typeReduction);
+
+
+                $productService->persist($produit);
+                $productService->persist($affaire);
+
+
+                break;
+        }
+
+        $productService->update();
+
+
+        //$montantCA = $productService->updateCA($affaire, $productRepository);
+
+        $produits = $this->productService->findProduitAffaire($affaire);
+
+        $tabCleProduit = [];
+
+        $facturesValide = [];
+        if ($affaire->getPaiement() != null && count($affaire->getFactures()) > 0) {
+            $factures = $affaire->getFactures();
+            $facturesValide = $factures->filter(function ($item) use ($affaire) {
+                return ($item->isValid() && 'regle' === $item->getStatut());
+                
+            });
+        }
+
+        return $this->render("admin/affaires/reloadFinanciereProduct.html.twig", [
+            'applicationCurrentInSession' => $applicationCurrentInSession,
+            'idApplication' => $this->application->getId(),
+            'affaire' => $affaire,
+            'produits' => $produits,
+            'montantCA' =>  null, // $montantCA - $montantRemiseFinale,
+            'affaireRemise' => $montantRemiseFinale,
+            'tvaVentes' => [],
+            'statuts' => $affaire::STATUT,
+            'application' => $this->application,
+            'factureFile' => (count($facturesValide) > 0 ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
+
+        ]);
+
+        //$this->addFlash('success', 'L\' enregistrement est bien effectuée avec succès!');
+
+        //return $this->redirect($uri);
+    }
+
 }

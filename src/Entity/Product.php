@@ -52,6 +52,10 @@ class Product
         'flacon' => 'Flacon'
     ];
     
+    const TYPE_REDUCTION = [
+        'remise' => 'Remise commerciale'
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -151,6 +155,8 @@ class Product
 
     #[ORM\Column(nullable: true)]
     private ?float $restePayer = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $typeReduction = null;
 
     public function __construct()
     {
@@ -553,6 +559,18 @@ class Product
     public function setRestePayer(?float $restePayer): static
     {
         $this->restePayer = $restePayer;
+
+        return $this;
+    }
+    
+    public function getTypeReduction(): ?string
+    {
+        return $this->typeReduction;
+    }
+
+    public function setTypeReduction(?string $typeReduction): static
+    {
+        $this->typeReduction = $typeReduction;
 
         return $this;
     }

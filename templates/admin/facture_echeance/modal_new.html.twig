@@ -18,9 +18,9 @@
                 {% set montantHt = 0 %}
                 {% for product in produits %}
                     {% if product.typeVente == "gros" %}
-                    {% set montantHt = montantHt + ((product.qtt)  * product.prixVenteGros) %}
+                    {% set montantHt = (montantHt + ((product.qtt)  * product.prixVenteGros)) - product.remise %}
                     {% else %}
-                        {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
+                        {% set montantHt = (montantHt + (product.qtt * product.prixVenteDetail)) - product.remise %}
                     {% endif %}
                 {% endfor %}
                 <p class="fw-bold mb-4">Total à payer : {{ montantHt|number_format(0, ',', ' ') }} Ar</p>

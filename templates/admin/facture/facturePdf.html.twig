@@ -69,6 +69,9 @@
                         PU (Ariary)
                     </th>
                     <th width="24%">
+                        Remise (Ariary)
+                    </th>
+                    <th width="24%">
                         Montant TTC (Ariary)
                     </th>
                 </tr>
@@ -102,18 +105,22 @@
                         {{ prix|number_format(0, ',', ' ') }} Ar
                     </td>
                     <td width="24%">
+                        &nbsp;
+                            {% if produit.remise is not null %} {{produit.remise}} {% endif %}
+                    </td> 
+                    <td width="24%">
                         {% if produit.typeVente == "gros" %}
-                        {{ ((produit.qtt)  * prix)|number_format(0, ',', ' ') }} Ar
+                        {{ ((produit.qtt  * prix) - produit.remise)|number_format(2, ',', ' ') }} Ar
                         {% else %}
-                            {{ (produit.qtt * prix)|number_format(0, ',', ' ') }} Ar
+                            {{ ((produit.qtt * prix) - produit.remise)|number_format(2, ',', ' ') }} Ar
                         {% endif %}
                     </td>
                 </tr>
 
                 {% if produit.typeVente == "gros" %}
-                        {% set montantHt = montantHt + ((produit.qtt) * prix)  %}
+                        {% set montantHt = (montantHt + ((produit.qtt) * prix)) - produit.remise  %}
                    {% else %}
-                        {% set montantHt = montantHt + (produit.qtt * prix)  %}
+                        {% set montantHt = (montantHt + (produit.qtt * prix)) - produit.remise %}
                    {% endif %}  
 
             {% endfor %}

@@ -1,0 +1,124 @@
+<div class="modal inmodal" id="modalRemise_{{ type }}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content animated bounceInRight" style="position: relative;">
+
+            <form id="formRemise" name="remise_{{ type }}" action="{{ path('valide_add_remise_product_ajax') }}" method="post">
+
+            <div class="modal-header text-center">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">
+
+                        Option pour l'affaire : <span style="color: #1ab394"> {{ affaire.nom|raw }}</span>
+                        <input name="idAffaire" value="{{ affaire.id }}" type="hidden">
+
+
+                </h4>
+
+            </div>
+
+
+
+            <input type="hidden" name="type" value="{{ type }}">
+                <input type="hidden" name="montantInitial" value="{{ montantTotal }}">
+                <input type="hidden" name="montantRemiseFinale" id="montantRemiseFinale" value="{{ produit.puHt }}">
+
+            <div class="modal-body">
+
+                {% if type == "affaire" %}
+                    <div class="form-group row"><label class="col-lg-4 col-form-label text-right">Type </label>
+
+                        <div class="col-lg-4">
+                            <select  name="typeReduction" class="form-control" onchange="return changeTypeReduction(this);">
+                                {% if affaire.application.id in [61, 100, 92, 93, 411, 421] %}
+                                    <option value="primeCee" {% if produit.typeReduction == "primeCee" %}selected{% endif %}>PRIME C.E.E. </option>
+                                    <option value="primeCeeEdf" {% if produit and produit.typeReduction == "primeCeeEdf" %}selected{% endif %}>PRIME C.E.E. EDF </option>
+                                    <option value="retenueAutre" {% if produit.typeReduction == "retenueAutre" %}selected{% endif %}>Autre </option>
+                                {% else %}
+                                    <option value="retenueRG" {% if produit.typeReduction == "retenueRG" %}selected{% endif %}>Retenue de garantie</option>
+                                    <option value="retenueBF" {% if produit.typeReduction == "retenueBF" %}selected{% endif %}>BF</option>
+                                    <option value="retenueCP" {% if produit.typeReduction == "retenueCP" %}selected{% endif %}>Compte prorata </option>
+                                    <option value="primeCee" {% if produit.typeReduction == "primeCee" %}selected{% endif %}>PRIME C.E.E. </option>
+                                    <option value="retenueAutre" {% if produit.typeReduction == "retenueAutre" %}selected{% endif %}>Autre </option>
+                                {% endif %}
+
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group row"><label class="col-lg-4 col-form-label text-right">Titre </label>
+
+                        <div class="col-lg-4">
+                            <input type="text" name="titreRemise" value="{{ produit.nom|striptags }}" class="form-control">
+
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="form-group row">
+                    <label class="col-lg-4 col-form-label text-right"> </label>
+                    <div class="col-lg-4">
+                        <input type="radio" {% if produit.remisePourcent %}checked{% endif %} onclick="return changeTypeRemise(this);" name="typeremise" value="1" id="type_remise_2"> <label for="type_remise_2">en %</label>
+
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-4 col-form-label text-right"> </label>
+                    <div class="col-lg-4">
+                        <input type="radio" {% if produit.remisePourcent is null %}checked{% endif %} onclick="return changeTypeRemise(this);" name="typeremise" value="2" id="type_remise_1"> <label for="type_remise_1">en montant</label>
+
+                    </div>
+                </div>
+
+                <div class="form-group row"><label class="col-lg-4 col-form-label text-right">Montant </label>
+
+                    <div class="col-lg-6">
+                        <input {% if produit.remisePourcent %}value="{{ produit.remisePourcent }}" {% else %} value="{{ produit.puHt * -1 }}" {% endif %} required onchange="return changeMontantRemise(this.value);" type="text" name="montantRemise" class="form-control" style="width: 30%; display: inline-block;">
+                        <span style="font-size: 16px; font-weight: bold;" class="typeRemiseMontant">{% if produit.remisePourcent %}% {% if produit.puHt %} ({{ produit.puHt|formatEuro  }}){% endif %}{% elseif produit.puHt %}€{% else %}%{% endif %}</span>
+
+                    </div>
+                </div>
+
+                {% if type == "affaire" %}
+                    <div class="form-group row"><label class="col-lg-4 col-form-label text-right">Tva </label>
+
+                        <div class="col-lg-2">
+                            <select  name="tva" class="form-control">
+                                <option value="0" {% if produit.tva == 0 %}selected{% endif %} >0%</option>
+                                {% for un_tvaVente in tvaVentes %}
+                                    <option value="{{ un_tvaVente.tva }}" {% if produit.tva == un_tvaVente.tva %}selected{% endif %}>{{ un_tvaVente.tva }}%</option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+                    </div>
+
+
+
+                {% endif %}
+
+
+
+            </div>
+            <div class="modal-footer text-center" style="display: block;">
+                <button type="reset" class="btn btn-white" data-dismiss="modal">Annuler</button>
+                <button onclick="return saveRemise('{{ type }}', {{ produit.id }});" type="submit" class="btn btn-primary">Enregistrer</button>
+
+            </div>
+
+
+            </form>
+
+
+        </div>
+    </div>
+</div>
+
+
+<script type="application/javascript">
+    function changeTypeReduction(elt) {
+        var typeReduction = elt.options[elt.selectedIndex].text;
+
+        $("input[name='titreRemise']").val(typeReduction);
+    }
+</script>

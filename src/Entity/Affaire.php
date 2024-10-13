@@ -167,6 +167,7 @@ class Affaire
 
     #[ORM\Column(nullable: true)]
     private ?bool $depot = null;
+    private ?float $remiseProduit = null;
 
 
     public function __construct()
@@ -700,6 +701,18 @@ class Affaire
     public function setDepot(?bool $depot): static
     {
         $this->depot = $depot;
+
+        return $this;
+    }
+
+    public function getRemiseProduit(): ?float
+    {
+        return $this->remiseProduit;
+    }
+
+    public function setRemiseProduit(?float $remiseProduit): static
+    {
+        $this->remiseProduit = $remiseProduit;
 
         return $this;
     }
