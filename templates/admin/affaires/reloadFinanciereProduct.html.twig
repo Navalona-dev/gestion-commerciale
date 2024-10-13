@@ -230,7 +230,7 @@
                                     <td class="align-middle text-center"> {% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(2, ',', ' ')}}{% else %}{{product.prixVenteDetail|number_format(2, ',', ' ')}}{% endif %}</td>
                                     <td class="align-middle text-center remise_{{ product.id }}"><a style="color: red;"
                                                                                                href="#"
-                                                                                               onclick="return addRemiseProduit({{ product.id }}, '{{ app.request.uri }}');">{% if product.remise %} <span class="text-danger">{{ product.remise }}</span> {% else %}<i class="bi bi-percent btn-remise"></i>{% endif %}</a>
+                                                                                               onclick="return addRemiseProduit({{ product.id }}, '{{ app.request.uri }}', {{affaire.id}});">{% if product.remise %} <span class="text-danger">{{ product.remise }}</span> {% else %}<i class="bi bi-percent btn-remise"></i>{% endif %}</a>
                                     </td>
                                     <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros * product.qtt  - product.remise }}{% else %}{{product.prixVenteDetail * product.qtt - product.remise }}{% endif %} Ar</td>
                                     <td>
@@ -311,7 +311,7 @@
                     </div>
                 </div>
             </div>
-
+<script src="{{ asset('assets/js/remise.js?version=1.4')}}"></script>
   <script>
     $(document).ready(function() {
         $('#tab-compte_1').removeClass('active').empty();

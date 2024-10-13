@@ -1006,7 +1006,7 @@ class AffaireController extends AbstractController
         $idProduit = $request->get('idProduit');
 
         $idAffaire = $request->get('idAffaire');
-
+        
         $type = $request->get('type');
 
         $isFrais = $request->get('isFrais');
@@ -1091,7 +1091,8 @@ class AffaireController extends AbstractController
             'montantPourcent' => $montantPourcent,
             'tvaVentes' => [],
             'option' => $option,
-            'isFrais' => $isFrais
+            'isFrais' => $isFrais,
+            'idAffaire' => $idAffaire
         ]);
     }
 
@@ -1256,7 +1257,6 @@ class AffaireController extends AbstractController
         }
 
         return $this->render("admin/affaires/reloadFinanciereProduct.html.twig", [
-            'applicationCurrentInSession' => $applicationCurrentInSession,
             'idApplication' => $this->application->getId(),
             'affaire' => $affaire,
             'produits' => $produits,
@@ -1274,4 +1274,93 @@ class AffaireController extends AbstractController
         //return $this->redirect($uri);
     }
 
+    /**
+     * @param Request $request
+     * @param ProduitRepository $produitRepository
+     * @param AffaireRepository $affaireRepository
+     * @Route("/financiere/deleteAddRemise/ajax", name="_delete_add_remise_product_ajax", methods={"POST"})
+     * @return Response
+     */
+    public function deleteAddRemise(Request $request, ProductRepository   $productRepository, AffaireRepository $affaireRepository, ProductService   $productService)
+    {
+        $idProduit = $request->get('idProduit');
+
+        $idAffaire = $request->get('idAffaire');
+
+        $type = $request->get('type');
+
+        $montantRemiseFinale = $request->get('montantRemiseFinale');
+
+        $uri = $request->get('uri');
+
+        $produit = [];
+
+        $affaire = [];
+        switch ($type) {
+            case "produit":
+                $produit = $productRepository->find($idProduit);
+
+                $affaires = $produit->getAffaires();
+
+                $affaire = $affaires[0];
+
+                $remiseAffaire = $affaire->getRemiseProduit();
+
+                if (null != $remiseAffaire) {
+                } else {
+                    $remiseAffaire = 0;
+                }
+
+                $affaire->setRemiseProduit($remiseAffaire - $produit->getRemise());
+
+                $produit->setRemise(null);
+
+                $produit->setRemisePourcent(null);
+
+                $productService->persist($produit);
+
+                $productService->persist($affaire);
+
+                break;
+
+            case "affaire":
+                $affaire = $affaireRepository->find($idAffaire);
+
+                $affaire->setRemise(null);
+
+                $affaire->setRemisePourcent(null);
+
+                $productService->persist($affaire);
+
+                break;
+        }
+
+        $productService->update();
+
+       // $montantCA = $produitService->updateCA($affaire, $produitRepository);
+
+       $produits = $this->productService->findProduitAffaire($affaire);
+
+       $facturesValide = [];
+       if ($affaire->getPaiement() != null && count($affaire->getFactures()) > 0) {
+           $factures = $affaire->getFactures();
+           $facturesValide = $factures->filter(function ($item) use ($affaire) {
+               return ($item->isValid() && 'regle' === $item->getStatut());
+               
+           });
+       }
+
+       return $this->render("admin/affaires/reloadFinanciereProduct.html.twig", [
+           'idApplication' => $this->application->getId(),
+           'affaire' => $affaire,
+           'produits' => $produits,
+           'montantCA' =>  null, // $montantCA - $montantRemiseFinale,
+           'affaireRemise' => $montantRemiseFinale,
+           'tvaVentes' => [],
+           'statuts' => $affaire::STATUT,
+           'application' => $this->application,
+           'factureFile' => (count($facturesValide) > 0 ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
+
+       ]);
+    }
 }

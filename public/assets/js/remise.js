@@ -1,14 +1,16 @@
-function addRemiseProduit(idProduit, uri) {
+function addRemiseProduit(idProduit, uri, idAffaire = null) {
 
   let displayConfirmation = false;
-
+  let elementAfter = null
   try {
-    displayConfirmation = ($("td.remise_"+ idProduit +" a").text().trim() != "--");
+    //displayConfirmation = ($("td.remise_"+ idProduit +" a").text().trim() != "%");
+    displayConfirmation = $("td.remise_"+ idProduit +" a").children().hasClass("bi");
+   
   } catch (e) {
     console.log(e); // Logs the error
   }
 
-  if (displayConfirmation) {
+  if (!displayConfirmation) {
     
     let messageAlert = "Les remises ne peuvent pas être modifiées une fois créées. Si vous devez ajuster le montant ou le pourcentage d'une remise, veuillez la supprimer et en créer une nouvelle avec les paramètres corrects."
     
@@ -22,7 +24,7 @@ function addRemiseProduit(idProduit, uri) {
   $.ajax({
     type: "post",
     url: "/admin/affaires/financiere/addRemise/ajax",
-    data: { idProduit: idProduit, type: "produit", uri: uri },
+    data: { idProduit: idProduit, type: "produit", uri: uri, idAffaire: idAffaire },
     success: function (response) {
       $("#modalRemiseEmpty").empty();
       $("#modalRemiseEmpty").append(response);
@@ -150,7 +152,7 @@ function saveRemise(type, id, isFrais = false) {
   var applicationID = $("input[name='applicationID']").val();
   formData.append("id", id);
   formData.append("applicationId", applicationID);
-
+  showSpinner();
   $.ajax({
     type: "POST",
     url: $("#formRemise").attr("action"),
@@ -171,8 +173,9 @@ function saveRemise(type, id, isFrais = false) {
       $("#modalRemise_" + type).modal("hide");
       $("#financiereProduct").empty();
       $("#financiereProduct").replaceWith(response);
+      hideSpinner();
 
-      $(".loadBody").css("display", "none");
+      //$(".loadBody").css("display", "none");
 
       return false;
     },
@@ -180,6 +183,40 @@ function saveRemise(type, id, isFrais = false) {
 
   return false;
 }
+
+function deleteRemiseProduitAffaire(type, id, isFrais = false) {
+  //$(".loadBody").css("display", "block");
+  if (confirm('Voulez-vous vraisment supprimer cette remise?')) {
+    var formData = new FormData($("#deleteRemise")[0]);
+
+    formData.append("idAffaire", id);
+    showSpinner();
+    $.ajax({
+      type: "POST",
+      url: $("#deleteRemise").attr("action"),
+      data: formData,
+      processData: false,
+      contentType: false,
+      error: function (jqXHR, textStatus, errorMessage) {
+        console.log(errorMessage); // Optional
+      },
+      success: function (response) {
+        //reloadTabFinanciere(response);
+        $("#modalRemise_" + type).modal("hide");
+        $("#financiereProduct").empty();
+        $("#financiereProduct").replaceWith(response);
+        hideSpinner();
+        //$(".loadBody").css("display", "none");
+
+        return false;
+      },
+    });
+  }
+  
+
+  return false;
+}
+
 
 function addFraistechniqueAffaire(idAffaire, uri, option, isFrais = true) {
   var applicationID = $("input[name='applicationID']").val();
