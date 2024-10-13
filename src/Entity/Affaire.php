@@ -33,7 +33,8 @@ class Affaire
         'paye' => 'Payé',
         'annule' => 'Annulé',
         'encours' => 'En cours',
-        'enecheance' => 'En écheance'
+        'enecheance' => 'En écheance',
+        'endepot' => 'En dépôt'
     ];
 
     const DEVIS = [
