@@ -140,6 +140,12 @@ class Facture
     #[ORM\OneToMany(targetEntity: MethodePaiement::class, mappedBy: 'facture')]
     private Collection $methodePaiements;
 
+    #[ORM\ManyToOne(inversedBy: 'factures')]
+    private ?Benefice $benefice = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isBenefice = null;
+
     public function __construct()
     {
         $this->factureDetails = new ArrayCollection();
@@ -571,4 +577,30 @@ class Facture
 
         return $this;
     }
+
+    public function getBenefice(): ?Benefice
+    {
+        return $this->benefice;
+    }
+
+    public function setBenefice(?Benefice $benefice): static
+    {
+        $this->benefice = $benefice;
+
+        return $this;
+    }
+
+    public function isBenefice(): ?bool
+    {
+        return $this->isBenefice;
+    }
+
+    public function setIsBenefice(?bool $isBenefice): static
+    {
+        $this->isBenefice = $isBenefice;
+
+        return $this;
+    }
+
+
 }

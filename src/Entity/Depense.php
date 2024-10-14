@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\DepenseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -31,6 +33,24 @@ class Depense
 
     #[ORM\ManyToOne(inversedBy: 'depenses')]
     private ?Application $application = null;
+
+    /**
+     * @var Collection<int, FactureDepense>
+     */
+    #[ORM\ManyToMany(targetEntity: FactureDepense::class, mappedBy: 'depenses')]
+    private Collection $factureDepenses;
+
+    /**
+     * @var Collection<int, Comptabilite>
+     */
+    #[ORM\ManyToMany(targetEntity: Comptabilite::class, mappedBy: 'depenses')]
+    private Collection $comptabilites;
+
+    public function __construct()
+    {
+        $this->factureDepenses = new ArrayCollection();
+        $this->comptabilites = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -108,4 +128,59 @@ class Depense
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, FactureDepense>
+     */
+    public function getFactureDepenses(): Collection
+    {
+        return $this->factureDepenses;
+    }
+
+    public function addFactureDepense(FactureDepense $factureDepense): static
+    {
+        if (!$this->factureDepenses->contains($factureDepense)) {
+            $this->factureDepenses->add($factureDepense);
+            $factureDepense->addDepense($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFactureDepense(FactureDepense $factureDepense): static
+    {
+        if ($this->factureDepenses->removeElement($factureDepense)) {
+            $factureDepense->removeDepense($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comptabilite>
+     */
+    public function getComptabilites(): Collection
+    {
+        return $this->comptabilites;
+    }
+
+    public function addComptabilite(Comptabilite $comptabilite): static
+    {
+        if (!$this->comptabilites->contains($comptabilite)) {
+            $this->comptabilites->add($comptabilite);
+            $comptabilite->addDepense($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComptabilite(Comptabilite $comptabilite): static
+    {
+        if ($this->comptabilites->removeElement($comptabilite)) {
+            $comptabilite->removeDepense($this);
+        }
+
+        return $this;
+    }
+
 }

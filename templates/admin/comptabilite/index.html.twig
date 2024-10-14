@@ -6,6 +6,21 @@
   td, tr {
     border-bottom: none !important;
   }
+
+  @keyframes fadeInOut {
+  0%, 100% { 
+    opacity: 1; 
+  }
+  50% { 
+    opacity: 0;
+  }
+}
+
+.add {
+  animation: fadeInOut 3s ease-in-out infinite; 
+  color: #5e1212;
+}
+
  
 </style>
 
@@ -28,18 +43,27 @@
             <div class="row">
                 <div class="col-md-6 col-12" style="border-right: solid 2px #5e1212;">
                     <div class="affaire">
-                        <h4 class="fw-bold mb-3">Commandes</h4>
+                        <h4 class="fw-bold mb-3">Commandes encaissées</h4>
                         <hr>
                         <div class="content">
                           {% if facturesToday|length > 0 %}
+                            {% set allFacturesHavePaymentMethod = true %}
                             <div class="row">
                               {% for facture in facturesToday %}
+                                {% set methodePaiement = facture.methodePaiementId|length %}
                                 <div class="col-md-6 col-12">
                                   <div class="card shadow p-3">
-                                    <h6 class="fw-bold "> {{facture.affaireNom}} </h6>
+                                    <div class="d-flex justify-content-between">
+                                      <h6 class="fw-bold "> {{facture.affaireNom}} </h6>
+                                      {% if facture.methodePaiementId|length < 1 %}
+                                        <span class="add"><i class="bi bi-exclamation-circle-fill"></i></span>
+                                        {% set allFacturesHavePaymentMethod = false %}
+                                      {% endif %}
+                                    </div>
+                                    
                                     <p class="">
                                       {% if facture.isEcheance is not null and facture.isEcheance == true %}
-                                      FAC/VSM/{{facture.numero}}-E{{facture.echeanceNumero}}-{{ facture.date|date('y')}}
+                                        FAC/VSM/{{facture.numero}}-E{{facture.echeanceNumero}}-{{ facture.date|date('y')}}
                                       {% elseif facture.isDepot is not null and facture.isDepot == true %}
                                         FAC/VSM/{{facture.numero}}-D{{facture.depotNumero}}-{{ facture.date|date('y')}}
                                       {% else %}
@@ -51,20 +75,73 @@
                                     </p>
                                     <p class="">
                                       <a href="#" onclick="return detailMethodePaiement({{facture.id}})" class="bg-warning text-black" style="padding: 7px 9px; border-radius: 100%;"><i class="bi bi-ticket-detailed-fill"></i></a>
-                                      {% if facture.methodePaiements|length < 1 %}
-                                        <a href="#" onclick="return newMethodePaiement({{facture.id}})" class="bg-primary text-white mx-3" style="padding: 7px 9px; border-radius: 100%;"><i class="bi bi-plus-circle-fill"></i></a>
+                                      {% if facture.methodePaiementId|length < 1 %}
+                                        <a href="#" onclick="return newMethodePaiement({{facture.id}})" class="mx-3 bg-primary text-white" style="padding: 7px 9px; border-radius: 100%;"><i class="bi bi-plus-circle-fill "></i></a>
                                       {% endif %}
                                     </p>
                                   </div>
                                 </div>
                               {% endfor %}
                             </div>
+                        
+                            {% if allFacturesHavePaymentMethod %}
+                              <div class="alert alert-warning">
+                                {% set totalEspece = 0 %}
+                                {% set totalMvola = 0 %}
+                                {% set totalOrangeMoney = 0 %}
+                                {% set totalAirtelMoney = 0 %}
+                        
+                                {% for methodePaiementToday in methodePaiementsToday %}
+                                  {% set totalEspece = totalEspece + methodePaiementToday.espece %}
+                                  {% set totalMvola = totalMvola + methodePaiementToday.mVola %}
+                                  {% set totalOrangeMoney = totalOrangeMoney + methodePaiementToday.orangeMoney %}
+                                  {% set totalAirtelMoney = totalAirtelMoney + methodePaiementToday.airtelMoney %}
+                                {% endfor %}
+                        
+                                <p>
+                                  <strong>Paiement en espèce :</strong> {{totalEspece|number_format(0,',',' ')}} Ariary
+                                </p>
+                                <p>
+                                  <strong>Paiement Mvola :</strong> {{totalMvola|number_format(0,',',' ')}} Ariary
+                                </p>
+                                <p>
+                                  <strong>Paiement AirtelMoney :</strong> {{totalAirtelMoney|number_format(0,',',' ')}} Ariary
+                                </p>
+                                <p>
+                                  <strong>Paiement OrangeMoney :</strong> {{totalOrangeMoney|number_format(0,',',' ')}} Ariary
+                                </p>
+                        
+                                <p class="bg-danger py-2 text-center text-white" style="border-radius: 5px;">
+                                  <strong>ESPECE : </strong> {{totalEspece|number_format(0,',',' ')}} Ariary
+                                  <br>
+                                  <strong>MOBILE MONEY : </strong> {{(totalMvola + totalAirtelMoney + totalOrangeMoney)|number_format(0,',',' ')}} Ariary
+                                  <br>
+                                  <strong>TOTAL : </strong> {{(totalEspece + totalMvola + totalAirtelMoney + totalOrangeMoney)|number_format(0,',',' ')}} Ariary
+                                </p>
+                        
+                                <p class="d-flex justify-content-center">
+                                  <a href="#" onclick="return newBenefice()" class="btn btn-info btn-sm px-3" style="margin-right: 15px;">Encaisser</a>
+                                  {#<a href="#" class="btn btn-info btn-sm px-3">Créer comptabilité</a>#}
+                                </p>
+
+                                {#<p class="d-flex justify-content-center">
+                                  <a href="#" class="btn btn-info btn-sm px-3" style="margin-right: 15px;">Facturer Bénéfice</a>
+                                  <a href="#" class="btn btn-info btn-sm px-3">Facturer comptabilité</a>
+                                </p>#}
+                              </div>
+                            {% else %}
+                              <div class="alert alert-warning">
+                                <strong>Attention :</strong> Toutes les factures n'ont pas de méthode de paiement associée.
+                              </div>
+                            {% endif %}
+                            
                           {% else %}
                             <div class="alert alert-warning">
                               Aucune facture réglée pour aujourd'hui
                             </div>
                           {% endif %}
                         </div>
+                        
                     </div>
                 </div>
                 <div class="col-md-6 col-12">
@@ -101,7 +178,9 @@
                         <div class="alert alert-warning">
                           Grand total : {{grandTotal|number_format(0,',',' ')}} Ariary
                         </div>
-
+                        {#<div class="pdf">
+                          <a href="#" onclick="return createFactureDepense()" class="btn btn-primary btn-sm px-3">Créer une facture</a>
+                        </div>#}
                       {% else %}
                         <div class="alert alert-warning">
                           Aucun depense pour aujourd'hui
@@ -109,8 +188,6 @@
                       {% endif %}
                     </div>
                   </div>
-                   
-                    
                 </div>
             </div>
 
@@ -120,7 +197,7 @@
       </div>
     </div>
     <div id="blocModalComptabiliteEmpty"></div>
-  </section>
+</section>
 
   <script>
     //datatable
@@ -170,8 +247,6 @@
         $('#tab-stock').removeClass('active');
         $('#tab-depot').css('display', 'none');
         $('#tab-comptabilite').css('display', 'block');
-
-
 
     });
 
@@ -295,4 +370,62 @@
             });
     }
     
+    function createFactureDepense() {
+        if (confirm('Voulez vous vraiment créer cette facture?')) {
+            setTimeout(function() {
+                $.ajax({
+                url: '/admin/depense/facture',
+                type: 'POST',
+                //data: {id: id},
+                success: function (response) {
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Création facture fait');
+                        
+                        showTabComptabilite();
+
+                        if (response.pdfUrl) {
+                            window.open(response.pdfUrl, '_blank');
+                        }
+
+                    }, 800);
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la création de facture.');
+                }
+            });
+        
+            }, 500);
+           
+        }
+    }
+  
+    function newBenefice() {
+      var anchorName = document.location.hash.substring(1);
+            $.ajax({
+                url: '/admin/benefice/new',
+                type: 'POST',
+                //data: {isNew: isNew},
+                success: function (response) {
+                    $("#blocModalComptabiliteEmpty").empty();
+                    $("#blocModalComptabiliteEmpty").append(response.html);
+                    $('#modalNewBenefice').modal('show');
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors l\'ajout de benefice.');
+                }
+            });
+    }
+
   </script>

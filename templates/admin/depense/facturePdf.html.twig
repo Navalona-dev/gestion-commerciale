@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+     
+    </style>
+</head>
+<body>
+    <div>
+        {% if application.logoFile is not null %}
+            <img src="{{ absolute_url(vich_uploader_asset(application, 'logoFile')) }}" alt="" style="width: 300px; height: 150px;">
+        {% endif %}
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <p style="margin-left: 500px;">Date : <strong style="margin-left: 15px;">{{factureDepense.date|date('d/m/Y')}}</strong></p>
+    </div>
+
+    <div style="margin-bottom: 30px;">
+        <table class="table" style="width: 100%;">
+            <tr>
+                <th style="width: 50%; border: 1px solid #000;">
+                    <p style="font-size: 15px;"> {{application.entreprise}} </p>
+                    <p style="font-size: 15px;">{{application.adresse}}</p>
+                    <p style="font-size: 15px;">NIF: {{application.nif}}</p>
+                    <p style="font-size: 15px;">STAT: {{application.stat}}</p>
+                    <p style="font-size: 15px;">TEL <span style="margin-left: 100px;">{{application.telephone}}</span></p>
+                </th>
+                <th style="width: 50%; border: 1px solid #000;">
+                    <p style="text-align: center; font-size: 15px; text-transform: uppercase;"> Dépense </p>
+                    <p style="font-size: 15px;">**************</p>
+                </th>
+            </tr>
+        </table>
+    </div>
+    <div style="margin-bottom: 30px;">
+        <p style="text-align: center; font-size: 30px;"> 
+            <strong>
+                Facture / 
+                {% if factureDepense.statut == "annule" %}
+                    FAC/VSM/Depense-{{factureDepense.numero}}-{{ factureDepense.date|date('y') }}
+                {% elseif factureDepense.statut == "regle" or factureDepense.statut == "encours" %}
+                    FAC/VSM/Depense-{{factureDepense.numero}}-{{ factureDepense.date|date('y') }}
+                {% endif %}
+            </strong>
+        </p>
+    </div>
+    <div style="margin-bottom: 30px;">
+        <table width="100%">
+            <thead>
+                <tr style="background-color: #504f4f81; color: #fff;">
+                    <th width="20%">Date</th>
+                    <th width="24%">
+                        Désignation
+                    </th>
+                    <th width="30%">
+                        Quantité
+                    </th>
+                    <th width="12%">
+                        Prix unitaire
+                    </th>
+                    <th width="14%">
+                        Total
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set montantHt = 0 %}
+     
+                {% for depense in depenses %}
+                <tr style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
+                    <td width="20%">
+                        {{depense.dateCreation|date('d-m-Y')}}
+                    </td>
+                    <td width="24%">
+                        {{ depense.designation }}
+                    </td>
+                    <td width="30%">
+                        {{ depense.nombre }}
+
+                    </td>
+                    <td width="12%">
+                        {{ depense.prix|number_format(0, ',', ' ') }} Ar
+                    </td>
+                    <td width="14%">
+                        {{ depense.total|number_format(0, ',', ' ') }} Ar
+                        
+                    </td>
+                </tr>
+
+                {% set montantHt = montantHt + depense.total  %}
+
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <p style="border: 1px solid #000; padding: 10px 50px; width: 40%;">
+                TOTAL À DÉPENSER 
+            <br><br>
+            <span> {{montantHt|number_format(0,',',' ')}} Ar </span>
+        </p>
+    </div>
+
+    <div>
+        <p>
+            <strong>Responsable</strong> <br><br>
+            <span>{{user.nom}}</span>
+        </p>
+    </div>
+    
+
+</body>
+</html>

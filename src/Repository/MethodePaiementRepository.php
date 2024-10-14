@@ -16,28 +16,21 @@ class MethodePaiementRepository extends ServiceEntityRepository
         parent::__construct($registry, MethodePaiement::class);
     }
 
-    //    /**
-    //     * @return MethodePaiement[] Returns an array of MethodePaiement objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('m.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function selectMethodeToday()
+    {
+        $today = new \DateTime();
+        $today->setTime(0, 0, 0);
+        $tomorrow = clone $today;
+        $tomorrow->modify('+1 day');
 
-    //    public function findOneBySomeField($value): ?MethodePaiement
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $qb = $this->createQueryBuilder('mp')
+                    ->select('mp.id, mp.espece, mp.mVola, mp.orangeMoney, mp.airtelMoney')
+                    ->where('mp.dateCreation >= :today')
+                    ->andWhere('mp.dateCreation < :tomorrow')
+                    ->setParameter('today', $today)
+                    ->setParameter('tomorrow', $tomorrow)
+                    ->getQuery()
+                    ->getResult();
+               return $qb;
+    }
 }

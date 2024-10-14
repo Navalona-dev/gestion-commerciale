@@ -15,6 +15,8 @@ use Doctrine\DBAL\ParameterType;
 class FactureRepository extends ServiceEntityRepository
 {
     private $connection;
+    private $application;
+    
     public function __construct(ManagerRegistry $registry, ApplicationManager $applicationManager, Connection $connection)
     {
         parent::__construct($registry, Facture::class);
@@ -301,22 +303,23 @@ class FactureRepository extends ServiceEntityRepository
         $today->setTime(0, 0, 0);
         $tomorrow = clone $today;
         $tomorrow->modify('+1 day');
-
+    
         $qb = $this->createQueryBuilder('f')
-                    ->select('f.id, f.dateCreation, f.solde, f.isEcheance, f.echeanceNumero, f.numero, f.isDepot, f.depotNumero, f.date, a.nom as affaireNom, m.id as methodePaiements')
-                    ->leftJoin('f.affaire', 'a')
-                    ->leftJoin('f.methodePaiements', 'm')
-                    ->where('f.dateCreation >= :today')
-                    ->andWhere('f.dateCreation < :tomorrow')
-                    ->andWhere('f.application = :application_id')
-                    ->andWhere('f.statut = :statut')
-                    ->setParameter('today', $today)
-                    ->setParameter('tomorrow', $tomorrow)
-                    ->setParameter('application_id', $this->application->getId())
-                    ->setParameter('statut', $statut)
-                    //->getQuery()->getSql();
-                    ->getQuery()
-                    ->getResult();
-               return $qb;
+            ->select('f.id, f.dateCreation, f.solde, f.isEcheance, f.echeanceNumero, f.numero, f.isDepot, f.depotNumero, f.date, a.nom as affaireNom, m.id AS methodePaiementId, m.espece, m.mVola, m.orangeMoney, m.airtelMoney')
+            ->leftJoin('f.affaire', 'a')
+            ->leftJoin('f.methodePaiements', 'm') // Jointure avec les méthodes de paiement
+            ->where('f.dateCreation >= :today')
+            ->andWhere('f.dateCreation < :tomorrow')
+            ->andWhere('f.application = :application_id')
+            ->andWhere('f.statut = :statut')
+            ->setParameter('today', $today)
+            ->setParameter('tomorrow', $tomorrow)
+            ->setParameter('application_id', $this->application->getId())
+            ->setParameter('statut', $statut)
+            ->getQuery()
+            ->getResult();
+    
+        return $qb;
     }
+    
 }

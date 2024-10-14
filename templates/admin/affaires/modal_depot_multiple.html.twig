@@ -15,6 +15,7 @@
             </div>
             <div class="modal-body">
                 {% set unite = '' %}
+                {% set qttRestant = 0 %}
                 <div class="row">
                     {% for index, product in products %}
                         {% if product.typeVente == "detail" %}
@@ -22,12 +23,17 @@
                         {% else %}
                             {% set unite = product.produitCategorie.presentationDetail %}
                         {% endif %}
+                        {% if product.qttRestant != null or product.qttRestant > 0 %}
+                            {% set qttRestant = product.qttRestant %}
+                        {% else %}
+                            {% set qttRestant = 0 %}
+                        {% endif %}
                         <span class="qtt-commander" data-qttcommander="{{product.qtt}}"></span>
                         <span class="qtt-restant" data-restant="{{product.qttRestant}}" ></span>
                         <span class="id-affaire-depot" data-affaire="{{affaire.id}}"></span>
 
                         <div class="col-md-10 col-12">
-                            <p class="mb-4 nom-produit" data-index="{{index}}" data-produitid="{{product.id}}" style="cursor: pointer;"> {{product.nom}} ({{product.reference}}, {{product.qtt}} {{unite}}) </p>
+                            <p class="mb-4 nom-produit" data-index="{{index}}" data-produitid="{{product.id}}" style="cursor: pointer;"> {{product.nom}} ({{product.reference}}, qtt : {{product.qtt}} {{unite}}, qttRestant : {{qttRestant}} {{unite}}) </p>
                         </div>
                         <div class="col-md-2 col-12 product_{{index}}">
                             <input type="text" name="qttVendu_{{index}}" id="qttVendu_{{index}}" placeholder="qté vendu" class="form-control form-control-sm qttVendu" readonly>
@@ -84,9 +90,9 @@
                 qttVenduValue = $(this).val();
 
                 const qttCommander = $('.qtt-commander').data('qttcommander'); // Récupération de la quantité commandée
-                const qttRestant = $('.qtt-restant').data('qttrestant'); // Assurez-vous que qttRestant existe et est défini
+                const qttRestant = $('.qtt-restant').data('restant'); // Assurez-vous que qttRestant existe et est défini
 
-                console.log(qttVenduValue, qttCommander);
+                console.log(qttVenduValue, qttCommander, qttRestant);
                 if (qttVenduValue > qttCommander || (qttRestant > 0 && qttVenduValue > qttRestant)) {
                     // Si la quantité vendue dépasse la quantité commandée ou la quantité restante
                     qttVendu.css('background-color', '#fc8b8b');

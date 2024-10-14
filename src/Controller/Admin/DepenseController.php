@@ -5,23 +5,34 @@ namespace App\Controller\Admin;
 use App\Entity\Depense;
 use App\Form\DepenseType;
 use App\Service\DepenseService;
+use App\Service\ApplicationManager;
+use App\Repository\DepenseRepository;
 use App\Repository\FactureRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/admin/depense', name: 'depenses')]
 class DepenseController extends AbstractController
 {
     private $depenseService;
+    private $depenseRepository;
+    private $application;
 
     public function __construct(
         DepenseService $depenseService,
+        DepenseRepository $depenseRepository,
+        ApplicationManager $applicationManager, 
+
     )
     {
         $this->depenseService = $depenseService;
+        $this->depenseRepository = $depenseRepository;
+        $this->application = $applicationManager->getApplicationActive();
+
     }
 
     #[Route('/', name: '_liste')]
@@ -80,6 +91,37 @@ class DepenseController extends AbstractController
         return new JsonResponse($data);
     }
 
+    #[Route('/facture', name: '_facture')]
+    public function facture(Request $request): Response
+    {
+        $depensesToday = $this->depenseRepository->selectDepenseToday();
+
+        if (count($depensesToday) > 0) {
+            $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/APP_'.$this->application->getId().'/factures/depense/';
+
+            // Vérifier si le dossier existe, sinon le créer avec les permissions appropriées
+            if (!is_dir($documentFolder)) {
+                mkdir($documentFolder, 0777, true); // 0777 pour les permissions, et `true` pour créer récursivement les sous-dossiers
+            }
+            
+            list($pdfContent, $facture) = $this->depenseService->addFacture($depensesToday, $documentFolder, $request);
+            
+            $filename = 'Depense' . '-' . $facture->getNumero() . ".pdf";
+            $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/depense/' . $filename;
+            
+            // Sauvegarder le fichier PDF
+            file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
+            
+            return new JsonResponse([
+                'status' => 'success',
+                'pdfUrl' => $pdfPath,
+            ]);
+            
+        }
+        
+        return new JsonResponse([]);
+    }
+
     #[Route('/edit/{depense}', name: '_edit')]
     public function edit(Request $request, Depense $depense)
     {
@@ -134,4 +176,8 @@ class DepenseController extends AbstractController
             $this->createNotFoundException('Exception' . $Exception->getMessage());
         }
     }
+
+    
 }
+
+

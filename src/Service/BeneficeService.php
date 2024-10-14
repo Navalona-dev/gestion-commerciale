@@ -1,42 +1,48 @@
 <?php
 namespace App\Service;
 
-use App\Entity\FactureComptabilite;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Twig\Environment;
+use App\Entity\Facture;
+use App\Entity\Benefice;
+use App\Entity\FactureBenefice;
 use App\Service\ApplicationManager;
+use App\Repository\FactureRepository;
 use App\Service\AuthorizationManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-class ComptabiliteService
+class BeneficeService
 {
     private $tokenStorage;
     private $authorization;
     private $entityManager;
     private $application;
-
+    private $security;
+    private $twig;
+    private $factureRepo;
 
     public function __construct(
         AuthorizationManager $authorization, 
         TokenStorageInterface  $TokenStorageInterface, 
         EntityManagerInterface $entityManager,
-        ApplicationManager  $applicationManager
+        ApplicationManager  $applicationManager,
+        Security $security,
+        Environment $twig,
+        FactureRepository $factureRepo
+
     )
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
         $this->entityManager = $entityManager;
         $this->application = $applicationManager->getApplicationActive();
+        $this->security = $security;
+        $this->twig = $twig;
+        $this->factureRepo = $factureRepo;
 
-    }
-
-    public function add($methodePaiement = null, $facture = null)
-    {
-        $methodePaiement->setDateCreation(new \DateTime);
-        $methodePaiement->setFacture($facture);
-        $this->entityManager->persist($methodePaiement);
-        $this->entityManager->flush();
-
-        return $methodePaiement;
     }
 
     public function remove($entity)
@@ -50,47 +56,26 @@ class ComptabiliteService
         $this->entityManager->flush();
     }
 
-    public function addComptabilite($comptabilite = null, $folder = null, $request = null, $depenses = null, $benefice = null)
+    public function add($benefice = null, $folder = null, $request = null,$espece = null, $total = null, $mobileMoney = null, $facturesToday = null)
     {   
         $user = $this->security->getUser();
 
         //créer nouveau benefice
-        $comptabilite->setDateCreation(new \DateTime());
-        $comptabilite->setBenefice($benefice);
-        $comptabilite->setApplication($this->application);
+        $benefice->setEspece($espece);
+        $benefice->setDateCreation(new \DateTime());
+        $benefice->setMobileMoney($mobileMoney);
+        $benefice->setTotal($total);
+        $benefice->setApplication($this->application);
 
-        $totalDepense = 0;
-        $totalBenefice = $benefice->getTotal();
-
-        foreach($depenses as $depense) {
-            $depense->setComptabilite($comptabilite);
-            $comptabilite->addDepense($depense);
-            $this->entityManager->persist($depense);
-
-            $totalDepense += $depense->getTotal(); 
+        foreach($facturesToday as $factureToday) {
+            $facture = $this->factureRepo->findOneBy(['id' => $factureToday['id']]);
+            $facture->setBenefice($benefice);
+            $facture->setIsBenefice(true);
+            $benefice->addFacture($facture);
+            $this->entityManager->persist($facture);
         }
 
-        $resultat = $totalBenefice - $totalDepense;
-        $comptabilite->setReste($resultat);
-        $comptabilite->setStatus();
-
-        // Déterminer le statut en fonction du résultat
-        if ($resultat >= 1000000) {
-            $statut = 'Excédent exceptionnel';
-        } elseif ($resultat > 5000) {
-            $statut = 'Excédent important';
-        } elseif ($resultat > 1000 && $resultat <= 5000) {
-            $statut = 'Excédent';
-        } elseif ($resultat > -1000 && $resultat <= 1000) {
-            $statut = 'Equilibre';
-        } elseif ($resultat <= -1000 && $resultat > -5000) {
-            $statut = 'Déficit léger';
-        } else {
-            $statut = 'Déficit important';
-        }
-        
-
-        $this->entityManager->persist($comptabilite);
+        $this->entityManager->persist($benefice);
 
         //créer la facture benefice
         $factureBenefice = new FactureBenefice();
@@ -142,7 +127,7 @@ class ComptabiliteService
         $data['application'] = $this->application;
         $data['user'] = $user;
         $data['facturesToday'] = $facturesToday;
-        $data['benefice'] = $comptabilite;
+        $data['benefice'] = $benefice;
         
         $html = $this->twig->render('admin/benefice/facturePdf.html.twig', $data);
 
@@ -162,11 +147,11 @@ class ComptabiliteService
         $fileName = $folder . $filename;
         file_put_contents($fileName, $pdfContent);
 
-        return [$pdfContent, $factureBenefice, $comptabilite]; 
+        return [$pdfContent, $factureBenefice, $benefice]; 
     }
 
     public function getLastValideFacture()
     {
-        return $this->entityManager->getRepository(FactureComptabilite::class)->getLastValideFacture();
+        return $this->entityManager->getRepository(FactureBenefice::class)->getLastValideFacture();
     }
 }

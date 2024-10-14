@@ -40,6 +40,11 @@
                             </p>
                         {% endif %}
 
+                        <div class="form-group">
+                            <a href="#" onclick="return updateMethodePaiement({{methodePaiement.id}})" class="btn btn-primary btn-sm px-3">Modifier</a>
+                            <a href="#" onclick="return deleteMethodePaiement({{methodePaiement.id}})" class="btn btn-danger px-3 btn-sm">Supprimer</a>
+                        </div>
+
                     {% endfor %}
                 {% else %}
                 <div class="alert alert-warning">
@@ -54,5 +59,70 @@
 
 {% block javascripts %}
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
+
+<script>
+    function updateMethodePaiement(id = null) {
+      var anchorName = document.location.hash.substring(1);
+            $.ajax({
+                url: '/admin/comptabilite/methode/paiement/edit/'+id,
+                type: 'GET',
+                //data: {isNew: isNew},
+                success: function (response) {
+                    $("#blocModalComptabiliteEmpty").empty();
+                    $("#blocModalComptabiliteEmpty").append(response.html);
+                    $('#modalDetailPaiement').modal('hide');
+                    $('#modalUpdateMethodePaiement').modal('show');
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la mise à jour de methode de paiement.');
+                }
+            });
+    }
+    
+    function deleteMethodePaiement(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
+        if (confirm('Voulez vous vraiment supprimer cette méthode de paiement?')) {
+            $.ajax({
+                url: '/admin/comptabilite/methode/paiement/delete/'+id,
+                type: 'POST',
+                //data: {category: id},
+                success: function (response) {
+                    
+                    var nextLink = $('#sidebar').find('li#comptabilite').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Suppression effectuée');
+                        $('#modalDetailPaiement').hide();
+                        
+                        //$(".loadBody").css('display', 'none');
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
+
+                        showTabComptabilite();
+
+                    }, 800);
+                   
+                  
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la suppression de méthode de paiement.');
+                }
+            });
+        }
+    }
+ 
+</script>
 
 {% endblock %}

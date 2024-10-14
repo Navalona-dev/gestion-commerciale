@@ -119,6 +119,12 @@ class Application
     #[ORM\OneToMany(targetEntity: Depense::class, mappedBy: 'application')]
     private Collection $depenses;
 
+    /**
+     * @var Collection<int, Benefice>
+     */
+    #[ORM\OneToMany(targetEntity: Benefice::class, mappedBy: 'application')]
+    private Collection $benefices;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -131,6 +137,7 @@ class Application
         $this->notifications = new ArrayCollection();
         $this->factures = new ArrayCollection();
         $this->depenses = new ArrayCollection();
+        $this->benefices = new ArrayCollection();
     }
 
     public function __toString()
@@ -588,6 +595,36 @@ class Application
             // set the owning side to null (unless already changed)
             if ($depense->getApplication() === $this) {
                 $depense->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Benefice>
+     */
+    public function getBenefices(): Collection
+    {
+        return $this->benefices;
+    }
+
+    public function addBenefice(Benefice $benefice): static
+    {
+        if (!$this->benefices->contains($benefice)) {
+            $this->benefices->add($benefice);
+            $benefice->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBenefice(Benefice $benefice): static
+    {
+        if ($this->benefices->removeElement($benefice)) {
+            // set the owning side to null (unless already changed)
+            if ($benefice->getApplication() === $this) {
+                $benefice->setApplication(null);
             }
         }
 

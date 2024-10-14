@@ -153,17 +153,13 @@
             {% else %}
                 TOTAL À REMBOURSER 
             {% endif %}
-            <span> {{montantHt|number_format(0,',',' ')}} Ar </span>
-        </p>
-        <p style="border: 1px solid #000; padding: 10px 50px; width: 40%;"></p>
-                DÉJÀ PAYER : 
-            <span> {{dejaPaye|number_format(0,',',' ')}} Ar </span>
-        </p>
-
-        <p style="border: 1px solid #000; padding: 10px 50px; width: 40%;"></p>
-                RESTE À PAYER : 
+            <span> {{montantHt|number_format(0,',',' ')}} Ar </span><br><br>
+            DÉJÀ PAYER : 
+            <span> {{dejaPaye|number_format(0,',',' ')}} Ar </span><br><br>
+            RESTE À PAYER : 
             <span> {{restePaye|number_format(0,',',' ')}} Ar </span>
         </p>
+        
     </div>
 
     <div>

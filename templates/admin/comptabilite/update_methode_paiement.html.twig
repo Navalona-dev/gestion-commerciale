@@ -1,9 +1,9 @@
 
-<div class="modal fade" id="modalNewMethodePaiement" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="modalUpdateMethodePaiement" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content p-4" style="width: 180% !important; margin-left: -12rem !important;">
             <div class="modal-header modal-header-center">
-                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau méthode de paiement</h5>
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Mise à jour méthode de paiement</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -14,8 +14,11 @@
                     <span class="solde-total" data-total="{{facture.solde}}"></span>
                     Total solde : {{facture.solde|number_format(0,',',' ')}} Ariary
                 </div>
+                <span class="mvola-solde" data-mvola="{{methodePaiement.mVola}}"></span>
+                <span class="orange-solde" data-orange="{{methodePaiement.orangeMoney}}"></span>
+                <span class="airtel-solde" data-airtel="{{methodePaiement.airtelMoney}}"></span>
                 
-                {{ form_start(form, {'attr': {'id': 'newMethodePaiement', 'action': path('comptabilites_new_methode_paiement', {'factureId' : facture.id}) }}) }}
+                {{ form_start(form, {'attr': {'id': 'updateMethodePaiement', 'action': path('comptabilites_edit_methode_paiement', {'methode' : methodePaiement.id}) }}) }}
                    
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Espèce </label>
@@ -132,7 +135,7 @@
     $(document).ready(function () {
         $('.error').hide();
 
-       $('#newMethodePaiement').on('submit', function (e) {
+       $('#updateMethodePaiement').on('submit', function (e) {
             e.preventDefault();
 
             let espece = parseFloat($('#methode_paiement_espece').val()) || 0;
@@ -146,7 +149,7 @@
             let total = soldeAirtel + soldeMvola + soldeOrange + espece;
 
             if(total != soldeTotal) {
-                $('#modalNewMethodePaiement').modal('show');
+                $('#modalUpdateMethodePaiement').modal('show');
                 let message = '';
                 if(total < soldeTotal) {
                     message = "Le total de solde mobile money + espece " + total + " est inférieur à " + soldeTotal;
@@ -170,7 +173,8 @@
                     processData: false,
                     contentType: false,
                     success: function (response) {
-                            $('#modalNewMethodePaiement').modal('hide');
+                            $('#modalUpdateMethodePaiement').modal('hide');
+                            $('#modalDetailPaiement').modal('hide');
                             $('.error').hide();
 
                             var nextLink = $('#sidebar').find('li#methode-paiement').find('a');
@@ -181,7 +185,7 @@
                                     showMethod: 'slideDown',
                                     timeOut: 1000
                                 };
-                                toastr.success('Avec succèss', 'Enregistrement effectuée');
+                                toastr.success('Avec succèss', 'Mise à jour effectuée');
 
                                 showTabComptabilite();
 
@@ -193,7 +197,7 @@
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                        alert('Erreur lors de l\'ajout de depense.');
+                        alert('Erreur lors de la mise à jour de depense.');
                     }
                 });
             }
@@ -206,6 +210,34 @@
 <script>
     $(document).ready(function() {
         $('.mvola, .airtel, .orange').hide();
+        const mvolaSolde = parseFloat($('.mvola-solde').data('mvola'));
+        const airtelSolde = parseFloat($('.airtel-solde').data('airtel'));
+        const orangeSolde = parseFloat($('.orange-solde').data('orange'));
+        console.log(mvolaSolde,airtelSolde, orangeSolde);
+
+        if (!isNaN(mvolaSolde) && mvolaSolde > 0) {
+            $('#mvola').prop('checked', true); 
+            $('.mvola').show();
+        } else {
+            $('#mvola').prop('checked', false);
+            $('.mvola').hide();
+        }
+
+        if (!isNaN(orangeSolde) && orangeSolde > 0) {
+            $('#orange').prop('checked', true); 
+            $('.orange').show();
+        } else {
+            $('#orange').prop('checked', false);
+            $('.orange').hide();
+        }
+
+        if (!isNaN(airtelSolde) && airtelSolde > 0) {
+            $('#airtel').prop('checked', true); 
+            $('.airtel').show();
+        } else {
+            $('#airtel').prop('checked', false);
+            $('.airtel').hide();
+        }
 
         $('#mvola').on('click', function() {
             if($(this).is(':checked')) {

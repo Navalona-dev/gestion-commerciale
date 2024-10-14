@@ -20,6 +20,7 @@ use App\Entity\ProduitCategorie;
 //use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\ReglementFacture;
 use App\Entity\DatePeremptionProduct;
+use App\Repository\FactureRepository;
 use App\Service\AuthorizationManager;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,6 +48,7 @@ class FactureService
     private $reglementFactureRepository;
     private $logService;
     private $applicationRepo;
+    private $factureRepository;
 
     public function __construct(
         AuthorizationManager $authorization, 
@@ -59,7 +61,8 @@ class FactureService
         Security $security,
         ReglementFactureRepository  $reglementFactureRepository,
         LogService $logService,
-        ApplicationRepository $applicationRepo
+        ApplicationRepository $applicationRepo,
+        FactureRepository $factureRepository
         )
     {
         $this->tokenStorage = $TokenStorageInterface;
@@ -73,6 +76,7 @@ class FactureService
         $this->reglementFactureRepository = $reglementFactureRepository;
         $this->logService = $logService;
         $this->applicationRepo = $applicationRepo;
+        $this->factureRepository = $factureRepository;
     }
 
     public function add($affaire = null, $folder = null, $request = null, $applicationRevendeur = null)
@@ -521,6 +525,31 @@ class FactureService
         $facture->setEtat('annule');
         $facture->setValid(true);
         $facture->setStatut('annule');
+
+        $factureEcheances = $facture->getFactureEcheances();
+
+        if(count($factureEcheances) > 0) {
+            foreach($factureEcheances as $factureEcheance) {
+                $fileEcheance = $factureEcheance->getFile();
+    
+                $facEcheance = $this->factureRepository->findOneBy(['file' => $fileEcheance]);
+                if($facEcheance){
+                    $facEcheance->setStatut('annule');
+                    $facEcheance->setEtat('annule');
+                    $this->entityManager->persist($facEcheance);
+                }
+            }
+        }
+
+        if($affaire->isDepot() == true) {
+            foreach($factures as $factureDepot){
+                $factureDepot->setEtat('annule');
+                $factureDepot->setValid(true);
+                $factureDepot->setStatut('annule');
+                $this->entityManager->persist($factureDepot);
+            }
+        }
+
         $products = $affaire->getProducts();
         $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
         $tabQttRestant = [];
