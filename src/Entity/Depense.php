@@ -46,6 +46,9 @@ class Depense
     #[ORM\ManyToMany(targetEntity: Comptabilite::class, mappedBy: 'depenses')]
     private Collection $comptabilites;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateDepense = null;
+
     public function __construct()
     {
         $this->factureDepenses = new ArrayCollection();
@@ -179,6 +182,18 @@ class Depense
         if ($this->comptabilites->removeElement($comptabilite)) {
             $comptabilite->removeDepense($this);
         }
+
+        return $this;
+    }
+
+    public function getDateDepense(): ?\DateTimeInterface
+    {
+        return $this->dateDepense;
+    }
+
+    public function setDateDepense(?\DateTimeInterface $dateDepense): static
+    {
+        $this->dateDepense = $dateDepense;
 
         return $this;
     }

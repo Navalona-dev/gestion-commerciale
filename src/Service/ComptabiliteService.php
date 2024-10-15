@@ -74,22 +74,6 @@ class ComptabiliteService
         $comptabilite->setReste($resultat);
         $comptabilite->setStatus();
 
-        // Déterminer le statut en fonction du résultat
-        if ($resultat >= 1000000) {
-            $statut = 'Excédent exceptionnel';
-        } elseif ($resultat > 5000) {
-            $statut = 'Excédent important';
-        } elseif ($resultat > 1000 && $resultat <= 5000) {
-            $statut = 'Excédent';
-        } elseif ($resultat > -1000 && $resultat <= 1000) {
-            $statut = 'Equilibre';
-        } elseif ($resultat <= -1000 && $resultat > -5000) {
-            $statut = 'Déficit léger';
-        } else {
-            $statut = 'Déficit important';
-        }
-        
-
         $this->entityManager->persist($comptabilite);
 
         //créer la facture benefice

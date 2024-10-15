@@ -46,6 +46,9 @@ class Comptabilite
     #[ORM\ManyToOne(inversedBy: 'comptabilites')]
     private ?Fourchette $fourchette = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateComptabilite = null;
+
     public function __construct()
     {
         $this->depenses = new ArrayCollection();
@@ -179,6 +182,18 @@ class Comptabilite
     public function setFourchette(?Fourchette $fourchette): static
     {
         $this->fourchette = $fourchette;
+
+        return $this;
+    }
+
+    public function getDateComptabilite(): ?\DateTimeInterface
+    {
+        return $this->dateComptabilite;
+    }
+
+    public function setDateComptabilite(?\DateTimeInterface $dateComptabilite): static
+    {
+        $this->dateComptabilite = $dateComptabilite;
 
         return $this;
     }

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\FourchetteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FourchetteRepository::class)]
@@ -29,6 +30,12 @@ class Fourchette
      */
     #[ORM\OneToMany(targetEntity: Comptabilite::class, mappedBy: 'fourchette')]
     private Collection $comptabilites;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateCreation = null;
+
+    #[ORM\ManyToOne(inversedBy: 'fourchettes')]
+    private ?Application $application = null;
 
     public function __construct()
     {
@@ -102,6 +109,30 @@ class Fourchette
                 $comptabilite->setFourchette(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDateCreation(): ?\DateTimeInterface
+    {
+        return $this->dateCreation;
+    }
+
+    public function setDateCreation(\DateTimeInterface $dateCreation): static
+    {
+        $this->dateCreation = $dateCreation;
+
+        return $this;
+    }
+
+    public function getApplication(): ?Application
+    {
+        return $this->application;
+    }
+
+    public function setApplication(?Application $application): static
+    {
+        $this->application = $application;
 
         return $this;
     }

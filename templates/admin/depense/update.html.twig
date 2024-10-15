@@ -16,6 +16,11 @@
                         {{ form_widget(form.designation) }}
                     </div>
                     <div class="form-group mb-3">
+                        <label for="" class="mb-2">Date dépense <sup class="text-danger">*</sup> </label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.dateDepense)}} </span>
+                        {{ form_widget(form.dateDepense) }}
+                    </div>
+                    <div class="form-group mb-3">
                         <label for="" class="mb-2">Nombre <sup class="text-danger">*</sup></label>
                         {{ form_widget(form.nombre) }}
                     </div>
@@ -40,6 +45,21 @@
 {% block javascripts %}
 <script src="{{ asset('assets/js/script_utile.js')}}"></script>
 <script>
+
+$(document).ready(function() {
+  var dateFormat = 'dd/mm/yyyy';
+  var dateNow = new Date();
+  dateNow.setDate(dateNow.getDate() + 1)
+
+  $('#depense_dateDepense').datepicker({
+      format: dateFormat,
+      todayHighlight: true,
+      language: 'fr',
+      autoclose: true,
+
+  });
+
+});
   
     $(document).ready(function () {
     

@@ -125,6 +125,12 @@ class Application
     #[ORM\OneToMany(targetEntity: Benefice::class, mappedBy: 'application')]
     private Collection $benefices;
 
+    /**
+     * @var Collection<int, Fourchette>
+     */
+    #[ORM\OneToMany(targetEntity: Fourchette::class, mappedBy: 'application')]
+    private Collection $fourchettes;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -138,6 +144,7 @@ class Application
         $this->factures = new ArrayCollection();
         $this->depenses = new ArrayCollection();
         $this->benefices = new ArrayCollection();
+        $this->fourchettes = new ArrayCollection();
     }
 
     public function __toString()
@@ -625,6 +632,36 @@ class Application
             // set the owning side to null (unless already changed)
             if ($benefice->getApplication() === $this) {
                 $benefice->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Fourchette>
+     */
+    public function getFourchettes(): Collection
+    {
+        return $this->fourchettes;
+    }
+
+    public function addFourchette(Fourchette $fourchette): static
+    {
+        if (!$this->fourchettes->contains($fourchette)) {
+            $this->fourchettes->add($fourchette);
+            $fourchette->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFourchette(Fourchette $fourchette): static
+    {
+        if ($this->fourchettes->removeElement($fourchette)) {
+            // set the owning side to null (unless already changed)
+            if ($fourchette->getApplication() === $this) {
+                $fourchette->setApplication(null);
             }
         }
 

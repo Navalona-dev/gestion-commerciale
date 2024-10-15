@@ -3,41 +3,34 @@
 namespace App\Repository;
 
 use App\Entity\Fourchette;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Service\ApplicationManager;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
 
 /**
  * @extends ServiceEntityRepository<Fourchette>
  */
 class FourchetteRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $connection;
+    private $application;
+    public function __construct(ManagerRegistry $registry, ApplicationManager $applicationManager, Connection $connection)
     {
         parent::__construct($registry, Fourchette::class);
+        $this->application = $applicationManager->getApplicationActive();
+        $this->connection = $connection;
     }
 
-    //    /**
-    //     * @return Fourchette[] Returns an array of Fourchette objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('f.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findByApplication()
+    {
+        return $this->createQueryBuilder('f')
+            ->leftJoin('f.application', 'a')
+            ->where('a.id = :applicationId')
+            ->setParameter('applicationId', $this->application->getId())
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?Fourchette
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+   
 }

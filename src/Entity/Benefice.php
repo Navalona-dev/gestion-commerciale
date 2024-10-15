@@ -52,6 +52,9 @@ class Benefice
     #[ORM\OneToMany(targetEntity: Comptabilite::class, mappedBy: 'benefice')]
     private Collection $comptabilites;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateBenefice = null;
+
     public function __construct()
     {
         $this->factures = new ArrayCollection();
@@ -222,6 +225,18 @@ class Benefice
                 $comptabilite->setBenefice(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDateBenefice(): ?\DateTimeInterface
+    {
+        return $this->dateBenefice;
+    }
+
+    public function setDateBenefice(?\DateTimeInterface $dateBenefice): static
+    {
+        $this->dateBenefice = $dateBenefice;
 
         return $this;
     }
