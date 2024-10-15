@@ -3,41 +3,33 @@
 namespace App\Repository;
 
 use App\Entity\Benefice;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
+use App\Service\ApplicationManager;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Benefice>
  */
 class BeneficeRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $connection;
+    private $application;
+
+    public function __construct(ManagerRegistry $registry, ApplicationManager $applicationManager, Connection $connection)
     {
         parent::__construct($registry, Benefice::class);
+        $this->application = $applicationManager->getApplicationActive();
+        $this->connection = $connection;
     }
 
-    //    /**
-    //     * @return Benefice[] Returns an array of Benefice objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('b.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Benefice
-    //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findByApplication()
+    {
+        return $this->createQueryBuilder('b')
+            ->leftJoin('b.application', 'a')
+            ->where('a.id = :applicationId')
+            ->setParameter('applicationId', $this->application->getId())
+            ->getQuery()
+            ->getResult();
+    }
 }

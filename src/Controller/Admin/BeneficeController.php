@@ -42,6 +42,27 @@ class BeneficeController extends AbstractController
         
     }
 
+    #[Route('/', name: '_liste')]
+    public function index(): Response
+    {
+        $data = [];
+        try {
+
+            $benefices = $this->beneficeRepo->findByApplication();
+
+            $data["html"] = $this->renderView('admin/benefice/index.html.twig', [
+                'listes' => $benefices,
+            ]);
+
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            $data["exception"] = $Exception->getMessage();
+            $data["html"] = "";
+            $this->createNotFoundException('Exception' . $Exception->getMessage());
+        }
+        return new JsonResponse($data);
+    }
+
     #[Route('/new', name: '_create')]
     public function create(Request $request)
     {
@@ -82,7 +103,6 @@ class BeneficeController extends AbstractController
                         }
                         
                         list($pdfContent, $facture, $returnBenefice) = $this->beneficeService->add($benefice, $documentFolder, $request, $espece, $total, $mobileMoney, $facturesToday);
-                        $request->getSession()->set('beneficeId', $returnBenefice->getId());
 
                         $filename = 'Benefice' . '-' . $facture->getNumero() . ".pdf";
                         $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/benefice/' . $filename;
@@ -123,22 +143,23 @@ class BeneficeController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/{beneficeId}', name: '_liste')]
-    public function index(Request $request, $beneficeId): Response
+    #[Route('/{id}', name: '_liste_one')]
+    public function indexOne(Request $request, Benefice $benefice): Response
     {
         $data = [];
         try {
             
-            $benefice = $this->beneficeRepo->findOneBy(['id'  => $beneficeId]);
+            //$request->getSession()->set('beneficeId', $benefice->getId());
 
             $depensesToday = $this->depenseRepository->selectDepenseToday();
 
             $request->getSession()->set('depenses', $depensesToday);
             $request->getSession()->set('benefice', $benefice);
 
-            $data["html"] = $this->renderView('admin/benefice/index.html.twig', [
+            $data["html"] = $this->renderView('admin/benefice/detail.html.twig', [
                 'depensesToday' => $depensesToday,
-                'benefice' => $benefice
+                'benefice' => $benefice,
+                'application' => $this->application
             ]);
 
             return new JsonResponse($data);
