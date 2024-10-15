@@ -1,34 +1,55 @@
- <style>
+<style>
    .icon-paye {
-    width: 44px;
-    height: 40px;
+    width: 50px;
+    height: 32px;
     background-color: #ffc107; 
     color: #000;
-    font-size: 24px; 
+    font-size: 16px; 
     border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid #ffc107 !important; 
     cursor: pointer;
-}
-
-.icon-paye:hover {
-    color: #000;
+    margin-right: 8px;
 }
 
 .icon-echeance {
-    width: 44px;
-    height: 40px;
+    width: 50px;
+    height: 32px;
     background-color: #0d6efd; 
     color: #fff;
-    font-size: 24px; 
+    font-size: 16px; 
     border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid #0d6efd !important; 
     cursor: pointer;
+    margin-right: 8px;
+
+}
+
+.icon-depot {
+    width: 50px;
+    height: 32px;
+    background-color: #9e2d2d; 
+    color: #fff;
+    font-size: 16px; 
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #9e2d2d !important; 
+    cursor: pointer;
+}
+
+.icon-depot:hover {
+    color: #fff;
+}
+
+.icon-paye:hover {
+    color: #000;
 }
 
 .icon-echeance:hover {
@@ -61,6 +82,7 @@
     margin-left: 15px;
     border:none !important;
 }
+
 .btn-remise {
     padding: 6px 8px;
     border-radius: 100%;
@@ -72,70 +94,113 @@
     color: #fff;
 }
 
-.icon-depot {
-    width: 50px;
-    height: 32px;
-    background-color: #9e2d2d; 
-    color: #fff;
-    font-size: 16px; 
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid #9e2d2d !important; 
-    cursor: pointer;
-}
-
-.icon-depot:hover {
-    color: #fff;
-}
-
 </style>
- 
- <div class="col-md-10 col-12" id="financiereProduct">
-    <div class="card p-3 p-lg-5">
-        <div class="date">
-            <div class="row">
-                <div class="col-md-5 col-12">
-                    <p class="fw-bold fs-5"><i class="bi bi-archive-fill text-primary"></i><span class="mx-2 text-primary">Date devis:</span><span class="text-warning">15/07/2024</span></p>
-                </div>
-                <div class="col-md-5 col-12">
-                    <p class="fw-bold fs-5"><i class="bi bi-archive-fill text-primary"></i><span class="mx-2 text-primary">Date commande:</span><span class="text-warning">15/07/2024</span></p>
-                </div>
-                {% if affaire.paiement is not null and affaire.paiement == "paye" and factureFile is not null %}
-                    <div class="col-md-2 col-12">
-                            <div class="d-flex justify-content-center">
-                            <a title="Annuler" style="cursor: pointer;" onclick="return annuleFacture({{affaire.id}})" title="Annuler" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
-                                <i class="bi bi-x"></i>
-                            </a>
-                        </div>
-                    </div>
-                {% else %}
-                    {% if affaire.paiement is not null and (affaire.paiement == "non" or affaire.paiement is null)  %}
-                    <div class="col-md-2 col-12">
-                        <div class="d-flex justify-content-end">
-                            {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
-                                <a title="Payé" style="cursor: pointer;" onclick="paiement({{affaire.id}})" class="icon-paye">
-                                    <i class="bi bi-credit-card-2-front-fill"></i>
-                                </a>
-                                <a href="#" title="Facture écheance" class="icon-echeance" onclick="return openModalFactureEcheance({{ affaire.id }})">
-                                    <i class="bi bi-calendar-heart-fill"></i>
-                                </a>
-                                {% if affaire.depot == 1 %}
-                                    <a onclick="return depot({{affaire.id}})" style="cursor: pointer;" title="Dépôt" class="icon-depot">
-                                        <i class="bi bi-box-seam"></i>
-                                    </a>
+
+<section class="section">
+    <div class="id-affaire" data-id-affaire="{{affaire.id}}"></div>
+    <div class="row">
+      <div class="col-lg-12">
+        {# entete compte #}
+         {% include 'admin/affaires/entete_compte.html.twig' with { 'compte': affaire.compte } %}
+        {# entete affaire #}
+        {% include 'admin/affaires/entete_affaire.html.twig' with { 'affaire': affaire } %}
+    {% set montantHt = 0 %}
+    {% set montantTTC = 0 %}
+           <div class="row mt-5">
+            <div class="col-md-2 col-12">
+               {% include '/admin/affaires/menu_left.html.twig' with { 'affaire' : affaire} %}
+            </div>
+            <div class="col-md-10 col-12" id="financiereProduct">
+                <div class="card p-3 p-lg-5">
+                    <div class="date">
+                        <div class="row">
+                            <div class="col-md-10 col-12">
+                                <div class="row">
+                                    <div class="col-md-4 col-12">
+                                        <p class="fw-bold text-center"><i class="bi bi-archive-fill text-primary"></i>
+                                            <span class="mx-2 text-primary">Date devis:</span>
+                                            
+                                        </p>
+                                        <p class="fw-bold fs-6 text-center" style="margin-top: -10px;">
+                                            <span class="text-black-50">
+                                                {% if affaire.dateDevis is not null %}
+                                                    {{affaire.dateDevis|date("d/m/Y")}}
+                                                {% else %}
+                                                    {{affaire.dateCreation|date("d/m/Y")}}
+                                                {% endif %}
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 col-12">
+                                        <p class="fw-bold text-center"><i class="bi bi-archive-fill text-primary"></i>
+                                            <span class="mx-2 text-primary">Date commande:</span>
+                                            
+                                        </p>
+                                        <p class="fw-bold fs-6 text-center" style="margin-top: -10px;">
+                                            <span class="text-black-50">
+                                                {% if affaire.dateCommande is not null %}
+                                                    {{affaire.dateCommande|date("d/m/Y")}}
+                                                {% else %}
+                                                    Pas encore commandé
+                                                {% endif %}
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 col-12">
+                                        <p class="fw-bold text-center"><i class="bi bi-archive-fill text-primary"></i>
+                                            <span class="mx-2 text-primary">Date facture:</span>
+                                            
+                                        </p>
+                                        <p class="fw-bold fs-6 text-center" style="margin-top: -10px;">
+                                            <span class="text-black-50">
+                                                {% if affaire.dateFacture is not null %}
+                                                    {{affaire.dateFacture|date("d/m/Y")}}
+                                                {% else %}
+                                                    Pas encore facturé
+                                                {% endif %}
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                                
+                            {% if affaire.paiement is not null and affaire.paiement == "paye" and factureFile is not null %}
+                                <div class="col-md-2 col-12">
+                                     <div class="d-flex justify-content-center">
+                                        <a title="Annuler" style="cursor: pointer;" onclick="return annuleFacture({{affaire.id}})" title="Annuler" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
+                                            <i class="bi bi-x"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% else %}
+                                {% if affaire.paiement is not null and (affaire.paiement == "non" or affaire.paiement is null)  %}
+                                <div class="col-md-2 col-12">
+                                    <div class="d-flex justify-content-end">
+                                        {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
+                                            <a title="Payé" style="cursor: pointer;" onclick="paiement({{affaire.id}})" class="icon-paye">
+                                                <i class="bi bi-credit-card-2-front-fill"></i>
+                                            </a>
+                                            <a href="#" title="Facture écheance" class="icon-echeance" onclick="return openModalFactureEcheance({{ affaire.id }})">
+                                                <i class="bi bi-calendar-heart-fill"></i>
+                                            </a>
+                                            {% if affaire.depot == 1 %}
+                                                <a onclick="return depot({{affaire.id}})" style="cursor: pointer;" title="Dépôt" class="icon-depot">
+                                                    <i class="bi bi-box-seam"></i>
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+
+                                    </div>
+                                </div>
                                 {% endif %}
                             {% endif %}
-
                         </div>
                     </div>
                     <hr>
-                    {% set montantHt = 0 %}
-                    {% set montantTTC = 0 %}
                     <div class="financier-produit mt-4">
                         <table class="table">
                             <thead>
+                               
                                 <tr class="bg-light">
                                     <th class="text-center">Ref</th>
                                     <th class="text-center" style="width: 200px;">Intitulé</th>
@@ -143,9 +208,11 @@
                                     <th class="text-center">PU(HT)</th>
                                     <th class="text-center">Remise</th>
                                     <th class="text-center">PT(HT)</th>
+                                    {% if affaire.paiement is not null and affaire.paiement != "paye" or affaire.paiement is null %}
                                     <th class="text-center">Action</th>
+                                    {% endif %}
                                 </tr>
-                            
+                             
                             </thead>
                             <tbody>
                                  {% for product in produits %}
@@ -246,36 +313,33 @@
                                         
                                        
                                     </td>
-                                    <td class="align-middle text-center"> {% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(2, ',', ' ')}}{% else %}{{product.prixVenteDetail|number_format(2, ',', ' ')}}{% endif %}</td>
-                                    <td class="align-middle text-center remise_{{ product.id }}"><a style="color: red;"
-                                                                                               href="#"
-                                                                                               onclick="return addRemiseProduit({{ product.id }}, '{{ app.request.uri }}', {{affaire.id}});">{% if product.remise %} <span class="text-danger">{{ product.remise }}</span> {% else %}<i class="bi bi-percent btn-remise"></i>{% endif %}</a>
+                                    <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(0, '.', ' ') }}{% else %}{{product.prixVenteDetail|number_format(0, '.', ' ')}}{% endif %} Ar</td>
+                                    <td class="align-middle text-center remise_{{ product.id }}">
+                                        <a class="" href="#" onclick="return addRemiseProduit({{ product.id }}, '{{ app.request.uri }}', {{affaire.id}});">{% if product.remise %} <span class="text-danger">{{ product.remise }}</span> {% else %} <i class="bi bi-percent btn-remise"></i> {% endif %}</a>
                                     </td>
-                                    <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros * product.qtt  - product.remise }}{% else %}{{product.prixVenteDetail * product.qtt - product.remise }}{% endif %} Ar</td>
+                                    <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros * product.qtt - product.remise }}{% else %}{{product.prixVenteDetail * product.qtt - product.remise}}{% endif %} Ar</td>
                                     <td>
                                         {% if affaire.paiement is null or (affaire.paiement != "paye" and affaire.paiement != "annule" and affaire.paiement != "enecheance") %}
-                                        <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
-                                        <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
+                                            <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
+                                            {# <a href="#" class="action-plus d-block text-center mb-2"><i class="bi bi-plus"></i></a>
+                                            <a href="#" class="action-list d-block text-center mb-2"><i class="bi bi-list-ul"></i></a> #}
+                                            <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
                                         {% endif %}
                                     </td>
-                                   {% if product.typeVente == "gros" %}
-                                        {% if product.produitCategorie.volumeGros > 0 %}
-                                            {% set montantHt = (montantHt + (product.qtt * product.prixVenteGros)) - product.remise %}
-                                            {# {% set montantHt = (montantHt + ((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros)) - product.remise %} #}
-                                        {% else %}
-                                            {% set montantHt = (montantHt + (product.qtt * product.prixVenteGros)) - product.remise %}
-                                        {%endif %}
+                                    {# {% set montantHt = montantHt + (product.qtt * product.puht) - product.remise %} #}
+                                    {% if product.typeVente == "gros" %}
+                                    {% set montantHt = (montantHt + ((product.qtt)  * product.prixVenteGros)) - product.remise %}
                                     {% else %}
                                         {% set montantHt = (montantHt + (product.qtt * product.prixVenteDetail)) - product.remise %}
                                     {% endif %}
-                                   
+                               
                                 </tr>
                                    {% endfor %}
                             </tbody>
                         </table>
                         
                     </div>
-                    <div class="financier-info">
+                    <div class="financier-info mt-5">
                         <div class="row">
                             <div class="col-md-6 col-12">
                                 <div class="mb-4">
@@ -286,15 +350,18 @@
                                         </a>
                                    
                                     {% else %}
-                                        {% if affaire.paiement is not null and affaire.paiement != "annule" or affaire.paiement is null  %}
+                                        {% if affaire.paiement is not null and (affaire.paiement == "non" or affaire.paiement is null)  %}
                                             {% if affaire.paiement != "enecheance" %}
                                                 <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
                                             {% endif %}
                                             {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
-                                            <a style="cursor: pointer;" onclick="return paiement({{affaire.id}})" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
+                                                <a style="cursor: pointer;" onclick="return paiement({{affaire.id}})" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
                                                 <a href="#" title="Facture écheance" class="text-success financier-icon" onclick="return openModalFactureEcheance({{affaire.id}})">
                                                     <i class="bi bi-calendar-heart-fill"></i>
                                                 </a>
+                                                {% if affaire.depot == 1 %}
+                                                    <a style="cursor: pointer;" title="Dépôt" onclick="return depot({{affaire.id}})" class="text-danger financier-icon"><i class="bi bi-box-seam"></i></a>
+                                                {% endif %}
                                             {% endif %}
                                             
                                         {% endif %}
@@ -302,201 +369,62 @@
                                     </div>
                                 <div class="row mb-4">
                                     <div class="col-md-6 col-12">
-                                        <p>Status : </p>
+                                        <p>Statut : </p>
                                     </div>
                                     <div class="col-md-6 col-12">
-                                        <select name="" id="" class="form-control form-control-md">
-                                            <option value="commande">commande</option>
-                                            <option value="devis">devis</option>
-                                        </select>
+                                        {#<select name="selectType" id="selectType" class="form-control form-control-md">
+                                            <option value="commande" {% if affaire.statut is not null and affaire.paiement == "commande" %}selected{% endif %}>commande</option>
+                                            <option value="devis" {% if affaire.statut is not null and affaire.paiement == "devis" %}selected{% endif %}>devis</option>
+                                        </select>#}
+                                        <input type="text" class="form-control form-control-md" readonly value="{{affaire.statut}}">
                                     </div>
                                 </div>
                                 
-                                {% if product.typeVente == "detail" %}
-                                    {{product.qtt}}&nbsp;{{product.uniteVenteGros}} / {{product.produitCategorie.stockRestant|number_format(2,'.','')}} {{product.uniteVenteDetail}} 
-                        
-                                    (
-                                        {% if ((product.qtt) |round(0)) != 0 %} 
-                                            {{ (product.qtt) |round(0)}} 
-                                            {{product.produitCategorie.presentationGros}}  
-                                                et 
-                                        {% endif %}
-                                        {{product.qtt - ( (product.qtt) |round(0))}} {{product.produitCategorie.presentationDetail}})   
-                                {% else %}
-                                    {% set coef = 1 %}
-                                    {% if product.produitCategorie.uniteVenteGros in ['l', 'ml', 'cc', 'PCS'] %}
-                                    {% set coef = product.produitCategorie.volumeGros %}
-                                    {% endif %}
-                                    
-                                    {{product.qtt }}&nbsp;{{product.produitCategorie.uniteVenteGros}} / {{product.produitCategorie.stockRestant|number_format(2,'.','')}} {{product.produitCategorie.uniteVenteGros}} 
-                                    (
-                                        {% if product.produitCategorie.volumeGros > 0 and product.qtt >= product.produitCategorie.volumeGros %} 
-                                            {{(product.qtt) |round(0)}}  {{product.produitCategorie.presentationGros}} 
-                                            {% if product.qtt * coef - product.produitCategorie.volumeGros != 0 %} 
-                                                et 
-                                            {% endif %} 
-                                        {% endif %} 
-
-                                        {% if product.produitCategorie.volumeGros > 0 and product.qtt >= product.produitCategorie.volumeGros %} 
-                                            {% if product.qtt * coef - product.produitCategorie.volumeGros != 0 %} 
-                                                {{product.qtt - ( (product.qtt) |round(0))}} {{product.produitCategorie.presentationDetail}} 
-                                            {% endif %} 
-                                        {% else %} 
-                                                {{product.qtt}}
-                                            {{product.produitCategorie.presentationGros}}
-                                            
-                                        {% endif %} 
-                                    )
-                                {% endif %}
-
-                            {% else %}
-
-                                {% if product.typeVente == "detail" %}
-                                    {{product.qtt}}&nbsp;{{product.produitCategorie.uniteVenteGros}} / {{product.produitCategorie.stockRestant|number_format(2,'.','') * product.produitCategorie.volumeGros }} {{product.produitCategorie.uniteVenteGros}} 
-                            
-                                    (
-                                        {% if product.qtt != 0 and product.qtt >= product.produitCategorie.volumeGros  %} 
-                                            {{( (product.qtt / product.produitCategorie.volumeGros) |round(2))}} {{product.produitCategorie.presentationGros}})
-                                        {% else %}
-                                            {% if product.produitCategorie.volumeGros > 0 %}
-                                                {% if product.qtt >= product.produitCategorie.volumeGros %} 
-                                                        {{ product.qtt }} {{product.produitCategorie.presentationGros}})
-                                                {% else %}
-                                                    {{product.qtt }} {{product.produitCategorie.presentationDetail}})
-                                                {% endif %}
-                                                
-                                            {% else %}
-                                                    {{product.qtt }} {{product.produitCategorie.presentationDetail}})
-                                            {% endif %}
-                                        {% endif %}
-                                            
-                                {% else %}
-                                    {% set coef = 1 %}
-                                    {% if product.produitCategorie.uniteVenteGros in ['l', 'ml', 'cc', 'PCS'] %}
-                                    {% set coef = product.produitCategorie.volumeGros %}
-                                    {% endif %}
-
-                                    {{product.qtt * product.produitCategorie.volumeGros }}&nbsp;{{product.produitCategorie.uniteVenteGros}} / {{product.produitCategorie.stockRestant|number_format(2,'.','') * product.produitCategorie.volumeGros}} {{product.uniteVenteGros}} 
-                                    (
-                                        {# {% if product.qtt >= product.produitCategorie.volumeGros %} 
-                                            {{(product.qtt / product.produitCategorie.volumeGros  ) |round(0)}} {{product.produitCategorie.presentationGros}} 
-                                            {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
-                                                et 
-                                            {% endif %} 
-                                        {% endif %}  #}
-
-                                    {# {% if product.qtt >= product.produitCategorie.volumeGros %} 
-                                        {% if product.qtt - product.produitCategorie.volumeGros != 0 %} 
-                                            {{product.qtt - ( (product.qtt  / product.produitCategorie.volumeGros) |round(0) * product.produitCategorie.volumeGros)}} {{product.produitCategorie.presentationDetail}} 
-                                        {% endif %} 
-                                    {% else %}  #}
-                                        {{product.qtt}}
-                                        {{product.produitCategorie.presentationGros}}
-                                    {# {% endif %}  #}
-                                )
-                                {% endif %}
-                            {% endif %}
-                            
-                            
-                        </td>
-                        <td class="align-middle text-center"> {% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(0, ',', ' ')}}{% else %}{{product.prixVenteDetail|number_format(0, ',', ' ')}}{% endif %}</td>
-                        <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros * product.qtt }}{% else %}{{product.prixVenteDetail * product.qtt}}{% endif %} Ar</td>
-                        <td>
-                            {% if affaire.paiement is null or (affaire.paiement != "paye" and affaire.paiement != "annule" and affaire.paiement != "enecheance") %}
-                            <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
-                            <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
-                            {% endif %}
-                        </td>
-                        {% if product.typeVente == "gros" %}
-                            {% if product.produitCategorie.volumeGros > 0 %}
-                                {% set montantHt = montantHt + ((product.qtt / product.produitCategorie.volumeGros) * product.prixVenteGros) %}
-                            {% else %}
-                                {% set montantHt = montantHt + (product.qtt * product.prixVenteGros) %}
-                            {%endif %}
-                        {% else %}
-                            {% set montantHt = montantHt + (product.qtt * product.prixVenteDetail) %}
-                        {% endif %}
-                        
-                    </tr>
-                        {% endfor %}
-                </tbody>
-            </table>
-            
-        </div>
-        <div class="financier-info">
-            <div class="row">
-                <div class="col-md-6 col-12">
-                    <div class="mb-4">
-                        
-                        {% if affaire.paiement is not null and affaire.paiement == "paye" and factureFile is not null %}
-                            <a title="Annuler" style="cursor: pointer;" onclick="return annuleFacture({{affaire.id}})" title="Annuler" class="text-danger financier-icon">
-                                <i class="bi bi-x-square-fill"></i>
-                            </a>
-                        
-                        {% else %}
-                            {% if affaire.paiement is not null and (affaire.paiement == "non" or affaire.paiement is null)  %}
-                                {% if affaire.paiement != "enecheance" %}
-                                    <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
-                                {% endif %}
-                                {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
-                                    <a style="cursor: pointer;" onclick="return paiement({{affaire.id}})" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
-                                    <a href="#" title="Facture écheance" class="text-success financier-icon" onclick="return openModalFactureEcheance({{affaire.id}})">
-                                        <i class="bi bi-calendar-heart-fill"></i>
-                                    </a>
-                                    {% if affaire.depot == 1 %}
-                                        <a onclick="return depot({{affaire.id}})" style="cursor: pointer;" title="Dépôt" class="text-danger financier-icon"><i class="bi bi-box-seam"></i></a>
-                                    {% endif %}
-                                {% endif %}
-                                
-                            {% endif %}
-                        {% endif %}
-                        </div>
-                    <div class="row mb-4">
-                        <div class="col-md-6 col-12">
-                            <p>Status : </p>
-                        </div>
-                        <div class="col-md-6 col-12">
-                            <select name="" id="" class="form-control form-control-md">
-                                <option value="commande">commande</option>
-                                <option value="devis">devis</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                </div>
-                <div class="col-md-6 col-12">
-                    <div class="box" style="border: 1px solid #5a5858; margin-left: 15px;">
-                        <div class="row box-content px-3">
-                            <div class="col-md-6 col-12 align-middle">
-                                <p class="mt-4">Montant : </p>
                             </div>
-                            <div class="col-md-6 col-12 align-middle d-flex justify-content-end">
-                                <p class="mt-4">{{ montantHt|number_format(0, ',', ' ') }} Ar</p>
+                            <div class="col-md-6 col-12">
+                                <div class="box" style="border: 1px solid #5a5858; margin-left: 15px;">
+                                    <div class="row box-content px-3">
+                                        <div class="col-md-6 col-12 align-middle">
+                                            <p class="mt-4">Montant : </p>
+                                        </div>
+                                        <div class="col-md-6 col-12 align-middle d-flex justify-content-end">
+                                            <p class="mt-4">{{ montantHt|number_format(0, ',', ' ') }} Ar</p>
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                               
                             </div>
                         </div>
                     </div>
-                    
                 </div>
             </div>
+           </div>
         </div>
+       
     </div>
-</div>
 
-<script src="{{ asset('assets/js/remise.js?version=1.4')}}"></script>
+    <div id="modalListProduitCategorieEmpty"></div>
+    <div id="modalFactureEcheanceEmpty"></div>
+   <div id="modalRemiseEmpty"></div>
+  </section>
+<script src="{{ asset('assets/js/produit.js?version=1.3')}}"></script>
+<script src="{{ asset('assets/js/remise.js')}}"></script>
   <script>
     $(document).ready(function() {
+       
         $('#tab-compte_1').removeClass('active').empty();
         $('#tab-compte_2').removeClass('active').empty();
         $('#affaires_fournisseur').removeClass('active').empty();
         $('#affaires_client').removeClass('active').empty();
+        $('#tab-produit-date-peremption').removeClass('active').empty();
+
         $('.tab-categorie').removeClass('active');
         $('#tab-produit-categorie').removeClass('active');
         $('.tab-produit-categorie').removeClass('active');
         $('#tab-categorie').removeClass('active');
         $('.tab-import-produit').css('display', 'none');
         $('#tab-import-produit').css('display', 'none');
-        $('#tab-produit-date-peremption').removeClass('active').empty();
-            $('#tab-inventaire-produit').css('display','none');
 
         $('.tab-user').removeClass('active');
         $('#tab-utilisateur').removeClass('active');
@@ -512,7 +440,6 @@
         $('#tab-permission').removeClass('active');
         $('#tab-privilege').removeClass('active');
         $('#tab-transfert-produit').css('display', 'none');
-     
       
         $('#tab-application').removeClass('active');
         $('#tab-profile').removeClass('active');
@@ -520,16 +447,18 @@
         $('.tab-produit-type').removeClass('active');
         $('#tab-import-produit').css('display', 'none');
         $('#tab-facture').css('display', 'none');
-        $('#tab-facture-affaire').css('display', 'none');
         $('#tab-info-affaire').removeClass('active');
         $('#tab-fiche-client').removeClass('active').empty();
         $('#tab-financier-affaire').addClass('active');
+        $('#tab-facture-affaire').removeClass('active').empty();
+        $('#tab-inventaire-produit').css('display','none');
         $('#tab-nouveau-facture').css('display','none');
         $('#tab-devis').css('display','none');
         $('#tab-commande').css('display','none');
         $('#tab-echeance').css('display','none');
+        $('#tab-produit-image').removeClass('active');
+        $('#tab-stock').removeClass('active');
         $('#tab-depot').css('display', 'none');
-
       
       
     });
@@ -572,6 +501,32 @@
                 error: function (jqXHR, textStatus, errorThrown) {
                     // Gérer l'erreur (par exemple, afficher un message d'erreur)
                     alert('Erreur lors de l\'ajout de produit.');
+                }
+            });
+    }
+   
+
+    function openModalFactureEcheance(id = null)
+    {
+        var anchorName = document.location.hash.substring(1);
+
+        $.ajax({
+                url: '/admin/facture/echeance/'+id,
+                type: 'post',
+                //data: {},
+                success: function (response) {
+                    $("#modalFactureEcheanceEmpty").empty();
+                    $("#modalFactureEcheanceEmpty").append(response.html);
+                    $('#modalFactureEcheance').modal('show');
+
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de facture echeance.');
                 }
             });
     }
