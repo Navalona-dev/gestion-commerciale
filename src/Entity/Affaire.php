@@ -167,6 +167,8 @@ class Affaire
 
     #[ORM\Column(nullable: true)]
     private ?float $remiseProduit = null;
+    
+    #[ORM\Column(nullable: true)]
     private ?bool $depot = null;
 
 
