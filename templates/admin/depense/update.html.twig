@@ -1,0 +1,117 @@
+
+<div class="modal fade" id="modalUpdateDepense" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content p-4">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Mise à jour dépense</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                {{ form_start(form, {'attr': {'id': 'updateDepense', 'action': path('depenses_edit', {'depense': depense.id}) }}) }}
+                   
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Designation <sup class="text-danger">*</sup> </label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.designation)}} </span>
+                        {{ form_widget(form.designation) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Nombre <sup class="text-danger">*</sup></label>
+                        {{ form_widget(form.nombre) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Prix unitaire (Ariary) <sup class="text-danger">*</sup></label>
+                        {{ form_widget(form.prix) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Total (Ariary) <sup class="text-danger">*</sup></label>
+                        {{ form_widget(form.total) }}
+                    </div>
+                        
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Ajouter depense</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+<script>
+  
+    $(document).ready(function () {
+    
+       $('#updateDepense').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+            
+            // Create an FormData object
+            let formData = new FormData(form[0]);
+          formData.append('isNew', false);
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#modalUpdateDepense').modal('hide');
+                    var nextLink = $('#sidebar').find('li#depense').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Modification effectuée');
+
+                        showTabComptabilite();
+
+                    }, 800);
+                    if (nextLink.length > 0) {
+                        nextLink.click();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la mise à jour de depense.');
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        let prix = $('#depense_prix').val();
+        let nombre = $('#depense_nombre').val();
+        let total = $('#depense_total');
+
+        // Fonction pour mettre à jour le total
+        function updateTotal() {
+            if(nombre != '' && prix != '') {
+                let totalValue = prix * nombre;
+                total.val(totalValue);
+            } else {
+                total.val('');
+            }
+        }
+
+        updateTotal();
+
+        $('#depense_prix').on('input', function() {
+            prix = $(this).val();
+            updateTotal(); 
+        });
+
+        $('#depense_nombre').on('input', function() {
+            nombre = $(this).val();
+            updateTotal(); 
+        });
+    });
+
+</script>
+{% endblock %}

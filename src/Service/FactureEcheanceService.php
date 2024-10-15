@@ -514,8 +514,8 @@ class FactureEcheanceService
         $products = $affaire->getProducts();
 
         if($reste == 0) {
-            $facture->setEtat('regle');
-            $facture->setStatut('regle');
+            $facture->setEtat('termine');
+            $facture->setStatut('termine');
             $affaire->setPaiement('paye');
             $affaire->setDevisEvol('gagne');
             $facture->setDate($date);
@@ -681,6 +681,7 @@ class FactureEcheanceService
         $newFacture->setFile($filename);
         $newFacture->setSolde($avance);
         $newFacture->setPrixHt($avance); 
+        $newFacture->setReglement($avance); 
         $newFacture->setEcheance(true);
         $this->persist($newFacture);
 
@@ -719,6 +720,7 @@ class FactureEcheanceService
          $data['montantPaye'] = $montantPaye;
          $data['application'] = $this->application;
          $data['user'] = $user;
+         $data['echeanceNumero'] = $numeroFacture;
          
          $html = $this->twig->render('admin/facture_echeance/facturePdf.html.twig', $data);
  

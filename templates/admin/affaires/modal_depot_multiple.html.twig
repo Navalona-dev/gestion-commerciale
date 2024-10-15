@@ -1,0 +1,199 @@
+<style>
+    .bg-selection {
+        background-color: #fc8b8b !important;
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+    }
+</style>
+
+<div class="modal fade" id="modalDepotMultipleAffaire" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content p-4" style="width: 230% !important; margin-left: -20rem !important;">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Facturation dépôt multiple</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% set unite = '' %}
+                {% set qttRestant = 0 %}
+                <div class="row">
+                    {% for index, product in products %}
+                        {% if product.typeVente == "detail" %}
+                            {% set unite = product.produitCategorie.presentationGros %}
+                        {% else %}
+                            {% set unite = product.produitCategorie.presentationDetail %}
+                        {% endif %}
+                        {% if product.qttRestant != null or product.qttRestant > 0 %}
+                            {% set qttRestant = product.qttRestant %}
+                        {% else %}
+                            {% set qttRestant = 0 %}
+                        {% endif %}
+                        <span class="qtt-commander" data-qttcommander="{{product.qtt}}"></span>
+                        <span class="qtt-restant" data-restant="{{product.qttRestant}}" ></span>
+                        <span class="id-affaire-depot" data-affaire="{{affaire.id}}"></span>
+
+                        <div class="col-md-10 col-12">
+                            <p class="mb-4 nom-produit" data-index="{{index}}" data-produitid="{{product.id}}" style="cursor: pointer;"> {{product.nom}} ({{product.reference}}, qtt : {{product.qtt}} {{unite}}, qttRestant : {{qttRestant}} {{unite}}) </p>
+                        </div>
+                        <div class="col-md-2 col-12 product_{{index}}">
+                            <input type="text" name="qttVendu_{{index}}" id="qttVendu_{{index}}" placeholder="qté vendu" class="form-control form-control-sm qttVendu" readonly>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button onclick="return addDepotMultiple()" id="depotProduitMultiple" class="btn btn-primary btn-sm">Ajouter facture dépôt</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+
+<script>
+   
+   $(document).ready(function () {
+    var anchorName = document.location.hash.substring(1);
+    var idAffaire = $('.id-affaire-depot').data('affaire');
+    const qttRestant = $('.qtt-restant').data('restant');
+
+    $('.qttVendu').on('click', function() {
+        if ($(this).attr('readonly')) {
+            // Si l'input a l'attribut readonly
+            setTimeout(function () {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 1500
+                };
+                toastr.error('Veuillez d\'abord sélectionner le produit');
+            }, 800);
+        }
+    });
+
+    $('.nom-produit').on('click', function() {
+        let qttVenduValue = 0;
+        let qttVendu = '';
+
+        const index = $(this).data('index'); // Récupération de l'index du produit
+        qttVendu = $('#qttVendu_' + index); // Récupération du champ input associé
+
+        if ($(this).hasClass('bg-selection')) {
+            // Si l'élément a déjà la classe 'bg-selection', on la retire et on met l'input en readonly
+            $(this).removeClass('bg-selection');
+            qttVendu.attr('readonly', true); // Remettre l'input en lecture seule
+        } else {
+            // Ajouter la classe 'bg-selection' et retirer le readonly de l'input
+            $(this).addClass('bg-selection');
+            qttVendu.attr('readonly', false); // Permettre la modification de l'input
+
+            // Gérer la modification de la quantité saisie
+            qttVendu.on('input', function() {
+                qttVenduValue = $(this).val();
+
+                const qttCommander = $('.qtt-commander').data('qttcommander'); // Récupération de la quantité commandée
+                const qttRestant = $('.qtt-restant').data('restant'); // Assurez-vous que qttRestant existe et est défini
+
+                console.log(qttVenduValue, qttCommander, qttRestant);
+                if (qttVenduValue > qttCommander || (qttRestant > 0 && qttVenduValue > qttRestant)) {
+                    // Si la quantité vendue dépasse la quantité commandée ou la quantité restante
+                    qttVendu.css('background-color', '#fc8b8b');
+                    qttVendu.val(""); // Réinitialiser la valeur de l'input
+                    var message = 'La quantité vendue ' + qttVenduValue + ' ne doit pas dépasser la quantité commandée (' + qttCommander + ') ou la quantité restante (' + qttRestant + ')';
+
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 5000
+                        };
+                        toastr.error(message);
+
+                    }, 800);
+                } else {
+                    // Réinitialiser la couleur de fond si la valeur est valide
+                    qttVendu.css('background-color', '#fff');
+                }
+            });
+        }
+    });
+
+    
+});
+
+    function addDepotMultiple()
+    {
+        var idAffaire = $('.id-affaire-depot').data('affaire');
+        var selectedProducts = [];
+        var qttVenduValues = []; // Nouveau tableau pour stocker les quantités
+        var index = null;
+        var valid = true; // Pour vérifier si toutes les quantités sont saisies
+
+        // Parcourir les lignes avec la classe 'bg-selection'
+        $('p.bg-selection').each(function() {
+            var productId = $(this).data('produitid'); // Attention à l'attribut data : data-produitid
+            index = $(this).data('index');
+            var qttVendu = $('#qttVendu_' + index);
+
+            // Vérification si la quantité est vide
+            if (qttVendu.val() == '') {
+                valid = false;
+            }
+
+            selectedProducts.push(productId);
+            qttVenduValues.push(qttVendu.val()); // Stocker la quantité vendue
+        });
+
+        let form = $(this);
+
+        // Vérifier s'il y a des produits sélectionnés et si toutes les quantités sont remplies
+        if (selectedProducts.length > 0 && valid) {
+            $.ajax({
+                url: '/admin/affaires/depot/valid/multiple',
+                method: 'POST',
+                data: {
+                    productIds: selectedProducts.join(','),
+                    qttVendus: qttVenduValues.join(','),
+                },
+                success: function (response) {
+                    $('#modalDepotMultipleAffaire').modal('hide');
+                    var nextLink = $('#sidebar').find('li#affaire').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succès', 'Mise à jour effectuée');
+
+                        if (response.pdfUrl) {
+                            window.open(response.pdfUrl, '_blank');
+                        }
+
+                        showTabDepot(idAffaire);
+
+                    }, 800);
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la facturation dépôt.');
+                }
+            });
+        } else {
+            setTimeout(function () {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 3000
+                };
+                toastr.error('Veuillez d\'abord sélectionner un ou plusieurs produits et renseigner les quantités.');
+                if (anchorName) {
+                    window.location.hash = anchorName;
+                }
+            }, 800);
+        }
+    }
+
+</script>

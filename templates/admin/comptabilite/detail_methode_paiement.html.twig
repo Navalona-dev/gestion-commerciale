@@ -1,0 +1,128 @@
+
+<div class="modal fade" id="modalDetailPaiement" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content p-4">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Détail méthode de paiement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% if methodePaiements|length > 0 %}
+                    {% for methodePaiement in methodePaiements %}
+                        {% if methodePaiement.espece is not null %}
+                            <p><strong>Espèce : </strong> {{methodePaiement.espece|number_format(0,',',' ')}} Ar </p>
+                        {% endif %}
+
+                        {% if methodePaiement.mvola is not null %}
+                            <p>
+                                <span class="fw-bold text-decoration-underline">MVOLA : </span> <br> 
+                                <span><strong>Solde : </strong>{{methodePaiement.mVola|number_format(0,',',' ')}} Ar</span> <br>
+                                <span><strong>Référence : </strong> {{methodePaiement.referenceMvola}} </span><br>
+                                <span><strong>Nom de compte : </strong> {{methodePaiement.nomMvola}} </span>
+                            </p>
+                        {% endif %}
+
+                        {% if methodePaiement.airtelMoney is not null %}
+                            <p>
+                                <span class="fw-bold text-decoration-underline">AIRTELMONEY : </span> <br> 
+                                <span><strong>Solde : </strong>{{methodePaiement.airtelMoney|number_format(0,',',' ')}} Ar</span> <br>
+                                <span><strong>Référence : </strong> {{methodePaiement.referenceAirtel}} </span><br>
+                                <span><strong>Nom de compte : </strong> {{methodePaiement.nomAirtel}} </span>
+                            </p>
+                        {% endif %}
+
+                        {% if methodePaiement.orangeMoney is not null %}
+                            <p>
+                                <span class="fw-bold text-decoration-underline">ORANGEMONEY : </span> <br> 
+                                <span><strong>Solde : </strong>{{methodePaiement.orangeMoney|number_format(0,',',' ')}} Ar</span> <br>
+                                <span><strong>Référence : </strong> {{methodePaiement.referenceOrange}} </span><br>
+                                <span><strong>Nom de compte : </strong> {{methodePaiement.nomOrange}} </span>
+                            </p>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <a href="#" onclick="return updateMethodePaiement({{methodePaiement.id}})" class="btn btn-primary btn-sm px-3">Modifier</a>
+                            <a href="#" onclick="return deleteMethodePaiement({{methodePaiement.id}})" class="btn btn-danger px-3 btn-sm">Supprimer</a>
+                        </div>
+
+                    {% endfor %}
+                {% else %}
+                <div class="alert alert-warning">
+                    Aucune méthode de paiement pour le moment ou peut être que le paiement à dû fait seuelemnt en espèce avec <strong> {{facture.solde|number_format(0,',',' ')}} Ariary </strong>
+                </div>
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+
+<script>
+    function updateMethodePaiement(id = null) {
+      var anchorName = document.location.hash.substring(1);
+            $.ajax({
+                url: '/admin/comptabilite/methode/paiement/edit/'+id,
+                type: 'GET',
+                //data: {isNew: isNew},
+                success: function (response) {
+                    $("#blocModalComptabiliteEmpty").empty();
+                    $("#blocModalComptabiliteEmpty").append(response.html);
+                    $('#modalDetailPaiement').modal('hide');
+                    $('#modalUpdateMethodePaiement').modal('show');
+                    if (anchorName) {
+                        window.location.hash = anchorName;
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la mise à jour de methode de paiement.');
+                }
+            });
+    }
+    
+    function deleteMethodePaiement(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
+        if (confirm('Voulez vous vraiment supprimer cette méthode de paiement?')) {
+            $.ajax({
+                url: '/admin/comptabilite/methode/paiement/delete/'+id,
+                type: 'POST',
+                //data: {category: id},
+                success: function (response) {
+                    
+                    var nextLink = $('#sidebar').find('li#comptabilite').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Suppression effectuée');
+                        $('#modalDetailPaiement').hide();
+                        
+                        //$(".loadBody").css('display', 'none');
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
+
+                        showTabComptabilite();
+
+                    }, 800);
+                   
+                  
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la suppression de méthode de paiement.');
+                }
+            });
+        }
+    }
+ 
+</script>
+
+{% endblock %}

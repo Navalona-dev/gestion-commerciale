@@ -1,0 +1,289 @@
+
+<div class="modal fade" id="modalUpdateMethodePaiement" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content p-4" style="width: 180% !important; margin-left: -12rem !important;">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Mise à jour méthode de paiement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger error">
+                    
+                </div>
+                <div class="alert alert-info">
+                    <span class="solde-total" data-total="{{facture.solde}}"></span>
+                    Total solde : {{facture.solde|number_format(0,',',' ')}} Ariary
+                </div>
+                <span class="mvola-solde" data-mvola="{{methodePaiement.mVola}}"></span>
+                <span class="orange-solde" data-orange="{{methodePaiement.orangeMoney}}"></span>
+                <span class="airtel-solde" data-airtel="{{methodePaiement.airtelMoney}}"></span>
+                
+                {{ form_start(form, {'attr': {'id': 'updateMethodePaiement', 'action': path('comptabilites_edit_methode_paiement', {'methode' : methodePaiement.id}) }}) }}
+                   
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Espèce </label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.espece)}} </span>
+                        {{ form_widget(form.espece) }}
+                    </div>
+                    <div class="choice mb-5">
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <div class="form-group">
+                                    <input type="checkbox" name="mvola" id="mvola">
+                                    <label for="">Mvola</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group">
+                                    <input type="checkbox" name="airtel" id="airtel">
+                                    <label for="">Airtel</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group">
+                                    <input type="checkbox" name="orange" id="orange">
+                                    <label for="">Orange</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mvola">
+                        <h5 class="fw-bold">Mvola</h5>
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <div class="form-group mb-3">
+                                    <label for="" class="mb-2">Solde <sup class="text-danger">*</sup></label>
+                                    {{ form_widget(form.mVola) }}
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group mb-3">
+                                    <label for="" class="mb-2">Référence <sup class="text-danger">*</sup></label>
+                                    {{ form_widget(form.referenceMvola) }}
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group mb-3">
+                                    <label for="" class="mb-2">Compte <sup class="text-danger">*</sup></label>
+                                    {{ form_widget(form.nomMvola) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="airtel">
+                        <h5 class="fw-bold">Airtel</h5>
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <div class="form-group mb-3">
+                                    <label for="" class="mb-2">Solde <sup class="text-danger">*</sup></label>
+                                    {{ form_widget(form.airtelMoney) }}
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group mb-3">
+                                    <label for="" class="mb-2">Référence <sup class="text-danger">*</sup></label>
+                                    {{ form_widget(form.referenceAirtel) }}
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group mb-3">
+                                    <label for="" class="mb-2">Compte <sup class="text-danger">*</sup></label>
+                                    {{ form_widget(form.nomAirtel) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="orange">
+                        <h5 class="fw-bold">Orange</h5>
+                        <div class="row">
+                            <div class="col-md-4 col-12">
+                                <div class="form-group mb-3">
+                                    <label for="" class="mb-2">Solde <sup class="text-danger">*</sup></label>
+                                    {{ form_widget(form.orangeMoney) }}
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group mb-3">
+                                    <label for="" class="mb-2">Référence <sup class="text-danger">*</sup></label>
+                                    {{ form_widget(form.referenceOrange) }}
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group mb-3">
+                                    <label for="" class="mb-2">Compte <sup class="text-danger">*</sup></label>
+                                    {{ form_widget(form.nomOrange) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Ajouter méthode de paiement</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+<script>
+  
+    $(document).ready(function () {
+        $('.error').hide();
+
+       $('#updateMethodePaiement').on('submit', function (e) {
+            e.preventDefault();
+
+            let espece = parseFloat($('#methode_paiement_espece').val()) || 0;
+            let soldeMvola = parseFloat($('#methode_paiement_mVola').val()) || 0;
+            let soldeAirtel = parseFloat($('#methode_paiement_airtelMoney').val()) || 0;
+            let soldeOrange = parseFloat($('#methode_paiement_orangeMoney').val()) || 0;
+
+            let soldeTotal = parseFloat($('.solde-total').data('total')) || 0;
+
+
+            let total = soldeAirtel + soldeMvola + soldeOrange + espece;
+
+            if(total != soldeTotal) {
+                $('#modalUpdateMethodePaiement').modal('show');
+                let message = '';
+                if(total < soldeTotal) {
+                    message = "Le total de solde mobile money + espece " + total + " est inférieur à " + soldeTotal;
+                } else {
+                    message = "Le total de solde mobile money + espece " + total + " est supérieur à " + soldeTotal;
+                }
+
+                $('.error').text(message);
+                $('.error').show();
+            }else {
+                let form = $(this);
+            
+                // Create an FormData object
+                let formData = new FormData(form[0]);
+                formData.append('isNew', false);
+
+                $.ajax({
+                    url: form.attr('action'),
+                    type: form.attr('method'),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                            $('#modalUpdateMethodePaiement').modal('hide');
+                            $('#modalDetailPaiement').modal('hide');
+                            $('.error').hide();
+
+                            var nextLink = $('#sidebar').find('li#methode-paiement').find('a');
+                            setTimeout(function () {
+                                toastr.options = {
+                                    closeButton: true,
+                                    progressBar: true,
+                                    showMethod: 'slideDown',
+                                    timeOut: 1000
+                                };
+                                toastr.success('Avec succèss', 'Mise à jour effectuée');
+
+                                showTabComptabilite();
+
+                            }, 800);
+                            if (nextLink.length > 0) {
+                                nextLink.click();
+                            }
+                        
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                        alert('Erreur lors de la mise à jour de depense.');
+                    }
+                });
+            }
+
+            
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('.mvola, .airtel, .orange').hide();
+        const mvolaSolde = parseFloat($('.mvola-solde').data('mvola'));
+        const airtelSolde = parseFloat($('.airtel-solde').data('airtel'));
+        const orangeSolde = parseFloat($('.orange-solde').data('orange'));
+        console.log(mvolaSolde,airtelSolde, orangeSolde);
+
+        if (!isNaN(mvolaSolde) && mvolaSolde > 0) {
+            $('#mvola').prop('checked', true); 
+            $('.mvola').show();
+        } else {
+            $('#mvola').prop('checked', false);
+            $('.mvola').hide();
+        }
+
+        if (!isNaN(orangeSolde) && orangeSolde > 0) {
+            $('#orange').prop('checked', true); 
+            $('.orange').show();
+        } else {
+            $('#orange').prop('checked', false);
+            $('.orange').hide();
+        }
+
+        if (!isNaN(airtelSolde) && airtelSolde > 0) {
+            $('#airtel').prop('checked', true); 
+            $('.airtel').show();
+        } else {
+            $('#airtel').prop('checked', false);
+            $('.airtel').hide();
+        }
+
+        $('#mvola').on('click', function() {
+            if($(this).is(':checked')) {
+                $('.mvola').show();
+                $('#methode_paiement_mVola').attr('required', true);
+                $('#methode_paiement_referenceMvola').attr('required', true);
+                $('#methode_paiement_nomMvola').attr('required', true);
+            } else {
+                $('.mvola').hide();
+                $('#methode_paiement_mVola').removeAttr('required');
+                $('#methode_paiement_referenceMvola').removeAttr('required');
+                $('#methode_paiement_nomMvola').removeAttr('required');
+            }
+
+        });
+
+        $('#airtel').on('click', function() {
+            if($(this).is(':checked')) {
+                $('.airtel').show();
+                $('#methode_paiement_airtelMoney').attr('required', true);
+                $('#methode_paiement_referenceAirtel').attr('required', true);
+                $('#methode_paiement_nomAirtel').attr('required', true);
+            } else {
+                $('.airtel').hide();
+                $('#methode_paiement_airtelMoney').removeAttr('required');
+                $('#methode_paiement_referenceAirtel').removeAttr('required');
+                $('#methode_paiement_nomAirtel').removeAttr('required');
+            }
+
+        });
+
+        $('#orange').on('click', function() {
+            if($(this).is(':checked')) {
+                $('.orange').show();
+                $('#methode_paiement_orangeMoney').attr('required', true);
+                $('#methode_paiement_referenceOrange').attr('required', true);
+                $('#methode_paiement_nomOrange').attr('required', true);
+            } else {
+                $('.orange').hide();
+                $('#methode_paiement_orangeMoney').removeAttr('required');
+                $('#methode_paiement_referenceOrange').removeAttr('required');
+                $('#methode_paiement_nomOrange').removeAttr('required');
+            }
+
+        });
+    })
+</script>
+
+{% endblock %}

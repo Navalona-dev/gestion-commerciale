@@ -1,7 +1,7 @@
 
 <div class="modal fade" id="modalAssignationPrivilege" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
-        <div class="modal-content p-4">
+        <div class="modal-content p-4" style="width: 180% !important; margin-left: -12rem !important;">
             <div class="modal-header modal-header-center">
                 <h5 class="modal-title text-center fw-bold" id="modalNewLabel">Assignation permission - <strong> {{ title }}</strong></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -22,13 +22,13 @@
                         </div>
                         <div class="row mb-4">
                             {% for keyPermission, permission in categories %}
-                            <div class="col-sm-6 col-md-4 checkbox-radios">
+                            <div class="col-md-3 col-12 checkbox-radios">
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                        <input class="form-check-input" type="checkbox" {% if permission.state == true %} checked {% endif %} name="permission_privilege[]" value="{{ permission.id }}"> {{ permission.title }}
-                                        <span class="form-check-sign">
-                                            <span class="check"></span>
-                                        </span>
+                                            <input class="form-check-input" type="checkbox" {% if permission.state == true %} checked {% endif %} name="permission_privilege[]" value="{{ permission.id }}"> {{ permission.title }}
+                                            <span class="form-check-sign">
+                                                <span class="check"></span>
+                                            </span>
                                         </label>
                                     </div>
                             </div>

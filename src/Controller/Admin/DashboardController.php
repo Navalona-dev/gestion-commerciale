@@ -56,6 +56,7 @@ class DashboardController extends AbstractController
         $idCompte = $session->get('idCompte');
         $idProduit = $session->get('produitCategorieId');
         $idFacture = $session->get('idFacture');
+        $idBenefice = $session->get('beneficeId');
 
         //count commande
         $countAffaireToday = $this->dashboardService->getCountAffairesToday('paye', 'commande');
@@ -179,6 +180,7 @@ class DashboardController extends AbstractController
                     'idCompte' => $idCompte,
                     'idProduit' => $idProduit,
                     'idFacture' => $idFacture,
+                    'idBenefice' => $idBenefice,
 
                     //count commande
                     'countAffaireToday' => $countAffaireToday,
@@ -308,6 +310,7 @@ class DashboardController extends AbstractController
             'idCompte' => $idCompte,
             'idProduit' => $idProduit,
             'idFacture' => $idFacture,
+            'idBenefice' => $idBenefice,
             
             //count commande
             'countAffaireToday' => $countAffaireToday,

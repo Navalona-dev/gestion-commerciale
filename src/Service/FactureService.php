@@ -20,6 +20,7 @@ use App\Entity\ProduitCategorie;
 //use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\ReglementFacture;
 use App\Entity\DatePeremptionProduct;
+use App\Repository\FactureRepository;
 use App\Service\AuthorizationManager;
 use App\Exception\PropertyVideException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,6 +48,7 @@ class FactureService
     private $reglementFactureRepository;
     private $logService;
     private $applicationRepo;
+    private $factureRepository;
 
     public function __construct(
         AuthorizationManager $authorization, 
@@ -59,7 +61,8 @@ class FactureService
         Security $security,
         ReglementFactureRepository  $reglementFactureRepository,
         LogService $logService,
-        ApplicationRepository $applicationRepo
+        ApplicationRepository $applicationRepo,
+        FactureRepository $factureRepository
         )
     {
         $this->tokenStorage = $TokenStorageInterface;
@@ -73,6 +76,7 @@ class FactureService
         $this->reglementFactureRepository = $reglementFactureRepository;
         $this->logService = $logService;
         $this->applicationRepo = $applicationRepo;
+        $this->factureRepository = $factureRepository;
     }
 
     public function add($affaire = null, $folder = null, $request = null, $applicationRevendeur = null)
@@ -522,6 +526,31 @@ class FactureService
         $facture->setEtat('annule');
         $facture->setValid(true);
         $facture->setStatut('annule');
+
+        $factureEcheances = $facture->getFactureEcheances();
+
+        if(count($factureEcheances) > 0) {
+            foreach($factureEcheances as $factureEcheance) {
+                $fileEcheance = $factureEcheance->getFile();
+    
+                $facEcheance = $this->factureRepository->findOneBy(['file' => $fileEcheance]);
+                if($facEcheance){
+                    $facEcheance->setStatut('annule');
+                    $facEcheance->setEtat('annule');
+                    $this->entityManager->persist($facEcheance);
+                }
+            }
+        }
+
+        if($affaire->isDepot() == true) {
+            foreach($factures as $factureDepot){
+                $factureDepot->setEtat('annule');
+                $factureDepot->setValid(true);
+                $factureDepot->setStatut('annule');
+                $this->entityManager->persist($factureDepot);
+            }
+        }
+
         $products = $affaire->getProducts();
         $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
         $tabQttRestant = [];
@@ -1085,33 +1114,25 @@ class FactureService
 
         // Obtenir l'utilisateur connecté
         $user = $this->security->getUser();
-
-        // Vérifier combien de factures existent déjà pour la facture parent
-        $numeroBase = $factureParentNumero;
-        $suffixeMax = 0; // On initialise le suffixe
+        
+        // Initialiser le numéro du dépôt au plus grand nombre existant
+        $suffixeMax = 0;
 
         foreach ($factures as $existingFacture) {
-            // Si la facture a un numéro qui commence par la même base avec un tiret
-            if (strpos($existingFacture->getNumero(), $numeroBase . '-') === 0) {
-                // Récupérer le suffixe actuel
-                $parts = explode('-', $existingFacture->getNumero());
-                if (isset($parts[1])) {
-                    $suffixe = (int)$parts[1];
-                    if ($suffixe > $suffixeMax) {
-                        $suffixeMax = $suffixe; // Mettre à jour le suffixe maximum trouvé
-                    }
+            // Si la facture a déjà un depotNumero (vérifiez si ce champ existe et est utilisé pour les dépôts)
+            if ($existingFacture->getDepotNumero() !== null) {
+                $depotNumero = $existingFacture->getDepotNumero();
+                if ($depotNumero > $suffixeMax) {
+                    $suffixeMax = $depotNumero; // Mettre à jour le plus grand numéro trouvé
                 }
             }
         }
 
-        // Incrémenter le suffixe pour la nouvelle facture
-        $numeroSuffixe = $suffixeMax + 1;
+        // Incrémenter le suffixe pour le nouveau dépôt
+        $nextDepotNumero = $suffixeMax + 1;
 
-        // Créer le numéro de facture avec le format "12-1", "12-2", etc.
-        $numeroFacture = $numeroBase . '-' . $numeroSuffixe;
-
-        $facture->setNumero($numeroFacture);
-
+        $facture->setNumero($factureParentNumero);
+        $facture->setDepotNumero($nextDepotNumero);
         $facture->setApplication($this->application);
 
         $facture->setEtat('regle');
@@ -1120,6 +1141,7 @@ class FactureService
         $facture->setDateCreation($date);
         $facture->setDate($date);
         $facture->setType("Facture");
+        $facture->setDepot(true);
 
         $products = $affaire->getProducts();
         $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
@@ -1160,8 +1182,8 @@ class FactureService
         if($sumQtt == $sumQttVendu) {
             $affaire->setPaiement('paye');
             $affaire->setDevisEvol('gagne');
-            $factureParent->setStatut('regle');
-            $factureParent->setEtat('regle');
+            $factureParent->setStatut('termine');
+            $factureParent->setEtat('termine');
             $factureParent->setDateReglement(new \DateTime());
         }else {
             $affaire->setPaiement('endepot');
@@ -1182,12 +1204,11 @@ class FactureService
         $this->persist($affaire);
 
         $facture->setFile($filename);
-        $facture->setSolde($montantHt);
-        $facture->setPrixHt($montantHt);    
+        $facture->setSolde($montantHt - ($qttVendu * $prix));
+        $facture->setPrixHt($montantHt - ($qttVendu * $prix));    
+        $facture->setReglement($montantHt - ($qttVendu * $prix));    
         
         $this->persist($facture);
-
-
 
         // Obtenir l'utilisateur connecté
         $user = $this->security->getUser();
@@ -1221,6 +1242,201 @@ class FactureService
         $data['produit'] = $product;
         
         $html = $this->twig->render('admin/facture/factureDepotPdf.html.twig', $data);
+
+        // Load HTML to Dompdf
+        $pdf->loadHtml($html);
+
+        // (Optional) Set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
+
+        // Render PDF
+        $pdf->render();
+
+        // Get PDF content
+        $pdfContent = $pdf->output();
+
+        // Save PDF to file
+        $fileName = $folder . $filename;
+        file_put_contents($fileName, $pdfContent);
+
+
+        // Créer le log
+        $this->logger->info('Commande payée', [
+            'Commande' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getUserIdentifier() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
+
+        return [$pdfContent, $facture]; // Retourner le contenu PDF et l'objet facture
+    }
+
+    public function validDepotMultiple($affaire = null, $folder = null, $request = null, $qttVendusSelection = null, $productsSelectionner = null)
+    {   //dd($qttVendusSelection);
+        $factures = $affaire->getFactures();
+        $factureParent = $factures[0];
+        $factureParentNumero = $factureParent->getNumero();
+
+        $facture = Facture::newFacture($affaire);
+        $date = new \DateTime();
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+        
+        // Initialiser le numéro du dépôt au plus grand nombre existant
+        $suffixeMax = 0;
+
+        foreach ($factures as $existingFacture) {
+            // Si la facture a déjà un depotNumero (vérifiez si ce champ existe et est utilisé pour les dépôts)
+            if ($existingFacture->getDepotNumero() !== null) {
+                $depotNumero = $existingFacture->getDepotNumero();
+                if ($depotNumero > $suffixeMax) {
+                    $suffixeMax = $depotNumero; // Mettre à jour le plus grand numéro trouvé
+                }
+            }
+        }
+
+        // Incrémenter le suffixe pour le nouveau dépôt
+        $nextDepotNumero = $suffixeMax + 1;
+
+        $facture->setNumero($factureParentNumero);
+        $facture->setDepotNumero($nextDepotNumero);
+        $facture->setApplication($this->application);
+
+        $facture->setEtat('regle');
+        $facture->setValid(true);
+        $facture->setStatut('regle');
+        $facture->setDateCreation($date);
+        $facture->setDate($date);
+        $facture->setType("Facture");
+        $facture->setDepot(true);
+
+        //$products = $affaire->getProducts();
+        $filename = $affaire->getCompte()->getIndiceFacture() . '-' . $facture->getNumero() . ".pdf";
+       
+        $prix = 0;
+        $sumQtt = 0;
+        $sumQttVendu = 0;
+        $qttVendu = 0;
+        $montantHtTotal = 0;
+
+        /*$tabQttVendu = [];
+        $tabQttRestant = [];
+        $tabQtt = [];
+        $tabRestePayer = [];
+        $tabDejaPaye = [];
+        $tabPaieNOw = [];
+        $tabMontantHt = [];*/
+
+
+        foreach($productsSelectionner as $key => $product) {
+            //dd($qttVendusSelection[$key]);
+            $qttVendu = $qttVendusSelection[$key];
+            
+            if($product->getTypeVente() == "detail") {
+                $prix = $product->getProduitCategorie()->getPrixVenteDetail();
+            } elseif($product->getTypeVente() == "gros") {
+                $prix = $product->getProduitCategorie()->getPrixVenteGros();
+            }
+
+            $qtt = $product->getQtt();
+            $sumQtt += $qtt;
+            //$qttVendus = $product->getQttVendu();
+            $sumQttVendu += $qttVendu;
+
+            if($product->getQttVendu() != null) {
+                $product->setQttVendu($qttVendu + $product->getQttVendu());
+            } else {
+                $product->setQttVendu($qttVendu);
+            }
+
+            $montantHt = $product->getQtt() * $prix;
+
+            $qttCommander = $product->getQtt();
+            $product->setQttRestant($qttCommander - $product->getQttVendu());
+            $product->setDejaPaye($product->getQttVendu() * $prix);
+            $product->setRestePayer($montantHt - $product->getDejaPaye());
+
+            $this->entityManager->persist($product);
+
+            if($factureParent->getReglement() != null) {
+                $factureParent->setReglement($factureParent->getReglement() + ($qttVendu * $prix));
+            } else {
+                $factureParent->setReglement($qttVendu * $prix);
+            }
+    
+            $this->entityManager->persist($factureParent);
+
+            $montantHtTotal += ($montantHt - ($qttVendu * $prix));
+
+            /*$tabQttVendu[] = $product->getQttVendu();
+            $tabQttRestant[] = $product->getQttRestant();
+            $tabQtt[] = $product->getQtt();
+            $tabRestePayer[] = $product->getRestePayer();
+            $tabDejaPaye[] = $product->getDejaPaye();
+            $tabPaieNOw[] = $product->getQttVendu() * $prix;
+            $tabMontantHt[] = $product->getQtt() * $prix;*/
+        }
+
+        //dd($tabMontantHt, $tabQtt, $tabQttVendu, $tabQttRestant, $tabDejaPaye, $tabRestePayer, $tabPaieNOw);
+
+        if($sumQtt == $sumQttVendu) {
+            $affaire->setPaiement('paye');
+            $affaire->setDevisEvol('gagne');
+            $factureParent->setStatut('termine');
+            $factureParent->setEtat('termine');
+            $factureParent->setDateReglement(new \DateTime());
+        }else {
+            $affaire->setPaiement('endepot');
+            $affaire->setDevisEvol('encours');
+        }
+
+        
+        $affaire->setDatePaiement($date);
+        $affaire->setDateFacture($date);
+        $affaire->setStatut("commande");
+        $this->persist($affaire);
+
+        $facture->setFile($filename);
+        $facture->setSolde($montantHtTotal);
+        $facture->setPrixHt($montantHtTotal);    
+        $facture->setReglement($montantHtTotal);    
+        
+        $this->persist($facture);
+
+        //dd($facture->getSolde(), $facture->getPrixHt(), $facture->getReglement());
+
+        // Obtenir l'utilisateur connecté
+        $user = $this->security->getUser();
+
+        // Créer log
+        $this->logger->info('Facture ajouté', [
+            'Commande' => $affaire->getNom(),
+            'Nom du responsable' => $user ? $user->getNom() : 'Utilisateur non connecté',
+            'Adresse e-mail' => $user ? $user->getEmail() : 'Pas d\'adresse e-mail',
+            'ID Application' => $affaire->getApplication()->getId()
+        ]);
+
+        $this->update();
+        
+        
+        // Initialize Dompdf
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $pdf = new Dompdf($options);
+
+        // Load HTML content
+        $data = [];
+        $data['produits'] = $productsSelectionner;
+        $data['facture'] = $facture;
+        $data['compte'] = $facture->getCompte();
+        $data['factureEcheances'] = null;
+        $data['application'] = $this->application;
+        $data['user'] = $user;
+        
+        $html = $this->twig->render('admin/facture/factureDepotMultiplePdf.html.twig', $data);
 
         // Load HTML to Dompdf
         $pdf->loadHtml($html);

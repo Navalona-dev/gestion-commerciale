@@ -42,9 +42,9 @@
             <strong>
                 Facture / 
                 {% if facture.statut == "annule" %}
-                    FAC/VSM/{{facture.numero}}-{{ facture.date|date('y') }}
+                    FAC/VSM/{{facture.numero}}-D{{facture.depotNumero}}-{{ facture.date|date('y') }}
                 {% elseif facture.statut == "regle" or facture.statut == "encours" %}
-                    FAC/VSM/{{facture.numero}}-{{ facture.date|date('y') }}
+                    FAC/VSM/{{facture.numero}}-D{{facture.depotNumero}}-{{ facture.date|date('y') }}
                 {% endif %}
             </strong>
         </p>
@@ -81,7 +81,7 @@
             </thead>
             <tbody>
                 {% set montantHt = 0 %}
-     
+
                 <tr style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
                     <td width="10%">
                         {{ produit.reference }}
@@ -130,26 +130,36 @@
                     </td>
                 </tr>
 
-                {% if produit.typeVente == "gros" %}
-                        {% set montantHt = montantHt + ((produit.qtt) * prix)  %}
-                   {% else %}
-                        {% set montantHt = montantHt + (produit.qtt * prix)  %}
-                   {% endif %}  
-
             </tbody>
         </table>
     </div>
 
     <div style="margin-bottom: 20px;">
+        {% set dejaPaye = 0 %}
+        {% set restePaye = 0 %}
+        {% for produit in produits %}
+            {% if produit.typeVente == "gros" %}
+                {% set montantHt = montantHt + ((produit.qtt) * prix)  %}
+            {% else %}
+                {% set montantHt = montantHt + (produit.qtt * prix)  %}
+            {% endif %}  
+            {% set dejaPaye = dejaPaye + produit.dejaPaye %}
+            {% set restePaye = restePaye + produit.restePayer %}
+        {% endfor %}
+
         <p style="border: 1px solid #000; padding: 10px 50px; width: 40%;">
             {% if facture.affaire.paiement != "annule" %}
                 TOTAL À PAYER 
             {% else %}
                 TOTAL À REMBOURSER 
             {% endif %}
-            <br><br>
-            <span> {{montantHt|number_format(0,',',' ')}} Ar </span>
+            <span> {{montantHt|number_format(0,',',' ')}} Ar </span><br><br>
+            DÉJÀ PAYER : 
+            <span> {{dejaPaye|number_format(0,',',' ')}} Ar </span><br><br>
+            RESTE À PAYER : 
+            <span> {{restePaye|number_format(0,',',' ')}} Ar </span>
         </p>
+        
     </div>
 
     <div>

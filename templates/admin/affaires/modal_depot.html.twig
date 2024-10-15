@@ -43,7 +43,12 @@
                                 {% endif %}
                             </span>
                         </p>
-                        <p><strong>Qté restant : </strong><span class="qtt-restant" data-restant="{{product.qttRestant}}" > {{product.qttRestant}} {{unite}} </span></p>
+                        <p>
+                            <strong>Qté restant : </strong>
+                            <span class="qtt-restant" data-restant="{{product.qttRestant}}" > 
+                                {{product.qttRestant}} {{unite}} 
+                            </span>
+                        </p>
                         <p>
                             <strong>Total à payer : </strong>
                             <span class="total-paye" data-total="{{total}}">
@@ -152,7 +157,7 @@
                     let qttRestantFinal = null;
                     let qttRestante = null;
 
-                    if(qttRestant == null) {
+                    if(qttRestant == '') {
                         qttRestante = qttCommander - qttVenduValue;
                         qttRestantFinal = qttRestante + ' ' + unite;
                         $('.qtt-restant').text(qttRestantFinal);

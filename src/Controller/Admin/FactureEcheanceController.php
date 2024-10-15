@@ -189,6 +189,7 @@ class FactureEcheanceController extends AbstractController
             $reste = 0;
             $avance = 0;
             $factureEcheanceReglement = 0;
+
             if($facture->getReglement() == null){
                 $avance = 0;
                 $factureEcheanceReglement = 0;
@@ -204,9 +205,8 @@ class FactureEcheanceController extends AbstractController
                 $reglement = $facture->getSolde();
             } else {
                 if($factureEcheance->getReglement() == null) {
-                    $reglement = $avance + $factureEcheance->getMontant();
+                    $montant = $factureEcheance->getMontant();
                 } else {
-                   
                     if($factureEcheance->getReglement() > $factureEcheance->getMontant()) {
                         $montant = $factureEcheance->getReglement() - $factureEcheance->getMontant();
                         
@@ -214,10 +214,11 @@ class FactureEcheanceController extends AbstractController
                     {
                         $montant = $factureEcheance->getMontant() - $factureEcheance->getReglement();
                     }
-                    $reglement = $avance + $montant;   
-                    
+                   // $reglement = $avance + $montant;   
                 }
             }
+            $reglement = $avance + $montant;
+
             $reste = $montantHt - $reglement;
 
             if($form->isSubmitted() && $form->isValid()) {

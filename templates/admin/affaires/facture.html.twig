@@ -101,15 +101,14 @@
                                         <th>Actions</th>
                                         <th>Facture finale</th>
                                         <th>Date</th>
-                                        <th>Type</th>
                                         <th>N°</th>
                                         <th>Compte</th>
                                         <th>Affaire</th>
                                         <th>Prix TTC</th>
                                         <th>Prix HT</th>
                                         <th>Règlement</th>
-                                        <th>Status</th>
                                         <th>Solde</th>
+                                        <th>Status</th>
                                         <th>État</th>
                                         <th>Rémise</th>
                                     </tr>
@@ -161,24 +160,30 @@
                                             {% endif %}
                                         </td>
                                         <td> {{liste.dateCreation|date('d-m-Y')}} </td>
-                                        <td> {{liste.type}} </td>
-                                        <td> {{liste.numero}} </td>
+                                        <td> 
+                                            {% if liste.isDepot is not null and liste.isDepot == true %}
+                                                {{liste.numero}} Dépôt n°{{liste.depotNumero}}
+                                            {% elseif liste.isEcheance is not null and liste.isEcheance == true %}
+                                                {{liste.numero}} Echeance n°{{liste.echeanceNumero}}
+                                            {% else %}
+                                            {{liste.numero}} 
+                                            {% endif %}
+                                        </td>
                                         <td> {{liste.compte}} </td>
                                         <td> {{liste.affaire}} </td>
                                         <td> {{liste.prixTtc|number_format(2, ',', ',')}} Ar </td>
                                         <td>{{liste.prixHt|number_format(0, ',', ' ')}} Ar</td>
                                         <td> {{liste.reglement|number_format(0, ',', ' ')}} Ar </td>
+                                        <td> {{liste.solde|number_format(0, ',', ' ')}} Ar </td>
                                         {% set statutPaiement = constant('App\\Entity\\Facture::STATUT') %}
                                         <td> {{statutPaiement[liste.statut]}} </td>
-                                        <td> {{liste.solde}} </td>
                                         {% set etat = constant('App\\Entity\\Facture::ETAT') %}
                                         <td> {{etat[liste.etat]}} </td>
                                         <td> {{liste.remise}} </td>
                                     </tr>
                                     {% else %}
                                     <tr>
-                                        <td colspan="16">Aucune facture trouvé</td>
-                                        <td></td>
+                                        <td colspan="15">Aucune facture trouvé</td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -255,6 +260,7 @@
         $('#tab-produit-image').removeClass('active');
         $('#tab-stock').removeClass('active');
         $('#tab-depot').css('display', 'none');
+        $('#tab-comptabilite').css('display', 'none');
 
       });
 
