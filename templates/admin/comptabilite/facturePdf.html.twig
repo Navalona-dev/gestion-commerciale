@@ -16,7 +16,7 @@
     </div>
 
     <div style="margin-bottom: 20px;">
-        <p style="margin-left: 500px;">Date : <strong style="margin-left: 15px;">{{factureBenefice.date|date('d/m/Y')}}</strong></p>
+        <p style="margin-left: 500px;">Date : <strong style="margin-left: 15px;">{{factureComptabilite.date|date('d/m/Y')}}</strong></p>
     </div>
 
     <div style="margin-bottom: 30px;">
@@ -30,7 +30,7 @@
                     <p style="font-size: 15px;">TEL <span style="margin-left: 100px;">{{application.telephone}}</span></p>
                 </th>
                 <th style="width: 50%; border: 1px solid #000;">
-                    <p style="text-align: center; font-size: 15px; text-transform: uppercase;"> Bénéfice </p>
+                    <p style="text-align: center; font-size: 15px; text-transform: uppercase;"> Comptabilité </p>
                     <p style="font-size: 15px;">**************</p>
                 </th>
             </tr>
@@ -40,10 +40,10 @@
         <p style="text-align: center; font-size: 30px;"> 
             <strong>
                 Facture / 
-                {% if factureBenefice.statut == "annule" %}
-                    FAC/VSM/Encaissement-{{factureBenefice.numero}}-{{ factureBenefice.date|date('y') }}
-                {% elseif factureBenefice.statut == "regle" or factureBenefice.statut == "encours" %}
-                    FAC/VSM/Encaissement-{{factureBenefice.numero}}-{{ factureBenefice.date|date('y') }}
+                {% if factureComptabilite.statut == "annule" %}
+                    FAC/VSM/Encaissement-{{factureComptabilite.numero}}-{{ factureComptabilite.date|date('y') }}
+                {% elseif factureComptabilite.statut == "regle" or factureComptabilite.statut == "encours" %}
+                    FAC/VSM/Encaissement-{{factureComptabilite.numero}}-{{ factureComptabilite.date|date('y') }}
                 {% endif %}
             </strong>
         </p>
@@ -55,26 +55,29 @@
                     <th width="24%">
                         Désignation
                     </th>
-                    <th width="30%">
-                        Commandes
+                    <th width="20%">
+                        Factures(commandes)
+                    </th>
+                    <th width="14%">
+                        Gagné
                     </th>
                     <th width="12%">
-                        Espèce
+                        Dépense
                     </th>
-                    <th width="24%">
-                        Mobile money
+                    <th width="20%">
+                        Encaissé
                     </th>
-                    <th width="10%">Total</th>
+                    <th width="10%">Date</th>
 
                 </tr>
             </thead>
             <tbody>
                 <tr style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
                     <td width="24%">
-                        {{benefice.designation}}
+                        {{comptabilite.designation}}
                     </td>
-                    <td width="30%">
-                        {% for facture in factures %}
+                    <td width="20%">
+                        {% for facture in benefice.factures %}
                             {% if facture.isEcheance is not null and facture.isEcheance == true %}
                                 FAC/VSM/{{facture.numero}}-E{{facture.echeanceNumero}}-{{ facture.date|date('y')}}
                             {% elseif facture.isDepot is not null and facture.isDepot == true %}
@@ -84,16 +87,17 @@
                             {% endif %} <br>
                         {% endfor %}
                     </td>
-                    <td width="12%">
-                        {{ benefice.espece|number_format(0,',',' ') }} Ar
-
+                    <td width="14%">
+                        {{benefice.total|number_format(0,',',' ')}} Ariary
                     </td>
-                    <td width="24%">
-                        {{ benefice.mobileMoney|number_format(0, ',', ' ') }} Ar
+                    <td width="12%">
+                        {{ totalDepense|number_format(0,',',' ') }} Ar
+                    </td>
+                    <td width="20%">
+                        {{ comptabilite.reste|number_format(0, ',', ' ') }} Ar
                     </td>
                     <td width="10%">
-                        {{ benefice.total|number_format(0, ',', ' ') }} Ar
-                        
+                        {{comptabilite.dateComptabilite|date('d-m-Y')}}
                     </td>
                 </tr>
 
@@ -101,11 +105,15 @@
         </table>
     </div>
 
+    <div class="">
+        <p><strong>Status : entre {{comptabilite.fourchette.minVal|number_format(0,',',' ')}} Ar et {{comptabilite.fourchette.maxVal|number_format(0,',',' ')}} Ar ({{comptabilite.fourchette.status}}) </strong></p>
+    </div>
+
     <div style="margin-bottom: 20px;">
         <p style="border: 1px solid #000; padding: 10px 50px; width: 40%;">
-                TOTAL À GAGNER 
+                TOTAL À ENCAISSER 
             <br><br>
-            <span> {{benefice.total|number_format(0,',',' ')}} Ar </span>
+            <span> {{comptabilite.reste|number_format(0,',',' ')}} Ar </span>
         </p>
     </div>
 

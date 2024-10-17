@@ -50,6 +50,12 @@ class MethodePaiement
     #[ORM\ManyToOne(inversedBy: 'methodePaiements')]
     private ?Facture $facture = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateMethodePaiement = null;
+
+    #[ORM\ManyToOne(inversedBy: 'methodePaiements')]
+    private ?Application $application = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -195,6 +201,30 @@ class MethodePaiement
     public function setFacture(?Facture $facture): static
     {
         $this->facture = $facture;
+
+        return $this;
+    }
+
+    public function getDateMethodePaiement(): ?\DateTimeInterface
+    {
+        return $this->dateMethodePaiement;
+    }
+
+    public function setDateMethodePaiement(?\DateTimeInterface $dateMethodePaiement): static
+    {
+        $this->dateMethodePaiement = $dateMethodePaiement;
+
+        return $this;
+    }
+
+    public function getApplication(): ?Application
+    {
+        return $this->application;
+    }
+
+    public function setApplication(?Application $application): static
+    {
+        $this->application = $application;
 
         return $this;
     }

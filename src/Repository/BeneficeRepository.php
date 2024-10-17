@@ -32,4 +32,15 @@ class BeneficeRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findAllDate()
+    {
+        return $this->createQueryBuilder('b')
+            ->select('b.id, b.dateBenefice')
+            ->leftJoin('b.application', 'a')
+            ->where('a.id = :applicationId')
+            ->setParameter('applicationId', $this->application->getId())
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -1,14 +1,14 @@
 
-<div class="modal fade" id="modalNewBenefice" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="modalNewComptabilite" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content p-4">
             <div class="modal-header modal-header-center">
-                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau encaissement</h5>
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau comptabilité</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                
-                {{ form_start(form, {'attr': {'id': 'newBenefice', 'action': path('benefices_create') }}) }}
+                <span class="id-benefice-compta" data-benefice="{{beneficeId}}"></span>
+                {{ form_start(form, {'attr': {'id': 'newComptabilite', 'action': path('comptabilites_create') }}) }}
                    
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Designation <sup class="text-danger">*</sup> </label>
@@ -17,35 +17,22 @@
                     </div>
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Date <sup class="text-danger">*</sup> </label>
-                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.dateBenefice)}} </span>
-                        {{ form_widget(form.dateBenefice) }}
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.dateComptabilite)}} </span>
+                        {{ form_widget(form.dateComptabilite) }}
                     </div>
-                    <div class="alert alert-warning">
-                        <h4 class="fw-bold text-center">Commandes</h4>
-                        <div class="row">
-                            {% for facture in factures %}
-                            <div class="col-md-6 col-12">
-                                <p>
-                                    {% if facture.isEcheance is not null and facture.isEcheance == true %}
-                                        FAC/VSM/{{facture.numero}}-E{{facture.echeanceNumero}}-{{ facture.date|date('y')}}
-                                      {% elseif facture.isDepot is not null and facture.isDepot == true %}
-                                        FAC/VSM/{{facture.numero}}-D{{facture.depotNumero}}-{{ facture.date|date('y')}}
-                                      {% else %}
-                                        FAC/VSM/{{facture.numero}}-{{ facture.date|date('y')}}
-                                      {% endif %}
-                                </p>
-                            </div>
-                            {% endfor %}
-                        </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Fourchette <sup class="text-danger">*</sup> </label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.fourchette)}} </span>
+                        {{ form_widget(form.fourchette) }}
                     </div>
                     <div class="alert alert-info">
                         <h4 class="fw-bold text-center">Récapitulatif</h4>
-                        <p><strong>Espèce : </strong> {{espece|number_format(0,',',' ')}} Ariary </p>
-                        <p><strong>Mobile money : </strong> {{(mvola + orange + airtel)|number_format(0,',',' ')}} Ariary </p>
-                        <p><strong>Total : </strong> {{(mvola + orange + airtel + espece)|number_format(0,',',' ')}} Ariary </p>
+                        <p><strong>Gagnés : </strong> {{totalBenefice|number_format(0,',',' ')}} Ariary </p>
+                        <p><strong>Dépenses : </strong> {{totalDepense|number_format(0,',',' ')}} Ariary </p>
+                        <p><strong>Encaissé : </strong> {{(totalBenefice - totalDepense)|number_format(0,',',' ')}} Ariary </p>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Ajouter bénéfice</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Ajouter comptabilité</button>
                     </div>
                 {{ form_end(form) }}
             </div>
@@ -62,7 +49,7 @@ $(document).ready(function() {
   var dateNow = new Date();
   dateNow.setDate(dateNow.getDate() + 1)
 
-  $('#benefice_dateBenefice').datepicker({
+  $('#comptabilite_dateComptabilite').datepicker({
       format: dateFormat,
       todayHighlight: true,
       language: 'fr',
@@ -73,15 +60,15 @@ $(document).ready(function() {
 });
   
     $(document).ready(function () {
-        var anchorName = document.location.hash.substring(1);
-    
-       $('#newBenefice').on('submit', function (e) {
+        const idBenefice = $('.id-benefice-compta').data('benefice');
+        
+        $('#newComptabilite').on('submit', function (e) {
             e.preventDefault();
             let form = $(this);
             
             // Create an FormData object
             let formData = new FormData(form[0]);
-          formData.append('isNew', false);
+            formData.append('isNew', false);
             $.ajax({
                 url: form.attr('action'),
                 type: form.attr('method'),
@@ -89,7 +76,7 @@ $(document).ready(function() {
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    $('#modalNewBenefice').modal('hide');
+                    $('#modalNewComptabilite').modal('hide');
                     var nextLink = $('#sidebar').find('li#benefice').find('a');
                     setTimeout(function () {
                         toastr.options = {
@@ -99,8 +86,9 @@ $(document).ready(function() {
                             timeOut: 1000
                         };
                         toastr.success('Avec succèss', 'Enregistrement effectuée');
-                        showTabComptabilite();
-                        
+                        window.location.hash = "tab-benefice";
+
+                        showTabBenefice(idBenefice);
                         if (response.pdfUrl) {
                             window.open(response.pdfUrl, '_blank');
                         }
@@ -112,6 +100,7 @@ $(document).ready(function() {
                     alert('Erreur lors de l\'ajout de bénéfice.');
                 }
             });
+        
         });
     });
 </script>

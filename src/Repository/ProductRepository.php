@@ -20,6 +20,17 @@ class ProductRepository extends ServiceEntityRepository
         $this->connection = $connection;
     }
 
+    public function getAllProducts($affaireId)
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.affaires', 'a')
+            ->where('a.id = :affaire_id')
+            ->andWhere('p.qttVendu IS NULL OR p.qttVendu != p.qtt')
+            ->setParameter('affaire_id', $affaireId)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findProduitAffaire($affaire)
     {
         $query = $this->createQueryBuilder('p')

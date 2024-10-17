@@ -131,6 +131,18 @@ class Application
     #[ORM\OneToMany(targetEntity: Fourchette::class, mappedBy: 'application')]
     private Collection $fourchettes;
 
+    /**
+     * @var Collection<int, Comptabilite>
+     */
+    #[ORM\OneToMany(targetEntity: Comptabilite::class, mappedBy: 'application')]
+    private Collection $comptabilites;
+
+    /**
+     * @var Collection<int, MethodePaiement>
+     */
+    #[ORM\OneToMany(targetEntity: MethodePaiement::class, mappedBy: 'application')]
+    private Collection $methodePaiements;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -145,6 +157,8 @@ class Application
         $this->depenses = new ArrayCollection();
         $this->benefices = new ArrayCollection();
         $this->fourchettes = new ArrayCollection();
+        $this->comptabilites = new ArrayCollection();
+        $this->methodePaiements = new ArrayCollection();
     }
 
     public function __toString()
@@ -662,6 +676,66 @@ class Application
             // set the owning side to null (unless already changed)
             if ($fourchette->getApplication() === $this) {
                 $fourchette->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comptabilite>
+     */
+    public function getComptabilites(): Collection
+    {
+        return $this->comptabilites;
+    }
+
+    public function addComptabilite(Comptabilite $comptabilite): static
+    {
+        if (!$this->comptabilites->contains($comptabilite)) {
+            $this->comptabilites->add($comptabilite);
+            $comptabilite->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComptabilite(Comptabilite $comptabilite): static
+    {
+        if ($this->comptabilites->removeElement($comptabilite)) {
+            // set the owning side to null (unless already changed)
+            if ($comptabilite->getApplication() === $this) {
+                $comptabilite->setApplication(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MethodePaiement>
+     */
+    public function getMethodePaiements(): Collection
+    {
+        return $this->methodePaiements;
+    }
+
+    public function addMethodePaiement(MethodePaiement $methodePaiement): static
+    {
+        if (!$this->methodePaiements->contains($methodePaiement)) {
+            $this->methodePaiements->add($methodePaiement);
+            $methodePaiement->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMethodePaiement(MethodePaiement $methodePaiement): static
+    {
+        if ($this->methodePaiements->removeElement($methodePaiement)) {
+            // set the owning side to null (unless already changed)
+            if ($methodePaiement->getApplication() === $this) {
+                $methodePaiement->setApplication(null);
             }
         }
 

@@ -932,4 +932,7 @@ class AffaireRepository extends ServiceEntityRepository
         $endOfLastYear = new \DateTime('last day of December last year');
         return $this->getTopOrdersByTotal($startOfLastYear, $endOfLastYear->modify('+1 day'), $paiement, $statut);
     }
+
+    
+
 }

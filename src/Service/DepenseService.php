@@ -3,14 +3,15 @@ namespace App\Service;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Twig\Environment;
 use App\Entity\Facture;
 use App\Entity\FactureDepense;
 use App\Service\ApplicationManager;
+use App\Repository\DepenseRepository;
 use App\Service\AuthorizationManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Twig\Environment;
 
 class DepenseService
 {
@@ -20,6 +21,7 @@ class DepenseService
     private $application;
     private $security;
     private $twig;
+    private $depenseRepo;
 
     public function __construct(
         AuthorizationManager $authorization, 
@@ -27,7 +29,8 @@ class DepenseService
         EntityManagerInterface $entityManager,
         ApplicationManager  $applicationManager,
         Security $security,
-        Environment $twig
+        Environment $twig,
+        DepenseRepository $depenseRepo
 
     )
     {
@@ -37,6 +40,7 @@ class DepenseService
         $this->application = $applicationManager->getApplicationActive();
         $this->security = $security;
         $this->twig = $twig;
+        $this->depenseRepo = $depenseRepo;
 
     }
 
@@ -94,8 +98,11 @@ class DepenseService
         $montantHtTotal = 0;
 
         foreach($depenses as $key => $depense) {
-            
+            $updateDepense = $this->depenseRepo->findOneBy(['id' => $depense['id']]);
             $montantHtTotal += $depense['total'];
+            $updateDepense->addFactureDepense($factureDepense);
+            $this->entityManager->persist($updateDepense);
+            $factureDepense->addDepense($updateDepense);
 
         }
 

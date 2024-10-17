@@ -65,6 +65,8 @@ class DepenseController extends AbstractController
 
             $form->handleRequest($request);
 
+            $beneficeId = $request->getSession()->get('beneficeId');
+
             if ($form->isSubmitted() && $form->isValid()) {
                 
                 if ($request->isXmlHttpRequest()) {
@@ -77,6 +79,7 @@ class DepenseController extends AbstractController
             $data['exception'] = "";
             $data["html"] = $this->renderView('admin/depense/new.html.twig', [
                 'form' => $form->createView(),
+                'beneficeId' => $beneficeId, 
             ]);
            
             return new JsonResponse($data);
@@ -131,6 +134,8 @@ class DepenseController extends AbstractController
 
             $form->handleRequest($request);
 
+            $beneficeId = $request->getSession()->get('beneficeId');
+
             if ($form->isSubmitted() && $form->isValid()) {
                 
                 if ($request->isXmlHttpRequest()) {
@@ -143,7 +148,8 @@ class DepenseController extends AbstractController
             $data['exception'] = "";
             $data["html"] = $this->renderView('admin/depense/update.html.twig', [
                 'form' => $form->createView(),
-                'depense' => $depense
+                'depense' => $depense,
+                'beneficeId' => $beneficeId
             ]);
            
             return new JsonResponse($data);
