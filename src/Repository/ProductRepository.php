@@ -52,7 +52,7 @@ class ProductRepository extends ServiceEntityRepository
     public function findByAffairePaye($paiement = null, $statut = null, $reference = null)
     {
         return $this->createQueryBuilder('p')
-            ->select('p.id as product_id, p.reference, p.qtt, p.prixVenteGros, p.prixVenteDetail, p.typeVente, a.id as affaire_id, a.nom as affaire_nom, a.dateFacture, c.nom as compte_nom')
+            ->select('p.id as product_id, p.remise, p.reference, p.qtt, p.prixVenteGros, p.prixVenteDetail, p.typeVente, a.id as affaire_id, a.nom as affaire_nom, a.dateFacture, c.nom as compte_nom')
             ->join('p.affaires', 'a')
             ->join('a.compte', 'c')
             ->where('p.reference = :reference')
