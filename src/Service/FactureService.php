@@ -1203,12 +1203,15 @@ class FactureService
         $affaire->setStatut("commande");
         $this->persist($affaire);
 
+        $montantFinal = $qttVendu * $prix;
+
         $facture->setFile($filename);
-        $facture->setSolde($montantHt - ($qttVendu * $prix));
-        $facture->setPrixHt($montantHt - ($qttVendu * $prix));    
-        $facture->setReglement($montantHt - ($qttVendu * $prix));    
+        $facture->setSolde($montantFinal);
+        $facture->setPrixHt($montantFinal);    
+        $facture->setReglement($montantFinal);    
         
         $this->persist($facture);
+        //dd($facture->getSolde());
 
         // Obtenir l'utilisateur connecté
         $user = $this->security->getUser();
@@ -1367,7 +1370,14 @@ class FactureService
     
             $this->entityManager->persist($factureParent);
 
-            $montantHtTotal += ($montantHt - ($qttVendu * $prix));
+            /*if($product->getQtt() == $qttVendu) {
+                $montantHtTotal += $montantHt;
+            } else {
+                $montantHtTotal += ($montantHt - ($qttVendu * $prix));
+            }*/
+
+            $montantHtTotal += $qttVendu * $prix;
+
 
             /*$tabQttVendu[] = $product->getQttVendu();
             $tabQttRestant[] = $product->getQttRestant();
@@ -1403,6 +1413,7 @@ class FactureService
         $facture->setReglement($montantHtTotal);    
         
         $this->persist($facture);
+        //dd($facture->getSolde());
 
         //dd($facture->getSolde(), $facture->getPrixHt(), $facture->getReglement());
 

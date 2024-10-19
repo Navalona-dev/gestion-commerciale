@@ -9,6 +9,7 @@ use App\Service\ApplicationManager;
 use App\Repository\DepenseRepository;
 use App\Repository\FactureRepository;
 use App\Repository\BeneficeRepository;
+use App\Repository\ComptabiliteRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -23,14 +24,15 @@ class BeneficeController extends AbstractController
     private $depenseRepository;
     private $beneficeRepo;
     private $application;
+    private $comptabiliteRepo;
 
     public function __construct(
         FactureRepository $factureRepository,
         BeneficeService $beneficeService,
         DepenseRepository $depenseRepository,
         BeneficeRepository $beneficeRepo,
-        ApplicationManager $applicationManager
-
+        ApplicationManager $applicationManager,
+        ComptabiliteRepository $comptabiliteRepo
 
     )
     {
@@ -39,6 +41,7 @@ class BeneficeController extends AbstractController
         $this->depenseRepository = $depenseRepository;
         $this->beneficeRepo = $beneficeRepo;
         $this->application = $applicationManager->getApplicationActive();
+        $this->comptabiliteRepo = $comptabiliteRepo;
         
     }
 
@@ -71,18 +74,26 @@ class BeneficeController extends AbstractController
         $form = $this->createForm(BeneficeType::class, $benefice);
         $data = [];
         try {
-            $facturesToday = $this->factureRepository->selectFactureToday('regle');
+            $dateFilterCommande = $request->getSession()->get('dateFilterCommande');
+            $factures = null;
+
+            if($dateFilterCommande) {
+                $factures = $this->factureRepository->selectFactureByDate('regle', $dateFilterCommande->format('Y-m-d'));
+            } else {
+                $factures = $this->factureRepository->selectFactureToday('regle');
+            }
+
             
             $espece = 0;
             $mvola = 0;
             $airtel = 0;
             $orange = 0;
 
-            foreach($facturesToday as $factureToday) {
-                $espece += $factureToday['espece'];
-                $mvola += $factureToday['mVola'];
-                $orange += $factureToday['orangeMoney'];
-                $airtel += $factureToday['airtelMoney'];
+            foreach($factures as $facture) {
+                $espece += $facture['espece'];
+                $mvola += $facture['mVola'];
+                $orange += $facture['orangeMoney'];
+                $airtel += $facture['airtelMoney'];
             }
 
             $total = $espece + $mvola + $orange + $airtel;
@@ -94,18 +105,18 @@ class BeneficeController extends AbstractController
                 
                 if ($request->isXmlHttpRequest()) {
 
-                    if (count($facturesToday) > 0) {
-                        $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/APP_'.$this->application->getId().'/factures/benefice/';
+                    if (count($factures) > 0) {
+                        $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/APP_'.$this->application->getId().'/factures/encaissement/';
             
                         // Vérifier si le dossier existe, sinon le créer avec les permissions appropriées
                         if (!is_dir($documentFolder)) {
                             mkdir($documentFolder, 0777, true);
                         }
                         
-                        list($pdfContent, $facture, $returnBenefice) = $this->beneficeService->add($benefice, $documentFolder, $request, $espece, $total, $mobileMoney, $facturesToday);
+                        list($pdfContent, $facture, $returnBenefice) = $this->beneficeService->add($benefice, $documentFolder, $request, $espece, $total, $mobileMoney, $factures);
 
-                        $filename = 'Benefice' . '-' . $facture->getNumero() . ".pdf";
-                        $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/benefice/' . $filename;
+                        $filename = 'Encaissement' . '-' . $facture->getNumero() . ".pdf";
+                        $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/encaissement/' . $filename;
                         
                         // Sauvegarder le fichier PDF
                         file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
@@ -113,7 +124,6 @@ class BeneficeController extends AbstractController
                         return new JsonResponse([
                             'status' => 'success',
                             'pdfUrl' => $pdfPath,
-                            'id' => $returnBenefice->getId()
                         ]);
                         
                     }
@@ -127,7 +137,7 @@ class BeneficeController extends AbstractController
                 'orange' => $orange,
                 'mvola' => $mvola,
                 'airtel' => $airtel,
-                'facturesToday' => $facturesToday,
+                'factures' => $factures,
                 'benefice' => $benefice,
             ]);
            
@@ -143,23 +153,50 @@ class BeneficeController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/{id}', name: '_liste_one')]
+    #[Route('/detail/{id}', name: '_liste_one')]
     public function indexOne(Request $request, Benefice $benefice): Response
     {
         $data = [];
         try {
+
+            $request->getSession()->set('beneficeId', $benefice->getId());
+
+            $dateBenefice = $benefice->getDateBenefice();
+            $dateBeneficeFormat = $benefice->getDateBenefice()->format('Y-m-d');
             
-            //$request->getSession()->set('beneficeId', $benefice->getId());
+            //$depensesToday = $this->depenseRepository->selectDepenseToday();
+            $depenses = $this->depenseRepository->selectDepenseByDate($dateBenefice);
 
-            $depensesToday = $this->depenseRepository->selectDepenseToday();
+            $comptabilitesDate = $this->comptabiliteRepo->findAllDates();
+            $tabDateCompta = [];
 
-            $request->getSession()->set('depenses', $depensesToday);
-            $request->getSession()->set('benefice', $benefice);
+            foreach($comptabilitesDate as $comptabiliteDate) {
+                $tabDateCompta[] = $comptabiliteDate['dateComptabilite']->format('Y-m-d');
+            }
+
+            $existeDate = false;
+
+            if(in_array($dateBeneficeFormat, $tabDateCompta)) {
+                $existeDate = true;
+            }
+
+            $comptabilites = $benefice->getComptabilites();
+            $comptabiliteFirst = $comptabilites[0];
+
+            $totalDepense = 0;
+            foreach($depenses as $depense) {
+                $totalDepense += $depense['total'];
+            }
+
+            $request->getSession()->set('totalDepense', $totalDepense);
+            $request->getSession()->set('totalBenefice', $benefice->getTotal());
 
             $data["html"] = $this->renderView('admin/benefice/detail.html.twig', [
-                'depensesToday' => $depensesToday,
+                'depenses' => $depenses,
                 'benefice' => $benefice,
-                'application' => $this->application
+                'application' => $this->application,
+                'existeDate' => $existeDate,
+                'comptabiliteFirst' => $comptabiliteFirst
             ]);
 
             return new JsonResponse($data);

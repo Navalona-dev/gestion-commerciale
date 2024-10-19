@@ -305,7 +305,7 @@ class FactureRepository extends ServiceEntityRepository
         $tomorrow->modify('+1 day');
     
         $qb = $this->createQueryBuilder('f')
-            ->select('f.id, f.dateCreation, f.solde, f.isEcheance, f.echeanceNumero, f.numero, f.isDepot, f.depotNumero, f.date, a.nom as affaireNom, m.id AS methodePaiementId, m.espece, m.mVola, m.orangeMoney, m.airtelMoney')
+            ->select('f.id, f.dateCreation, f.date, f.solde, f.isEcheance, f.echeanceNumero, f.numero, f.isDepot, f.depotNumero, f.date, a.nom as affaireNom, m.id AS methodePaiementId, m.espece, m.mVola, m.orangeMoney, m.airtelMoney')
             ->leftJoin('f.affaire', 'a')
             ->leftJoin('f.methodePaiements', 'm') // Jointure avec les méthodes de paiement
             ->where('f.dateCreation >= :today')
@@ -321,5 +321,26 @@ class FactureRepository extends ServiceEntityRepository
     
         return $qb;
     }
+
+    public function selectFactureByDate($statut, $date)
+    {
+        $qb = $this->createQueryBuilder('f')
+            ->select('f.id, f.dateCreation, f.date, f.solde, f.isEcheance, f.echeanceNumero, f.numero, f.isDepot, f.depotNumero, a.nom as affaireNom, m.id AS methodePaiementId, m.espece, m.mVola, m.orangeMoney, m.airtelMoney')
+            ->leftJoin('f.affaire', 'a')
+            ->leftJoin('f.methodePaiements', 'm') 
+            ->where('f.date >= :startOfDay')
+            ->andWhere('f.date <= :endOfDay')
+            ->andWhere('f.application = :application_id')
+            ->andWhere('f.statut = :statut')
+            ->setParameter('startOfDay', $date->format('Y-m-d') . ' 00:00:00') 
+            ->setParameter('endOfDay', $date->format('Y-m-d') . ' 23:59:59')   
+            ->setParameter('application_id', $this->application->getId())
+            ->setParameter('statut', $statut)
+            ->getQuery()
+            ->getResult();
+
+        return $qb;
+    }
+
     
 }

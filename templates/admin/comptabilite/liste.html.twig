@@ -6,24 +6,11 @@
   td, tr {
     border-bottom: none !important;
   }
-
-  .compta-icon {
-    padding: 8px 12px;
-    border-radius: 100%;
-    background-color: #520a0a;
-    color: #fff;
-    margin-top: 5px;
-    margin-right: 5px;
-  }
-
-  .compta-icon:hover{
-    color: #fff;
-  }
  
 </style>
 
 <div class="pagetitle">
-    <h1>Liste de vente </h1>
+    <h1>Liste comptabilités </h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
@@ -34,58 +21,68 @@
 <section class="section">
     <div class="row">
       <div class="col-lg-12">
-        
+
         <div class="card">
-          <div class="d-flex justify-content-end">
-            <a href="#tab-comptabilite" onclick="return showTabComptabilite()" class="compta-icon"><i class="bi bi-currency-dollar"></i></a>
-          </div>
           <div class="card-body px-3 px-lg-5 pb-lg-5 pt-5">
-            <table class="table table-striped" id="liste-table-vente" style="width: 100%;">
+            <table class="table table-striped" id="table-comptabilite-liste" style="width: 100%;">
               <thead>
                 <tr class="text-nowrap">
-                    <th>Actions</th>
-                    <th>Designation</th>
-                    <th>Commandes</th>
                     <th>Date de création</th>
-                    <th>Espèce</th>
-                    <th>Mobile money</th>
-                    <th>Total</th>
+                    <th>Designation</th>
+                    <th>Date de comptabilité</th>
+                    <th>Montant</th>
+                    <th>Commandes(factures)</th>
+                    <th>Total commande</th>
+                    <th>Dépenses</th>
+                    <th>Total dépense</th>
+                    <th>Status</th>
                 </tr>
               </thead>
               <tbody>
-                {% for liste in listes %}
-                <tr class="text-nowrap">
-                    <td>
-                        <a href="#tab-benefice" onclick="return showTabBenefice({{liste.id}})" style="border-radius: 100%; padding: 5px 8px; color: #fff; background-color: #520a0a;"><i class="bi bi-currency-dollar"></i></a>
-                    </td>
-                    <td>{{liste.designation}}</td>
-                    <td>
-                        {% for facture in liste.factures %}
-                            {% if facture.isEcheance is not null and facture.isEcheance == true %}
-                                FAC/VSM/{{facture.numero}}-E{{facture.echeanceNumero}}-{{ facture.date|date('y')}}
-                            {% elseif facture.isDepot is not null and facture.isDepot == true %}
-                                FAC/VSM/{{facture.numero}}-D{{facture.depotNumero}}-{{ facture.date|date('y')}}
-                            {% else %}
-                                FAC/VSM/{{facture.numero}}-{{ facture.date|date('y')}}
-                            {% endif %} <br>
-                        {% endfor %}
-                    </td>
-                    <td> {{liste.dateCreation|date('d-m-Y')}} </td>
-                    <td> {{liste.espece|number_format(0,',',' ')}} Ar </td>
-                    <td> {{liste.mobileMoney|number_format(0,',',' ')}} Ar </td>
-                    <td> {{liste.total|number_format(0,',',' ')}} Ar </td>
-                </tr>
+                {% for comptabilite in comptabilites %}
+                    <tr class="text-nowrap">
+                        <td> {{comptabilite.dateCreation|date('d-m-Y')}} </td>
+                        <td> {{comptabilite.designation}} </td>
+                        <td> {{comptabilite.dateComptabilite|date('d-m-Y')}} </td>
+                        <td> {{comptabilite.reste|number_format(0,',',' ')}} Ar </td>
+                        <td>
+                            {% for facture in comptabilite.benefice.factures %}
+                                {% if facture.isEcheance is not null and facture.isEcheance == true %}
+                                    FAC/VSM/{{facture.numero}}-E{{facture.echeanceNumero}}-{{ facture.date|date('y')}}
+                                {% elseif facture.isDepot is not null and facture.isDepot == true %}
+                                    FAC/VSM/{{facture.numero}}-D{{facture.depotNumero}}-{{ facture.date|date('y')}}
+                                {% else %}
+                                    FAC/VSM/{{facture.numero}}-{{ facture.date|date('y')}}
+                                {% endif %} <br>
+                            {% endfor %}
+                        </td>
+                        <td> {{comptabilite.benefice.total|number_format(0,',',' ')}} Ar </td>
+                        <td>
+                            {% set totalDepense = 0 %}
+                            {% for depense in comptabilite.depenses %}
+                                {% set totalDepense = totalDepense + depense.total %}
+                                -{{depense.designation}} <br>
+                            {% endfor %}
+                        </td>
+                        <td> {{totalDepense|number_format(0,',',' ')}} Ar </td>
+                        <td>
+                            Entre {{comptabilite.fourchette.minVal|number_format(0,',',' ')}} Ar et {{comptabilite.fourchette.maxVal|number_format(0,',',' ')}} ({{comptabilite.fourchette.status}})
+                        </td>
+                    </tr>
                 {% else %}
-                <tr>
-                    <td colspan="7">Aucun enregistrement trouvé</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
+                    <tr>
+                        <td colspan="9">Aucun enregistrement trouvé</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                 {% endfor %}
+                
               </tbody>
             </table>
 
@@ -94,8 +91,8 @@
 
       </div>
     </div>
-    <div id="blocModalBenefice2Empty">
-    </div>
+    <div id="blocModalApplicationEmpty">
+            </div>
   </section>
 
   <script>
@@ -120,7 +117,7 @@
         $('#tab-permission').removeClass('active');
         $('#tab-privilege').removeClass('active');
         $('#tab-categorie-permission').removeClass('active');
-        $('#tab-application').removeClass('active');
+        $('#tab-application').remove('active');
         $('.tab-categorie').removeClass('active');
         $('#tab-produit-categorie').removeClass('active');
         $('.tab-produit-categorie').removeClass('active');
@@ -146,14 +143,12 @@
         $('#tab-stock').removeClass('active');
         $('#tab-depot').css('display', 'none');
         $('#tab-comptabilite').css('display', 'none');
-        $('#tab-vente').css('display', 'block');
+        $('#tab-vente').css('display', 'none');
         $('#tab-fourchette').css('display', 'none');
-        $('#tab-comptabilite-liste').removeClass('active');
+        $('#tab-comptabilite-liste').addClass('active');
 
 
 
     });
 
   </script>
-
- 

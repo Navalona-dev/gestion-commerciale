@@ -19,7 +19,11 @@
                 <span class="airtel-solde" data-airtel="{{methodePaiement.airtelMoney}}"></span>
                 
                 {{ form_start(form, {'attr': {'id': 'updateMethodePaiement', 'action': path('comptabilites_edit_methode_paiement', {'methode' : methodePaiement.id}) }}) }}
-                   
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Date </label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.dateMethodePaiement)}} </span>
+                        {{ form_widget(form.dateMethodePaiement) }}
+                    </div>
                     <div class="form-group mb-3">
                         <label for="" class="mb-2">Espèce </label>
                         <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.espece)}} </span>
@@ -208,6 +212,21 @@
 </script>
 
 <script>
+    $(document).ready(function() {
+        var dateFormat = 'dd/mm/yyyy';
+        var dateNow = new Date();
+        dateNow.setDate(dateNow.getDate() + 1)
+
+        $('#methode_paiement_dateMethodePaiement').datepicker({
+            format: dateFormat,
+            todayHighlight: true,
+            language: 'fr',
+            autoclose: true,
+
+        });
+
+    });
+
     $(document).ready(function() {
         $('.mvola, .airtel, .orange').hide();
         const mvolaSolde = parseFloat($('.mvola-solde').data('mvola'));

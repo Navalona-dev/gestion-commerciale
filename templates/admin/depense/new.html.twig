@@ -7,7 +7,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                
+                <span class="id-benefice-depense" data-benefice="{{beneficeId}}"></span>
                 {{ form_start(form, {'attr': {'id': 'newDepense', 'action': path('depenses_create') }}) }}
                    
                     <div class="form-group mb-3">
@@ -62,7 +62,8 @@ $(document).ready(function() {
 });
   
     $(document).ready(function () {
-    
+        var anchorName = document.location.hash.substring(1);
+        const idBenefice = $('.id-benefice-depense').data('benefice');
        $('#newDepense').on('submit', function (e) {
             e.preventDefault();
             let form = $(this);
@@ -88,7 +89,12 @@ $(document).ready(function() {
                         };
                         toastr.success('Avec succèss', 'Enregistrement effectuée');
 
-                        showTabComptabilite();
+                        if(anchorName == "tab-benefice") {
+                            showTabBenefice(idBenefice);
+                        } else if(anchorName == "tab-comptabilite") {
+                            showTabComptabilite();
+                        }
+
 
                     }, 800);
                     if (nextLink.length > 0) {

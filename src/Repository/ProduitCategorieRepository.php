@@ -55,7 +55,7 @@ class ProduitCategorieRepository extends ServiceEntityRepository
         $sql = "SELECT p.id, p.nom, p.stockRestant, p.reference, p.isChangePrix, p.prixAchat, p.prixHt, p.tva, p.prixTTC, p.qtt, p.stockMin, p.prixVenteGros, p.prixVenteDetail, p.uniteVenteGros, p.uniteVenteDetail, p.application_id, p.presentationGros, p.presentationDetail, p.volumeGros, p.volumeDetail, p.qttReserver, p.qttReserverGros, p.qttReserverDetail, c.nom AS categorie 
         FROM `ProduitCategorie` p 
         LEFT JOIN `Categorie` c ON p.categorie_id = c.id 
-        WHERE p.application_id = ".$this->application->getId()."
+        WHERE p.application_id = ".$this->application->getId()." AND p.stockRestant >= 1
         ";
         // AND p.stockRestant >= 1
         if (count($affairesProduct)> 0) {

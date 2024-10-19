@@ -1,0 +1,80 @@
+
+<div class="modal fade" id="modalUpdateFourchette" tabindex="-1" aria-labelledby="modalNewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content p-4">
+            <div class="modal-header modal-header-center">
+                <h5 class="modal-title fw-bold" id="modalNewLabel">Nouveau fourchette de vente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ form_start(form, {'attr': {'id': 'updateFourchette', 'action': path('fourchettes_edit', {'id' : fourchette.id}) }}) }}
+                   
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Prix minimal <sup class="text-danger">*</sup> </label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.minVal)}} </span>
+                        {{ form_widget(form.minVal) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Prix maximal <sup class="text-danger">*</sup> </label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.maxVal)}} </span>
+                        {{ form_widget(form.maxVal) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="" class="mb-2">Status <sup class="text-danger">*</sup> </label>
+                        <span class="text-danger" style="font-size: 12px;"> {{form_errors(form.status)}} </span>
+                        {{ form_widget(form.status) }}
+                    </div>
+                   
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm px-5 mt-3" style="width: 100%;">Modifier fourchette</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="{{ asset('assets/js/script_utile.js')}}"></script>
+<script>
+
+    $(document).ready(function () {
+       $('#updateFourchette').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
+            
+            // Create an FormData object
+            let formData = new FormData(form[0]);
+            formData.append('isNew', false);
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#modalUpdateFourchette').modal('hide');
+                    var nextLink = $('#sidebar').find('li#benefice').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succèss', 'Enregistrement effectuée');
+                            window.location.hash = "tab-fourchette";
+                            showTabFourchette();
+
+                    }, 800);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la mise à jour de fourchette.');
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

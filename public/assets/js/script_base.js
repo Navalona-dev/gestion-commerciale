@@ -152,8 +152,239 @@ $(document).ready(function() {
         showTabVente();
     }
 
+    if(anchorName === "tab-fourchette") {
+        showTabFourchette();
+    }
+    
+    if(anchorName == "tab-comptabilite-liste") {
+        showTabComptabiliteList();
+    }
+
 
 });
+
+function showTabComptabiliteList() {
+    showSpinner();
+    
+    $.ajax({
+             type: 'post',
+             url: '/admin/comptabilite/liste',
+             //data: {},
+             success: function (response) {
+                 $("#tab-comptabilite-liste").empty();
+                 $("#tab-comptabilite-liste").append(response.html);
+                 $('.sidebar-nav a[href="#tab-comptabilite-liste"]').tab('show');
+                 $("#tab-comptabilite-liste").addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-comptabilite-liste"]').removeClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+                $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
+
+                 $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#table-comptabilite-liste')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#table-comptabilite-liste').DataTable().clear().destroy();
+                    }
+                    $('#table-comptabilite-liste').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+                 hideSpinner();
+             }
+
+         });
+ }
+
+function newFourchette() {
+    var anchorName = document.location.hash.substring(1);
+
+    $.ajax({
+        url: '/admin/fourchette/new',
+        type: 'POST',
+        //data: {isNew: isNew},
+        success: function (response) {
+            $("#blocModalNewFourchetteEmpty").empty();
+            $("#blocModalNewFourchetteEmpty").append(response.html);
+            $('#modalNewFourchette').modal('show');
+            if (anchorName) {
+                window.location.hash = anchorName;
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Gérer l'erreur (par exemple, afficher un message d'erreur)
+            alert('Erreur lors de l\'ajout de la catégorie.');
+        }
+    });
+}
+
+function newDepense() {
+    var anchorName = document.location.hash.substring(1);
+          $.ajax({
+              url: '/admin/depense/new',
+              type: 'POST',
+              //data: {isNew: isNew},
+              success: function (response) {
+                  $("#blocModalDepenseEmpty").empty();
+                  $("#blocModalDepenseEmpty").append(response.html);
+                  $('#modalNewDepense').modal('show');
+                  if (anchorName) {
+                      window.location.hash = anchorName;
+                  }
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                  // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                  alert('Erreur lors l\'ajout de depense.');
+              }
+          });
+  }
+
+  function updateDepense(id = null) {
+    var anchorName = document.location.hash.substring(1);
+          $.ajax({
+              url: '/admin/depense/edit/'+id,
+              type: 'POST',
+              //data: {isNew: isNew},
+              success: function (response) {
+                  $("#blocModalDepenseEmpty").empty();
+                  $("#blocModalDepenseEmpty").append(response.html);
+                  $('#modalUpdateDepense').modal('show');
+                  if (anchorName) {
+                      window.location.hash = anchorName;
+                  }
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                  // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                  alert('Erreur lors de mise à jour de depense.');
+              }
+          });
+  }
+  
+
+  function deleteDepense(id = null) {
+      var anchorName = document.location.hash.substring(1);
+
+      if (confirm('Voulez vous vraiment supprimer ce depense?')) {
+          $.ajax({
+              url: '/admin/depense/delete/'+id,
+              type: 'POST',
+              //data: {depense: id},
+              success: function (response) {
+                  var nextLink = $('#sidebar').find('li#depense').find('a');
+                  setTimeout(function () {
+                      toastr.options = {
+                          closeButton: true,
+                          progressBar: true,
+                          showMethod: 'slideDown',
+                          timeOut: 1000
+                      };
+                      toastr.success('Avec succèss', 'Suppression effectuée');
+
+                      if (anchorName) {
+                          window.location.hash = anchorName;
+                      }
+                      showTabComptabilite();
+
+                  }, 800);
+                  
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                  // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                  alert('Erreur lors de la suppression de depense.');
+              }
+          });
+      }
+  }
+
+
+
+function showTabFourchette() {
+    showSpinner();
+
+    $.ajax({
+             type: 'post',
+             url: '/admin/fourchette/',
+             //data: {},
+             success: function (response) {
+                 $("#tab-fourchette").empty();
+                 $("#tab-fourchette").append(response.html);
+                 $('.sidebar-nav a[href="#tab-fourchette"]').tab('show');
+                 $("#tab-fourchette").addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-fourchette"]').removeClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');     
+                 $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+                $('.sidebar-nav #historique a').addClass('collapsed');
+
+                 $(".loadBody").css('display', 'none');
+
+                  // Réinitialiser le DataTable avec un léger retard
+                setTimeout(function() {
+                    if ($.fn.dataTable.isDataTable('#liste-table-fourchette')) {
+                        // Si déjà initialisé, détruire puis réinitialiser pour éviter les réinitialisations multiples
+                        $('#liste-table-fourchette').DataTable().clear().destroy();
+                    }
+                    $('#liste-table-fourchette').DataTable({
+                        responsive: true,
+                        language: {
+                          url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json',
+                      },
+                        border: false,
+                        scrollX: '100%',
+                        pageLength: 10,
+                        scrollCollapse: false,
+                      });
+                    hideSpinner();
+                }, 2000);
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+                 hideSpinner();
+             }
+
+         });
+ }
 
 function showTabVente() {
     showSpinner();
@@ -219,7 +450,7 @@ function showTabBenefice(id = null) {
     showSpinner();
     $.ajax({
             type: 'get',
-            url: '/admin/benefice/'+id,
+            url: '/admin/benefice/detail/'+id,
             //data: {id: id},
             success: function (response) {
                 $("#tab-benefice").empty();

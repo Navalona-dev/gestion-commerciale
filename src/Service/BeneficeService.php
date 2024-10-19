@@ -56,7 +56,7 @@ class BeneficeService
         $this->entityManager->flush();
     }
 
-    public function add($benefice = null, $folder = null, $request = null,$espece = null, $total = null, $mobileMoney = null, $facturesToday = null)
+    public function add($benefice = null, $folder = null, $request = null,$espece = null, $total = null, $mobileMoney = null, $factures = null)
     {   
         $user = $this->security->getUser();
 
@@ -67,8 +67,8 @@ class BeneficeService
         $benefice->setTotal($total);
         $benefice->setApplication($this->application);
 
-        foreach($facturesToday as $factureToday) {
-            $facture = $this->factureRepo->findOneBy(['id' => $factureToday['id']]);
+        foreach($factures as $facture) {
+            $facture = $this->factureRepo->findOneBy(['id' => $facture['id']]);
             $facture->setBenefice($benefice);
             $facture->setIsBenefice(true);
             $benefice->addFacture($facture);
@@ -101,7 +101,7 @@ class BeneficeService
         $factureBenefice->setType("Facture");
 
         //$depenses = $affaire->getProducts();
-        $filename = 'Benefice' . '-' . $factureBenefice->getNumero() . ".pdf";
+        $filename = 'Encaissement' . '-' . $factureBenefice->getNumero() . ".pdf";
        
         $factureBenefice->setFile($filename);
         $factureBenefice->setSolde($total);
@@ -126,7 +126,7 @@ class BeneficeService
         $data['factureBenefice'] = $factureBenefice;
         $data['application'] = $this->application;
         $data['user'] = $user;
-        $data['facturesToday'] = $facturesToday;
+        $data['factures'] = $factures;
         $data['benefice'] = $benefice;
         
         $html = $this->twig->render('admin/benefice/facturePdf.html.twig', $data);

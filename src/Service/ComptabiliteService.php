@@ -1,10 +1,15 @@
 <?php
 namespace App\Service;
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Twig\Environment;
 use App\Entity\FactureComptabilite;
 use App\Service\ApplicationManager;
+use App\Repository\DepenseRepository;
 use App\Service\AuthorizationManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ComptabiliteService
@@ -13,19 +18,28 @@ class ComptabiliteService
     private $authorization;
     private $entityManager;
     private $application;
-
+    private $depenseRepo;
+    private $security;
+    private $twig;
 
     public function __construct(
         AuthorizationManager $authorization, 
         TokenStorageInterface  $TokenStorageInterface, 
         EntityManagerInterface $entityManager,
-        ApplicationManager  $applicationManager
+        ApplicationManager  $applicationManager,
+        DepenseRepository $depenseRepo,
+        Security $security,
+        Environment $twig
+
     )
     {
         $this->tokenStorage = $TokenStorageInterface;
         $this->authorization = $authorization;
         $this->entityManager = $entityManager;
         $this->application = $applicationManager->getApplicationActive();
+        $this->depenseRepo = $depenseRepo;
+        $this->security = $security;
+        $this->twig = $twig;
 
     }
 
@@ -33,6 +47,7 @@ class ComptabiliteService
     {
         $methodePaiement->setDateCreation(new \DateTime);
         $methodePaiement->setFacture($facture);
+        $methodePaiement->setApplication($this->application);
         $this->entityManager->persist($methodePaiement);
         $this->entityManager->flush();
 
@@ -63,21 +78,21 @@ class ComptabiliteService
         $totalBenefice = $benefice->getTotal();
 
         foreach($depenses as $depense) {
-            $depense->setComptabilite($comptabilite);
-            $comptabilite->addDepense($depense);
-            $this->entityManager->persist($depense);
+            $updateDepense = $this->depenseRepo->findOneBy(['id' => $depense['id']]);
+            $updateDepense->addComptabilite($comptabilite);
+            $comptabilite->addDepense($updateDepense);
+            $this->entityManager->persist($updateDepense);
 
-            $totalDepense += $depense->getTotal(); 
+            $totalDepense += $depense['total']; 
         }
 
         $resultat = $totalBenefice - $totalDepense;
         $comptabilite->setReste($resultat);
-        $comptabilite->setStatus();
 
         $this->entityManager->persist($comptabilite);
 
         //créer la facture benefice
-        $factureBenefice = new FactureBenefice();
+        $factureComptabilite = new FactureComptabilite();
         $date = new \DateTime();
 
         $numeroFacture = 1;
@@ -89,27 +104,28 @@ class ComptabiliteService
             $numeroFacture = $tabNumeroFacture[0] + 1;
         }
 
-        $factureBenefice->setNumero($numeroFacture);
-        $factureBenefice->setApplication($this->application);
+        $factureComptabilite->setNumero($numeroFacture);
+        $factureComptabilite->setApplication($this->application);
 
-        $factureBenefice->setEtat('regle');
-        $factureBenefice->setValid(true);
-        $factureBenefice->setStatut('regle');
-        $factureBenefice->setDateCreation($date);
-        $factureBenefice->setDate($date);
-        $factureBenefice->setType("Facture");
+        $factureComptabilite->setEtat('regle');
+        $factureComptabilite->setValid(true);
+        $factureComptabilite->setStatut('regle');
+        $factureComptabilite->setDateCreation($date);
+        $factureComptabilite->setDate($date);
+        $factureComptabilite->setType("Facture");
 
         //$depenses = $affaire->getProducts();
-        $filename = 'Benefice' . '-' . $factureBenefice->getNumero() . ".pdf";
+        $filename = 'Comptabilite' . '-' . $factureComptabilite->getNumero() . ".pdf";
        
-        $factureBenefice->setFile($filename);
-        $factureBenefice->setSolde($total);
-        $factureBenefice->setPrixHt($total);    
-        $factureBenefice->setReglement($total);    
+        $factureComptabilite->setFile($filename);
+        $factureComptabilite->setSolde($resultat);
+        $factureComptabilite->setPrixHt($resultat);    
+        $factureComptabilite->setReglement($resultat);    
+        $factureComptabilite->setComptabilite($comptabilite);    
         
-        $this->entityManager->persist($factureBenefice);
+        $this->entityManager->persist($factureComptabilite);
 
-        //dd($factureBenefice->getSolde());
+        //dd($factureComptabilite->getSolde());
 
         $this->update();
         
@@ -122,13 +138,14 @@ class ComptabiliteService
 
         // Load HTML content
         $data = [];
-        $data['factureBenefice'] = $factureBenefice;
+        $data['factureComptabilite'] = $factureComptabilite;
         $data['application'] = $this->application;
         $data['user'] = $user;
-        $data['facturesToday'] = $facturesToday;
-        $data['benefice'] = $comptabilite;
+        $data['comptabilite'] = $comptabilite;
+        $data['benefice'] = $benefice;
+        $data['totalDepense'] = $totalDepense;
         
-        $html = $this->twig->render('admin/benefice/facturePdf.html.twig', $data);
+        $html = $this->twig->render('admin/comptabilite/facturePdf.html.twig', $data);
 
         // Load HTML to Dompdf
         $pdf->loadHtml($html);
@@ -146,7 +163,7 @@ class ComptabiliteService
         $fileName = $folder . $filename;
         file_put_contents($fileName, $pdfContent);
 
-        return [$pdfContent, $factureBenefice, $comptabilite]; 
+        return [$pdfContent, $factureComptabilite, $comptabilite]; 
     }
 
     public function getLastValideFacture()

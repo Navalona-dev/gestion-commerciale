@@ -64,6 +64,7 @@ class AffaireController extends AbstractController
     private $applicationRepo;
     private $affaireRepo;
     private $em;
+    private $productRepo;
 
 
     public function __construct(
@@ -77,7 +78,8 @@ class AffaireController extends AbstractController
         FactureEcheanceRepository $factureEcheanceRepo,
         ApplicationRepository $applicationRepo,
         AffaireRepository $affaireRepo,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        ProductRepository $productRepo
         
         )
     {
@@ -92,6 +94,7 @@ class AffaireController extends AbstractController
         $this->applicationRepo = $applicationRepo;
         $this->affaireRepo = $affaireRepo;
         $this->em = $em;
+        $this->productRepo = $productRepo;
 
     }
 
@@ -199,7 +202,7 @@ class AffaireController extends AbstractController
     {
         $idAffaire = $request->getSession()->get('idAffaire');
         $affaire = $this->affaireRepo->findOneBy(['id' => $idAffaire]);
-        $products = $affaire->getProducts();
+        $products = $this->productRepo->getAllProducts($affaire->getId());
 
         $data = [];
         try {
@@ -855,10 +858,7 @@ class AffaireController extends AbstractController
         Affaire $affaire,
         CategorieService $categorieService)
     {
-        /*if (!$this->accesService->insufficientPrivilege('oatf')) {
-            return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
-        }*/
-        
+      
         $data = [];
         try {
 

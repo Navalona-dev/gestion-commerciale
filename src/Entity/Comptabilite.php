@@ -40,14 +40,14 @@ class Comptabilite
     #[ORM\OneToMany(targetEntity: FactureComptabilite::class, mappedBy: 'comptabilite')]
     private Collection $factureComptabilites;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $status = null;
-
     #[ORM\ManyToOne(inversedBy: 'comptabilites')]
     private ?Fourchette $fourchette = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateComptabilite = null;
+
+    #[ORM\ManyToOne(inversedBy: 'comptabilites')]
+    private ?Application $application = null;
 
     public function __construct()
     {
@@ -162,18 +162,6 @@ class Comptabilite
         return $this;
     }
 
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(?string $status): static
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
     public function getFourchette(): ?Fourchette
     {
         return $this->fourchette;
@@ -194,6 +182,18 @@ class Comptabilite
     public function setDateComptabilite(?\DateTimeInterface $dateComptabilite): static
     {
         $this->dateComptabilite = $dateComptabilite;
+
+        return $this;
+    }
+
+    public function getApplication(): ?Application
+    {
+        return $this->application;
+    }
+
+    public function setApplication(?Application $application): static
+    {
+        $this->application = $application;
 
         return $this;
     }

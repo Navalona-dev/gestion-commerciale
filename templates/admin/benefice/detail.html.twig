@@ -18,7 +18,7 @@
                 <div class="col-md-6 col-12" style="border-right: solid 2px #5e1212;">
                     <div class="affaire">
                         <span class="id-benefice" data-benefice="{{benefice.id}}"></span>
-                        <h4 class="fw-bold mb-3">Encaissement</h4>
+                        <h4 class="fw-bold mb-3">Encaissement du : {{benefice.dateBenefice|date('d-m-Y')}} </h4>
                         <hr>
                         <div class="content">
                           <div class="alert alert-warning">
@@ -34,13 +34,41 @@
                             <p>
                                 <strong>Total à gagné : </strong> {{benefice.total|number_format(0,',',' ')}} Ariary
                             </p>
+                            {% if application.fourchettes|length < 4 %}
+                              <div class="alert alert-danger">
+                                <p>Vous n'avez que {{application.fourchettes|length}} fourchette, vous devez ajouter d'autre fourchette avant de créer la comptabilité</p>
+                                <a href="#" onclick="return newFourchette()" class="text-decoration-underline">Créer une autre fourchette</a> <br><br>
+                                <a href="#tab-fourchette" onclick="return showTabFourchette()" class="text-decoration-underline">Liste fourchette</a>
+
+                              </div>
+                            {% endif %}
+                            {% set isFactureDepense = false %}
+                            {% for depense in depenses  %}
+                              {% if depense.factureDepenses|length > 0 %}
+                                {% set isFactureDepense = true %}
+                              {% endif %}
+                            {% endfor %}
                             {% if application.fourchettes|length > 0 %}
-                            <p class="d-flex justify-content-center">
-                                <a href="#" class="btn btn-info btn-sm px-3">Créer comptabilité</a>
-                            </p>
+                              {% if isFactureDepense or depenses|length < 1 %}
+                                {% if not existeDate %}
+                                  <p class="d-flex justify-content-center">
+                                      <a href="#" onclick="return newComptabilite()" class="btn btn-info btn-sm px-3">Créer comptabilité</a>
+                                  </p>
+                                {% else %}
+                                  <div class="alert alert-info">
+                                    Vous avez déjà créer une comptabilité pour cette encaissement et ce depense le {{comptabiliteFirst.dateCreation|date('d-m-Y')}} <br>
+                                    Comptabilité du {{comptabiliteFirst.dateComptabilite|date('d-m-Y')}} <br>
+                                    {{comptabiliteFirst.designation}} : {{comptabiliteFirst.reste|number_format(0,',',' ')}} Ariary
+                                  </div>
+                                {% endif %}
+                              {% else %}
+                                  <div class="alert alert-danger">
+                                    Vous devez d'abord créer une facture pour le depense avant de créer la comptabilité
+                                  </div>
+                              {% endif %}
                             {% else %}
                                 <p class="d-flex justify-content-center">
-                                    <a href="#" class="btn btn-info btn-sm px-3">Créer fourchette</a>
+                                    <a href="#" onclick="return newFourchette()" class="btn btn-info btn-sm px-3">Créer fourchette</a>
                                 </p>
                             {% endif %}
                           </div>
@@ -51,14 +79,16 @@
                 <div class="col-md-6 col-12">
                   <div class="depense">
                     <div class="d-flex justify-content-between align-items-center">
-                      <h4 class="fw-bold mb-0">Dépenses</h4>
-                      <a href="#" onclick="return newDepense()" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle-fill"></i></a>
+                      <h4 class="fw-bold mb-0">Dépenses du : {{benefice.dateBenefice|date('d-m-Y')}} </h4>
+                      {% if not existeDate %}
+                        <a href="#" onclick="return newDepense()" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle-fill"></i></a>
+                      {% endif %}
                     </div>
                     <hr>
                     <div class="content">
-                      {% if depensesToday|length > 0 %}
+                      {% if depenses|length > 0 %}
                       {% set grandTotal = 0 %}
-                        {% for depense in depensesToday %}
+                        {% for depense in depenses %}
                           {% set grandTotal = grandTotal + depense.total %}
                           <div class="row alert alert-info" style="margin-left: 1px;">
                               <div class="col-md-4 col-12">
@@ -74,17 +104,21 @@
                                 <p> {{depense.total|number_format(0,',',' ')}} Ar </p>
                               </div>
                               <div class="col-md-2 col-12">
-                                <a href="#" onclick="return updateDepense({{depense.id}})" class="text-primary"><i class="bi bi-pencil-square"></i></a>
-                                <a href="#" onclick=" return deleteDepense({{depense.id}})" class="text-danger"><i class="bi bi-trash-fill"></i></a>
+                                {% if not existeDate %}
+                                  <a href="#" onclick="return updateDepense({{depense.id}})" class="text-primary"><i class="bi bi-pencil-square"></i></a>
+                                  <a href="#" onclick=" return deleteDepense({{depense.id}})" class="text-danger"><i class="bi bi-trash-fill"></i></a>
+                                {% endif %}
                               </div>
                           </div>
                         {% endfor %}
                         <div class="alert alert-warning">
                           Grand total : {{grandTotal|number_format(0,',',' ')}} Ariary
                         </div>
-                        <div class="pdf">
-                          <a href="#" onclick="return createFactureDepense()" class="btn btn-primary btn-sm px-3">Créer une facture</a>
-                        </div>
+                        {% if not isFactureDepense %}
+                          <div class="pdf">
+                            <a href="#" onclick="return createFactureDepense()" class="btn btn-primary btn-sm px-3">Créer une facture</a>
+                          </div>
+                        {% endif %}
                       {% else %}
                         <div class="alert alert-warning">
                           Aucun depense pour aujourd'hui
@@ -100,7 +134,7 @@
 
       </div>
     </div>
-    <div id="blocModalComptabiliteEmpty"></div>
+    <div id="blocModalDetailEmpty"></div>
 </section>
 
 <script>
@@ -149,7 +183,11 @@
         $('#tab-stock').removeClass('active');
         $('#tab-depot').css('display', 'none');
         $('#tab-comptabilite').css('display', 'none');
+        $('#tab-vente').css('display', 'none');
         $('#tab-benefice').css('display', 'block');
+        $('#tab-fourchette').css('display', 'none');
+        $('#tab-comptabilite-liste').removeClass('active');
+
 
     });
 </script>
@@ -172,7 +210,7 @@
                             timeOut: 1000
                         };
                         toastr.success('Avec succèss', 'Création facture fait');
-                        
+                        window.location.hash = "tab-benefice";
                         showTabBenefice(idBenefice);
 
                         if (response.pdfUrl) {
@@ -193,4 +231,21 @@
         }
     }
   
+    function newComptabilite() {
+            $.ajax({
+                url: '/admin/comptabilite/new',
+                type: 'POST',
+                //data: {isNew: isNew},
+                success: function (response) {
+                    $("#blocModalDetailEmpty").empty();
+                    $("#blocModalDetailEmpty").append(response.html);
+                    $('#modalNewComptabilite').modal('show');
+                    window.location.hash = "tab-benefice";
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de l\'ajout de la catégorie.');
+                }
+            });
+    }
 </script>

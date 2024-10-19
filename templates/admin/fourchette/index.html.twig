@@ -1,20 +1,199 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Hello FourchetteController!{% endblock %}
-
-{% block body %}
 <style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+  .dataTables_scroll {
+    margin-top: 50px !important;
+    margin-bottom: 30px !important;
+  }
+  td, tr {
+    border-bottom: none !important;
+  }
+
+ 
 </style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+<div class="pagetitle">
+    <h1>Liste de fourchette de vente </h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{path('app_admin')}}">Tableau de board</a></li>
+        <li class="breadcrumb-item active">Liste</li>
+      </ol>
+    </nav>
+  </div>
+<section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        
+        <div class="card">
+          <div class="d-flex justify-content-end">
+            <a href="#" onclick="return newFourchette()" class="btn btn-primary btn-md mx-1 my-1"><i class="bi bi-plus-circle-fill"></i></a>
+            <a href="#tab-benefice" onclick="return showTabBenefice({{beneficeId}})" class="btn btn-danger btn-md mx-1 my-1"><i class="bi bi-currency-dollar"></i></a>
+          </div>
+          <div class="card-body px-3 px-lg-5 pb-lg-5 pt-5">
+            <table class="table table-striped" id="liste-table-fourchette" style="width: 100%;">
+              <thead>
+                <tr class="text-nowrap">
+                    <th>Actions</th>
+                    <th>Prix max</th>
+                    <th>Prix min</th>
+                    <th>Date de création</th>
+                    <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for liste in listes %}
+                <tr class="text-no-wrap">
+                    <td>
+                        <a href="#" onclick="return openModalUpdateFourchette({{liste.id}})" class="text-primary"><i class="bi bi-pencil-square"></i></a>
+                        <a href="#" onclick="return deleteFourchette({{liste.id}})" class="text-danger"><i class="bi bi-trash-fill"></i></a>
+                    </td>
+                    <td> {{liste.maxVal|number_format(0,',',' ')}} Ar </td>
+                    <td>{{liste.minVal|number_format(0,',',' ')}} Ar</td>
+                    <td> {{liste.dateCreation|date('d-m-Y')}} </td>
+                    <td> {{liste.status}} </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">Aucun enregistrement trouvé</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/anjara/SYMFONY/gestion-commerciale/src/Controller/Admin/FourchetteController.php</code></li>
-        <li>Your template at <code>/home/anjara/SYMFONY/gestion-commerciale/templates/admin/fourchette/index.html.twig</code></li>
-    </ul>
-</div>
-{% endblock %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div id="blocModalFourchetteEmpty">
+    </div>
+  </section>
+
+  <script>
+    //datatable
+    
+    $(document).ready(function() {
+        $('#tab-historique-produit').removeClass('active').empty();
+        $('#tab-historique-affaire').removeClass('active').empty();
+        $('#tab-produit-date-peremption').removeClass('active').empty();
+        $('#tab-inventaire-produit').css('display','none');
+
+        $('#tab-fiche-fournisseur').removeClass('active').empty();
+        $('#tab-quantite-vendu').removeClass('active').empty();
+        $('#tab-notification').removeClass('active').empty();
+        $('.tab-user').removeClass('active');
+        $('.tab-permission').removeClass('active');
+        $('.tab-privilege').removeClass('active');
+        $('.tab-cat-permission').removeClass('active');
+        $('#tab-dashboard').removeClass('active');
+        $('#tab-profile').removeClass('active');
+        $('#tab-utilisateur').removeClass('active');
+        $('#tab-permission').removeClass('active');
+        $('#tab-privilege').removeClass('active');
+        $('#tab-categorie-permission').removeClass('active');
+        $('#tab-application').removeClass('active');
+        $('.tab-categorie').removeClass('active');
+        $('#tab-produit-categorie').removeClass('active');
+        $('.tab-produit-categorie').removeClass('active');
+        $('#tab-categorie').removeClass('active');  
+         $('#tab-compte_1').removeClass('active');
+        $('#tab-compte_2').removeClass('active');
+        $('#tab-produit-type').removeClass('active');
+        $('.tab-import-produit').css('display', 'none');
+        $('#tab-import-produit').css('display', 'none');
+        $('#tab-transfert-produit').css('display', 'none');
+        $('#affaires_client').removeClass('active').empty();
+        $('#affaires_fournisseur').removeClass('active').empty();
+        $('#tab-info-affaire').removeClass('active').empty();
+        $('#tab-financier-affaire').removeClass('active').empty();
+        $('#tab-fiche-client').removeClass('active').empty();
+        $('#tab-facture').css('display', 'none');
+        $('#tab-facture-affaire').css('display', 'none');     
+        $('#tab-nouveau-facture').css('display','none');
+        $('#tab-devis').css('display','none');
+        $('#tab-commande').css('display','none');
+        $('#tab-echeance').css('display','none');
+        $('#tab-produit-image').removeClass('active');
+        $('#tab-stock').removeClass('active');
+        $('#tab-depot').css('display', 'none');
+        $('#tab-comptabilite').css('display', 'none');
+        $('#tab-vente').css('display', 'none');
+        $('#tab-fourchette').css('display', 'block');
+                $('#tab-comptabilite-liste').removeClass('active');
+
+    });
+
+    function openModalUpdateFourchette(id = null) {
+            var anchorName = document.location.hash.substring(1);
+
+            $.ajax({
+                    url: '/admin/fourchette/edit/'+id,
+                    type: 'POST',
+                    data: {id: id},
+                    success: function (response) {
+                        if (response.html != "") {
+                            $("#blocModalFourchetteEmpty").empty();
+                            $("#blocModalFourchetteEmpty").append(response.html);
+
+                            $('#modalUpdateFourchette').modal('show');
+
+                            if (anchorName) {
+                                window.location.hash = anchorName;
+                            }
+
+                        }
+                        
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                        alert('Erreur lors de la mise à jour de fourchette.');
+                    }
+                });
+        }
+     
+        function deleteFourchette(id = null) {
+        var anchorName = document.location.hash.substring(1);
+
+        if (confirm('Voulez vous vraiment supprimer cette fourchette?')) {
+            $.ajax({
+                url: '/admin/fourchette/delete/'+id,
+                type: 'POST',
+                data: {category: id},
+                success: function (response) {
+                  
+                    var nextLink = $('#sidebar').find('li#fourchette').find('a');
+                    setTimeout(function () {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 3000
+                        };
+                        if(response.status == "error") {
+                          toastr.error('Cette fourchette est déjà rélié avec une comptabilité, vous ne pouvez plus la supprimer');
+                        } else {
+                          toastr.success('Avec succèss', 'Suppression effectuée');
+                        }
+
+                        if (anchorName) {
+                            window.location.hash = anchorName;
+                        }
+
+                        showTabFourchette();
+
+                    }, 800);
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la suppression de fourchette.');
+                }
+            });
+        }
+    }
+  </script>
+
+ 

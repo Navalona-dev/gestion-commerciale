@@ -31,9 +31,10 @@ class DepenseRepository extends ServiceEntityRepository
         $tomorrow->modify('+1 day');
 
         $qb = $this->createQueryBuilder('d')
-                    ->select('d.id, d.dateCreation, d.total, d.prix, d.designation, d.nombre')
-                    ->where('d.dateCreation >= :today')
-                    ->andWhere('d.dateCreation < :tomorrow')
+                    ->select('d.id, d.dateCreation, d.dateDepense, d.total, d.prix, d.designation, d.nombre, f.id as factureDepenses')
+                    ->leftJoin('d.factureDepenses', 'f')
+                    ->where('d.dateDepense >= :today')
+                    ->andWhere('d.dateDepense < :tomorrow')
                     ->andWhere('d.application = :application_id')
                     ->setParameter('today', $today)
                     ->setParameter('tomorrow', $tomorrow)
@@ -44,5 +45,21 @@ class DepenseRepository extends ServiceEntityRepository
                return $qb;
     }
 
-    
+    public function selectDepenseByDate($date)
+    {
+        $qb = $this->createQueryBuilder('d')
+                    ->select('d.id, d.dateCreation, d.dateDepense, d.total, d.prix, d.designation, d.nombre, f.id as factureDepenses')
+                    ->leftJoin('d.factureDepenses', 'f')
+                    ->where('d.dateDepense >= :startOfDay')
+                    ->andWhere('d.dateDepense <= :endOfDay')
+                    ->andWhere('d.application = :application_id')
+                    ->setParameter('startOfDay', $date->format('Y-m-d') . ' 00:00:00') 
+                    ->setParameter('endOfDay', $date->format('Y-m-d') . ' 23:59:59')   
+                    ->setParameter('application_id', $this->application->getId())
+                    ->getQuery()
+                    ->getResult();
+
+               return $qb;
+    }
+
 }
