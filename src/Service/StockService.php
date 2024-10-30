@@ -236,7 +236,7 @@ class StockService
                 }
 
                 // Calculez le nouveau stock restant après soustraction de l'ancienne quantité
-                if ($oldQtt <= $oldStockRestant) {
+                /*if ($oldQtt <= $oldStockRestant) {
                     $stockRestant = $oldStockRestant - $oldQtt;
                     $newQtt = $stock->getQtt();
                     $stockRestant = $stockRestant + $newQtt;
@@ -245,7 +245,22 @@ class StockService
                     $stocktoAdd = $oldQtt - $oldStockRestant;
                     $stockRestant = $oldStockRestant + $stocktoAdd;
 
+                }*/
+                if ($oldQtt <= $oldStockRestant) {
+                    $stockRestant = $oldStockRestant - $oldQtt;
+                    $newQtt = $stock->getQtt();
+                    $stockRestant = $stockRestant + $newQtt;
+    
+                } else {
+                    $newQtt = $stock->getQtt(); 
+                    if($newQtt > $oldQtt) {
+                        $newStockRestant = $oldStockRestant + ($newQtt - $oldQtt);
+                    } else {
+                        $newStockRestant = $oldStockRestant - ($oldQtt - $newQtt);
+                    }
+                    $stockRestant = $newStockRestant;
                 }
+                
                 $produitCategorie->setStockRestant($stockRestant);
                 $this->entityManager->persist($produitCategorie);
 
