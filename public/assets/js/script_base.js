@@ -2829,3 +2829,177 @@ function showTabNotification() {
     document.getElementById('overlay').style.display = 'none';
   }
 
+
+
+// Tableau pour stocker les IDs des affaires pour lesquelles une notification a déjà été affichée
+const displayedAffaireIds = new Set();
+const notifiedAffaireIds = new Set();
+
+let newAffaires = $('#newAffaire').data('affaire');
+let countAffaires = $('#countAffaire').data('affaire');
+
+function validerCommande(id = null) {
+    if (confirm('Voulez-vous vraiment valider cette commande ?')) {
+        $.ajax({
+            url: '/admin/affaires/valider/' + id,
+            method: 'POST',
+            data: { affaireId: id },
+            success: function(response) {
+                if (response.status === 'success') {
+                    // Notifiez le caissier directement ici si besoin
+                    notifyCashier(response.affaireId, countAffaires, newAffaires);
+                    financier(id);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error validating order:", error);
+            }
+        });
+    }
+}
+
+function notifyCashier(affaireId, countAffaires, newAffaires) {
+    if (displayedAffaireIds.has(affaireId) || notifiedAffaireIds.has(affaireId)) {
+        return; // Si une notification pour cette affaire a déjà été affichée, arrêtez ici
+    }
+
+    notifiedAffaireIds.add(affaireId); // Marque l'affaire comme notifiée
+    displayedAffaireIds.add(affaireId); // Marque l'affaire comme affichée
+
+    // Mettre à jour le conteneur de notification
+    const notificationContainer = $('#new-commande');
+    notificationContainer.removeClass('hide-content').addClass('show-content');
+
+    // Mettre à jour le compteur d'affaires
+    $('.badge-commande').text(countAffaires).removeClass('badge-animation');
+    if (countAffaires > 0) {
+        $('.badge-commande').addClass('badge-animation');
+    }
+
+    $('#count-commande').text(`Vous avez ${countAffaires} Commandes`);
+
+    // Ajouter la nouvelle affaire à la liste
+    const notificationList = notificationContainer.find('.notification-commande');
+    const affaire = newAffaires.find(a => a.id === affaireId); // Trouver l'affaire spécifique à notifier
+
+    if (affaire) {
+        const totalNotifications = notificationList.children('.notification-item').length;
+        
+        notificationList.append(`
+            <a href="#tab-financier-affaire" onclick="return financier(${affaireId})">
+                <li><hr class="dropdown-divider"></li>
+                <li class="notification-item item-commande">
+                    <i class="bi bi-exclamation-circle text-danger"></i>
+                    <div>
+                        <h4 class="text-black">Commande validée</h4>
+                        <p>${affaire.nom}</p>
+                        ${affaire.dateValidation ? `<p>${affaire.dateValidation}</p>` : ''}
+                    </div>
+                </li>
+            </a>
+            
+        `);
+
+    }
+}
+
+
+
+function toggleNotification(button) {
+    const notification = button.parentElement;
+    notification.classList.toggle('collapsed');
+    const span = notification.querySelector('span');
+    if (notification.classList.contains('collapsed')) {
+        span.style.display = 'none'; // Masquer le texte
+        button.textContent = 'Show'; // Changer le texte du bouton
+    } else {
+        span.style.display = 'block'; // Afficher le texte
+        button.textContent = 'Hide'; // Changer le texte
+    }
+}
+
+function removeNotification(button) {
+    const notification = button.parentElement;
+    notification.remove(); // Supprimer la notification
+}
+
+// Vérifier régulièrement les nouvelles commandes
+function checkForNewOrders() {
+    $.ajax({
+        url: '/admin/affaires/verifier/new/affaire',
+        method: 'GET',
+        success: function(response) {
+            const newAffaires = response.affaires; // Récupérer les nouvelles affaires
+            const countAffaires = newAffaires.length; // Compte des nouvelles affaires
+
+            newAffaires.forEach(affaire => {
+                // Vérifie si l'affaire a déjà été notifiée
+                if (!notifiedAffaireIds.has(affaire.id)) {
+                    notifyCashier(affaire.id, countAffaires, newAffaires);
+                }
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error("Error checking for new orders:", error);
+        }
+    });
+}
+
+// Fonction pour initialiser les notifications
+function initNotifications() {
+    $.ajax({
+        url: '/admin/affaires/verifier/new/affaire',
+        method: 'GET',
+        success: function(response) {
+            const affaires = response.affaires; // Récupérer toutes les affaires
+            const countAffaires = affaires.length; // Compte des affaires
+
+            // Mettre à jour le compteur d'affaires
+            $('#count-commande').text(`Vous avez ${countAffaires} Commandes`);
+            $('.badge-commande').text(countAffaires).removeClass('badge-animation');
+            if (countAffaires > 0) {
+                $('.badge-commande').addClass('badge-animation');
+            }
+
+            affaires.forEach(affaire => {
+                // Vérifie si l'affaire a déjà été notifiée
+                if (!notifiedAffaireIds.has(affaire.id)) {
+                    notifyCashier(affaire.id, countAffaires, affaires);
+                }
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error("Error initializing notifications:", error);
+        }
+    });
+}
+
+// Appel initial pour charger les notifications
+initNotifications();
+
+
+// Vérifiez les nouvelles commandes toutes les 3 secondes
+setInterval(checkForNewOrders, 3000);
+
+function newMethodePaiement(id = null) {
+    var anchorName = document.location.hash.substring(1);
+          $.ajax({
+              url: '/admin/comptabilite/nouveau/methode/paiement/'+id,
+              type: 'GET',
+              //data: {isNew: isNew},
+              success: function (response) {
+                  $("#blockMethodePaiement").empty();
+                  $("#blockMethodePaiement").append(response.html);
+                  $('#modalNewMethodePaiement').modal('show');
+                  if (anchorName) {
+                      window.location.hash = anchorName;
+                  }
+                  showTabComptabilite();
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                  // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                  alert('Erreur lors de l\'ajout de methode de paiement.');
+              }
+          });
+  }
+  

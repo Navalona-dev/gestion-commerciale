@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Exception\PropertyVideException;
 use App\Repository\AffaireRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -170,6 +171,12 @@ class Affaire
     
     #[ORM\Column(nullable: true)]
     private ?bool $depot = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isValid = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateValidation = null;
 
 
     public function __construct()
@@ -715,6 +722,30 @@ class Affaire
     public function setRemiseProduit(?float $remiseProduit): static
     {
         $this->remiseProduit = $remiseProduit;
+
+        return $this;
+    }
+
+    public function isValid(): ?bool
+    {
+        return $this->isValid;
+    }
+
+    public function setValid(?bool $isValid): static
+    {
+        $this->isValid = $isValid;
+
+        return $this;
+    }
+
+    public function getDateValidation(): ?\DateTimeInterface
+    {
+        return $this->dateValidation;
+    }
+
+    public function setDateValidation(?\DateTimeInterface $dateValidation): static
+    {
+        $this->dateValidation = $dateValidation;
 
         return $this;
     }

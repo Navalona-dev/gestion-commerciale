@@ -167,8 +167,11 @@
                             {% if affaire.paiement is not null and affaire.paiement == "paye" and factureFile is not null %}
                                 <div class="col-md-2 col-12">
                                      <div class="d-flex justify-content-center">
-                                        <a title="Annuler" style="cursor: pointer;" onclick="return annuleFacture({{affaire.id}})" title="Annuler" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
+                                        <a title="Annuler" style="cursor: pointer;" onclick="return annuleFacture({{affaire.id}})" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
                                             <i class="bi bi-x"></i>
+                                        </a>
+                                        <a title="Méthode de paiement" style="cursor: pointer;" onclick="return newMethodePaiement({{idFacture}})" class="icon-cancel bg-primary text-white d-flex align-items-center justify-content-center border border-secondary">
+                                            <i class="bi bi-currency-dollar"></i>
                                         </a>
                                     </div>
                                 </div>
@@ -177,11 +180,16 @@
                                 <div class="col-md-2 col-12">
                                     <div class="d-flex justify-content-end">
                                         {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
+                                            {% if affaire.isValid == 0 %}
+                                                <a title="Valider" style="cursor: pointer;" onclick="validerCommande({{affaire.id}})" class="icon-paye">
+                                                    <i class="bi bi-check-circle"></i>
+                                                </a>
+                                            {% endif %}
                                             <a title="Payé" style="cursor: pointer;" onclick="paiement({{affaire.id}})" class="icon-paye">
                                                 <i class="bi bi-credit-card-2-front-fill"></i>
                                             </a>
                                             <a href="#" title="Facture écheance" class="icon-echeance" onclick="return openModalFactureEcheance({{ affaire.id }})">
-                                                <i class="bi bi-calendar-heart-fill"></i>
+                                                <i class="bi bi-calendar"></i>
                                             </a>
                                             {% if affaire.depot == 1 %}
                                                 <a onclick="return depot({{affaire.id}})" style="cursor: pointer;" title="Dépôt" class="icon-depot">
@@ -355,9 +363,12 @@
                                                 <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
                                             {% endif %}
                                             {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
+                                                {% if affaire.isValid == 0 %}
+                                                    <a style="cursor: pointer;" onclick="return validerCommande({{affaire.id}})" class="text-info financier-icon" title="Payer"><i class="bi bi-check-circle"></i></a>
+                                                {% endif %}
                                                 <a style="cursor: pointer;" onclick="return paiement({{affaire.id}})" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
                                                 <a href="#" title="Facture écheance" class="text-success financier-icon" onclick="return openModalFactureEcheance({{affaire.id}})">
-                                                    <i class="bi bi-calendar-heart-fill"></i>
+                                                    <i class="bi bi-calendar"></i>
                                                 </a>
                                                 {% if affaire.depot == 1 %}
                                                     <a style="cursor: pointer;" title="Dépôt" onclick="return depot({{affaire.id}})" class="text-danger financier-icon"><i class="bi bi-box-seam"></i></a>
@@ -461,6 +472,7 @@
         $('#tab-depot').css('display', 'none');
         $('#tab-comptabilite').css('display', 'none');
         $('#tab-vente').css('display', 'none');
+        $('#tab-benefice').css('display', 'none');
         $('#tab-fourchette').css('display', 'none');
                 $('#tab-comptabilite-liste').removeClass('active');
 
@@ -650,3 +662,77 @@
     }
 
 </script>
+
+<script>
+   /*function validerCommande(id = null) {
+    if (confirm('Voulez-vous vraiment valider cette commande ?')) {
+        setTimeout(function() {
+            $.ajax({
+                url: '/admin/affaires/valider/' + id,
+                type: 'POST',
+                data: { id: id },
+                success: function(response) {
+                    setTimeout(function() {
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 1000
+                        };
+                        toastr.success('Avec succès', 'Validation faite');
+                        
+                        financier(id);
+
+                        if (response.pdfUrl) {
+                            window.open(response.pdfUrl, '_blank');
+                        }
+
+                        // Intégration de Mercure ici
+                        const baseUrl = window.location.origin;
+                        console.log(baseUrl);
+                        const url = new URL('http://localhost:8080/.well-known/mercure');
+                        url.searchParams.append('topic', `${baseUrl}/admin/affaires/valider/${id}`);
+
+                        const eventSource = new EventSource(url);
+
+                        eventSource.onmessage = event => {
+                            const data = JSON.parse(event.data);
+                            
+                            // Créez un élément pour la notification
+                            const notification = document.createElement('div');
+                            notification.className = 'notification';
+                            notification.style.backgroundColor = '#4CAF50'; // Couleur verte
+                            notification.style.color = 'white';
+                            notification.style.padding = '15px';
+                            notification.style.marginBottom = '10px';
+                            notification.style.borderRadius = '5px';
+                            notification.style.position = 'relative';
+
+                            // Contenu de la notification
+                            notification.innerHTML = `Nouvelle commande : ${data.message}, ID : ${data.orderId} <button class="close-btn" style="color: white; float: right;">X</button>`;
+                            
+                            // Ajoutez la notification au conteneur
+                            document.getElementById('notification-container').appendChild(notification);
+                            
+                            // Fonction pour fermer la notification
+                            notification.querySelector('.close-btn').onclick = function() {
+                                notification.remove();
+                            };
+                        };
+
+
+                    }, 800);
+                    
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                    alert('Erreur lors de la validation de la commande.');
+                }
+            });
+        
+        }, 500);
+    }
+}*/
+
+</script>
+

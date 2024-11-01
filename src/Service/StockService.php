@@ -304,12 +304,18 @@ class StockService
                 $stockRestant = $stockRestant + $newQtt;
 
             } else {
-                $stocktoAdd = $oldQtt - $oldStockRestant;
-                $stockRestant = $oldStockRestant + $stocktoAdd;
+                $newQtt = $stock->getQtt(); 
+                if($newQtt > $oldQtt) {
+                    $newStockRestant = $oldStockRestant + ($newQtt - $oldQtt);
+                } else {
+                    $newStockRestant = $oldStockRestant - ($oldQtt - $newQtt);
+                }
+                $stockRestant = $newStockRestant;
             }
 
             $produitCategorie->setStockRestant($stockRestant);
             $this->entityManager->persist($produitCategorie);
+            //dd($produitCategorie->getStockRestant());
 
             if ($newDatePeremption) {
                 $stock->setDatePeremption($newDatePeremption);
