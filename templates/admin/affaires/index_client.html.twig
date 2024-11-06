@@ -36,17 +36,23 @@
                     {% if listes|length > 0 %}
                         {% for affaire in listes %}
                         <div class="affaire-produit card shadow p-4 mb-3 position-relative">
-                            <div class="filter position-absolute top-0 end-0 p-3">
-                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                    {# <li class="dropdown-header text-start">
-                                        <h6>Filter</h6>
-                                    </li> #}
-                                    <li><a class="dropdown-item" href="#" onclick="return updateAffaire({{affaire.id}})">Modifier</a></li>
-                                    <li><a class="dropdown-item" href="#" onclick="return deleteAffaire({{affaire.id}})">Supprimer</a></li>
-                                    {# <li><a class="dropdown-item" href="#">Dupliquer</a></li> #}
-                                </ul>
-                            </div>
+                            {% if app_authorization.isUserGrantedPrivilege('responsable_vente') %}
+                                <div class="filter position-absolute top-0 end-0 p-3">
+                                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                        {# <li class="dropdown-header text-start">
+                                            <h6>Filter</h6>
+                                        </li> #}
+                                        {% if app_authorization.isUserAllowedOnFeature('edit_commande') %}
+                                            <li><a class="dropdown-item" href="#" onclick="return updateAffaire({{affaire.id}})">Modifier</a></li>
+                                        {% endif %}
+                                        {% if app_authorization.isUserAllowedOnFeature('suppression_commande') %}
+                                            <li><a class="dropdown-item" href="#" onclick="return deleteAffaire({{affaire.id}})">Supprimer</a></li>
+                                        {% endif %}
+                                        {# <li><a class="dropdown-item" href="#">Dupliquer</a></li> #}
+                                    </ul>
+                                </div>
+                            {% endif %}
                             <div class="row">
                                 <div class="col-md-4 col-12">
                                     <a href="#tab-financier-affaire" onclick="return financier({{affaire.id}})">
@@ -88,17 +94,21 @@
                                                 <i class="bi bi-coin text-black bg-warning action-icon"></i>
                                                 <span class="action-text">Financier</span>
                                             </a>
-                                            {% if affaire.depot == 1 and affaire.products|length > 0 and (affaire.paiement == "endepot" or affaire.paiement == "paye") %}
-                                                <a href="#tab-depot" onclick="return showTabDepot({{affaire.id}})" class="d-flex flex-column align-items-center mx-3">
-                                                    <i class="bi bi-box-seam text-black bg-primary action-icon"></i>
-                                                    <span class="action-text">Dépôt</span>
-                                                </a>
+                                            {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') and app_authorization.isUserAllowedOnFeature('paiement_depot') %}
+                                                {% if affaire.depot == 1 and affaire.products|length > 0 and (affaire.paiement == "endepot" or affaire.paiement == "paye") %}
+                                                    <a href="#tab-depot" onclick="return showTabDepot({{affaire.id}})" class="d-flex flex-column align-items-center mx-3">
+                                                        <i class="bi bi-box-seam text-black bg-primary action-icon"></i>
+                                                        <span class="action-text">Dépôt</span>
+                                                    </a>
+                                                {% endif %}
                                             {% endif %}
-                                            {% if affaire.factures|length > 0 %}
-                                            <a href="#tab-facture-affaire" onclick="return showTabFactureAffaire({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
-                                                <i class="bi bi-file-earmark-pdf bg-success action-icon"></i>
-                                                <span class="action-text">Facture</span>
-                                            </a>
+                                            {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') %}
+                                                {% if affaire.factures|length > 0 %}
+                                                    <a href="#tab-facture-affaire" onclick="return showTabFactureAffaire({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
+                                                        <i class="bi bi-file-earmark-pdf bg-success action-icon"></i>
+                                                        <span class="action-text">Facture</span>
+                                                    </a>
+                                                {% endif %}
                                             {% endif %}
                                             {#<a href="#" class="d-flex flex-column align-items-center mx-2">
                                                 <i class="bi bi-file-earmark-pdf bg-danger action-icon"></i>
@@ -120,9 +130,13 @@
                                         <div class="menu-icon mb-3">
                                             <div class="form-group">
                                                 {# <a href="#"><i class="bi bi-skip-end-fill"></i></a>#}
-                                                <a href="#" onclick="return updateAffaire({{affaire.id}})"><i class="bi bi-pencil-square edit"></i></a>
-                                                <a href="#" onclick="return deleteAffaire({{affaire.id}})"><i class="bi bi-trash delete"></i></a>
-                                                
+                                                {% if app_authorization.isUserGrantedPrivilege('responsable_vente') and app_authorization.isUserAllowedOnFeature('edit_commande') %}
+                                                    <a href="#" onclick="return updateAffaire({{affaire.id}})"><i class="bi bi-pencil-square edit"></i></a>
+                                                {% endif %}
+                                                {% if app_authorization.isUserGrantedPrivilege('responsable_vente') and app_authorization.isUserAllowedOnFeature('suppression_commande') %}
+                                                    <a href="#" onclick="return deleteAffaire({{affaire.id}})"><i class="bi bi-trash delete"></i></a>
+                                                {% endif %}
+
                                                 {# <a href="#"><i class="bi bi-bell-fill"></i></a>
                                                 <a href="#"><i class="bi bi-calendar-fill"></i></a> #}
                                                 {# <a href="#"><i class="bi bi-hourglass-split"></i></a> #}
@@ -170,6 +184,7 @@
                     <div class="card p-5">
                         <div class="d-flex align-items-center">
                             <p class="mb-0">Ce client n'a pas encore fait de commande</p>
+                            {% if app_authorization.isUserGrantedPrivilege('responsable_vente') and app_authorization.isUserAllowedOnFeature('ajout_commande') %}
                             <div class="dropdown ms-3">
                                 <a class="dropdown-toggle btn-sm px-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-plus-circle"></i>
@@ -180,6 +195,7 @@
                                     <li><a class="dropdown-item" href="#" onclick="return newAffaire({{compte.id}},'commande')">Une commande</a></li>
                                 </ul>
                             </div>
+                            {% endif %}
                         </div>
                     </div>
                     

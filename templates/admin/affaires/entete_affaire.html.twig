@@ -48,17 +48,21 @@
                                 <i class="bi bi-coin text-black bg-warning action-icon"></i>
                                 <span class="action-text">Financier</span>
                             </a>
-                            {% if affaire.depot == 1 and affaire.products|length > 0 and (affaire.paiement == "endepot" or affaire.paiement == "paye") %}
-                                <a href="#tab-depot" onclick="return showTabDepot({{affaire.id}})" class="d-flex flex-column align-items-center mx-3">
-                                    <i class="bi bi-box-seam text-black bg-primary action-icon"></i>
-                                    <span class="action-text">Dépôt</span>
-                                </a>
+                            {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') and app_authorization.isUserAllowedOnFeature('paiement_depot') %}
+                                {% if affaire.depot == 1 and affaire.products|length > 0 and (affaire.paiement == "endepot" or affaire.paiement == "paye") %}
+                                    <a href="#tab-depot" onclick="return showTabDepot({{affaire.id}})" class="d-flex flex-column align-items-center mx-3">
+                                        <i class="bi bi-box-seam text-black bg-primary action-icon"></i>
+                                        <span class="action-text">Dépôt</span>
+                                    </a>
+                                {% endif %}
                             {% endif %}
-                            {% if affaire.factures|length > 0 %}
-                            <a href="#tab-facture-affaire" onclick="return showTabFactureAffaire({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
-                                <i class="bi bi-file-earmark-pdf bg-success action-icon"></i>
-                                <span class="action-text">Facture</span>
-                            </a>
+                            {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') %}
+                                {% if affaire.factures|length > 0 %}
+                                    <a href="#tab-facture-affaire" onclick="return showTabFactureAffaire({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
+                                        <i class="bi bi-file-earmark-pdf bg-success action-icon"></i>
+                                        <span class="action-text">Facture</span>
+                                    </a>
+                                {% endif %}
                             {% endif %}
                             {#<a href="#" class="d-flex flex-column align-items-center mx-3">
                                 <i class="bi bi-check-circle-fill bg-success action-icon"></i>

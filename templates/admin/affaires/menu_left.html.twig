@@ -48,10 +48,12 @@
                     </li>
                     {% if affaire.products|length > 0 %}
                     <li class="nav-item">
-                        <a href="#tab-facture-affaire" onclick="return showTabFactureAffaire({{affaire.id}})" class="text-black nav-link d-block mb-3 facture">
-                            <i class="bi bi-file-earmark-excel-fill"></i>
-                            <span class="mx-1">Factures</span>
-                        </a>
+                        {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') %}
+                            <a href="#tab-facture-affaire" onclick="return showTabFactureAffaire({{affaire.id}})" class="text-black nav-link d-block mb-3 facture">
+                                <i class="bi bi-file-earmark-excel-fill"></i>
+                                <span class="mx-1">Factures</span>
+                            </a>
+                        {% endif %}
                     </li>
                     {% endif %}
                 </ul>
