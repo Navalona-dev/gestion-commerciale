@@ -18,6 +18,7 @@ use App\Form\FicheCompteType;
 use App\Service\AccesService;
 use App\Form\ProductDepotType;
 use App\Service\CompteService;
+use App\Service\DateFormatter;
 use App\Form\AccesExtranetType;
 use App\Service\AffaireService;
 use App\Service\FactureService;
@@ -27,6 +28,7 @@ use App\Service\ApplicationManager;
 use App\Repository\CompteRepository;
 use App\Repository\AffaireRepository;
 use App\Repository\FactureRepository;
+use App\Repository\ProductRepository;
 use App\Exception\PropertyVideException;
 use App\Service\ProduitCategorieService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,9 +39,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Exception\UnsufficientPrivilegeException;
-use App\Repository\ProductRepository;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -65,7 +67,7 @@ class AffaireController extends AbstractController
     private $affaireRepo;
     private $em;
     private $productRepo;
-
+    private $dateFormatter;
 
     public function __construct(
         AffaireService $affaireService, 
@@ -79,7 +81,8 @@ class AffaireController extends AbstractController
         ApplicationRepository $applicationRepo,
         AffaireRepository $affaireRepo,
         EntityManagerInterface $em,
-        ProductRepository $productRepo
+        ProductRepository $productRepo,
+        DateFormatter $dateFormatter
         
         )
     {
@@ -95,6 +98,7 @@ class AffaireController extends AbstractController
         $this->affaireRepo = $affaireRepo;
         $this->em = $em;
         $this->productRepo = $productRepo;
+        $this->dateFormatter = $dateFormatter;
 
     }
 
@@ -788,6 +792,12 @@ class AffaireController extends AbstractController
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('app_logout'); // To DO page d'alerte insufisance privilege
         }*/
+
+        $idFac = $request->getSession()->get('idFacture');
+        $idFacture = null;
+        if($idFac) {
+            $idFacture = $idFac;
+        }
       
         $data = [];
         try {
@@ -816,6 +826,7 @@ class AffaireController extends AbstractController
             $data["html"] = $this->renderView('admin/affaires/financier.html.twig', [
                 'affaire' => $affaire,
                 'produits' => $produits,
+                'idFacture' => $idFacture,
                 'factureFile' => ((count($facturesValide) > 0 && $facturesValide[count($facturesValide) - 1] != null) ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
             ]);
           
@@ -1010,6 +1021,8 @@ class AffaireController extends AbstractController
             // Sauvegarder le fichier PDF
             file_put_contents($this->getParameter('kernel.project_dir') . '/public' . $pdfPath, $pdfContent);
             
+            $request->getSession()->set('idFacture', $facture->getId());
+
             return new JsonResponse([
                 'status' => 'success',
                 'pdfUrl' => $pdfPath,
@@ -1442,6 +1455,12 @@ class AffaireController extends AbstractController
             });
         }
 
+        $idFac = $request->getSession()->get('idFacture');
+        $idFacture = null;
+        if($idFac) {
+            $idFacture = $idFac;
+        }
+
         return $this->render("admin/affaires/reloadFinanciereProduct.html.twig", [
             'idApplication' => $this->application->getId(),
             'affaire' => $affaire,
@@ -1451,6 +1470,7 @@ class AffaireController extends AbstractController
             'tvaVentes' => [],
             'statuts' => $affaire::STATUT,
             'application' => $this->application,
+            'idFacture' => $idFacture,
             'factureFile' => (count($facturesValide) > 0 ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
 
         ]);
@@ -1536,6 +1556,12 @@ class AffaireController extends AbstractController
            });
        }
 
+       $idFac = $request->getSession()->get('idFacture');
+        $idFacture = null;
+        if($idFac) {
+            $idFacture = $idFac;
+        }
+
        return $this->render("admin/affaires/reloadFinanciereProduct.html.twig", [
            'idApplication' => $this->application->getId(),
            'affaire' => $affaire,
@@ -1543,10 +1569,68 @@ class AffaireController extends AbstractController
            'montantCA' =>  null, // $montantCA - $montantRemiseFinale,
            'affaireRemise' => $montantRemiseFinale,
            'tvaVentes' => [],
+           'idFacture' => $idFacture,
            'statuts' => $affaire::STATUT,
            'application' => $this->application,
            'factureFile' => (count($facturesValide) > 0 ? $facturesValide[count($facturesValide) - 1]->getFile(): null)
 
        ]);
     }
+
+
+    #[Route('/valider/{affaire}', name: '_valider')]
+    public function valider(Affaire $affaire, Request $request, UserInterface $user): Response
+    {
+        $request->getSession()->set('idAffaire', $affaire->getId());
+        
+        if (count($affaire->getProducts()) > 0) {
+            $affaire->setValid(true);
+            $affaire->setDateValidation(new \DateTime());
+            $this->em->persist($affaire);
+            $this->em->flush();
+
+            $formattedDate = $this->dateFormatter->formatDate($affaire->getDateValidation());
+
+            $newAffaires = $this->affaireRepo->findBy(['paiement' => 'non', 'isValid' => true, 'application' => $this->application]);
+            $countAffaires = count($newAffaires);
+    
+            return new JsonResponse([
+                'status' => 'success',
+                'affaireId' => $affaire->getId(),
+                'affaireName' => $affaire->getNom(),
+                'dateValidation' => $formattedDate,
+                'countAffaires' => $countAffaires,
+                'newAffaires' => $newAffaires,
+            ]);
+        }
+        
+        return new JsonResponse([]);
+    }
+    
+    #[Route('/verifier/new/affaire', name: '_verifier_new_affaire')]
+    public function getNewAffaires(): JsonResponse
+    {
+        $newAffaires = $this->affaireRepo->findBy(['paiement' => 'non', 'isValid' => true, 'application' => $this->application]);
+        $countAffaires = count($newAffaires);
+
+        // Préparer les données à retourner
+        $affairesData = [];
+        foreach ($newAffaires as $affaire) {
+            $formattedDate = $this->dateFormatter->formatDate($affaire->getDateValidation());
+
+            $affairesData[] = [
+                'id' => $affaire->getId(),
+                'nom' => $affaire->getNom(), 
+                'dateValidation' => $formattedDate,
+                'countAffaires' => $countAffaires,
+                'newAffaires' => $newAffaires,
+            ];
+        }
+
+        // Retourner les affaires validées
+        return new JsonResponse(['affaires' => $affairesData]);
+    }
+
+
+    
 }

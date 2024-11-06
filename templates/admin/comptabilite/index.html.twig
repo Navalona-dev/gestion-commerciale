@@ -299,6 +299,7 @@
         $('#tab-stock').removeClass('active');
         $('#tab-depot').css('display', 'none');
         $('#tab-vente').css('display', 'none');
+        $('#tab-benefice').css('display', 'none');
         $('#tab-fourchette').css('display', 'none');
                 $('#tab-comptabilite-liste').removeClass('active');
 
@@ -327,26 +328,6 @@
             });
     }
     
-    function newMethodePaiement(id = null) {
-      var anchorName = document.location.hash.substring(1);
-            $.ajax({
-                url: '/admin/comptabilite/nouveau/methode/paiement/'+id,
-                type: 'GET',
-                //data: {isNew: isNew},
-                success: function (response) {
-                    $("#blocModalComptabiliteEmpty").empty();
-                    $("#blocModalComptabiliteEmpty").append(response.html);
-                    $('#modalNewMethodePaiement').modal('show');
-                    if (anchorName) {
-                        window.location.hash = anchorName;
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'ajout de methode de paiement.');
-                }
-            });
-    }
     
     function createFactureDepense() {
         if (confirm('Voulez vous vraiment créer cette facture?')) {

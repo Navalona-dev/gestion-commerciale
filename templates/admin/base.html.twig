@@ -26,6 +26,38 @@
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
 
+        <style>
+            .notification-container {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 1000;
+                max-width: 300px;
+            }
+
+            .notification {
+                background-color: #f0f8ff;
+                border: 1px solid #007bff;
+                padding: 10px;
+                margin: 5px 0;
+                border-radius: 5px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .notification button {
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
+
+            .icon-notification .nav-link.nav-icon i {
+                font-size: 20px !important;
+            }
+
+        </style>
+
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}

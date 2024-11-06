@@ -180,6 +180,9 @@
                                         <a title="Annuler" style="cursor: pointer;" onclick="return annuleFacture({{affaire.id}})" title="Annuler" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
                                             <i class="bi bi-x"></i>
                                         </a>
+                                        <a title="Méthode de paiement" style="cursor: pointer;" onclick="return newMethodePaiement({{idFacture}})" class="icon-cancel bg-primary text-white d-flex align-items-center justify-content-center border border-secondary">
+                                            <i class="bi bi-currency-dollar"></i>
+                                        </a>
                                     </div>
                                 </div>
                             {% else %}
@@ -187,17 +190,30 @@
                                 <div class="col-md-2 col-12">
                                     <div class="d-flex justify-content-end">
                                         {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
-                                            <a title="Payé" style="cursor: pointer;" onclick="paiement({{affaire.id}})" class="icon-paye">
-                                                <i class="bi bi-credit-card-2-front-fill"></i>
-                                            </a>
-                                            <a href="#" title="Facture écheance" class="icon-echeance" onclick="return openModalFactureEcheance({{ affaire.id }})">
-                                                <i class="bi bi-calendar-heart-fill"></i>
-                                            </a>
-                                            {% if affaire.depot == 1 %}
-                                                <a onclick="return depot({{affaire.id}})" style="cursor: pointer;" title="Dépôt" class="icon-depot">
-                                                    <i class="bi bi-box-seam"></i>
+                                        {% if affaire.isValid == 0 %}
+                                            {% if app_authorization.isUserGrantedPrivilege('responsable_vente') and app_authorization.isUserAllowedOnFeature('validation_commande') %}
+                                                <a title="Valider" style="cursor: pointer;" onclick="validerCommande({{affaire.id}})" class="icon-paye">
+                                                    <i class="bi bi-check-circle"></i>
                                                 </a>
                                             {% endif %}
+                                        {% endif %}
+                                            {% if affaire.isValid == 1 %}
+                                                {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') and app_authorization.isUserAllowedOnFeature('paiement') %}
+                                                    {% if affaire.depot == 0 %}
+                                                    <a title="Payé" style="cursor: pointer;" onclick="paiement({{affaire.id}})" class="icon-paye">
+                                                        <i class="bi bi-credit-card-2-front-fill"></i>
+                                                    </a>
+                                                    <a href="#" title="Facture écheance" class="icon-echeance" onclick="return openModalFactureEcheance({{ affaire.id }})">
+                                                        <i class="bi bi-calendar"></i>
+                                                    </a>
+                                                    {% else %}
+                                                        <a onclick="return depot({{affaire.id}})" style="cursor: pointer;" title="Dépôt" class="icon-depot">
+                                                            <i class="bi bi-box-seam"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endif %}
+                                                
                                         {% endif %}
 
                                     </div>
@@ -324,16 +340,33 @@
                                        
                                     </td>
                                     <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros|number_format(0, '.', ' ') }}{% else %}{{product.prixVenteDetail|number_format(0, '.', ' ')}}{% endif %} Ar</td>
-                                    <td class="align-middle text-center remise_{{ product.id }}">
-                                        <a class="" href="#" onclick="return addRemiseProduit({{ product.id }}, '{{ app.request.uri }}', {{affaire.id}});">{% if product.remise %} <span class="text-danger">{{ product.remise }}</span> {% else %} <i class="bi bi-percent btn-remise"></i> {% endif %}</a>
+                                    <td class="align-middle text-center remise_{{ product.id }}"></td>
+                                        {% if app_authorization.isUserAllowedOnFeature('remise') %}
+                                            {% if product.remise %} 
+                                                <span class="text-danger">{{ product.remise }}</span> 
+                                            {% else %}
+                                                {% if affaire.paiement == 'non' %} 
+                                                    <a class="" href="#" onclick="return addRemiseProduit({{ product.id }}, '{{ app.request.uri }}', {{affaire.id}});">
+                                                        <i class="bi bi-percent btn-remise"></i> 
+                                                    </a>
+                                                {% else %}
+                                                    <span class="text-info" style="font-size: 14px;">Pas de remise</span>
+                                                {% endif %}
+                                            {% endif %}
+
+                                        {% endif %}
                                     </td>
                                     <td class="align-middle text-center">{% if product.typeVente == "gros" %}{{product.prixVenteGros * product.qtt - product.remise }}{% else %}{{product.prixVenteDetail * product.qtt - product.remise}}{% endif %} Ar</td>
                                     <td>
-                                        {% if affaire.paiement is null or (affaire.paiement != "paye" and affaire.paiement != "annule" and affaire.paiement != "enecheance") %}
-                                            <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
+                                        {% if affaire.paiement is null or (affaire.paiement == "non") %}
+                                            {% if app_authorization.isUserGrantedPrivilege('responsable_vente') and app_authorization.isUserAllowedOnFeature('edit_ligne_produit') %}
+                                                <a href="#" onclick="return updateLigneProduct(this, {{ product.id }}, {{ affaire.id }})" class="action-pencil d-block text-center mb-2"><i class="bi bi-pencil"></i></a>
+                                            {% endif %}
                                             {# <a href="#" class="action-plus d-block text-center mb-2"><i class="bi bi-plus"></i></a>
                                             <a href="#" class="action-list d-block text-center mb-2"><i class="bi bi-list-ul"></i></a> #}
-                                            <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
+                                            {% if app_authorization.isUserGrantedPrivilege('responsable_vente') and app_authorization.isUserAllowedOnFeature('suppression_ligne_produit') %}
+                                                <a href="#" onclick="deleteProduitAffaire(this, {{ product.id }}, {{ affaire.id }});" class="action-trash d-block text-center mb-2"><i class="bi bi-trash-fill"></i></a>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     {# {% set montantHt = montantHt + (product.qtt * product.puht) - product.remise %} #}
@@ -361,17 +394,30 @@
                                    
                                     {% else %}
                                         {% if affaire.paiement is not null and (affaire.paiement == "non" or affaire.paiement is null)  %}
-                                            {% if affaire.paiement != "enecheance" %}
-                                                <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
+                                            {% if affaire.paiement == "non" %}
+                                                {% if app_authorization.isUserGrantedPrivilege('responsable_vente') and app_authorization.isUserAllowedOnFeature('ajout_produit_commande') %}
+                                                    <a style="cursor: pointer;" onclick="return openModalListProduit({{affaire.id}})" class="text-primary financier-icon" title="Ajouter produit"><i class="bi bi-list-ul"></i></a>
+                                                {% endif %}
                                             {% endif %}
                                             {% if affaire.products|length > 0 and affaire.paiement != "enecheance" %}
-                                                <a style="cursor: pointer;" onclick="return paiement({{affaire.id}})" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
-                                                <a href="#" title="Facture écheance" class="text-success financier-icon" onclick="return openModalFactureEcheance({{affaire.id}})">
-                                                    <i class="bi bi-calendar-heart-fill"></i>
-                                                </a>
-                                                {% if affaire.depot == 1 %}
-                                                    <a style="cursor: pointer;" title="Dépôt" onclick="return depot({{affaire.id}})" class="text-danger financier-icon"><i class="bi bi-box-seam"></i></a>
+                                                {% if affaire.isValid == 0 %}
+                                                    {% if app_authorization.isUserGrantedPrivilege('responsable_vente') and app_authorization.isUserAllowedOnFeature('validation_commande') %}
+                                                        <a style="cursor: pointer;" onclick="return validerCommande({{affaire.id}})" class="text-info financier-icon" title="Payer"><i class="bi bi-check-circle"></i></a>
+                                                    {% endif %}
                                                 {% endif %}
+                                                {% if affaire.isValid == 1 %}
+                                                    {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') and app_authorization.isUserAllowedOnFeature('paiement') %}
+                                                        {% if affaire.depot == 0 %}
+                                                        <a style="cursor: pointer;" onclick="return paiement({{affaire.id}})" class="text-info financier-icon" title="Payer"><i class="bi bi-credit-card-2-front-fill"></i></a>
+                                                        <a href="#" title="Facture écheance" class="text-success financier-icon" onclick="return openModalFactureEcheance({{affaire.id}})">
+                                                            <i class="bi bi-calendar"></i>
+                                                        </a>
+                                                        {% else %}
+                                                            <a style="cursor: pointer;" title="Dépôt" onclick="return depot({{affaire.id}})" class="text-danger financier-icon"><i class="bi bi-box-seam"></i></a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endif %}
+                                             
                                             {% endif %}
                                             
                                         {% endif %}
@@ -471,6 +517,7 @@
         $('#tab-depot').css('display', 'none');
         $('#tab-comptabilite').css('display', 'none');
         $('#tab-vente').css('display', 'none');
+        $('#tab-benefice').css('display', 'none');
         $('#tab-fourchette').css('display', 'none');
                 $('#tab-comptabilite-liste').removeClass('active');
 

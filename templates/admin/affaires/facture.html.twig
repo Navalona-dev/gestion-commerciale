@@ -129,8 +129,10 @@
                                         <td class="">
                                             <a href="#" class="text-primary fs-6"><i class="bi bi-pencil-square"></i></a>
                                             <a href="#" onclick="return deleteFacture({{liste.id}})" class="text-danger fs-6 mx-2"><i class="bi bi-trash-fill"></i></a>
-                                            {% if liste.factureEcheances|length > 0 %}
-                                            <a href="#tab-echeance" onclick="return showTabEcheance({{liste.id}})" class="text-warning fs-6"><i class="bi bi-calendar-date-fill"></i></a>
+                                            {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') and app_authorization.isUserAllowedOnFeature('echeance') %}
+                                                {% if liste.factureEcheances|length > 0 %}
+                                                    <a href="#tab-echeance" onclick="return showTabEcheance({{liste.id}})" class="text-warning fs-6"><i class="bi bi-calendar-date-fill"></i></a>
+                                                {% endif %}
                                             {% endif %}
                                             {% set filePath = '' %}
                                             {% if liste.file is not null %}
@@ -262,6 +264,7 @@
         $('#tab-depot').css('display', 'none');
         $('#tab-comptabilite').css('display', 'none');
         $('#tab-vente').css('display', 'none');
+        $('#tab-benefice').css('display', 'none');
         $('#tab-fourchette').css('display', 'none');
                 $('#tab-comptabilite-liste').removeClass('active');
 

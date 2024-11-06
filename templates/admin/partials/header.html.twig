@@ -1,3 +1,13 @@
+<style>
+  .show-content {
+    display: block !important;
+  }
+
+  .hide-content {
+    display: none !important;
+  }
+</style>
+
 <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
@@ -15,14 +25,14 @@
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div>
 
-    <div class="search-bar">
+    {#<div class="search-bar">
       <form class="search-form d-flex align-items-center" method="POST" action="#">
         <input type="text" name="query" placeholder="Search" title="Enter search keyword">
         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
       </form>
-    </div>
+    </div>#}
 
-    <div class="dropdown">
+    <div class="dropdown" style="margin-left: 200px;">
       <button class="btn btn-primary dropdown-toggle btn-sm px-4 btn-add-header" type="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-plus-circle"></i>
         <span class="mx-2">Ajouter</span>
@@ -92,16 +102,6 @@
                   <p class="text-center"><small>Catégorie permission</small></p>
                 </a>
               </div>
-
-              <div class="col-4 mb-3">
-                <a href="#tab-comptabilite" onclick="return showTabComptabilite()" class="work-post-content">
-                  <div class="d-flex justify-content-center">
-                    <i class="bi-currency-dollar text-white" style="padding: 5px 10px; border-radius: 100%; background-color: #882525;"></i>
-                  </div>
-                  <p class="text-center"><small>Comptabilité</small></p>
-                </a>
-              </div>
-             
               <div class="col-4 mb-3">
                 <a class="work-post-content" href="#tab-import-produit" onclick="return showTabImportProduit()">
                   <div class="d-flex justify-content-center">
@@ -134,6 +134,16 @@
                   <p class="text-center"><small>Utilisateurs</small></p>
                 </a>
               </div>
+              {% endif %}
+              {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') %}
+                <div class="col-4 mb-3">
+                  <a href="#tab-comptabilite" onclick="return showTabComptabilite()" class="work-post-content">
+                    <div class="d-flex justify-content-center">
+                      <i class="bi-currency-dollar text-white" style="padding: 5px 10px; border-radius: 100%; background-color: #882525;"></i>
+                    </div>
+                    <p class="text-center"><small>Comptabilité</small></p>
+                  </a>
+                </div>
               {% endif %}
 
                <div class="col-4 mb-3">
@@ -186,21 +196,22 @@
                   <p class="text-center"><small>Type de produit</small></p>
                 </a>
               </div>
-
-              <div class="col-4 mb-3">
-                <a class="work-post-content" href="#tab-vente" onclick="return showTabVente()">
-                  <div class="d-flex justify-content-center">
-                    <i class="bi bi-cart-fill" style="padding: 5px 10px; border-radius: 100%; background-color: #026af1; color: #fff !important;"></i>
-                  </div>
-                  <p class="text-center"><small>Vente</small></p>
-                </a>
-              </div>
+              {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') %}
+                <div class="col-4 mb-3">
+                  <a class="work-post-content" href="#tab-vente" onclick="return showTabVente()">
+                    <div class="d-flex justify-content-center">
+                      <i class="bi bi-cart-fill" style="padding: 5px 10px; border-radius: 100%; background-color: #026af1; color: #fff !important;"></i>
+                    </div>
+                    <p class="text-center"><small>Vente</small></p>
+                  </a>
+                </div>
+              {% endif %}
               
             </div>
           </ul>
         </li>
 
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown icon-notification">
 
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-bell text-black"></i>
@@ -267,6 +278,68 @@
           </ul>
 
         </li>
+
+        {#<li class="nav-item dropdown hide-content" id="new-commande">
+
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-cart-fill text-black"></i>
+            <span class="badge badge-number badge-commande {% if countAffaires > 0 %} badge-animation {% endif %} "> {{countAffaires}} </span>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications notification-commande">
+            <li class="dropdown-header count-commande" id="count-commande">
+              Vous avez {{countAffaires}} Commandes
+              <a href="#tab-notification" onclick="return showTabNotification()"><span class="badge rounded-pill p-2 ms-2">Voir tous</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            {% for affaire in affaires %}
+                <a href="#tab-financier-affaire" onclick="return financier({{affaire.id}})">
+                  <li class="notification-item item-commande">
+                    <i class="bi bi-exclamation-circle text-danger"></i>
+                    <div>
+                        <h4 class="text-black">Commande valider</h4>
+                        <p>{{ affaire.nom }}</p>
+                        {% if affaire.dateValidation is not null %}
+                        <p>{{ affaire.dateValidation|format_date }}</p>
+                        {% endif %}
+                    </div>
+                    
+                </li>
+                </a>
+             
+          {% endfor %}
+
+
+            <li class="dropdown-footer footer-commande">
+              <a href="#">Voir tous les commandes</a>
+            </li>
+
+          </ul>
+
+        </li>#}
+
+        {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') %}
+          <li class="nav-item dropdown hide-content icon-notification" id="new-commande">
+            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                <i class="bi bi-cart-fill text-black"></i>
+                <span class="badge badge-number badge-commande {% if countAffaires > 0 %} badge-animation {% endif %} "> {{countAffaires}} </span>
+            </a>
+        
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications notification-commande">
+                <li class="dropdown-header count-commande" id="count-commande">
+                    Vous avez {{countAffaires}} Commandes
+                    <a href="#tab-notification" onclick="return showTabNotification()"><span class="badge rounded-pill p-2 ms-2">Voir tous</span></a>
+                </li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+            </ul>
+          </li>
+        {% endif %}
+      
            
         <li class="nav-item dropdown pe-3">
           {% if app.user is not null %}

@@ -20,20 +20,21 @@
                         <div class="row">
                             <h4 class="card-title col-sm-12  text-left">{{key}}</h4>
                         </div>
-                        <div class="row mb-4">
+                        <div class="mb-4 d-flex flex-wrap">
                             {% for keyPermission, permission in categories %}
-                            <div class="col-md-3 col-12 checkbox-radios">
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" {% if permission.state == true %} checked {% endif %} name="permission_privilege[]" value="{{ permission.id }}"> {{ permission.title }}
-                                            <span class="form-check-sign">
-                                                <span class="check"></span>
-                                            </span>
-                                        </label>
-                                    </div>
+                            <div class="checkbox-radios me-3 mb-3">
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" type="checkbox" {% if permission.state == true %} checked {% endif %} name="permission_privilege[]" value="{{ permission.id }}"> {{ permission.title }}
+                                        <span class="form-check-sign">
+                                            <span class="check"></span>
+                                        </span>
+                                    </label>
+                                </div>
                             </div>
                             {% endfor %}
                         </div>
+                        
                     {% endfor %}
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-sm px-3 mt-3" style="width: 100%;">Ajouter</button>

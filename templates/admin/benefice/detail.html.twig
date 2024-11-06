@@ -58,7 +58,10 @@
                                   <div class="alert alert-info">
                                     Vous avez déjà créer une comptabilité pour cette encaissement et ce depense le {{comptabiliteFirst.dateCreation|date('d-m-Y')}} <br>
                                     Comptabilité du {{comptabiliteFirst.dateComptabilite|date('d-m-Y')}} <br>
-                                    {{comptabiliteFirst.designation}} : {{comptabiliteFirst.reste|number_format(0,',',' ')}} Ariary
+                                    {{comptabiliteFirst.designation}} : {{comptabiliteFirst.reste|number_format(0,',',' ')}} Ariary <br>
+                                    Voulez vous faire une modification? <br><br>
+                                    <a href="#tab-comptabilite" onclick="return showTabComptabilite()" class="btn btn-info btn-sm px-4">Modifier</a>
+
                                   </div>
                                 {% endif %}
                               {% else %}
