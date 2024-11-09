@@ -2372,3 +2372,39 @@ function showTabNotification() {
     document.getElementById('overlay').style.display = 'none';
   }
 
+
+  function annuleFacture(id = null) {
+    if (confirm('Voulez vous vraiment annuler ce paiement?')) {
+        setTimeout(function() {
+            $.ajax({
+            url: '/admin/affaires/paiement/annule/'+id,
+            type: 'POST',
+            data: {id: id},
+            success: function (response) {
+                setTimeout(function () {
+                    toastr.options = {
+                        closeButton: true,
+                        progressBar: true,
+                        showMethod: 'slideDown',
+                        timeOut: 1000
+                    };
+                    toastr.success('Avec succèss', 'Annulation fait');
+                    
+                    financier(id);
+
+                    if (response.pdfUrl) {
+                        window.open(response.pdfUrl, '_blank');
+                    }
+                }, 800);
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                alert('Erreur lors de l\'annulation de paiement.');
+            }
+        });
+        
+        }, 500);
+       
+    }
+}

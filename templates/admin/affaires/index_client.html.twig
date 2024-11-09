@@ -1,4 +1,9 @@
 <style>
+    .menu-icon a i.cancel {
+        color: #9a090c;
+        padding: 4px 8px;
+        border: 1px solid #9a090c;
+    }
     @media screen and (max-width: 750px) {
         .card-search {
             height: 20vh !important;
@@ -36,17 +41,19 @@
                     {% if listes|length > 0 %}
                         {% for affaire in listes %}
                         <div class="affaire-produit card shadow p-4 mb-3 position-relative">
-                            <div class="filter position-absolute top-0 end-0 p-3">
-                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                    {# <li class="dropdown-header text-start">
-                                        <h6>Filter</h6>
-                                    </li> #}
-                                    <li><a class="dropdown-item" href="#" onclick="return updateAffaire({{affaire.id}})">Modifier</a></li>
-                                    <li><a class="dropdown-item" href="#" onclick="return deleteAffaire({{affaire.id}})">Supprimer</a></li>
-                                    {# <li><a class="dropdown-item" href="#">Dupliquer</a></li> #}
-                                </ul>
-                            </div>
+                            {% if affaire.paiement == "non" %}
+                                <div class="filter position-absolute top-0 end-0 p-3">
+                                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                        {# <li class="dropdown-header text-start">
+                                            <h6>Filter</h6>
+                                        </li> #}
+                                        <li><a class="dropdown-item" href="#" onclick="return updateAffaire({{affaire.id}})">Modifier</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="return deleteAffaire({{affaire.id}})">Supprimer</a></li>
+                                        {# <li><a class="dropdown-item" href="#">Dupliquer</a></li> #}
+                                    </ul>
+                                </div>
+                            {% endif %}
                             <div class="row">
                                 <div class="col-md-4 col-12">
                                     <a href="#tab-financier-affaire" onclick="return financier({{affaire.id}})">
@@ -114,9 +121,14 @@
                                         <div class="menu-icon mb-3">
                                             <div class="form-group">
                                                 {# <a href="#"><i class="bi bi-skip-end-fill"></i></a>#}
-                                                <a href="#" onclick="return updateAffaire({{affaire.id}})"><i class="bi bi-pencil-square edit"></i></a>
-                                                <a href="#" onclick="return deleteAffaire({{affaire.id}})"><i class="bi bi-trash delete"></i></a>
-                                                
+                                                {% if affaire.paiement != "annule" %}
+                                                    {% if affaire.paiement == "non" %}
+                                                        <a href="#" onclick="return updateAffaire({{affaire.id}})"><i class="bi bi-pencil-square edit"></i></a>
+                                                        <a href="#" onclick="return deleteAffaire({{affaire.id}})"><i class="bi bi-trash delete"></i></a>
+                                                    {% elseif affaire.paiement == "paye" %}
+                                                        <a href="#" onclick="return annuleFacture({{affaire.id}})"><i class="bi bi-x-circle-fill cancel"></i></a>
+                                                    {% endif %}
+                                                {% endif %}
                                                 {# <a href="#"><i class="bi bi-bell-fill"></i></a>
                                                 <a href="#"><i class="bi bi-calendar-fill"></i></a> #}
                                                 {# <a href="#"><i class="bi bi-hourglass-split"></i></a> #}
