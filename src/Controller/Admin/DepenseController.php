@@ -57,6 +57,8 @@ class DepenseController extends AbstractController
     #[Route('/new', name: '_create')]
     public function create(Request $request)
     {
+        $existeCompta = $request->getSession()->get('existeCompta');
+
         $depense = new Depense();
 
         $form = $this->createForm(DepenseType::class, $depense);
@@ -71,7 +73,7 @@ class DepenseController extends AbstractController
                 
                 if ($request->isXmlHttpRequest()) {
                     
-                    $this->depenseService->add($depense);
+                    $this->depenseService->add($depense, $existeCompta);
                     return new JsonResponse(['status' => 'success'], Response::HTTP_OK);
                 }
             }
@@ -80,6 +82,7 @@ class DepenseController extends AbstractController
             $data["html"] = $this->renderView('admin/depense/new.html.twig', [
                 'form' => $form->createView(),
                 'beneficeId' => $beneficeId, 
+                'comptabilite' => $existeCompta
             ]);
            
             return new JsonResponse($data);
@@ -97,9 +100,15 @@ class DepenseController extends AbstractController
     #[Route('/facture', name: '_facture')]
     public function facture(Request $request): Response
     {
-        $depensesToday = $this->depenseRepository->selectDepenseToday();
+        $depenses = null;
+        $date = $request->getSession()->get('date');
+        if($date) {
+            $depenses = $this->depenseRepository->selectDepenseByDate($date);
+        } else {
+            $depenses = $this->depenseRepository->selectDepenseToday();
+        }
 
-        if (count($depensesToday) > 0) {
+        if (count($depenses) > 0) {
             $documentFolder = $this->getParameter('kernel.project_dir'). '/public/uploads/APP_'.$this->application->getId().'/factures/depense/';
 
             // Vérifier si le dossier existe, sinon le créer avec les permissions appropriées
@@ -107,7 +116,7 @@ class DepenseController extends AbstractController
                 mkdir($documentFolder, 0777, true); // 0777 pour les permissions, et `true` pour créer récursivement les sous-dossiers
             }
             
-            list($pdfContent, $facture) = $this->depenseService->addFacture($depensesToday, $documentFolder, $request);
+            list($pdfContent, $facture) = $this->depenseService->addFacture($depenses, $documentFolder, $request);
             
             $filename = 'Depense' . '-' . $facture->getNumero() . ".pdf";
             $pdfPath = '/uploads/APP_'.$this->application->getId().'/factures/depense/' . $filename;
@@ -128,6 +137,8 @@ class DepenseController extends AbstractController
     #[Route('/edit/{depense}', name: '_edit')]
     public function edit(Request $request, Depense $depense)
     {
+        $existeCompta = $request->getSession()->get('existeCompta');
+
         $form = $this->createForm(DepenseType::class, $depense);
         $data = [];
         try {
@@ -149,7 +160,8 @@ class DepenseController extends AbstractController
             $data["html"] = $this->renderView('admin/depense/update.html.twig', [
                 'form' => $form->createView(),
                 'depense' => $depense,
-                'beneficeId' => $beneficeId
+                'beneficeId' => $beneficeId,
+                'comptabilite' => $existeCompta
             ]);
            
             return new JsonResponse($data);

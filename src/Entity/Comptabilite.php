@@ -22,9 +22,6 @@ class Comptabilite
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateCreation = null;
 
-    #[ORM\ManyToOne(inversedBy: 'comptabilites')]
-    private ?Benefice $benefice = null;
-
     /**
      * @var Collection<int, Depense>
      */
@@ -49,10 +46,17 @@ class Comptabilite
     #[ORM\ManyToOne(inversedBy: 'comptabilites')]
     private ?Application $application = null;
 
+    /**
+     * @var Collection<int, Benefice>
+     */
+    #[ORM\ManyToMany(targetEntity: Benefice::class, inversedBy: 'comptabilites')]
+    private Collection $benefices;
+
     public function __construct()
     {
         $this->depenses = new ArrayCollection();
         $this->factureComptabilites = new ArrayCollection();
+        $this->benefices = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -84,17 +88,6 @@ class Comptabilite
         return $this;
     }
 
-    public function getBenefice(): ?Benefice
-    {
-        return $this->benefice;
-    }
-
-    public function setBenefice(?Benefice $benefice): static
-    {
-        $this->benefice = $benefice;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Depense>
@@ -194,6 +187,30 @@ class Comptabilite
     public function setApplication(?Application $application): static
     {
         $this->application = $application;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Benefice>
+     */
+    public function getBenefices(): Collection
+    {
+        return $this->benefices;
+    }
+
+    public function addBenefice(Benefice $benefice): static
+    {
+        if (!$this->benefices->contains($benefice)) {
+            $this->benefices->add($benefice);
+        }
+
+        return $this;
+    }
+
+    public function removeBenefice(Benefice $benefice): static
+    {
+        $this->benefices->removeElement($benefice);
 
         return $this;
     }

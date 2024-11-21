@@ -6,6 +6,7 @@ use Dompdf\Options;
 use Twig\Environment;
 use App\Entity\Facture;
 use App\Entity\FactureDepense;
+use App\Entity\Comptabilite;
 use App\Service\ApplicationManager;
 use App\Repository\DepenseRepository;
 use App\Service\AuthorizationManager;
@@ -44,15 +45,33 @@ class DepenseService
 
     }
 
-    public function add($depense = null)
+    public function add($depense = null, $existeCompta = null)
     {
         $depense->setDateCreation(new \DateTime);
         $depense->setApplication($this->application);
+        //dd($existeCompta);
+        if ($existeCompta) {
+            // Charger `Comptabilite` depuis le repository pour s'assurer qu'il est géré
+            $comptaRepo = $this->entityManager->getRepository(Comptabilite::class);
+            $existingCompta = $comptaRepo->find($existeCompta->getId());
+    
+            if (!$existingCompta) {
+                throw new \Exception("L'entité Comptabilite n'existe pas ou n'est pas trouvée.");
+            }
+    
+            // Ajouter la dépense sans persister une nouvelle entité
+            $existingCompta->addDepense($depense);
+            $depense->addComptabilite($existingCompta);
+        }
+        
         $this->entityManager->persist($depense);
         $this->entityManager->flush();
 
         return $depense;
     }
+
+   
+
 
     public function remove($entity)
     {

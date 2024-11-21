@@ -4,7 +4,7 @@
         <div class="modal-content p-4" style="width: 180% !important; margin-left: -12rem !important;">
             <div class="modal-header modal-header-center">
                 <h5 class="modal-title fw-bold" id="modalNewLabel">Mise à jour méthode de paiement</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" id="close-modal-update-paiement" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger error">
@@ -178,7 +178,7 @@
                     contentType: false,
                     success: function (response) {
                             $('#modalUpdateMethodePaiement').modal('hide');
-                            $('#modalDetailPaiement').modal('hide');
+                            //$('#modalDetailPaiement').modal('hide');
                             $('.error').hide();
 
                             var nextLink = $('#sidebar').find('li#methode-paiement').find('a');
@@ -191,7 +191,9 @@
                                 };
                                 toastr.success('Avec succèss', 'Mise à jour effectuée');
 
-                                showTabComptabilite();
+                                //showTabComptabilite();
+                                location.reload();
+
 
                             }, 800);
                             if (nextLink.length > 0) {
@@ -303,6 +305,14 @@
 
         });
     })
+
+    $(document).ready(function() {
+        $('#close-modal-update-paiement').on('click', function() {
+            location.reload();
+        });
+
+    })
+
 </script>
 
 {% endblock %}

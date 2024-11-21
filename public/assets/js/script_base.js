@@ -7,6 +7,7 @@ $(document).ready(function() {
     var idProduit = $('.id-produit').data('produit');
     var idFacture = $('.id-facture').data('facture');
     var idBenefice = $('.id-benefice').data('benefice');
+    var idComptabilite = $('#elementIdCompta').data('comptabilite');
 
     if (anchorName === "affaires_client") {
         showTabAffaireClient();
@@ -160,8 +161,60 @@ $(document).ready(function() {
         showTabComptabiliteList();
     }
 
+    if(anchorName == "tab-comptabilite-detail") {
+        showTabComptabiliteDetail(idComptabilite);
+    }
+
 
 });
+
+function showTabComptabiliteDetail(id = null) {
+    showSpinner();
+    
+    $.ajax({
+             type: 'post',
+             url: '/admin/comptabilite/detail/'+id,
+             //data: {},
+             success: function (response) {
+                 $("#tab-comptabilite-detail").empty();
+                 $("#tab-comptabilite-detail").append(response.html);
+                 $('.sidebar-nav a[href="#tab-comptabilite-detail"]').tab('show');
+                 $("#tab-comptabilite-detail").addClass('active');
+                 $('.sidebar-nav a[href="#tab-dashboard"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-comptabilite-detail"]').removeClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-privilege"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-application"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-utilisateur"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-categorie-permission"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-categorie"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_1"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-compte_2"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-produit-type"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-import-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-transfert-produit"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-facture"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-historique-affaire"]').removeClass('active');
+                 $('.sidebar-nav a[href="#tab-historique-produit"]').removeClass('active');    
+                $('.sidebar-nav #historique a').addClass('collapsed');
+                $('.sidebar-nav a[href="#tab-devis"]').addClass('collapsed');
+                 $('.sidebar-nav a[href="#tab-commande"]').addClass('collapsed');
+
+                 $(".loadBody").css('display', 'none');
+
+                 setTimeout(function() {
+                    
+                    hideSpinner();
+                }, 2000);
+             },
+             error: function () {
+                // $(".loadBody").css('display', 'none');
+                 $(".chargementError").css('display', 'block');
+                 hideSpinner();
+             }
+
+         });
+ }
 
 function showTabComptabiliteList() {
     showSpinner();
@@ -3002,4 +3055,127 @@ function newMethodePaiement(id = null) {
               }
           });
   }
+  
+
+  function detailMethodePaiement(id = null) {
+    var anchorName = document.location.hash.substring(1);
+          $.ajax({
+              url: '/admin/comptabilite/detail/paiement/'+id,
+              type: 'GET',
+              //data: {isNew: isNew},
+              success: function (response) {
+                  $("#blocModalDetailPaiementEmpty").empty();
+                  $("#blocModalDetailPaiementEmpty").append(response.html);
+                  $('#modalDetailPaiement').modal('show');
+                  if (anchorName) {
+                      window.location.hash = anchorName;
+                  }
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                  // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                  alert('Erreur lors de l\'affichage de détail de paiement.');
+              }
+          });
+  }
+
+  function updateMethodePaiement(id = null) {
+    var anchorName = document.location.hash.substring(1);
+          $.ajax({
+              url: '/admin/comptabilite/methode/paiement/edit/'+id,
+              type: 'GET',
+              //data: {isNew: isNew},
+              success: function (response) {
+                  $("#blocModalDetailPaiementEmpty").empty();
+                  $("#blocModalDetailPaiementEmpty").append(response.html);
+                  $('#modalUpdateMethodePaiement').modal('show');
+                  if (anchorName) {
+                      window.location.hash = anchorName;
+                  }
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                  // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                  alert('Erreur lors de la mise à jour de methode de paiement.');
+              }
+          });
+  }
+  
+  function deleteMethodePaiement(id = null) {
+      var anchorName = document.location.hash.substring(1);
+
+      if (confirm('Voulez vous vraiment supprimer cette méthode de paiement?')) {
+          $.ajax({
+              url: '/admin/comptabilite/methode/paiement/delete/'+id,
+              type: 'POST',
+              //data: {category: id},
+              success: function (response) {
+                  
+                  var nextLink = $('#sidebar').find('li#comptabilite').find('a');
+                  setTimeout(function () {
+                      toastr.options = {
+                          closeButton: true,
+                          progressBar: true,
+                          showMethod: 'slideDown',
+                          timeOut: 1000
+                      };
+                      toastr.success('Avec succèss', 'Suppression effectuée');
+                      //location.reload();
+                      
+                      //$(".loadBody").css('display', 'none');
+                      if (anchorName) {
+                          window.location.hash = anchorName;
+                      }
+
+                      showTabComptabilite();
+
+                  }, 800);
+                 
+                
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                  // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                  alert('Erreur lors de la suppression de méthode de paiement.');
+              }
+          });
+      }
+  }
+
+  function annuleFacture(id = null) {
+    if (confirm('Voulez vous vraiment annuler ce paiement?')) {
+        setTimeout(function() {
+            $.ajax({
+            url: '/admin/affaires/paiement/annule/'+id,
+            type: 'POST',
+            data: {id: id},
+            success: function (response) {
+                setTimeout(function () {
+                    toastr.options = {
+                        closeButton: true,
+                        progressBar: true,
+                        showMethod: 'slideDown',
+                        timeOut: 1000
+                    };
+                    toastr.success('Avec succèss', 'Annulation fait');
+                    
+                    financier(id);
+
+                    if (response.pdfUrl) {
+                        window.open(response.pdfUrl, '_blank');
+                    }
+                }, 800);
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                alert('Erreur lors de l\'annulation de paiement.');
+            }
+        });
+        
+        }, 500);
+       
+    }
+}
+
+
+
+ 
   

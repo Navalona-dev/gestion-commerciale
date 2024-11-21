@@ -8,6 +8,9 @@
             </div>
             <div class="modal-body">
                 <span class="id-benefice-depense" data-benefice="{{beneficeId}}"></span>
+                {% if comptabilite %}
+                    <span class="id-compta-depense" data-compta="{{comptabilite.id}}"></span>
+                {% endif %}
                 {{ form_start(form, {'attr': {'id': 'newDepense', 'action': path('depenses_create') }}) }}
                    
                     <div class="form-group mb-3">
@@ -64,6 +67,7 @@ $(document).ready(function() {
     $(document).ready(function () {
         var anchorName = document.location.hash.substring(1);
         const idBenefice = $('.id-benefice-depense').data('benefice');
+        const idCompta = $('.id-compta-depense').data('compta');
        $('#newDepense').on('submit', function (e) {
             e.preventDefault();
             let form = $(this);
@@ -93,6 +97,8 @@ $(document).ready(function() {
                             showTabBenefice(idBenefice);
                         } else if(anchorName == "tab-comptabilite") {
                             showTabComptabilite();
+                        } else if(anchorName == "tab-comptabilite-detail") {
+                            showTabComptabiliteDetail(idCompta);
                         }
 
 

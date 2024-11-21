@@ -71,24 +71,30 @@ class ComptabiliteService
 
         //créer nouveau benefice
         $comptabilite->setDateCreation(new \DateTime());
-        $comptabilite->setBenefice($benefice);
         $comptabilite->setApplication($this->application);
 
         $totalDepense = 0;
         $totalBenefice = $benefice->getTotal();
 
-        foreach($depenses as $depense) {
-            $updateDepense = $this->depenseRepo->findOneBy(['id' => $depense['id']]);
-            $updateDepense->addComptabilite($comptabilite);
-            $comptabilite->addDepense($updateDepense);
-            $this->entityManager->persist($updateDepense);
-
-            $totalDepense += $depense['total']; 
+        if(count($depenses) > 0) {
+            foreach($depenses as $depense) {
+                $updateDepense = $this->depenseRepo->findOneBy(['id' => $depense['id']]);
+                $updateDepense->addComptabilite($comptabilite);
+                $comptabilite->addDepense($updateDepense);
+                $this->entityManager->persist($updateDepense);
+    
+                $totalDepense += $depense['total']; 
+            }
         }
+
+
+        $comptabilite->addBenefice($benefice);
+        $benefice->addComptabilite($comptabilite);
 
         $resultat = $totalBenefice - $totalDepense;
         $comptabilite->setReste($resultat);
 
+        $this->entityManager->persist($benefice);
         $this->entityManager->persist($comptabilite);
 
         //créer la facture benefice
@@ -96,7 +102,6 @@ class ComptabiliteService
         $date = new \DateTime();
 
         $numeroFacture = 1;
-        //dd('ici');
 
         $tabNumeroFacture = $this->getLastValideFacture();
 

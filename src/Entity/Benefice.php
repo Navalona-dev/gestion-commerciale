@@ -46,14 +46,14 @@ class Benefice
     #[ORM\OneToMany(targetEntity: FactureBenefice::class, mappedBy: 'benefice')]
     private Collection $factureBenefices;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateBenefice = null;
+
     /**
      * @var Collection<int, Comptabilite>
      */
-    #[ORM\OneToMany(targetEntity: Comptabilite::class, mappedBy: 'benefice')]
+    #[ORM\ManyToMany(targetEntity: Comptabilite::class, mappedBy: 'benefices')]
     private Collection $comptabilites;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateBenefice = null;
 
     public function __construct()
     {
@@ -199,6 +199,18 @@ class Benefice
         return $this;
     }
 
+    public function getDateBenefice(): ?\DateTimeInterface
+    {
+        return $this->dateBenefice;
+    }
+
+    public function setDateBenefice(?\DateTimeInterface $dateBenefice): static
+    {
+        $this->dateBenefice = $dateBenefice;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Comptabilite>
      */
@@ -211,7 +223,7 @@ class Benefice
     {
         if (!$this->comptabilites->contains($comptabilite)) {
             $this->comptabilites->add($comptabilite);
-            $comptabilite->setBenefice($this);
+            $comptabilite->addBenefice($this);
         }
 
         return $this;
@@ -220,23 +232,8 @@ class Benefice
     public function removeComptabilite(Comptabilite $comptabilite): static
     {
         if ($this->comptabilites->removeElement($comptabilite)) {
-            // set the owning side to null (unless already changed)
-            if ($comptabilite->getBenefice() === $this) {
-                $comptabilite->setBenefice(null);
-            }
+            $comptabilite->removeBenefice($this);
         }
-
-        return $this;
-    }
-
-    public function getDateBenefice(): ?\DateTimeInterface
-    {
-        return $this->dateBenefice;
-    }
-
-    public function setDateBenefice(?\DateTimeInterface $dateBenefice): static
-    {
-        $this->dateBenefice = $dateBenefice;
 
         return $this;
     }

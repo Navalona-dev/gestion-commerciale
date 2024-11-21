@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Facture;
+use App\Entity\Benefice;
 use App\Entity\Comptabilite;
 use App\Form\ComptabiliteType;
 use App\Entity\MethodePaiement;
@@ -53,6 +54,8 @@ class ComptabiliteController extends AbstractController
     #[Route('/', name: '_show')]
     public function index(Request $request): Response
     {
+        $request->getSession()->set('typePage', 'compta');
+
         $data = [];
         try {
             $existDate = false;
@@ -107,7 +110,8 @@ class ComptabiliteController extends AbstractController
                 'existDate' => $existDate,
                 'factures' => $factures,
                 'depenses' => $depenses,
-                'filter' => $filter
+                'filter' => $filter,
+                
             ]);
     
             // Retour de la réponse JSON avec le HTML généré
@@ -123,6 +127,8 @@ class ComptabiliteController extends AbstractController
     #[Route('/reload', name: '_reload')]
     public function reload(Request $request): Response
     {
+        $request->getSession()->set('typePage', 'compta');
+
         $data = [];
         try {
             $existDate = false;
@@ -285,8 +291,11 @@ class ComptabiliteController extends AbstractController
     }
 
     #[Route('/detail/paiement/{facture}', name: '_detail_paiement')]
-    public function detailPaiement(Facture $facture): Response
+    public function detailPaiement(Facture $facture, Request $request): Response
     {
+        $typePage = $request->getSession()->get('typePage');
+        //dd($typePage);
+
         $data = [];
         try {
 
@@ -295,6 +304,7 @@ class ComptabiliteController extends AbstractController
             $data["html"] = $this->renderView('admin/comptabilite/detail_methode_paiement.html.twig', [
                 'methodePaiements' => $methodePaiements,
                 'facture' => $facture,
+                'typePage' => $typePage
             ]);
 
             return new JsonResponse($data);
@@ -349,6 +359,7 @@ class ComptabiliteController extends AbstractController
     #[Route('/methode/paiement/edit/{methode}', name: '_edit_methode_paiement')]
     public function editMethodePaiement(Request $request, $methode)
     {
+
         $methodePaiement = $this->methodePaiementRepo->findOneBy(['id' => $methode]);
 
         $facture = $methodePaiement->getFacture();
@@ -372,7 +383,7 @@ class ComptabiliteController extends AbstractController
             $data["html"] = $this->renderView('admin/comptabilite/update_methode_paiement.html.twig', [
                 'form' => $form->createView(),
                 'facture' => $facture,
-                'methodePaiement' => $methodePaiement
+                'methodePaiement' => $methodePaiement,
             ]);
            
             return new JsonResponse($data);
@@ -403,6 +414,41 @@ class ComptabiliteController extends AbstractController
                 
         }catch (\Exception $Exception) {
             $data['exception'] = $Exception->getMessage();
+            $data["html"] = "";
+            return new JsonResponse($data);
+        }
+    }
+
+    #[Route('/detail/{idComptabilite}', name: '_detail_comptabilite')]
+    public function detailCompta($idComptabilite, Request $request): Response
+    {
+        $request->getSession()->set('typePage', 'detail');
+        $request->getSession()->set('idComptabilite', $idComptabilite);
+        $idBenefice = $request->getSession()->get('beneficeId');
+
+        $data = [];
+        try {
+        
+            //$benefice = $this->beneficeRepo->findOneBy(['id' => $idBenefice]);
+            $comptabilite = $this->comptabiliteRepository->findOneBy(['id' => $idComptabilite]);
+            $depenses = $comptabilite->getDepenses();
+            //dd($comptabilite, count($depenses));
+            $benefice = $this->beneficeRepo->findOneBy(['id' => $idBenefice]);
+
+            $request->getSession()->set('existeCompta', $comptabilite);
+
+            // Rendu du template avec les données nécessaires
+            $data["html"] = $this->renderView('admin/comptabilite/detail_comptabilite.html.twig', [
+                'comptabilite' => $comptabilite,
+                'depenses' => $depenses,
+                'benefice' => $benefice
+            ]);
+    
+            // Retour de la réponse JSON avec le HTML généré
+            return new JsonResponse($data);
+        } catch (\Exception $Exception) {
+            // Gestion des exceptions
+            $data["exception"] = $Exception->getMessage();
             $data["html"] = "";
             return new JsonResponse($data);
         }

@@ -1,131 +1,131 @@
 <div class="affaire-produit card shadow p-4 mb-3 position-relative" id="entete-affaire">
-            <div class="filter position-absolute top-0 end-0 p-3 affaire-action">
-                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li><a class="dropdown-item" href="#" onclick="return updateAffaire({{affaire.id}})">Modifier</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="return deleteAffaire({{affaire.id}})">Supprimer</a></li>
-                </ul>
-            </div>
-            <div class="row">
-                <div class="col-md-4 col-12">
-                    <a href="#tab-financier-affaire" onclick="return financier({{affaire.id}})">
-                        <div class="info-produit">
-                            <h4 class="fw-bold mb-3">
-                                <i class="bi bi-lock"></i>
-                                <span class=""> {{affaire.nom}} </span>
-                            </h4>
-                            <p class="date mb-3">
-                                <i class="bi bi-calendar-date-fill"></i>
-                                <span class=""> {{affaire.dateCreation|date('d/m/Y')}} </span>
-                            </p>
-                            <p class="order-number py-1 px-2 mb-3">
-                                <i class="bi bi-info-circle-fill"></i>
-                                <span class="mx-2">{{affaire.statut}} n°{{affaire.id}}</span>
-                            </p>
-                            {% set montantHt = 0 %}
-                            {% for product in affaire.products %}
-                                {% if product.typeVente == "gros" %}
-                                {% set montantHt = (montantHt + ((product.qtt)  * product.prixVenteGros)) - product.remise %}
-                                {% else %}
-                                    {% set montantHt = (montantHt + (product.qtt * product.prixVenteDetail)) - product.remise %}
-                                {% endif %}
-                            {% endfor %}
-                            
-                            <p class="text-danger">
-                                {{ montantHt|number_format(0, ',', ' ') }} Ar HT
-                            </p>
-                        </div>
-                    </a>
+    <div class="filter position-absolute top-0 end-0 p-3 affaire-action">
+        <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+            <li><a class="dropdown-item" href="#" onclick="return updateAffaire({{affaire.id}})">Modifier</a></li>
+            <li><a class="dropdown-item" href="#" onclick="return deleteAffaire({{affaire.id}})">Supprimer</a></li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-12">
+            <a href="#tab-financier-affaire" onclick="return financier({{affaire.id}})">
+                <div class="info-produit">
+                    <h4 class="fw-bold mb-3">
+                        <i class="bi bi-lock"></i>
+                        <span class=""> {{affaire.nom}} </span>
+                    </h4>
+                    <p class="date mb-3">
+                        <i class="bi bi-calendar-date-fill"></i>
+                        <span class=""> {{affaire.dateCreation|date('d/m/Y')}} </span>
+                    </p>
+                    <p class="order-number py-1 px-2 mb-3">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <span class="mx-2">{{affaire.statut}} n°{{affaire.id}}</span>
+                    </p>
+                    {% set montantHt = 0 %}
+                    {% for product in affaire.products %}
+                        {% if product.typeVente == "gros" %}
+                        {% set montantHt = (montantHt + ((product.qtt)  * product.prixVenteGros)) - product.remise %}
+                        {% else %}
+                            {% set montantHt = (montantHt + (product.qtt * product.prixVenteDetail)) - product.remise %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <p class="text-danger">
+                        {{ montantHt|number_format(0, ',', ' ') }} Ar HT
+                    </p>
                 </div>
-                <div class="col-md-4 col-12 mb-5">
-                    <div class="container mt-5 ">
-                        <div class="action-produit d-flex justify-content-around">
-                            <a href="#tab-info-affaire" onclick="return information({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
-                                <i class="bi bi-info-circle bg-info text-black action-icon"></i>
-                                <span class="action-text">Information</span>
+            </a>
+        </div>
+        <div class="col-md-4 col-12 mb-5">
+            <div class="container mt-5 ">
+                <div class="action-produit d-flex justify-content-around">
+                    <a href="#tab-info-affaire" onclick="return information({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
+                        <i class="bi bi-info-circle bg-info text-black action-icon"></i>
+                        <span class="action-text">Information</span>
+                    </a>
+                    <a href="#tab-financier-affaire" onclick="return financier({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
+                        <i class="bi bi-coin text-black bg-warning action-icon"></i>
+                        <span class="action-text">Financier</span>
+                    </a>
+                    {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') and app_authorization.isUserAllowedOnFeature('paiement_depot') %}
+                        {% if affaire.depot == 1 and affaire.products|length > 0 and (affaire.paiement == "endepot" or affaire.paiement == "paye") %}
+                            <a href="#tab-depot" onclick="return showTabDepot({{affaire.id}})" class="d-flex flex-column align-items-center mx-3">
+                                <i class="bi bi-box-seam text-black bg-primary action-icon"></i>
+                                <span class="action-text">Dépôt</span>
                             </a>
-                            <a href="#tab-financier-affaire" onclick="return financier({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
-                                <i class="bi bi-coin text-black bg-warning action-icon"></i>
-                                <span class="action-text">Financier</span>
+                        {% endif %}
+                    {% endif %}
+                    {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') %}
+                        {% if affaire.factures|length > 0 %}
+                            <a href="#tab-facture-affaire" onclick="return showTabFactureAffaire({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
+                                <i class="bi bi-file-earmark-pdf bg-success action-icon"></i>
+                                <span class="action-text">Facture</span>
                             </a>
-                            {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') and app_authorization.isUserAllowedOnFeature('paiement_depot') %}
-                                {% if affaire.depot == 1 and affaire.products|length > 0 and (affaire.paiement == "endepot" or affaire.paiement == "paye") %}
-                                    <a href="#tab-depot" onclick="return showTabDepot({{affaire.id}})" class="d-flex flex-column align-items-center mx-3">
-                                        <i class="bi bi-box-seam text-black bg-primary action-icon"></i>
-                                        <span class="action-text">Dépôt</span>
-                                    </a>
-                                {% endif %}
-                            {% endif %}
-                            {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') %}
-                                {% if affaire.factures|length > 0 %}
-                                    <a href="#tab-facture-affaire" onclick="return showTabFactureAffaire({{affaire.id}})" class="d-flex flex-column align-items-center mx-2">
-                                        <i class="bi bi-file-earmark-pdf bg-success action-icon"></i>
-                                        <span class="action-text">Facture</span>
-                                    </a>
-                                {% endif %}
-                            {% endif %}
-                            {#<a href="#" class="d-flex flex-column align-items-center mx-3">
-                                <i class="bi bi-check-circle-fill bg-success action-icon"></i>
-                                <span class="action-text">Tâche</span>
-                            </a>
-                            <a href="#" class="d-flex flex-column align-items-center mx-3">
-                                <i class="bi bi-journal-text bg-primary action-icon"></i>
-                                <span class="action-text">Notes</span>
-                            </a>#}
-                        </div>
+                        {% endif %}
+                    {% endif %}
+                    {#<a href="#" class="d-flex flex-column align-items-center mx-3">
+                        <i class="bi bi-check-circle-fill bg-success action-icon"></i>
+                        <span class="action-text">Tâche</span>
+                    </a>
+                    <a href="#" class="d-flex flex-column align-items-center mx-3">
+                        <i class="bi bi-journal-text bg-primary action-icon"></i>
+                        <span class="action-text">Notes</span>
+                    </a>#}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-12">
+            <div class="menu_produit">
+                <div class="menu-icon mb-3">
+                    <div class="form-group affaire-action">
+                        <a href="#" onclick="return updateAffaire({{affaire.id}})"><i class="bi bi-pencil-square edit"></i></a>
+                        <a href="#" onclick="return deleteAffaire({{affaire.id}})"><i class="bi bi-trash delete"></i></a>
                     </div>
                 </div>
-                <div class="col-md-4 col-12">
-                    <div class="menu_produit">
-                        <div class="menu-icon mb-3">
-                            <div class="form-group affaire-action">
-                                <a href="#" onclick="return updateAffaire({{affaire.id}})"><i class="bi bi-pencil-square edit"></i></a>
-                                <a href="#" onclick="return deleteAffaire({{affaire.id}})"><i class="bi bi-trash delete"></i></a>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 col-12 status">
-                                <label for="" class="mb-2 label-status">Statut devis</label>
-                                  {% set statutDevis = constant('App\\Entity\\Affaire::DEVIS') %}
-                                {#<select name="status-devis" id="status-devis" class="form-control form-control-sm">
-                                    {% for key,statutDev in statutDevis %}
-                                    <option value="{{key}}" {% if affaire.devisEvol is not null and affaire.devisEvol == key %} selected {% endif %}>{{statutDev}}</option>
-                                    {% endfor %}
-                                </select>#}
-                                <input type="text" name="status-devis" id="status-devis" class="form-control form-control-sm" value="{{statutDevis[affaire.devisEvol]}}" readonly>
-                                
-                            </div>
-                            {#<div class="col-md-4 col-12 status">
-                                <label for="" class="mb-2 label-status">Statut projet</label>
-                                <select name="status-projet" id="status-projet" class="form-control form-control-sm">
-                                    <option value="1">Gagné</option>
-                                    <option value="2">Perdu</option>
-                                    <option value="3">Terminé</option>
-                                </select>
-                            </div>#}
-                            <div class="col-md-6 col-12 status">
-                                <label for="" class="mb-2 label-status">Statut paiement</label>
-                                {% set statutPaiement = constant('App\\Entity\\Affaire::PAIEMENT') %}
-                                {#<select name="status-paiement" id="status-paiement" class="form-control form-control-sm">
-                                   {% for key,statutPaie in statutPaiement %}
-                                    <option value="{{key}}" {% if affaire.paiement is not null and affaire.paiement == key %} selected {% endif %}>{{statutPaie}}</option>
-                                    {% endfor %}
-                                </select>#}
-                                <input type="text" name="status-paiement" id="status-paiement" class="form-control form-control-sm" value="{{statutPaiement[affaire.paiement]}}" readonly>
+                <div class="row">
+                    <div class="col-md-6 col-12 status">
+                        <label for="" class="mb-2 label-status">Statut devis</label>
+                            {% set statutDevis = constant('App\\Entity\\Affaire::DEVIS') %}
+                        {#<select name="status-devis" id="status-devis" class="form-control form-control-sm">
+                            {% for key,statutDev in statutDevis %}
+                            <option value="{{key}}" {% if affaire.devisEvol is not null and affaire.devisEvol == key %} selected {% endif %}>{{statutDev}}</option>
+                            {% endfor %}
+                        </select>#}
+                        <input type="text" name="status-devis" id="status-devis" class="form-control form-control-sm" value="{{statutDevis[affaire.devisEvol]}}" readonly>
+                        
+                    </div>
+                    {#<div class="col-md-4 col-12 status">
+                        <label for="" class="mb-2 label-status">Statut projet</label>
+                        <select name="status-projet" id="status-projet" class="form-control form-control-sm">
+                            <option value="1">Gagné</option>
+                            <option value="2">Perdu</option>
+                            <option value="3">Terminé</option>
+                        </select>
+                    </div>#}
+                    <div class="col-md-6 col-12 status">
+                        <label for="" class="mb-2 label-status">Statut paiement</label>
+                        {% set statutPaiement = constant('App\\Entity\\Affaire::PAIEMENT') %}
+                        {#<select name="status-paiement" id="status-paiement" class="form-control form-control-sm">
+                            {% for key,statutPaie in statutPaiement %}
+                            <option value="{{key}}" {% if affaire.paiement is not null and affaire.paiement == key %} selected {% endif %}>{{statutPaie}}</option>
+                            {% endfor %}
+                        </select>#}
+                        <input type="text" name="status-paiement" id="status-paiement" class="form-control form-control-sm" value="{{statutPaiement[affaire.paiement]}}" readonly>
 
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
-        <script>
-            $(document).ready(function() {
-                var anchorName = document.location.hash.substring(1);
-                if(anchorName == "tab-financier-affaire" || anchorName == "tab-facture-affaire" || anchorName == "tab-info-affaire" || anchorName == "tab-echeance") {
-                    $('.affaire-action').hide();
-                }
+<script>
+    $(document).ready(function() {
+        var anchorName = document.location.hash.substring(1);
+        if(anchorName == "tab-financier-affaire" || anchorName == "tab-facture-affaire" || anchorName == "tab-info-affaire" || anchorName == "tab-echeance") {
+            $('.affaire-action').hide();
+        }
 
-            });
-        </script>
+    });
+</script>

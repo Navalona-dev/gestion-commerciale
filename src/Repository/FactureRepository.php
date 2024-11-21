@@ -324,6 +324,7 @@ class FactureRepository extends ServiceEntityRepository
 
     public function selectFactureByDate($statut, $date)
     {
+        //dd($date);
         $qb = $this->createQueryBuilder('f')
             ->select('f.id, f.dateCreation, f.date, f.solde, f.isEcheance, f.echeanceNumero, f.numero, f.isDepot, f.depotNumero, a.nom as affaireNom, m.id AS methodePaiementId, m.espece, m.mVola, m.orangeMoney, m.airtelMoney')
             ->leftJoin('f.affaire', 'a')

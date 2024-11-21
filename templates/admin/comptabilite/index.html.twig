@@ -300,34 +300,13 @@
         $('#tab-depot').css('display', 'none');
         $('#tab-vente').css('display', 'none');
         $('#tab-benefice').css('display', 'none');
-        $('#tab-fourchette').css('display', 'none');
+         $('#tab-fourchette').css('display', 'none');
+        $('#tab-comptabilite-detail').css('display', 'none');
                 $('#tab-comptabilite-liste').removeClass('active');
 
         $('#tab-comptabilite').css('display', 'block');
 
     });
-
-    function detailMethodePaiement(id = null) {
-      var anchorName = document.location.hash.substring(1);
-            $.ajax({
-                url: '/admin/comptabilite/detail/paiement/'+id,
-                type: 'GET',
-                //data: {isNew: isNew},
-                success: function (response) {
-                    $("#blocModalComptabiliteEmpty").empty();
-                    $("#blocModalComptabiliteEmpty").append(response.html);
-                    $('#modalDetailPaiement').modal('show');
-                    if (anchorName) {
-                        window.location.hash = anchorName;
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'affichage de détail de paiement.');
-                }
-            });
-    }
-    
     
     function createFactureDepense() {
         if (confirm('Voulez vous vraiment créer cette facture?')) {
@@ -375,7 +354,7 @@
                 success: function (response) {
                     $("#blocModalComptabiliteEmpty").empty();
                     $("#blocModalComptabiliteEmpty").append(response.html);
-                    $('#modalNewBenefice').modal('show');
+                    $('#').modal('show');
                     if (anchorName) {
                         window.location.hash = anchorName;
                     }

@@ -165,16 +165,18 @@
                             </div>
                                 
                             {% if affaire.paiement is not null and affaire.paiement == "paye" and factureFile is not null %}
-                                <div class="col-md-2 col-12">
-                                     <div class="d-flex justify-content-center">
-                                        <a title="Annuler" style="cursor: pointer;" onclick="return annuleFacture({{affaire.id}})" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
-                                            <i class="bi bi-x"></i>
-                                        </a>
-                                        <a title="Méthode de paiement" style="cursor: pointer;" onclick="return newMethodePaiement({{idFacture}})" class="icon-cancel bg-primary text-white d-flex align-items-center justify-content-center border border-secondary">
-                                            <i class="bi bi-currency-dollar"></i>
-                                        </a>
+                                {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') and app_authorization.isUserAllowedOnFeature('annuler_commande') %}
+                                    <div class="col-md-2 col-12">
+                                        <div class="d-flex justify-content-center">
+                                            <a title="Annuler" style="cursor: pointer;" onclick="return annuleFacture({{affaire.id}})" class="icon-cancel bg-danger text-white d-flex align-items-center justify-content-center border border-secondary">
+                                                <i class="bi bi-x"></i>
+                                            </a>
+                                            <a title="Méthode de paiement" style="cursor: pointer;" onclick="return newMethodePaiement({{idFacture}})" class="icon-cancel bg-primary text-white d-flex align-items-center justify-content-center border border-secondary">
+                                                <i class="bi bi-currency-dollar"></i>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
+                                {% endif %}
                             {% else %}
                                 {% if affaire.paiement is not null and (affaire.paiement == "non" or affaire.paiement is null)  %}
                                 <div class="col-md-2 col-12">
@@ -378,9 +380,11 @@
                                 <div class="mb-4">
                                     
                                     {% if affaire.paiement is not null and affaire.paiement == "paye" and factureFile is not null %}
-                                        <a title="Annuler" style="cursor: pointer;" onclick="return annuleFacture({{affaire.id}})" title="Annuler" class="text-danger financier-icon">
-                                            <i class="bi bi-x-square-fill"></i>
-                                        </a>
+                                        {% if app_authorization.isUserGrantedPrivilege('responsable_caisse') and app_authorization.isUserAllowedOnFeature('annuler_commande') %}
+                                            <a title="Annuler" style="cursor: pointer;" onclick="return annuleFacture({{affaire.id}})" title="Annuler" class="text-danger financier-icon">
+                                                <i class="bi bi-x-square-fill"></i>
+                                            </a>
+                                        {% endif %}
                                    
                                     {% else %}
                                         {% if affaire.paiement is not null and (affaire.paiement == "non" or affaire.paiement is null)  %}
@@ -508,7 +512,8 @@
         $('#tab-comptabilite').css('display', 'none');
         $('#tab-vente').css('display', 'none');
         $('#tab-benefice').css('display', 'none');
-        $('#tab-fourchette').css('display', 'none');
+         $('#tab-fourchette').css('display', 'none');
+        $('#tab-comptabilite-detail').css('display', 'none');
                 $('#tab-comptabilite-liste').removeClass('active');
 
       
@@ -618,42 +623,6 @@
                 }
             });
         
-            }, 500);
-           
-        }
-    }
-
-    function annuleFacture(id = null) {
-        if (confirm('Voulez vous vraiment annuler ce paiement?')) {
-            setTimeout(function() {
-                $.ajax({
-                url: '/admin/affaires/paiement/annule/'+id,
-                type: 'POST',
-                data: {id: id},
-                success: function (response) {
-                    setTimeout(function () {
-                        toastr.options = {
-                            closeButton: true,
-                            progressBar: true,
-                            showMethod: 'slideDown',
-                            timeOut: 1000
-                        };
-                        toastr.success('Avec succèss', 'Annulation fait');
-                        
-                        financier(id);
-
-                        if (response.pdfUrl) {
-                            window.open(response.pdfUrl, '_blank');
-                        }
-                    }, 800);
-                    
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    // Gérer l'erreur (par exemple, afficher un message d'erreur)
-                    alert('Erreur lors de l\'annulation de paiement.');
-                }
-            });
-            
             }, 500);
            
         }

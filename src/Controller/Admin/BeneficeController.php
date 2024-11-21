@@ -75,10 +75,11 @@ class BeneficeController extends AbstractController
         $data = [];
         try {
             $dateFilterCommande = $request->getSession()->get('dateFilterCommande');
+            //dd($dateFilterCommande);
             $factures = null;
 
             if($dateFilterCommande) {
-                $factures = $this->factureRepository->selectFactureByDate('regle', $dateFilterCommande->format('Y-m-d'));
+                $factures = $this->factureRepository->selectFactureByDate('regle', $dateFilterCommande);
             } else {
                 $factures = $this->factureRepository->selectFactureToday('regle');
             }
@@ -156,6 +157,7 @@ class BeneficeController extends AbstractController
     #[Route('/detail/{id}', name: '_liste_one')]
     public function indexOne(Request $request, Benefice $benefice): Response
     {
+
         $data = [];
         try {
 
@@ -190,6 +192,7 @@ class BeneficeController extends AbstractController
 
             $request->getSession()->set('totalDepense', $totalDepense);
             $request->getSession()->set('totalBenefice', $benefice->getTotal());
+            $request->getSession()->set('date', $benefice->getDateBenefice());
 
             $data["html"] = $this->renderView('admin/benefice/detail.html.twig', [
                 'depenses' => $depenses,

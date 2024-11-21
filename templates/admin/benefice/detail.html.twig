@@ -40,7 +40,7 @@
                                 <a href="#" onclick="return newFourchette()" class="text-decoration-underline">Créer une autre fourchette</a> <br><br>
                                 <a href="#tab-fourchette" onclick="return showTabFourchette()" class="text-decoration-underline">Liste fourchette</a>
 
-                              </div>
+                          </div>
                             {% endif %}
                             {% set isFactureDepense = false %}
                             {% for depense in depenses  %}
@@ -51,16 +51,17 @@
                             {% if application.fourchettes|length > 0 %}
                               {% if isFactureDepense or depenses|length < 1 %}
                                 {% if not existeDate %}
-                                  <p class="d-flex justify-content-center">
+                                  <div class="d-flex justify-content-center">
                                       <a href="#" onclick="return newComptabilite()" class="btn btn-info btn-sm px-3">Créer comptabilité</a>
-                                  </p>
+                                      <a href="#" class="btn btn-info btn-sm px-3 mx-3 btn-edit-benefice">Modifier encaissement</a>
+                                  </div>
                                 {% else %}
                                   <div class="alert alert-info">
                                     Vous avez déjà créer une comptabilité pour cette encaissement et ce depense le {{comptabiliteFirst.dateCreation|date('d-m-Y')}} <br>
                                     Comptabilité du {{comptabiliteFirst.dateComptabilite|date('d-m-Y')}} <br>
                                     {{comptabiliteFirst.designation}} : {{comptabiliteFirst.reste|number_format(0,',',' ')}} Ariary <br>
                                     Voulez vous faire une modification? <br><br>
-                                    <a href="#tab-comptabilite" onclick="return showTabComptabilite()" class="btn btn-info btn-sm px-4">Modifier</a>
+                                    <a href="#tab-comptabilite-detail" onclick="return showTabComptabiliteDetail({{comptabiliteFirst.id}})" class="btn btn-info btn-sm px-4">Détail comptabilité</a>
 
                                   </div>
                                 {% endif %}
@@ -188,7 +189,8 @@
         $('#tab-comptabilite').css('display', 'none');
         $('#tab-vente').css('display', 'none');
         $('#tab-benefice').css('display', 'block');
-        $('#tab-fourchette').css('display', 'none');
+         $('#tab-fourchette').css('display', 'none');
+        $('#tab-comptabilite-detail').css('display', 'none');
         $('#tab-comptabilite-liste').removeClass('active');
 
 
