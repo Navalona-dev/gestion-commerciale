@@ -172,7 +172,8 @@ class StockController extends AbstractController
         /*if (!$this->accesService->insufficientPrivilege('oatf')) {
             return $this->redirectToRoute('index_front'); // To DO page d'alerte insufisance privilege
         }*/
-        $oldQtt = (integer) $request->get('oldQtt');
+        $oldQtt = (float) $request->get('oldQtt');
+        $qttPlus = (float) $request->get('qtt-plus-stock-update');
         $totalStock = $request->get('totalStock');
         $quantity = $request->get('quantity');
         $qttVendu = $request->get('qttVendu');
@@ -208,7 +209,7 @@ class StockController extends AbstractController
 
                     $qtt = $formData->getQtt();
 
-                    $stockService->edit($stock, $produitCategorie, $oldQtt, $datePeremption, $qtt);
+                    $stockService->edit($stock, $produitCategorie, $oldQtt, $datePeremption, $qtt, $qttPlus);
                     
                     $stockRestant = $produitCategorie->getStockRestant();
                     $sousUnite = 0;
@@ -247,7 +248,7 @@ class StockController extends AbstractController
                     $data["type"] = "Modification stock";
                     $data["qtt"] = $stock->getQtt() . ' ' . $produitCategorie->getPresentationGros();
                     $data["stockRestant"] = $stockRestantStr;
-                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : $reference);
+                    $data["fournisseur"] = ($produitCategorie->getReference() != false && $produitCategorie->getReference() != null ? $produitCategorie->getReference() : null);
                     $data["typeSource"] = "Point de vente";
                     $data["typeDestination"] = "Point de vente";
                     $data["commande"] = null;
@@ -268,7 +269,6 @@ class StockController extends AbstractController
 
             $data["html"] = $this->renderView('admin/stock/modal_update.html.twig', [
                 'form' => $form->createView(),
-                'id' => $stock->getId(),
                 'oldQtt' => $stock->getQtt(),
                 'totalStock' => $totalStock,
                 'produitCategorie' => $produitCategorie,
@@ -278,7 +278,8 @@ class StockController extends AbstractController
                 'qttRestant' => ($produitCategorie->getStockRestant() != null ? $produitCategorie->getStockRestant() : 0),
                 'qttFinal' => $qttFinal,
                 'sacs' => $sacs . $produitCategorie->getPresentationGros(),
-                'unite' => $unite . $produitCategorie->getUniteVenteGros()
+                'unite' => $unite . $produitCategorie->getUniteVenteGros(),
+                'stock' => $stock
             ]);
 
 

@@ -157,7 +157,7 @@ class StockService
         return $newStock;
     }
 
-    public function edit($stock = null, $produitCategorie = null, $oldQtt = null, $datePeremption = null, $editQtt = null)
+    public function edit($stock = null, $produitCategorie = null, $oldQtt = null, $datePeremption = null, $editQtt = null, $qttPlusForm)
     {
         $stocks = $produitCategorie->getStocks();
         $datePeremptions = [];
@@ -217,50 +217,61 @@ class StockService
                     }
                 }
 
+                $stockRestant = 0;
+
                 $oldQttRestant = $stock->getQttRestant();
+
+                $volumeGros = $produitCategorie->getVolumeGros(); 
 
                 //si oldQtt est egale à oldQttRestant
                 if ($oldQtt == $oldQttRestant) {
                     // Cas où la quantité ancienne est égale à la quantité restante
-                    $newQtt = $stock->getQtt();
-                    $stock->setQttRestant($newQtt);
-                } elseif ($oldQtt > $oldQttRestant) {
-                    $newQtt = $stock->getQtt();
+                    $qttStockForm = $stock->getQtt(); 
+                    $newQtt = null;
 
-                    if($newQtt > $oldQtt) {
-                        $newQttRestant = $oldQttRestant + ($newQtt - $oldQtt);
-                    } elseif($newQtt < $oldQtt) {
-                        $newQttRestant = $oldQttRestant - ($oldQtt - $newQtt);
-                    }
-                    $stock->setQttRestant($newQttRestant);
-                }
-
-                // Calculez le nouveau stock restant après soustraction de l'ancienne quantité
-                /*if ($oldQtt <= $oldStockRestant) {
-                    $stockRestant = $oldStockRestant - $oldQtt;
-                    $newQtt = $stock->getQtt();
-                    $stockRestant = $stockRestant + $newQtt;
-
-                } else {
-                    $stocktoAdd = $oldQtt - $oldStockRestant;
-                    $stockRestant = $oldStockRestant + $stocktoAdd;
-
-                }*/
-                if ($oldQtt <= $oldStockRestant) {
-                    $stockRestant = $oldStockRestant - $oldQtt;
-                    $newQtt = $stock->getQtt();
-                    $stockRestant = $stockRestant + $newQtt;
-    
-                } else {
-                    $newQtt = $stock->getQtt(); 
-                    if($newQtt > $oldQtt) {
-                        $newStockRestant = $oldStockRestant + ($newQtt - $oldQtt);
+                    if($qttPlusForm > 0) { 
+                        $newQtt = $qttStockForm + ($qttPlusForm / $volumeGros); 
+                        $stock->setQtt($newQtt);
+                        $stock->setQttRestant($newQtt);
                     } else {
-                        $newStockRestant = $oldStockRestant - ($oldQtt - $newQtt);
+                        $newQtt = $qttStockForm;
+                        $stock->setQtt($newQtt);
+                        $stock->setQttRestant($newQtt);
                     }
-                    $stockRestant = $newStockRestant;
+                    
+                            
+                } elseif ($oldQtt > $oldQttRestant) {
+                    $qttStockForm = $stock->getQtt();
+                    $newQtt = null;
+                    $additionStock = 0;
+                    $newQttRestant = null;
+
+                    if($qttStockForm > $oldQtt) {
+                        $additionStock = $qttStockForm - $oldQtt; 
+                        $newQttRestant = $oldQttRestant + $additionStock; 
+
+                    } elseif($oldQtt > $qttStockForm) {
+                        $additionStock = $oldQtt - $qttStockForm;
+                        $newQttRestant = $oldQttRestant - $additionStock; 
+                    }
+
+                    if($qttPlusForm > 0) {     
+                        $newQtt = $qttStockForm + ($qttPlusForm / $volumeGros); 
+                        $newQttRestantStock = $newQttRestant + ($qttPlusForm / $volumeGros); 
+                        $stock->setQtt($newQtt);
+                        $stock->setQttRestant($newQttRestantStock);
+                    } else {
+                        $newQtt = $qttStockForm;
+                        $newQttRestantStock = $newQttRestant;
+                        $stock->setQtt($newQtt);
+                        $stock->setQttRestant($newQttRestantStock);
+                    }
                 }
-                
+
+                foreach($stocks as $stockProduitCat) {
+                    $stockRestant += $stockProduitCat->getQttRestant();
+                }
+
                 $produitCategorie->setStockRestant($stockRestant);
                 $this->entityManager->persist($produitCategorie);
 
@@ -294,37 +305,64 @@ class StockService
                 }
             }
 
-            $oldQttRestant = $stock->getQttRestant();
+            $stockRestant = 0;
 
-            //si oldQtt est egale à oldQttRestant
-            if ($oldQtt == $oldQttRestant) {
-                // Cas où la quantité ancienne est égale à la quantité restante
-                $newQtt = $stock->getQtt();
-                $stock->setQttRestant($newQtt);
-            } elseif ($oldQtt > $oldQttRestant) {
-                $newQtt = $stock->getQtt();
+                $oldQttRestant = $stock->getQttRestant();
 
-                if($newQtt > $oldQtt) {
-                    $newQttRestant = $oldQttRestant + ($newQtt - $oldQtt);
-                } elseif($newQtt < $oldQtt) {
-                    $newQttRestant = $oldQttRestant - ($oldQtt - $newQtt);
+                $volumeGros = $produitCategorie->getVolumeGros(); 
+
+                //si oldQtt est egale à oldQttRestant
+                if ($oldQtt == $oldQttRestant) {
+                    // Cas où la quantité ancienne est égale à la quantité restante
+                    $qttStockForm = $stock->getQtt(); 
+                    $newQtt = null;
+
+                    if($qttPlusForm > 0) { 
+                        $newQtt = $qttStockForm + ($qttPlusForm / $volumeGros); 
+                        $stock->setQtt($newQtt);
+                        $stock->setQttRestant($newQtt);
+                    } else {
+                        $newQtt = $qttStockForm;
+                        $stock->setQtt($newQtt);
+                        $stock->setQttRestant($newQtt);
+                    }
+                    
+                            
+                } elseif ($oldQtt > $oldQttRestant) {
+                    $qttStockForm = $stock->getQtt();
+                    $newQtt = null;
+                    $additionStock = 0;
+                    $newQttRestant = null;
+
+                    if($qttStockForm > $oldQtt) {
+                        $additionStock = $qttStockForm - $oldQtt; 
+                        $newQttRestant = $oldQttRestant + $additionStock; 
+
+                    } elseif($oldQtt > $qttStockForm) {
+                        $additionStock = $oldQtt - $qttStockForm;
+                        $newQttRestant = $oldQttRestant - $additionStock; 
+                    }
+
+                    if($qttPlusForm > 0) {     
+                        $newQtt = $qttStockForm + ($qttPlusForm / $volumeGros); 
+                        $newQttRestantStock = $newQttRestant + ($qttPlusForm / $volumeGros); 
+                        $stock->setQtt($newQtt);
+                        $stock->setQttRestant($newQttRestantStock);
+                    } else {
+                        $newQtt = $qttStockForm;
+                        $newQttRestantStock = $newQttRestant;
+                        $stock->setQtt($newQtt);
+                        $stock->setQttRestant($newQttRestantStock);
+                    }
                 }
-                $stock->setQttRestant($newQttRestant);
 
-            }
-            // Calculez le nouveau stock restant après soustraction de l'ancienne quantité
-            if ($oldQtt <= $oldStockRestant) {
-                $stockRestant = $oldStockRestant - $oldQtt;
-                $newQtt = $stock->getQtt();
-                $stockRestant = $stockRestant + $newQtt;
-
-            } else {
-                $stocktoAdd = $oldQtt - $oldStockRestant;
-                $stockRestant = $oldStockRestant + $stocktoAdd;
-            }
+                foreach($stocks as $stockProduitCat) {
+                    $stockRestant += $stockProduitCat->getQttRestant();
+                }
 
             $produitCategorie->setStockRestant($stockRestant);
             $this->entityManager->persist($produitCategorie);
+            //dd($produitCategorie->getStockRestant());
 
             if ($newDatePeremption) {
                 $stock->setDatePeremption($newDatePeremption);

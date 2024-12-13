@@ -11,33 +11,34 @@
                 <span class="qtt-restant" data-qttrestant="{{qttRestant}}"></span>
                 <span class="qtt" data-qtt="{{quantity}}"></span>
                 <span class="total-stock" data-totalstock="{{totalStock}}"></span>
+                <span class="qtt-stock" data-qtt="{{stock.qtt}}"></span>
 
                 <span class="volume-gros" data-volume="{{produitCategorie.volumeGros}}"></span>
                 <span class="presentation-gros" data-presentation="{{produitCategorie.presentationGros}}"></span>
                 <span class="unite-gros" data-unite="{{produitCategorie.uniteVenteGros}}"></span>
-                {{ form_start(form, {'attr': {'id': 'updateStock', 'action': path('stocks_edit', {'stock': id}) }}) }}
+                {{ form_start(form, {'attr': {'id': 'updateStock', 'action': path('stocks_edit', {'stock': stock.id}) }}) }}
                     <div class="form-group mb-3">
-                        <label for="" class="mb-2">Quantité ({{qttFinal}}) </label>
+                        <label for="" class="mb-2">Quantité (<span class="qtt-finale-gros"></span><span class="qtt-finale-detail"></span>)  </label>
                         <div class="row">
-                            <div class="col-10">
+                            <div class="col-9">
                                 {{ form_widget(form.qtt) }}
                             </div>
-                            <div class="col-2">
-                                ({{sacs}})
+                            <div class="col-3">
+                                <span class="value-qtt-stock"></span>
                             </div>
                         </div>
                          
-                        <span class="text-success text-qtt-stock"></span>
+                        {#<span class="text-success text-qtt-stock"></span>#}
                     </div>  
                     {% if produitCategorie.volumeGros > 1 %}
                         <div class="form-group mb-3">
                             <label for="" class="mb-2">Qtt en plus</label>
                             <div class="row">
-                                <div class="col-10">
+                                <div class="col-9">
                                     <input type="text" name="qtt-plus-stock-update" id="qtt-plus-stock-update" class="form-control form-control-md" autocomplete="off" readonly>
                                 </div>
-                                <div class="col-2">
-                                    ({{unite}})
+                                <div class="col-3">
+                                    <span class="value-qtt-plus"></span>
                                 </div>
                             </div>
                              
@@ -132,10 +133,70 @@
 
 <script>
     $(document).ready(function() {
-        var qttStock = $('#stock_qtt');
-        var volumeGros = $('.volume-gros').data('volume');
-        var presentationGros = $('.presentation-gros').data('presentation');
-        var uniteVenteGros = $('.unite-gros').data('unite');
+        let qttStock = $('#stock_qtt');
+        let volumeGros = $('.volume-gros').data('volume');
+        let presentationGros = $('.presentation-gros').data('presentation');
+        let uniteVenteGros = $('.unite-gros').data('unite');
+
+        
+        // Récupérez la valeur actuelle
+        let currentValue = qttStock.val();
+        
+        // Conservez uniquement la partie entière
+        let integerValue = Math.floor(parseFloat(currentValue));
+        
+        // Mettez à jour la valeur de l'input
+        qttStock.val(integerValue);
+
+        let stockPlusInput = $('#qtt-plus-stock-update');
+        // Récupérez la valeur actuelle
+        let currentValuePlus = $('.qtt-stock').data('qtt');
+        let stockPlusValue = null;
+
+        if (!isNaN(currentValuePlus)) {
+            // Convertissez la valeur en chaîne pour manipulation
+            let currentValueStr = currentValuePlus.toString();
+
+            // Séparer la partie entière et la partie décimale
+            let [integerPart, decimalPart] = currentValueStr.split('.');
+
+            // Si la partie décimale existe
+            if (decimalPart) {
+                // Récupérez la partie décimale exactement
+                let exactDecimal = `0.${decimalPart}`;
+
+                // Convertir en flottant pour calculs
+                stockPlusValue = parseFloat(exactDecimal) * volumeGros;
+
+                // Affichez le résultat dans l'input
+                stockPlusInput.val(stockPlusValue);
+                console.log('Partie exacte après la virgule :', exactDecimal);
+                console.log('Valeur calculée avec volumeGros :', stockPlusValue);
+            } else {
+                // Si aucune partie décimale, valeur par défaut
+                stockPlusInput.val(0);
+                console.log('Aucune partie décimale trouvée.');
+            }
+        } else {
+            // Gérer les erreurs si la valeur est invalide
+            stockPlusInput.val('Erreur');
+            console.log('Valeur invalide détectée.');
+        }
+
+
+        let qttFinaleGros = $('.qtt-finale-gros');
+        let qttFinaleDetail = $('.qtt-finale-detail');
+
+        let qttStockValue = $('.value-qtt-stock');
+        let qttStockPlus = $('.value-qtt-plus');
+
+        let qttFinaleGrosValue = integerValue + ' ' + presentationGros;
+
+        qttFinaleGros.text(qttFinaleGrosValue);
+        let qttFinaleDetailValue = ' et ' + stockPlusValue + ' ' + uniteVenteGros;
+        qttFinaleDetail.text(qttFinaleDetailValue);
+        qttStockValue.text('(' + qttFinaleGrosValue + ')');
+        qttStockPlus.text('(' + stockPlusValue + ' ' + uniteVenteGros + ')');
 
         $('#qtt-plus-stock-update').on('click', function() {
             if(qttStock.val() === "") {
@@ -150,6 +211,11 @@
             var initialQttStock = parseFloat(qttStock.val());
             // Enregistrer la valeur dans la session (si vous avez une fonction pour cela)
             sessionStorage.setItem('initialQttStock', initialQttStock);
+
+            let valueStock = $(this).val();
+            qttFinaleGros.text(valueStock + ' ' + presentationGros);
+            qttStockValue.text('(' + valueStock + ' ' + presentationGros + ')');
+
         });
 
         var typingTimer; // Timer variable
@@ -158,6 +224,9 @@
         $('#qtt-plus-stock-update').on('input', function() {
             clearTimeout(typingTimer); // Effacer le timer précédent
             var inputField = $(this);
+            let qttPlusValueStock = $(this).val();
+            qttFinaleDetail.text(' et ' + qttPlusValueStock + ' ' + uniteVenteGros);
+            qttStockPlus.text('(' + qttPlusValueStock + ' ' + uniteVenteGros + ')');
 
             typingTimer = setTimeout(function() {
                 // Convertir les valeurs en nombres
@@ -197,7 +266,7 @@
                         var stockRestantText = stockRestantValue + ' ' + presentationGros + ' et ' + qttPlusValue + ' ' + uniteVenteGros;
                         $('.text-qtt-stock').text(stockRestantText);
 
-                        qttStock.val(stockRestantValueFinale);
+                        //qttStock.val(stockRestantValueFinale);
                     }
                 }
 
@@ -225,3 +294,4 @@
         
     })
 </script>
+
