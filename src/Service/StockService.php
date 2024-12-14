@@ -157,7 +157,7 @@ class StockService
         return $newStock;
     }
 
-    public function edit($stock = null, $produitCategorie = null, $oldQtt = null, $datePeremption = null, $editQtt = null, $qttPlusForm)
+    public function edit($stock = null, $produitCategorie = null, $oldQtt = null, $datePeremption = null, $editQtt = null, $qttPlusForm = null)
     {
         $stocks = $produitCategorie->getStocks();
         $datePeremptions = [];
